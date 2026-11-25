@@ -1,37 +1,56 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export type ThemePreference = 'system' | 'light' | 'dark';
+export type Theme = 'light' | 'dark';
 
 const KEY = 'dart-times:theme';
-const ORDER: ThemePreference[] = ['system', 'light', 'dark'];
+const darkQuery = () => window.matchMedia('(prefers-color-scheme: dark)');
+const systemTheme = (): Theme => (darkQuery().matches ? 'dark' : 'light');
 
-function readPreference(): ThemePreference {
+/** The viewer's override, if any. Without one the app follows the phone's setting. */
+function readOverride(): Theme | undefined {
   try {
     const stored = localStorage.getItem(KEY);
-    return ORDER.includes(stored as ThemePreference) ? (stored as ThemePreference) : 'system';
+    return stored === 'light' || stored === 'dark' ? stored : undefined;
   } catch {
-    return 'system';
+    return undefined;
+  }
+}
+
+function writeOverride(theme: Theme | undefined): void {
+  try {
+    if (theme) localStorage.setItem(KEY, theme);
+    else localStorage.removeItem(KEY);
+  } catch {
+    // Applied for this visit only.
   }
 }
 
 /** `data-theme` on <html> overrides the phone setting; without it, CSS follows prefers-color-scheme. */
-export function applyTheme(preference: ThemePreference = readPreference()): void {
-  if (preference === 'system') delete document.documentElement.dataset.theme;
-  else document.documentElement.dataset.theme = preference;
+export function applyTheme(override: Theme | undefined = readOverride()): void {
+  if (override) document.documentElement.dataset.theme = override;
+  else delete document.documentElement.dataset.theme;
 }
 
-/** The viewer's theme choice, cycling Auto → Light → Dark. Storage failures just mean it isn't remembered. */
+/** The theme in use, and a toggle that switches to the other one. */
 export function useTheme() {
-  const [preference, setPreference] = useState(readPreference);
-  const cycle = () => {
-    const next = ORDER[(ORDER.indexOf(preference) + 1) % ORDER.length]!;
-    setPreference(next);
-    applyTheme(next);
-    try {
-      localStorage.setItem(KEY, next);
-    } catch {
-      // Applied for this visit only.
-    }
+  const [override, setOverride] = useState(readOverride);
+  const [system, setSystem] = useState(systemTheme);
+
+  useEffect(() => {
+    const query = darkQuery();
+    const onChange = () => setSystem(systemTheme());
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, []);
+
+  const theme = override ?? system;
+  const toggle = () => {
+    const next: Theme = theme === 'dark' ? 'light' : 'dark';
+    // Switching back to the phone's own setting drops the override, so the app follows the phone again.
+    const nextOverride = next === system ? undefined : next;
+    setOverride(nextOverride);
+    writeOverride(nextOverride);
+    applyTheme(nextOverride);
   };
-  return { preference, cycle };
+  return { theme, toggle };
 }

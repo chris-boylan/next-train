@@ -1,17 +1,12 @@
-import { type ThemePreference, useTheme } from './theme';
+import { useTheme } from './theme';
 
-const LABELS: Record<ThemePreference, { icon: string; name: string }> = {
-  system: { icon: 'A', name: 'Auto (follows your phone)' },
-  light: { icon: '☀', name: 'Light' },
-  dark: { icon: '☾', name: 'Dark' },
-};
-
+/** Shows the mode you'd switch to: a moon in light mode, a sun in dark mode. */
 export function ThemeToggle() {
-  const { preference, cycle } = useTheme();
-  const { icon, name } = LABELS[preference];
+  const { theme, toggle } = useTheme();
+  const label = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
   return (
-    <button className="theme-toggle" onClick={cycle} aria-label={`Theme: ${name}. Tap to change.`} title={`Theme: ${name}`}>
-      <span aria-hidden>{icon}</span>
+    <button className="theme-toggle" onClick={toggle} aria-label={label} title={label}>
+      <span aria-hidden>{theme === 'dark' ? '☀' : '☾'}</span>
     </button>
   );
 }
