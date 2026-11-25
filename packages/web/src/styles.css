@@ -260,7 +260,8 @@ p {
 .clock__now {
   font-size: 1.75rem;
   font-weight: 900;
-  letter-spacing: -0.03em;
+  /* Normal spacing: tightened tracking pushes the digits into the colon. */
+  letter-spacing: 0;
 }
 
 .clock__label {
@@ -831,7 +832,6 @@ p {
   opacity: 0.2;
 }
 
-.going-to,
 .going-to__name,
 .going-to__clear {
   border: 0;
@@ -845,15 +845,9 @@ p {
 }
 
 .going-to {
-  margin: 2px auto 4px;
-  padding: 4px 12px;
-  border: 1.5px solid currentColor;
-}
-
-.going-to--set {
   display: inline-flex;
   align-items: stretch;
-  margin: 2px auto 4px;
+  margin: 4px auto 2px;
   border: 1.5px solid currentColor;
   padding: 0;
 }

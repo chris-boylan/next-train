@@ -11,11 +11,9 @@ import {
 } from '@dart-times/core';
 import { formatTime, useNow } from './clock';
 import { DeparturesSheet } from './DeparturesSheet';
-import { DestinationList } from './DestinationList';
 import { Caps, useI18n } from './i18n';
 import { OptionsMenu } from './OptionsMenu';
 import { getGoingTo, setGoingTo } from './prefs';
-import { Sheet } from './Sheet';
 import { useDepartures } from './useDepartures';
 
 const TRAINS_PER_DIRECTION = 3;
@@ -51,7 +49,8 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
     setGoingTo(station.code, code);
   };
   const goingDirection = goingTo ? directionBetween(station.code, goingTo) : undefined;
-  const [sheet, setSheet] = useState<{ kind: 'more'; direction: Direction } | { kind: 'goingTo' }>();
+  // The full departures panel for one direction; it's also where the going-to filter is chosen.
+  const [sheetDirection, setSheetDirection] = useState<Direction>();
 
   const allIn = (direction: Direction) => data?.departures.filter((d) => d.direction === direction) ?? [];
   const shownIn = (direction: Direction) =>
@@ -67,7 +66,7 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
         direction={direction}
         trains={dimmed(direction) ? [] : shown.slice(0, TRAINS_PER_DIRECTION)}
         moreCount={dimmed(direction) ? 0 : Math.max(0, shown.length - TRAINS_PER_DIRECTION)}
-        onMore={() => setSheet({ kind: 'more', direction })}
+        onMore={() => setSheetDirection(direction)}
         ends={ends}
         goingToName={goingDirection === direction ? goingToName : undefined}
         hidden={dimmed(direction)}
@@ -132,21 +131,18 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
           <h1 className={`platform__name${name.length > 20 ? ' platform__name--longer' : name.length > 13 ? ' platform__name--long' : ''}`}>
             <Caps text={name} />
           </h1>
-          <Neighbours codes={neighbours.south} direction="south" onSelect={onSelectStation} />
-          {goingTo ? (
-            <div className="going-to going-to--set">
-              <button className="going-to__name" onClick={() => setSheet({ kind: 'goingTo' })}>
+          {/* Only shown while a filter is on: tap the name to change it in that direction's panel, ✕ to clear. */}
+          {goingTo && goingDirection && (
+            <div className="going-to">
+              <button className="going-to__name" onClick={() => setSheetDirection(goingDirection)}>
                 {goingDirection === 'Northbound' ? '↑' : '↓'} <Caps text={t.goingTo(goingToName!)} />
               </button>
               <button className="going-to__clear" onClick={() => chooseGoingTo(undefined)} aria-label={t.showAll}>
                 ✕
               </button>
             </div>
-          ) : (
-            <button className="going-to" onClick={() => setSheet({ kind: 'goingTo' })}>
-              {t.goingToPrompt}
-            </button>
           )}
+          <Neighbours codes={neighbours.south} direction="south" onSelect={onSelectStation} />
         </div>
 
         {/* Bottom half: northbound trains on their way in, nearest at the top. Orange arrow continues down to its termini. */}
@@ -161,28 +157,15 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
         </section>
       </div>
 
-      {sheet?.kind === 'more' && (
+      {sheetDirection && (
         <DeparturesSheet
           station={station}
-          direction={sheet.direction}
-          departures={allIn(sheet.direction)}
-          goingTo={goingDirection === sheet.direction ? goingTo : undefined}
+          direction={sheetDirection}
+          departures={allIn(sheetDirection)}
+          goingTo={goingDirection === sheetDirection ? goingTo : undefined}
           onGoingTo={chooseGoingTo}
-          onClose={() => setSheet(undefined)}
+          onClose={() => setSheetDirection(undefined)}
         />
-      )}
-      {sheet?.kind === 'goingTo' && (
-        <Sheet title={t.goingToTitle(name)} onClose={() => setSheet(undefined)}>
-          <DestinationList
-            from={station.code}
-            directions={['Northbound', 'Southbound']}
-            selected={goingTo}
-            onSelect={(code) => {
-              chooseGoingTo(code);
-              setSheet(undefined);
-            }}
-          />
-        </Sheet>
       )}
     </div>
   );
@@ -254,7 +237,7 @@ function Trains({
 }: {
   direction: Direction;
   trains: Departure[];
-  /** Departures beyond the ones shown, opened in the full list. */
+  /** Departures beyond the ones shown. The link to the full list (and its filters) shows either way. */
   moreCount: number;
   onMore: () => void;
   ends: string[];
@@ -274,12 +257,12 @@ function Trains({
       </p>
     );
   }
-  const more = moreCount > 0 && (
+  const more = (
     <button className={`more more--${side}`} onClick={onMore}>
-      {t.more(moreCount)}
+      {moreCount > 0 ? t.more(moreCount) : t.filter}
     </button>
   );
-  // Southbound lists run bottom-up (nearest by the platform), so "more" goes at the far end: the top.
+  // Southbound lists run bottom-up (nearest by the platform), so the link goes at the far end: the top.
   return (
     <>
       {side === 'south' && more}
