@@ -39,11 +39,11 @@ export function OptionsMenu() {
             label={t.language}
             value={lang}
             onChange={setLang}
-            options={[
-              // Each language is named in itself, so it's findable whichever one is showing.
-              { value: 'en', label: 'English', lang: 'en' },
-              { value: 'ga', label: 'Gaeilge', lang: 'ga' },
-            ]}
+            // Named in the current language, current language first: "English | Irish" or "Gaeilge | Béarla".
+            options={(lang === 'en' ? (['en', 'ga'] as const) : (['ga', 'en'] as const)).map((value) => ({
+              value,
+              label: t.languageNames[value],
+            }))}
           />
           <Choice<Theme>
             label={t.appearance}
@@ -69,7 +69,7 @@ function Choice<T extends string>({
   label: string;
   value: T;
   onChange: (value: T) => void;
-  options: { value: T; label: string; lang?: string }[];
+  options: { value: T; label: string }[];
 }) {
   return (
     <div className="options__row">
@@ -80,7 +80,6 @@ function Choice<T extends string>({
             key={o.value}
             role="radio"
             aria-checked={value === o.value}
-            lang={o.lang}
             className={`segmented__option${value === o.value ? ' segmented__option--on' : ''}`}
             onClick={() => onChange(o.value)}
           >
