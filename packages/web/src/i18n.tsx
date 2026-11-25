@@ -12,7 +12,6 @@ const en = {
   chooseService: 'Choose a service',
   serviceNames: { dart: 'DART', enterprise: 'Enterprise' } as Record<ServiceId, string>,
   dublinBelfast: 'Dublin – Belfast',
-  border: 'Border',
   stations: 'Stations',
   findStation: 'Find a station',
   favouriteStations: 'Favourite stations',
@@ -66,7 +65,6 @@ const ga: Messages = {
   serviceNames: { dart: 'DART', enterprise: 'Enterprise' },
   // As on Irish Rail's bilingual Dublin–Belfast timetable.
   dublinBelfast: 'Baile Átha Cliath – Béal Feirste',
-  border: 'An Teorainn',
   stations: 'Stáisiúin',
   findStation: 'Aimsigh stáisiún',
   favouriteStations: 'Stáisiúin is fearr leat',

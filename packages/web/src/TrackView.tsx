@@ -131,21 +131,23 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
 
         <div className="platform">
           <Neighbours codes={neighbours.north} direction="north" onSelect={onSelectStation} />
-          {/* Some Irish names are long; step the size down so they fit on one line on a phone. */}
-          <h1 className={`platform__name${name.length > 20 ? ' platform__name--longer' : name.length > 13 ? ' platform__name--long' : ''}`}>
-            <Caps text={name} />
-          </h1>
-          {/* Only shown while a filter is on: tap the name to change it in that direction's panel, ✕ to clear. */}
-          {goingTo && goingDirection && (
-            <div className="going-to">
-              <button className="going-to__name" onClick={() => setSheetDirection(goingDirection)}>
-                {goingDirection === 'Northbound' ? '↑' : '↓'} <Caps text={t.goingTo(goingToName!)} />
-              </button>
-              <button className="going-to__clear" onClick={() => chooseGoingTo(undefined)} aria-label={t.showAll}>
-                ✕
-              </button>
-            </div>
-          )}
+          <div className="platform__middle">
+            {/* Some Irish names are long; step the size down so they fit on one line on a phone. */}
+            <h1 className={`platform__name${name.length > 20 ? ' platform__name--longer' : name.length > 13 ? ' platform__name--long' : ''}`}>
+              <Caps text={name} />
+            </h1>
+            {/* Only shown while a filter is on: tap the name to change it in that direction's panel, ✕ to clear. */}
+            {goingTo && goingDirection && (
+              <div className="going-to">
+                <button className="going-to__name" onClick={() => setSheetDirection(goingDirection)}>
+                  {goingDirection === 'Northbound' ? '↑' : '↓'} <Caps text={t.goingTo(goingToName!)} />
+                </button>
+                <button className="going-to__clear" onClick={() => chooseGoingTo(undefined)} aria-label={t.showAll}>
+                  ✕
+                </button>
+              </div>
+            )}
+          </div>
           <Neighbours codes={neighbours.south} direction="south" onSelect={onSelectStation} />
         </div>
 
@@ -187,7 +189,8 @@ function Neighbours({
   onSelect: (code: string) => void;
 }) {
   const { t, nameOf } = useI18n();
-  if (!codes.length) return null;
+  // At a terminus the row stays, empty, so the station sign keeps its size.
+  if (!codes.length) return <div className="neighbours" aria-hidden />;
   return (
     <nav className={`neighbours neighbours--${direction}`} aria-label={t.nextStation[direction]}>
       {codes.map((code) => (

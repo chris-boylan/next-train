@@ -12,8 +12,6 @@ export interface Service {
   stations: Station[];
   /** Whether a train on a station's departure board belongs to this service. */
   matches: (raw: RawStationData) => boolean;
-  /** Where the line crosses the Irish border, as [north, south] neighbouring stations. */
-  border?: [string, string];
 }
 
 export const SERVICES: Record<ServiceId, Service> = {
@@ -29,7 +27,6 @@ export const SERVICES: Record<ServiceId, Service> = {
     stations: ENTERPRISE_STATIONS,
     // The API has no Enterprise train type; it's the only Irish Rail service that runs to or from Belfast.
     matches: (raw) => raw.Origin.startsWith('Belfast') || raw.Destination.startsWith('Belfast'),
-    border: ['NEWRY', 'DDALK'],
   },
 };
 
