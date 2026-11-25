@@ -1,0 +1,397 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "dart times",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "GetDeparturesIntent",
+          "slots": [
+            {
+              "name": "station",
+              "type": "STATION"
+            },
+            {
+              "name": "direction",
+              "type": "DIRECTION"
+            }
+          ],
+          "samples": [
+            "when is the next dart from {station}",
+            "when's the next dart from {station}",
+            "when is the next train from {station}",
+            "when's the next train from {station}",
+            "next dart from {station}",
+            "next train from {station}",
+            "darts from {station}",
+            "trains from {station}",
+            "departures from {station}",
+            "next {direction} dart from {station}",
+            "next {direction} train from {station}",
+            "when's the next {direction} dart from {station}",
+            "when's the next {direction} train from {station}",
+            "next dart from {station} going {direction}",
+            "next train from {station} going {direction}",
+            "{direction} darts from {station}",
+            "{direction} trains from {station}",
+            "{station}",
+            "{station} going {direction}"
+          ]
+        },
+        {
+          "name": "FavouriteDeparturesIntent",
+          "slots": [],
+          "samples": [
+            "when's my next train",
+            "when is my next train",
+            "when's my next dart",
+            "when is my next dart",
+            "my next train",
+            "my next dart",
+            "check my station"
+          ]
+        },
+        {
+          "name": "AddFavouriteIntent",
+          "slots": [
+            {
+              "name": "station",
+              "type": "STATION"
+            }
+          ],
+          "samples": [
+            "add {station} to my favourites",
+            "add {station} to favourites",
+            "save {station} as a favourite",
+            "set {station} as my favourite",
+            "make {station} my favourite station",
+            "favourite {station}"
+          ]
+        },
+        {
+          "name": "RemoveFavouriteIntent",
+          "slots": [
+            {
+              "name": "station",
+              "type": "STATION"
+            }
+          ],
+          "samples": [
+            "remove {station} from my favourites",
+            "remove {station} from favourites",
+            "delete {station} from my favourites",
+            "forget {station}"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "name": "STATION",
+          "values": [
+            {
+              "id": "MHIDE",
+              "name": {
+                "value": "Malahide",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "PMNCK",
+              "name": {
+                "value": "Portmarnock",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "GRGRD",
+              "name": {
+                "value": "Clongriffin",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "HOWTH",
+              "name": {
+                "value": "Howth",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "SUTTN",
+              "name": {
+                "value": "Sutton",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "BYSDE",
+              "name": {
+                "value": "Bayside",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "HWTHJ",
+              "name": {
+                "value": "Howth Junction",
+                "synonyms": [
+                  "Donaghmede"
+                ]
+              }
+            },
+            {
+              "id": "KBRCK",
+              "name": {
+                "value": "Kilbarrack",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "RAHNY",
+              "name": {
+                "value": "Raheny",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "HTOWN",
+              "name": {
+                "value": "Harmonstown",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "KLSTR",
+              "name": {
+                "value": "Killester",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "CTARF",
+              "name": {
+                "value": "Clontarf Road",
+                "synonyms": [
+                  "Clontarf"
+                ]
+              }
+            },
+            {
+              "id": "CNLLY",
+              "name": {
+                "value": "Connolly",
+                "synonyms": [
+                  "Dublin Connolly",
+                  "Connolly Station",
+                  "Amiens Street"
+                ]
+              }
+            },
+            {
+              "id": "TARA",
+              "name": {
+                "value": "Tara Street",
+                "synonyms": [
+                  "Tara St",
+                  "Tara"
+                ]
+              }
+            },
+            {
+              "id": "PERSE",
+              "name": {
+                "value": "Pearse",
+                "synonyms": [
+                  "Dublin Pearse",
+                  "Pearse Station",
+                  "Westland Row"
+                ]
+              }
+            },
+            {
+              "id": "GCDK",
+              "name": {
+                "value": "Grand Canal Dock",
+                "synonyms": [
+                  "Grand Canal",
+                  "Barrow Street"
+                ]
+              }
+            },
+            {
+              "id": "LDWNE",
+              "name": {
+                "value": "Lansdowne Road",
+                "synonyms": [
+                  "Lansdowne",
+                  "Aviva"
+                ]
+              }
+            },
+            {
+              "id": "SMONT",
+              "name": {
+                "value": "Sandymount",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "SIDNY",
+              "name": {
+                "value": "Sydney Parade",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "BTSTN",
+              "name": {
+                "value": "Booterstown",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "BROCK",
+              "name": {
+                "value": "Blackrock",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "SEAPT",
+              "name": {
+                "value": "Seapoint",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "SHILL",
+              "name": {
+                "value": "Salthill and Monkstown",
+                "synonyms": [
+                  "Monkstown",
+                  "Salthill"
+                ]
+              }
+            },
+            {
+              "id": "DLERY",
+              "name": {
+                "value": "Dun Laoghaire",
+                "synonyms": [
+                  "Dunleary",
+                  "Dun Leary"
+                ]
+              }
+            },
+            {
+              "id": "SCOVE",
+              "name": {
+                "value": "Sandycove",
+                "synonyms": [
+                  "Glasthule"
+                ]
+              }
+            },
+            {
+              "id": "GLGRY",
+              "name": {
+                "value": "Glenageary",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "DLKEY",
+              "name": {
+                "value": "Dalkey",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "KILNY",
+              "name": {
+                "value": "Killiney",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "SKILL",
+              "name": {
+                "value": "Shankill",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "WBROK",
+              "name": {
+                "value": "Woodbrook",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "BRAY",
+              "name": {
+                "value": "Bray",
+                "synonyms": []
+              }
+            },
+            {
+              "id": "GSTNS",
+              "name": {
+                "value": "Greystones",
+                "synonyms": []
+              }
+            }
+          ]
+        },
+        {
+          "name": "DIRECTION",
+          "values": [
+            {
+              "id": "Northbound",
+              "name": {
+                "value": "northbound",
+                "synonyms": [
+                  "north",
+                  "northern",
+                  "towards Howth",
+                  "towards Malahide"
+                ]
+              }
+            },
+            {
+              "id": "Southbound",
+              "name": {
+                "value": "southbound",
+                "synonyms": [
+                  "south",
+                  "southern",
+                  "towards Bray",
+                  "towards Greystones"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

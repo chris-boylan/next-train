@@ -1,0 +1,22 @@
+{
+  "name": "@dart-times/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./dynamo": "./src/dynamo.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "smoke": "tsx scripts/smoke.ts",
+    "verify-line": "tsx scripts/verify-line.ts",
+    "update-stations": "tsx scripts/update-stations.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.700.0",
+    "@aws-sdk/lib-dynamodb": "^3.700.0",
+    "fast-xml-parser": "^4.5.0"
+  }
+}

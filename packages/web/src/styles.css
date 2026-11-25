@@ -1,0 +1,645 @@
+:root {
+  --bg: #f4f5f2;
+  --surface: #ffffff;
+  --text: #16201b;
+  --muted: #5b6862;
+  --border: #dde2de;
+  /* Tricolour: green northbound, white station, orange southbound. */
+  --green: #169b62;
+  --orange: #ff883e;
+  --platform: #ffffff;
+  --platform-text: #16201b;
+  --glyph-window: #1d2a24;
+  --glyph-light: #ffd75e;
+  --minor: #8a5a00;
+  --minor-bg: #fff2d6;
+  --major: #b3261e;
+  --major-bg: #fde4e2;
+  --star: #e0a800;
+  --lane-width: 56px;
+  --lane-gap: 8px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1311;
+    --surface: #18201c;
+    --text: #e8ece9;
+    --muted: #9ba8a2;
+    --border: #2a3530;
+    --platform: #f3f4f0;
+    --platform-text: #16201b;
+    --minor: #f2c46b;
+    --minor-bg: #3a2e12;
+    --major: #ff9a91;
+    --major-bg: #3d1a17;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.35 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+.star {
+  border: 0;
+  background: none;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.star--on {
+  color: var(--star);
+}
+
+.chip {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 600;
+  min-height: 40px;
+}
+
+/* ---------- Track view ---------- */
+
+.track-view {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 560px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.clock {
+  text-align: center;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock__now {
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.clock__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.clock__updated {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.clock__updated--stale {
+  color: var(--major);
+  font-weight: 700;
+}
+
+.track-view__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 8px 0 12px;
+  flex: none;
+  position: relative;
+  z-index: 3;
+}
+
+.tracks {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* The two arrows run the full height behind everything else. */
+.lane {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--lane-width);
+  display: flex;
+  align-items: center;
+}
+
+.lane--north {
+  left: calc(50% - var(--lane-width) - var(--lane-gap) / 2);
+  flex-direction: column-reverse; /* head at the top */
+  --lane-color: var(--green);
+}
+
+.lane--south {
+  left: calc(50% + var(--lane-gap) / 2);
+  flex-direction: column; /* head at the bottom */
+  --lane-color: var(--orange);
+}
+
+.lane__shaft {
+  flex: 1;
+  width: 26px;
+  background-color: var(--lane-color);
+  background-image: linear-gradient(rgb(255 255 255 / 0.35) 0 6px, transparent 6px);
+  background-size: 100% 24px;
+}
+
+.lane--north .lane__shaft {
+  animation: flow-up 1.4s linear infinite;
+}
+
+.lane--south .lane__shaft {
+  animation: flow-down 1.4s linear infinite;
+}
+
+.lane__head {
+  width: 100%;
+  height: 40px;
+  flex: none;
+  background: var(--lane-color);
+}
+
+.lane--north .lane__head {
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.lane--south .lane__head {
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+/* The halves are equal, so the platform sits at 50%: a terminating track runs only up to it. */
+.lane--north.lane--ends {
+  top: 50%;
+}
+
+.lane--south.lane--ends {
+  bottom: 50%;
+}
+
+@keyframes flow-up {
+  to {
+    background-position: 0 -24px;
+  }
+}
+
+@keyframes flow-down {
+  to {
+    background-position: 0 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lane__shaft {
+    animation: none !important;
+  }
+}
+
+.half {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 8px 0;
+}
+
+.half--top {
+  justify-content: flex-end;
+}
+
+.half--bottom {
+  justify-content: flex-start;
+}
+
+.terminus {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Beside the green arrowhead (top left) and the orange arrowhead (bottom right). */
+.terminus__to {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+.terminus--north {
+  top: 10px;
+  align-items: flex-end;
+  right: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
+  text-align: right;
+  color: var(--green);
+}
+
+.terminus--south {
+  bottom: 10px;
+  left: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
+  color: var(--orange);
+}
+
+.trains {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Southbound trains approach from above, so the nearest sits at the bottom, next to the platform. */
+.trains--south {
+  flex-direction: column-reverse;
+}
+
+.train {
+  position: relative;
+  height: 62px;
+  --glyph-width: 30px;
+}
+
+.train--next {
+  height: 76px;
+  --glyph-width: 40px;
+}
+
+.train__glyph {
+  position: absolute;
+  top: 50%;
+  width: var(--glyph-width);
+  transform: translateY(-50%);
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.25));
+}
+
+.train--north .train__glyph {
+  left: calc(50% - var(--lane-gap) / 2 - var(--lane-width) / 2 - var(--glyph-width) / 2);
+  --lane-color: var(--green);
+}
+
+.train--south .train__glyph {
+  left: calc(50% + var(--lane-gap) / 2 + var(--lane-width) / 2 - var(--glyph-width) / 2);
+  --lane-color: var(--orange);
+}
+
+.glyph-body {
+  fill: #ffffff;
+  stroke: var(--lane-color);
+  stroke-width: 3;
+}
+
+.glyph-window {
+  fill: var(--glyph-window);
+}
+
+.glyph-light {
+  fill: var(--glyph-light);
+}
+
+.train__info {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Northbound details sit left of the green track, southbound right of the orange one. */
+.train--north .train__info {
+  left: 6px;
+  right: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 6px);
+  align-items: flex-end;
+  text-align: right;
+}
+
+.train--south .train__info {
+  left: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 6px);
+  right: 6px;
+  align-items: flex-start;
+}
+
+.train__due {
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.train--next .train__due {
+  font-size: 1.75rem;
+}
+
+.train__dest {
+  font-weight: 600;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.train__meta {
+  display: flex;
+  gap: 4px;
+  white-space: nowrap;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.train__scheduled {
+  text-decoration-thickness: 1.5px;
+  opacity: 0.75;
+}
+
+.train__expected {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.late {
+  padding: 0 5px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.late--minor {
+  color: var(--minor);
+  background: var(--minor-bg);
+}
+
+.late--major {
+  color: var(--major);
+  background: var(--major-bg);
+}
+
+.trains-empty {
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 12px 0;
+}
+
+.trains-empty--north {
+  margin-left: 12px;
+  margin-right: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
+  text-align: right;
+}
+
+.trains-empty--south {
+  margin-left: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
+  margin-right: 12px;
+}
+
+/* The station: a white band across both tracks. */
+.platform {
+  position: relative;
+  z-index: 2;
+  flex: none;
+  padding: 4px 16px;
+  background: var(--platform);
+  color: var(--platform-text);
+  text-align: center;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.06), 0 6px 20px rgb(0 0 0 / 0.12);
+}
+
+.platform__name {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.neighbours {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.neighbour {
+  border: 0;
+  background: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  min-height: 36px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.neighbours--north .neighbour {
+  color: var(--green);
+}
+
+.neighbours--south .neighbour {
+  color: #c25a12;
+}
+
+.neighbour:hover,
+.neighbour:focus-visible {
+  background: rgb(0 0 0 / 0.06);
+}
+
+/* ---------- Station picker ---------- */
+
+.favourites {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chip--fav {
+  flex: none;
+  color: var(--text);
+}
+
+/* Schematic map: SVG draws track and dots, HTML buttons on top are the labels and tap targets. */
+.line-map {
+  position: relative;
+  margin: 8px auto 0;
+  max-width: 100%;
+}
+
+.line-map__svg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.line-map__track {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.line-map__dot {
+  fill: var(--surface);
+  stroke: var(--text);
+  stroke-width: 3;
+}
+
+.line-map__dot--current {
+  fill: var(--orange);
+  stroke: var(--text);
+}
+
+.line-map__bracket {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.5;
+}
+
+.line-map__zone,
+.line-map__compass {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.line-map__stop {
+  position: absolute;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.line-map__stop:hover,
+.line-map__stop:focus-visible {
+  background: rgb(22 155 98 / 0.1);
+}
+
+.line-map__stop--trunk,
+.line-map__stop--howth {
+  padding-left: 30px;
+  justify-content: flex-start;
+}
+
+.line-map__stop--malahide {
+  padding-right: 30px;
+  justify-content: flex-end;
+}
+
+.line-map__stop--major {
+  font-weight: 700;
+}
+
+.line-map__stop--current {
+  font-weight: 800;
+  color: #c25a12;
+}
+
+.line-map__fav {
+  color: var(--star);
+  font-size: 0.85rem;
+}
+
+.picker {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 16px 32px;
+}
+
+.picker__header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 16px 0 12px;
+  background: var(--bg);
+}
+
+.picker__header h1 {
+  margin-bottom: 12px;
+  font-size: 1.5rem;
+  background: linear-gradient(90deg, var(--green), var(--orange));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  width: fit-content;
+}
+
+.search {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.station-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.station-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.station-row:last-child {
+  border-bottom: 0;
+}
+
+.station-row__name {
+  flex: 1;
+  padding: 14px;
+  border: 0;
+  background: none;
+  text-align: left;
+  min-height: 48px;
+}
+
+.picker__empty {
+  padding: 14px;
+  color: var(--muted);
+}

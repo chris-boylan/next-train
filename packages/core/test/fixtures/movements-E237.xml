@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfObjTrainMovements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://api.irishrail.ie/realtime/">
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>MHIDE</LocationCode>
+    <LocationFullName>Malahide</LocationFullName>
+    <LocationOrder>1</LocationOrder>
+    <LocationType>C</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>00:00:00</ScheduledArrival>
+    <ScheduledDeparture>14:44:00</ScheduledDeparture>
+    <ExpectedArrival>00:00:00</ExpectedArrival>
+    <ExpectedDeparture>14:44:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>PMNCK</LocationCode>
+    <LocationFullName>Portmarnock</LocationFullName>
+    <LocationOrder>2</LocationOrder>
+    <LocationType>C</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>14:48:00</ScheduledArrival>
+    <ScheduledDeparture>14:48:30</ScheduledDeparture>
+    <ExpectedArrival>14:48:00</ExpectedArrival>
+    <ExpectedDeparture>14:48:30</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>GRGRD</LocationCode>
+    <LocationFullName>Clongriffin</LocationFullName>
+    <LocationOrder>3</LocationOrder>
+    <LocationType>C</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>14:50:30</ScheduledArrival>
+    <ScheduledDeparture>14:51:00</ScheduledDeparture>
+    <ExpectedArrival>14:50:30</ExpectedArrival>
+    <ExpectedDeparture>14:51:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>HWTHJ</LocationCode>
+    <LocationFullName>Howth Junction</LocationFullName>
+    <LocationOrder>4</LocationOrder>
+    <LocationType>O</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>14:53:00</ScheduledArrival>
+    <ScheduledDeparture>14:53:30</ScheduledDeparture>
+    <ExpectedArrival>14:53:00</ExpectedArrival>
+    <ExpectedDeparture>14:53:30</ExpectedDeparture>
+    <Arrival>15:03:42</Arrival>
+    <Departure>15:06:12</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>0</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>KBRCK</LocationCode>
+    <LocationFullName>Kilbarrack</LocationFullName>
+    <LocationOrder>5</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>14:55:00</ScheduledArrival>
+    <ScheduledDeparture>14:55:30</ScheduledDeparture>
+    <ExpectedArrival>15:07:42</ExpectedArrival>
+    <ExpectedDeparture>15:07:24</ExpectedDeparture>
+    <Arrival>15:06:54</Arrival>
+    <Departure>15:08:00</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>RAHNY</LocationCode>
+    <LocationFullName>Raheny</LocationFullName>
+    <LocationOrder>6</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>14:57:30</ScheduledArrival>
+    <ScheduledDeparture>14:58:00</ScheduledDeparture>
+    <ExpectedArrival>15:10:00</ExpectedArrival>
+    <ExpectedDeparture>15:09:24</ExpectedDeparture>
+    <Arrival>15:08:54</Arrival>
+    <Departure>15:09:54</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>HTOWN</LocationCode>
+    <LocationFullName>Harmonstown</LocationFullName>
+    <LocationOrder>7</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>14:59:30</ScheduledArrival>
+    <ScheduledDeparture>15:00:00</ScheduledDeparture>
+    <ExpectedArrival>15:11:24</ExpectedArrival>
+    <ExpectedDeparture>15:11:12</ExpectedDeparture>
+    <Arrival>15:10:42</Arrival>
+    <Departure>15:11:42</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>KLSTR</LocationCode>
+    <LocationFullName>Killester</LocationFullName>
+    <LocationOrder>8</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:01:30</ScheduledArrival>
+    <ScheduledDeparture>15:02:00</ScheduledDeparture>
+    <ExpectedArrival>15:13:12</ExpectedArrival>
+    <ExpectedDeparture>15:13:00</ExpectedDeparture>
+    <Arrival>15:12:30</Arrival>
+    <Departure>15:13:36</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>CTARF</LocationCode>
+    <LocationFullName>Clontarf Road</LocationFullName>
+    <LocationOrder>9</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:05:00</ScheduledArrival>
+    <ScheduledDeparture>15:05:30</ScheduledDeparture>
+    <ExpectedArrival>15:16:36</ExpectedArrival>
+    <ExpectedDeparture>15:15:24</ExpectedDeparture>
+    <Arrival>15:14:54</Arrival>
+    <Departure>15:15:54</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>C</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>EWALL</LocationCode>
+    <LocationFullName />
+    <LocationOrder>10</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:07:00</ScheduledArrival>
+    <ScheduledDeparture>15:07:00</ScheduledDeparture>
+    <ExpectedArrival>15:17:24</ExpectedArrival>
+    <ExpectedDeparture>15:17:24</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SUBJN</LocationCode>
+    <LocationFullName />
+    <LocationOrder>11</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:07:30</ScheduledArrival>
+    <ScheduledDeparture>15:07:30</ScheduledDeparture>
+    <ExpectedArrival>15:17:54</ExpectedArrival>
+    <ExpectedDeparture>15:17:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DC336</LocationCode>
+    <LocationFullName />
+    <LocationOrder>12</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:07:30</ScheduledArrival>
+    <ScheduledDeparture>15:07:30</ScheduledDeparture>
+    <ExpectedArrival>15:17:54</ExpectedArrival>
+    <ExpectedDeparture>15:17:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DC343</LocationCode>
+    <LocationFullName />
+    <LocationOrder>13</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:08:30</ScheduledArrival>
+    <ScheduledDeparture>15:08:30</ScheduledDeparture>
+    <ExpectedArrival>15:18:54</ExpectedArrival>
+    <ExpectedDeparture>15:18:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>CNLLY</LocationCode>
+    <LocationFullName>Dublin Connolly</LocationFullName>
+    <LocationOrder>14</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:10:00</ScheduledArrival>
+    <ScheduledDeparture>15:11:00</ScheduledDeparture>
+    <ExpectedArrival>15:20:24</ExpectedArrival>
+    <ExpectedDeparture>15:21:24</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>N</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>TARA</LocationCode>
+    <LocationFullName>Tara Street</LocationFullName>
+    <LocationOrder>15</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:13:00</ScheduledArrival>
+    <ScheduledDeparture>15:14:00</ScheduledDeparture>
+    <ExpectedArrival>15:23:24</ExpectedArrival>
+    <ExpectedDeparture>15:24:24</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>PERSE</LocationCode>
+    <LocationFullName>Dublin Pearse</LocationFullName>
+    <LocationOrder>16</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:15:00</ScheduledArrival>
+    <ScheduledDeparture>15:16:00</ScheduledDeparture>
+    <ExpectedArrival>15:25:24</ExpectedArrival>
+    <ExpectedDeparture>15:26:24</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>PERSE</LocationCode>
+    <LocationFullName>Dublin Pearse</LocationFullName>
+    <LocationOrder>17</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:16:30</ScheduledArrival>
+    <ScheduledDeparture>15:16:30</ScheduledDeparture>
+    <ExpectedArrival>15:26:54</ExpectedArrival>
+    <ExpectedDeparture>15:26:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>GCDK</LocationCode>
+    <LocationFullName>Grand Canal Dock</LocationFullName>
+    <LocationOrder>18</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:17:30</ScheduledArrival>
+    <ScheduledDeparture>15:18:30</ScheduledDeparture>
+    <ExpectedArrival>15:27:54</ExpectedArrival>
+    <ExpectedDeparture>15:28:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>LDWNE</LocationCode>
+    <LocationFullName>Lansdowne Road</LocationFullName>
+    <LocationOrder>19</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:20:30</ScheduledArrival>
+    <ScheduledDeparture>15:21:00</ScheduledDeparture>
+    <ExpectedArrival>15:30:54</ExpectedArrival>
+    <ExpectedDeparture>15:31:24</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SMONT</LocationCode>
+    <LocationFullName>Sandymount</LocationFullName>
+    <LocationOrder>20</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:22:30</ScheduledArrival>
+    <ScheduledDeparture>15:23:00</ScheduledDeparture>
+    <ExpectedArrival>15:32:54</ExpectedArrival>
+    <ExpectedDeparture>15:33:24</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SIDNY</LocationCode>
+    <LocationFullName>Sydney Parade</LocationFullName>
+    <LocationOrder>21</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:25:00</ScheduledArrival>
+    <ScheduledDeparture>15:25:30</ScheduledDeparture>
+    <ExpectedArrival>15:35:24</ExpectedArrival>
+    <ExpectedDeparture>15:35:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>BTSTN</LocationCode>
+    <LocationFullName>Booterstown</LocationFullName>
+    <LocationOrder>22</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:27:30</ScheduledArrival>
+    <ScheduledDeparture>15:28:00</ScheduledDeparture>
+    <ExpectedArrival>15:37:54</ExpectedArrival>
+    <ExpectedDeparture>15:38:24</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>BROCK</LocationCode>
+    <LocationFullName>Blackrock</LocationFullName>
+    <LocationOrder>23</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:29:30</ScheduledArrival>
+    <ScheduledDeparture>15:30:00</ScheduledDeparture>
+    <ExpectedArrival>15:39:54</ExpectedArrival>
+    <ExpectedDeparture>15:40:24</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SEAPT</LocationCode>
+    <LocationFullName>Seapoint</LocationFullName>
+    <LocationOrder>24</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:31:30</ScheduledArrival>
+    <ScheduledDeparture>15:32:00</ScheduledDeparture>
+    <ExpectedArrival>15:41:54</ExpectedArrival>
+    <ExpectedDeparture>15:42:24</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SHILL</LocationCode>
+    <LocationFullName>Salthill and Monkstown</LocationFullName>
+    <LocationOrder>25</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:33:30</ScheduledArrival>
+    <ScheduledDeparture>15:34:00</ScheduledDeparture>
+    <ExpectedArrival>15:43:54</ExpectedArrival>
+    <ExpectedDeparture>15:44:24</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DLERY</LocationCode>
+    <LocationFullName>Dun Laoghaire</LocationFullName>
+    <LocationOrder>26</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:36:00</ScheduledArrival>
+    <ScheduledDeparture>15:36:30</ScheduledDeparture>
+    <ExpectedArrival>15:46:24</ExpectedArrival>
+    <ExpectedDeparture>15:46:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SCOVE</LocationCode>
+    <LocationFullName>Sandycove</LocationFullName>
+    <LocationOrder>27</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:39:00</ScheduledArrival>
+    <ScheduledDeparture>15:39:30</ScheduledDeparture>
+    <ExpectedArrival>15:49:24</ExpectedArrival>
+    <ExpectedDeparture>15:49:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>GLGRY</LocationCode>
+    <LocationFullName>Glenageary</LocationFullName>
+    <LocationOrder>28</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:41:00</ScheduledArrival>
+    <ScheduledDeparture>15:41:30</ScheduledDeparture>
+    <ExpectedArrival>15:51:24</ExpectedArrival>
+    <ExpectedDeparture>15:51:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DLKEY</LocationCode>
+    <LocationFullName>Dalkey</LocationFullName>
+    <LocationOrder>29</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:43:30</ScheduledArrival>
+    <ScheduledDeparture>15:44:00</ScheduledDeparture>
+    <ExpectedArrival>15:53:54</ExpectedArrival>
+    <ExpectedDeparture>15:54:24</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>KILNY</LocationCode>
+    <LocationFullName>Killiney</LocationFullName>
+    <LocationOrder>30</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:48:00</ScheduledArrival>
+    <ScheduledDeparture>15:48:30</ScheduledDeparture>
+    <ExpectedArrival>15:58:24</ExpectedArrival>
+    <ExpectedDeparture>15:58:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SKILL</LocationCode>
+    <LocationFullName>Shankill</LocationFullName>
+    <LocationOrder>31</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:51:00</ScheduledArrival>
+    <ScheduledDeparture>15:51:30</ScheduledDeparture>
+    <ExpectedArrival>16:01:24</ExpectedArrival>
+    <ExpectedDeparture>16:01:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>WBROK</LocationCode>
+    <LocationFullName>Woodbrook</LocationFullName>
+    <LocationOrder>32</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>15:54:00</ScheduledArrival>
+    <ScheduledDeparture>15:54:30</ScheduledDeparture>
+    <ExpectedArrival>16:04:24</ExpectedArrival>
+    <ExpectedDeparture>16:04:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E237 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>BRAY</LocationCode>
+    <LocationFullName>Bray</LocationFullName>
+    <LocationOrder>33</LocationOrder>
+    <LocationType>D</LocationType>
+    <TrainOrigin>Malahide</TrainOrigin>
+    <TrainDestination>Bray</TrainDestination>
+    <ScheduledArrival>16:00:00</ScheduledArrival>
+    <ScheduledDeparture>00:00:00</ScheduledDeparture>
+    <ExpectedArrival>16:10:24</ExpectedArrival>
+    <ExpectedDeparture>00:00:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+</ArrayOfObjTrainMovements>

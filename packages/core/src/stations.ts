@@ -1,0 +1,131 @@
+import { branchOf, LINE_ORDER } from './line';
+import type { Station } from './types';
+import { DART_STATION_DATA } from './stations.data';
+
+export interface StationRecord {
+  code: string;
+  name: string;
+  /** Alias from the API, sometimes with a parenthesised alternative, e.g. `Monkstown ( Salthill )`. */
+  apiAlias: string;
+  lat: number;
+  lon: number;
+}
+
+// Names people (and Alexa's speech recognition) use that the API doesn't know about.
+const EXTRA_ALIASES: Record<string, string[]> = {
+  CNLLY: ['Connolly Station', 'Amiens Street'],
+  TARA: ['Tara St', 'Tara'],
+  PERSE: ['Pearse Station', 'Westland Row'],
+  GCDK: ['Grand Canal', 'Barrow Street'],
+  LDWNE: ['Lansdowne', 'Aviva'],
+  DLERY: ['Dún Laoghaire', 'Dunleary', 'Dun Leary'],
+  SHILL: ['Salthill', 'Monkstown'],
+  SCOVE: ['Glasthule'],
+  CTARF: ['Clontarf'],
+  HWTHJ: ['Donaghmede'],
+};
+
+function splitAlias(alias: string): string[] {
+  return alias
+    .split(/[()]/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function toStation(record: StationRecord): Station {
+  const shortName = record.name.replace(/^Dublin\s+/i, '');
+  const aliases = [shortName, ...splitAlias(record.apiAlias), ...(EXTRA_ALIASES[record.code] ?? [])];
+  const seen = new Set([record.name.toLowerCase()]);
+  return {
+    code: record.code,
+    name: record.name,
+    shortName,
+    branch: branchOf(record.code) ?? 'trunk',
+    aliases: aliases.filter((a) => {
+      const key = a.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }),
+    lat: record.lat,
+    lon: record.lon,
+  };
+}
+
+/**
+ * DART stations in line order (see `LINE_ORDER`). The API's DART list also includes stations
+ * no DART serves (e.g. Kilcoole, beyond Greystones), so only stations on the line are kept.
+ */
+export const DART_STATIONS: Station[] = LINE_ORDER.map((code) => {
+  const record = DART_STATION_DATA.find((r) => r.code === code);
+  if (!record) throw new Error(`Station ${code} is on the line but missing from stations.data.ts`);
+  return toStation(record);
+});
+
+export function findStationByCode(code: string, stations: Station[] = DART_STATIONS): Station | undefined {
+  const wanted = code.trim().toUpperCase();
+  return stations.find((s) => s.code === wanted);
+}
+
+/** Exact lookup by Irish Rail's full name, as used in departure origins and destinations. */
+export function findStationByName(name: string, stations: Station[] = DART_STATIONS): Station | undefined {
+  return stations.find((s) => s.name === name.trim());
+}
+
+export function normaliseStationName(input: string): string {
+  return input
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/^dublin /, '')
+    .replace(/ (station|stn)$/, '')
+    .replace(/\bst\b/g, 'street');
+}
+
+function levenshtein(a: string, b: string): number {
+  const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = row[0]!;
+    row[0] = i;
+    for (let j = 1; j <= b.length; j++) {
+      const temp = row[j]!;
+      row[j] = Math.min(row[j]! + 1, row[j - 1]! + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = temp;
+    }
+  }
+  return row[b.length]!;
+}
+
+function scoreKey(query: string, key: string): number {
+  if (key === query) return 100;
+  if (query.length >= 3 && key.startsWith(query)) return 80;
+  if (query.length >= 3 && key.includes(query)) return 60;
+  const allowed = Math.max(1, Math.floor(key.length / 5));
+  const distance = levenshtein(query, key);
+  return distance <= allowed ? 50 - distance : 0;
+}
+
+function scoreStation(query: string, station: Station): number {
+  if (station.code === query.trim().toUpperCase()) return 100;
+  const q = normaliseStationName(query);
+  if (!q) return 0;
+  return Math.max(...[station.name, ...station.aliases].map((k) => scoreKey(q, normaliseStationName(k))));
+}
+
+/** Stations matching a free-text query, best match first. An empty query returns every station. */
+export function searchStations(query: string, stations: Station[] = DART_STATIONS): Station[] {
+  if (!query.trim()) return stations;
+  return stations
+    .map((station, index) => ({ station, index, score: scoreStation(query, station) }))
+    .filter((r) => r.score > 0)
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .map((r) => r.station);
+}
+
+/** Best station for a name, alias, code or near-miss spelling (e.g. "connoly"). */
+export function resolveStation(query: string, stations: Station[] = DART_STATIONS): Station | undefined {
+  return query.trim() ? searchStations(query, stations)[0] : undefined;
+}

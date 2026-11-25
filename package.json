@@ -1,0 +1,30 @@
+{
+  "name": "dart-times",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/core",
+    "packages/api",
+    "packages/web",
+    "packages/alexa",
+    "packages/infra"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "smoke": "npm run smoke -w @dart-times/core --",
+    "verify-line": "npm run verify-line -w @dart-times/core",
+    "dev:api": "npm run dev -w @dart-times/api --",
+    "dev:web": "npm run dev -w @dart-times/web --",
+    "build:web": "npm run build -w @dart-times/web",
+    "alexa:model": "npm run build-model -w @dart-times/alexa",
+    "synth": "npm run build:web && npm run synth -w @dart-times/infra",
+    "deploy": "npm run build:web && npm run deploy -w @dart-times/infra"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5"
+  }
+}

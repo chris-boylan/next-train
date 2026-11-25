@@ -1,0 +1,17 @@
+{
+  "name": "@dart-times/alexa",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build-model": "tsx scripts/build-model.ts",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@dart-times/core": "0.1.0",
+    "ask-sdk-core": "^2.14.0"
+  },
+  "devDependencies": {
+    "ask-sdk-model": "^1.86.0"
+  }
+}

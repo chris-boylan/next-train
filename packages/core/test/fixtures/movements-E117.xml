@@ -1,0 +1,687 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfObjTrainMovements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://api.irishrail.ie/realtime/">
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>HOWTH</LocationCode>
+    <LocationFullName>Howth</LocationFullName>
+    <LocationOrder>1</LocationOrder>
+    <LocationType>O</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>00:00:00</ScheduledArrival>
+    <ScheduledDeparture>13:55:00</ScheduledDeparture>
+    <ExpectedArrival>00:00:00</ExpectedArrival>
+    <ExpectedDeparture>13:55:00</ExpectedDeparture>
+    <Arrival>13:59:06</Arrival>
+    <Departure>14:00:18</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SUTTN</LocationCode>
+    <LocationFullName>Sutton</LocationFullName>
+    <LocationOrder>2</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>13:58:00</ScheduledArrival>
+    <ScheduledDeparture>13:58:30</ScheduledDeparture>
+    <ExpectedArrival>14:03:18</ExpectedArrival>
+    <ExpectedDeparture>14:03:30</ExpectedDeparture>
+    <Arrival>14:03:00</Arrival>
+    <Departure>14:04:12</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>BYSDE</LocationCode>
+    <LocationFullName>Bayside</LocationFullName>
+    <LocationOrder>3</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:00:00</ScheduledArrival>
+    <ScheduledDeparture>14:00:30</ScheduledDeparture>
+    <ExpectedArrival>14:05:42</ExpectedArrival>
+    <ExpectedDeparture>14:06:06</ExpectedDeparture>
+    <Arrival>14:05:36</Arrival>
+    <Departure>14:07:30</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>HWTHJ</LocationCode>
+    <LocationFullName>Howth Junction</LocationFullName>
+    <LocationOrder>4</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:03:00</ScheduledArrival>
+    <ScheduledDeparture>14:03:30</ScheduledDeparture>
+    <ExpectedArrival>14:10:00</ExpectedArrival>
+    <ExpectedDeparture>14:09:18</ExpectedDeparture>
+    <Arrival>14:08:48</Arrival>
+    <Departure>14:10:00</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>KBRCK</LocationCode>
+    <LocationFullName>Kilbarrack</LocationFullName>
+    <LocationOrder>5</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:05:00</ScheduledArrival>
+    <ScheduledDeparture>14:05:30</ScheduledDeparture>
+    <ExpectedArrival>14:11:30</ExpectedArrival>
+    <ExpectedDeparture>14:11:24</ExpectedDeparture>
+    <Arrival>14:10:54</Arrival>
+    <Departure>14:12:00</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>RAHNY</LocationCode>
+    <LocationFullName>Raheny</LocationFullName>
+    <LocationOrder>6</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:07:30</ScheduledArrival>
+    <ScheduledDeparture>14:08:00</ScheduledDeparture>
+    <ExpectedArrival>14:14:00</ExpectedArrival>
+    <ExpectedDeparture>14:13:48</ExpectedDeparture>
+    <Arrival>14:13:18</Arrival>
+    <Departure>14:14:30</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>HTOWN</LocationCode>
+    <LocationFullName>Harmonstown</LocationFullName>
+    <LocationOrder>7</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:09:30</ScheduledArrival>
+    <ScheduledDeparture>14:10:00</ScheduledDeparture>
+    <ExpectedArrival>14:16:00</ExpectedArrival>
+    <ExpectedDeparture>14:16:12</ExpectedDeparture>
+    <Arrival>14:15:42</Arrival>
+    <Departure>14:16:42</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>KLSTR</LocationCode>
+    <LocationFullName>Killester</LocationFullName>
+    <LocationOrder>8</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:11:30</ScheduledArrival>
+    <ScheduledDeparture>14:12:00</ScheduledDeparture>
+    <ExpectedArrival>14:18:12</ExpectedArrival>
+    <ExpectedDeparture>14:18:18</ExpectedDeparture>
+    <Arrival>14:17:48</Arrival>
+    <Departure>14:19:18</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>CTARF</LocationCode>
+    <LocationFullName>Clontarf Road</LocationFullName>
+    <LocationOrder>9</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:15:00</ScheduledArrival>
+    <ScheduledDeparture>14:15:30</ScheduledDeparture>
+    <ExpectedArrival>14:22:18</ExpectedArrival>
+    <ExpectedDeparture>14:22:42</ExpectedDeparture>
+    <Arrival>14:22:12</Arrival>
+    <Departure>14:23:18</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>EWALL</LocationCode>
+    <LocationFullName />
+    <LocationOrder>10</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:17:00</ScheduledArrival>
+    <ScheduledDeparture>14:17:00</ScheduledDeparture>
+    <ExpectedArrival>14:24:48</ExpectedArrival>
+    <ExpectedDeparture>14:24:48</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SUBJN</LocationCode>
+    <LocationFullName />
+    <LocationOrder>11</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:17:30</ScheduledArrival>
+    <ScheduledDeparture>14:17:30</ScheduledDeparture>
+    <ExpectedArrival>14:25:18</ExpectedArrival>
+    <ExpectedDeparture>14:25:18</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DC336</LocationCode>
+    <LocationFullName />
+    <LocationOrder>12</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:18:00</ScheduledArrival>
+    <ScheduledDeparture>14:18:00</ScheduledDeparture>
+    <ExpectedArrival>14:25:48</ExpectedArrival>
+    <ExpectedDeparture>14:25:48</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DC343</LocationCode>
+    <LocationFullName />
+    <LocationOrder>13</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:18:30</ScheduledArrival>
+    <ScheduledDeparture>14:18:30</ScheduledDeparture>
+    <ExpectedArrival>14:26:18</ExpectedArrival>
+    <ExpectedDeparture>14:26:18</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>CNLLY</LocationCode>
+    <LocationFullName>Dublin Connolly</LocationFullName>
+    <LocationOrder>14</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:20:00</ScheduledArrival>
+    <ScheduledDeparture>14:21:00</ScheduledDeparture>
+    <ExpectedArrival>14:27:48</ExpectedArrival>
+    <ExpectedDeparture>14:29:18</ExpectedDeparture>
+    <Arrival>14:28:18</Arrival>
+    <Departure>14:29:54</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>TARA</LocationCode>
+    <LocationFullName>Tara Street</LocationFullName>
+    <LocationOrder>15</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:23:00</ScheduledArrival>
+    <ScheduledDeparture>14:24:00</ScheduledDeparture>
+    <ExpectedArrival>14:31:54</ExpectedArrival>
+    <ExpectedDeparture>14:33:06</ExpectedDeparture>
+    <Arrival>14:32:06</Arrival>
+    <Departure>14:33:36</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>PERSE</LocationCode>
+    <LocationFullName>Dublin Pearse</LocationFullName>
+    <LocationOrder>16</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:25:00</ScheduledArrival>
+    <ScheduledDeparture>14:26:00</ScheduledDeparture>
+    <ExpectedArrival>14:34:36</ExpectedArrival>
+    <ExpectedDeparture>14:35:24</ExpectedDeparture>
+    <Arrival>14:34:24</Arrival>
+    <Departure>14:35:54</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>PERSE</LocationCode>
+    <LocationFullName>Dublin Pearse</LocationFullName>
+    <LocationOrder>17</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:26:30</ScheduledArrival>
+    <ScheduledDeparture>14:26:30</ScheduledDeparture>
+    <ExpectedArrival>14:36:24</ExpectedArrival>
+    <ExpectedDeparture>14:36:24</ExpectedDeparture>
+    <Arrival>14:34:24</Arrival>
+    <Departure>14:35:54</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>GCDK</LocationCode>
+    <LocationFullName>Grand Canal Dock</LocationFullName>
+    <LocationOrder>18</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:27:30</ScheduledArrival>
+    <ScheduledDeparture>14:28:30</ScheduledDeparture>
+    <ExpectedArrival>14:36:54</ExpectedArrival>
+    <ExpectedDeparture>14:38:00</ExpectedDeparture>
+    <Arrival>14:37:00</Arrival>
+    <Departure>14:38:30</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>LDWNE</LocationCode>
+    <LocationFullName>Lansdowne Road</LocationFullName>
+    <LocationOrder>19</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:30:30</ScheduledArrival>
+    <ScheduledDeparture>14:31:00</ScheduledDeparture>
+    <ExpectedArrival>14:40:30</ExpectedArrival>
+    <ExpectedDeparture>14:40:18</ExpectedDeparture>
+    <Arrival>14:39:48</Arrival>
+    <Departure>14:40:54</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SMONT</LocationCode>
+    <LocationFullName>Sandymount</LocationFullName>
+    <LocationOrder>20</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:32:30</ScheduledArrival>
+    <ScheduledDeparture>14:33:00</ScheduledDeparture>
+    <ExpectedArrival>14:42:24</ExpectedArrival>
+    <ExpectedDeparture>14:42:00</ExpectedDeparture>
+    <Arrival>14:41:30</Arrival>
+    <Departure>14:42:42</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SIDNY</LocationCode>
+    <LocationFullName>Sydney Parade</LocationFullName>
+    <LocationOrder>21</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:35:00</ScheduledArrival>
+    <ScheduledDeparture>14:35:30</ScheduledDeparture>
+    <ExpectedArrival>14:44:42</ExpectedArrival>
+    <ExpectedDeparture>14:44:54</ExpectedDeparture>
+    <Arrival>14:44:24</Arrival>
+    <Departure>14:45:36</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>BTSTN</LocationCode>
+    <LocationFullName>Booterstown</LocationFullName>
+    <LocationOrder>22</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:37:30</ScheduledArrival>
+    <ScheduledDeparture>14:38:00</ScheduledDeparture>
+    <ExpectedArrival>14:47:36</ExpectedArrival>
+    <ExpectedDeparture>14:47:18</ExpectedDeparture>
+    <Arrival>14:46:48</Arrival>
+    <Departure>14:48:18</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>BROCK</LocationCode>
+    <LocationFullName>Blackrock</LocationFullName>
+    <LocationOrder>23</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:39:30</ScheduledArrival>
+    <ScheduledDeparture>14:40:00</ScheduledDeparture>
+    <ExpectedArrival>14:49:48</ExpectedArrival>
+    <ExpectedDeparture>14:49:36</ExpectedDeparture>
+    <Arrival>14:49:06</Arrival>
+    <Departure>14:51:12</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SEAPT</LocationCode>
+    <LocationFullName>Seapoint</LocationFullName>
+    <LocationOrder>24</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:41:30</ScheduledArrival>
+    <ScheduledDeparture>14:42:00</ScheduledDeparture>
+    <ExpectedArrival>14:52:42</ExpectedArrival>
+    <ExpectedDeparture>14:52:00</ExpectedDeparture>
+    <Arrival>14:51:30</Arrival>
+    <Departure>14:53:00</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SHILL</LocationCode>
+    <LocationFullName>Salthill and Monkstown</LocationFullName>
+    <LocationOrder>25</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:43:30</ScheduledArrival>
+    <ScheduledDeparture>14:44:00</ScheduledDeparture>
+    <ExpectedArrival>14:54:30</ExpectedArrival>
+    <ExpectedDeparture>14:53:54</ExpectedDeparture>
+    <Arrival>14:53:24</Arrival>
+    <Departure>14:54:48</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DLERY</LocationCode>
+    <LocationFullName>Dun Laoghaire</LocationFullName>
+    <LocationOrder>26</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:46:00</ScheduledArrival>
+    <ScheduledDeparture>14:46:30</ScheduledDeparture>
+    <ExpectedArrival>14:56:48</ExpectedArrival>
+    <ExpectedDeparture>14:56:24</ExpectedDeparture>
+    <Arrival>14:55:54</Arrival>
+    <Departure>14:57:12</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SCOVE</LocationCode>
+    <LocationFullName>Sandycove</LocationFullName>
+    <LocationOrder>27</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:49:00</ScheduledArrival>
+    <ScheduledDeparture>14:49:30</ScheduledDeparture>
+    <ExpectedArrival>14:59:42</ExpectedArrival>
+    <ExpectedDeparture>14:59:30</ExpectedDeparture>
+    <Arrival>14:59:00</Arrival>
+    <Departure>15:01:12</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>GLGRY</LocationCode>
+    <LocationFullName>Glenageary</LocationFullName>
+    <LocationOrder>28</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:51:00</ScheduledArrival>
+    <ScheduledDeparture>14:51:30</ScheduledDeparture>
+    <ExpectedArrival>15:02:42</ExpectedArrival>
+    <ExpectedDeparture>15:02:06</ExpectedDeparture>
+    <Arrival>15:01:36</Arrival>
+    <Departure>15:03:18</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DLKEY</LocationCode>
+    <LocationFullName>Dalkey</LocationFullName>
+    <LocationOrder>29</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:53:30</ScheduledArrival>
+    <ScheduledDeparture>14:54:00</ScheduledDeparture>
+    <ExpectedArrival>15:05:18</ExpectedArrival>
+    <ExpectedDeparture>15:05:30</ExpectedDeparture>
+    <Arrival>15:05:00</Arrival>
+    <Departure>15:06:36</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>KILNY</LocationCode>
+    <LocationFullName>Killiney</LocationFullName>
+    <LocationOrder>30</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>14:58:00</ScheduledArrival>
+    <ScheduledDeparture>14:58:30</ScheduledDeparture>
+    <ExpectedArrival>15:10:36</ExpectedArrival>
+    <ExpectedDeparture>15:10:12</ExpectedDeparture>
+    <Arrival>15:09:42</Arrival>
+    <Departure>15:11:24</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SKILL</LocationCode>
+    <LocationFullName>Shankill</LocationFullName>
+    <LocationOrder>31</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>15:01:00</ScheduledArrival>
+    <ScheduledDeparture>15:01:30</ScheduledDeparture>
+    <ExpectedArrival>15:13:54</ExpectedArrival>
+    <ExpectedDeparture>15:13:36</ExpectedDeparture>
+    <Arrival>15:13:06</Arrival>
+    <Departure>15:14:48</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>WBROK</LocationCode>
+    <LocationFullName>Woodbrook</LocationFullName>
+    <LocationOrder>32</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>15:04:00</ScheduledArrival>
+    <ScheduledDeparture>15:04:30</ScheduledDeparture>
+    <ExpectedArrival>15:17:18</ExpectedArrival>
+    <ExpectedDeparture>15:16:54</ExpectedDeparture>
+    <Arrival>15:16:24</Arrival>
+    <Departure />
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart />
+    <StopType>C</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>BRAY</LocationCode>
+    <LocationFullName>Bray</LocationFullName>
+    <LocationOrder>33</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>15:09:00</ScheduledArrival>
+    <ScheduledDeparture>15:14:30</ScheduledDeparture>
+    <ExpectedArrival>15:21:24</ExpectedArrival>
+    <ExpectedDeparture>15:26:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>N</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>BYARD</LocationCode>
+    <LocationFullName>Bray Yard</LocationFullName>
+    <LocationOrder>34</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>15:15:30</ScheduledArrival>
+    <ScheduledDeparture>15:15:30</ScheduledDeparture>
+    <ExpectedArrival>15:27:54</ExpectedArrival>
+    <ExpectedDeparture>15:27:54</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>BR49</LocationCode>
+    <LocationFullName />
+    <LocationOrder>35</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>15:20:00</ScheduledArrival>
+    <ScheduledDeparture>15:20:00</ScheduledDeparture>
+    <ExpectedArrival>15:32:24</ExpectedArrival>
+    <ExpectedDeparture>15:32:24</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>E117 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>GSTNS</LocationCode>
+    <LocationFullName>Greystones</LocationFullName>
+    <LocationOrder>36</LocationOrder>
+    <LocationType>D</LocationType>
+    <TrainOrigin>Howth</TrainOrigin>
+    <TrainDestination>Greystones</TrainDestination>
+    <ScheduledArrival>15:26:00</ScheduledArrival>
+    <ScheduledDeparture>00:00:00</ScheduledDeparture>
+    <ExpectedArrival>15:39:18</ExpectedArrival>
+    <ExpectedDeparture>00:00:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+</ArrayOfObjTrainMovements>

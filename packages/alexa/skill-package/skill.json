@@ -1,0 +1,68 @@
+{
+  "manifest": {
+    "manifestVersion": "1.0",
+    "publishingInformation": {
+      "locales": {
+        "en-IE": {
+          "name": "DART Times",
+          "summary": "Live DART departures from any station, from Irish Rail real-time data.",
+          "description": "Ask for the next DARTs from any station on the Dublin Area Rapid Transit line, optionally northbound or southbound. Save favourite stations and just ask when your next train is. Data from the Irish Rail real-time API.",
+          "examplePhrases": [
+            "Alexa, open dart times",
+            "Alexa, ask dart times when's the next train from Connolly",
+            "Alexa, ask dart times when's my next train"
+          ],
+          "keywords": [
+            "DART",
+            "Irish Rail",
+            "Dublin",
+            "train",
+            "commute"
+          ]
+        },
+        "en-GB": {
+          "name": "DART Times",
+          "summary": "Live DART departures from any station, from Irish Rail real-time data.",
+          "description": "Ask for the next DARTs from any station on the Dublin Area Rapid Transit line, optionally northbound or southbound. Save favourite stations and just ask when your next train is. Data from the Irish Rail real-time API.",
+          "examplePhrases": [
+            "Alexa, open dart times",
+            "Alexa, ask dart times when's the next train from Connolly",
+            "Alexa, ask dart times when's my next train"
+          ],
+          "keywords": [
+            "DART",
+            "Irish Rail",
+            "Dublin",
+            "train",
+            "commute"
+          ]
+        }
+      },
+      "isAvailableWorldwide": false,
+      "distributionCountries": [
+        "IE",
+        "GB"
+      ],
+      "category": "NAVIGATION_AND_TRIP_PLANNER",
+      "testingInstructions": "Ask for departures from a DART station, e.g. \"next DART from Connolly\"."
+    },
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "usesPersonalInfo": false,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "containsAds": false,
+      "locales": {
+        "en-IE": {},
+        "en-GB": {}
+      }
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "REPLACE_WITH_ALEXA_FUNCTION_ARN"
+        }
+      }
+    }
+  }
+}
