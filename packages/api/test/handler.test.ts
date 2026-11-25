@@ -71,3 +71,12 @@ describe('API handler: Enterprise', () => {
     expect((await request('GET', '/api/stations/CNLLY/departures?service=luas')).statusCode).toBe(400);
   });
 });
+
+describe('API handler: all trains', () => {
+  it('returns every train with its category for ?service=all', async () => {
+    const res = await request('GET', '/api/stations/CNLLY/departures?service=all');
+    expect(res.statusCode).toBe(200);
+    const categories = new Set(body(res).departures.map((d: { category: string }) => d.category));
+    expect(categories).toEqual(new Set(['dart', 'enterprise', 'intercity', 'commuter']));
+  });
+});

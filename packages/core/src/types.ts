@@ -1,5 +1,7 @@
 export type Direction = 'Northbound' | 'Southbound';
 
+export type TrainCategory = 'dart' | 'enterprise' | 'intercity' | 'commuter';
+
 export interface Station {
   /** Irish Rail station code, e.g. `CNLLY`. */
   code: string;
@@ -36,5 +38,7 @@ export interface Departure {
   /** Minutes late (negative means early). */
   lateMins: number;
   trainType: 'DART' | 'Train' | string;
+  /** What kind of service this is (see `trainCategory`). */
+  category: TrainCategory;
   lastLocation: string;
 }

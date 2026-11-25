@@ -5,6 +5,7 @@ import { getDeviceId } from './deviceId';
 import { NetworkMap } from './NetworkMap';
 import { getLastService, getLastStation, setLastService, setLastStation } from './prefs';
 import { ServicePicker } from './ServicePicker';
+import { StationBoard } from './StationBoard';
 import { StationPicker } from './StationPicker';
 import { TrackView } from './TrackView';
 
@@ -24,6 +25,8 @@ export function App() {
   });
   const [favourites, setFavourites] = useState<Station[]>([]);
   const [showNetwork, setShowNetwork] = useState(false);
+  // A station opened from the all-stations map.
+  const [boardStation, setBoardStation] = useState<{ code: string; name: string }>();
   // Highlighted on the map when you go back to it.
   const [previousCode, setPreviousCode] = useState(stationCode);
 
@@ -53,7 +56,12 @@ export function App() {
   const toggleFavourite = (code: string) =>
     setFavourite(deviceId, code, !isFavourite(code)).then(setFavourites, (err: Error) => console.error(err));
 
-  if (showNetwork) return <NetworkMap onBack={() => setShowNetwork(false)} />;
+  if (boardStation) {
+    return <StationBoard code={boardStation.code} name={boardStation.name} onBack={() => setBoardStation(undefined)} />;
+  }
+  if (showNetwork) {
+    return <NetworkMap onBack={() => setShowNetwork(false)} onSelectStation={(code, name) => setBoardStation({ code, name })} />;
+  }
   if (!service) return <ServicePicker onSelect={selectService} onOpenNetwork={() => setShowNetwork(true)} />;
 
   const station = stationCode ? findStationByCode(stationCode, service.stations) : undefined;

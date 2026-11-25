@@ -7,6 +7,7 @@ import { OptionsMenu } from './OptionsMenu';
 
 interface Props {
   onBack: () => void;
+  onSelectStation: (code: string, name: string) => void;
 }
 
 // Same flat Beck style as the line maps: one row per station, branches step right (see networkLayout).
@@ -27,7 +28,7 @@ const dartStations = new Set(DART_LINE.paths.flat());
 const rawNames = new Map(NETWORK_STATIONS.map((s) => [s.code, s.name]));
 
 /** Every Irish Rail station as one schematic, fitting the screen's width and scrolling down. Not linked to live times yet. */
-export function NetworkMap({ onBack }: Props) {
+export function NetworkMap({ onBack, onSelectStation }: Props) {
   const { t, lang } = useI18n();
   const layout = useMemo(() => layoutNetwork(NETWORK_EDGES, ROOT), []);
   const placed = useMemo(() => new Map(layout.stations.map((s) => [s.code, s])), [layout]);
@@ -61,7 +62,7 @@ export function NetworkMap({ onBack }: Props) {
         <h1 className="picker__service">{t.allStations}</h1>
       </header>
 
-      <div className="line-map network__map" style={{ width: WIDTH, height }} role="img" aria-label={t.allStations}>
+      <nav className="line-map network__map" style={{ width: WIDTH, height }} aria-label={t.allStations}>
         <svg className="line-map__svg" width={WIDTH} height={height} aria-hidden>
           {layout.segments.map(({ from, to }) => {
             const p = placed.get(from)!;
@@ -92,17 +93,18 @@ export function NetworkMap({ onBack }: Props) {
         {layout.stations.map((s) => {
           const loop = layout.links.find((l) => l.from === s.code);
           return (
-            <div
+            <button
               key={s.code}
               className={`network__label${major(s.code) ? ' network__label--major' : ''}`}
               style={{ top: y(s.row) - ROW / 2, left: x(s.col) + 16 }}
+              onClick={() => onSelectStation(s.code, name(s.code))}
             >
               <Caps text={name(s.code)} />
               {loop && <span className="network__loop"> ↔ {name(loop.to)}</span>}
-            </div>
+            </button>
           );
         })}
-      </div>
+      </nav>
 
       {unmapped.length > 0 && (
         <p className="network__unmapped">

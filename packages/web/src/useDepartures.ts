@@ -5,7 +5,7 @@ import { type DeparturesResponse, fetchDepartures } from './api';
 const REFRESH_MS = 30_000;
 
 /** Live departures for a station, refreshed every 30s while the tab is visible. */
-export function useDepartures(code: string, service: ServiceId) {
+export function useDepartures(code: string, service: ServiceId | 'all') {
   const [data, setData] = useState<DeparturesResponse>();
   const [error, setError] = useState<string>();
 

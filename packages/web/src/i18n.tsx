@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
-import { type Departure, type Direction, findStationByCode, type ServiceId, type Station } from '@dart-times/core';
+import { type Departure, type Direction, findStationByCode, type ServiceId, type Station, type TrainCategory } from '@dart-times/core';
 
 export type Lang = 'en' | 'ga';
 
@@ -15,6 +15,9 @@ const en = {
   allStations: 'All stations',
   allStationsNote: 'Every Irish Rail station on one map',
   notYetMapped: 'Not yet mapped (no train seen on these lines yet)',
+  noTrainsAnyDirection: 'No trains in the next 90 minutes.',
+  map: 'Map',
+  categories: { dart: 'DART', enterprise: 'Enterprise', intercity: 'InterCity', commuter: 'Commuter' } as Record<TrainCategory, string>,
   stations: 'Stations',
   findStation: 'Find a station',
   favouriteStations: 'Favourite stations',
@@ -72,6 +75,10 @@ const ga: Messages = {
   allStations: 'Gach stáisiún',
   allStationsNote: 'Gach stáisiún de chuid Iarnród Éireann ar léarscáil amháin',
   notYetMapped: 'Gan mapáil fós (níor feiceadh traein ar na línte seo fós)',
+  noTrainsAnyDirection: 'Níl aon traein sna 90 nóiméad atá romhainn.',
+  map: 'Léarscáil',
+  // Irish Rail's service brands, kept as brand names in both languages.
+  categories: { dart: 'DART', enterprise: 'Enterprise', intercity: 'InterCity', commuter: 'Commuter' },
   stations: 'Stáisiúin',
   findStation: 'Aimsigh stáisiún',
   favouriteStations: 'Stáisiúin is fearr leat',

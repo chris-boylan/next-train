@@ -35,7 +35,7 @@ describe('FavouritesService', () => {
 describe('describe helpers', () => {
   const base = {
     trainCode: 'E1', origin: 'Bray', destination: 'Howth', direction: 'Northbound',
-    expectedDepart: '13:13', scheduledDepart: '13:13', trainType: 'DART', lastLocation: '',
+    expectedDepart: '13:13', scheduledDepart: '13:13', trainType: 'DART', category: 'dart' as const, lastLocation: '',
   };
 
   it('describes on-time and late departures', () => {

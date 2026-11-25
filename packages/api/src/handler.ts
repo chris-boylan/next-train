@@ -49,6 +49,13 @@ export function createHandler({ client, favourites }: ApiDeps) {
       const departuresMatch = path.match(/^\/api\/stations\/([A-Za-z]+)\/departures$/);
       if (method === 'GET' && departuresMatch) {
         const service = event.queryStringParameters?.service ?? 'dart';
+        // "all": every train at any Irish Rail station, for the network map's station boards.
+        if (service === 'all') {
+          const code = departuresMatch[1]!.toUpperCase();
+          const departures = await getDepartures(client, code, { includeTrains: true });
+          const station = findStationByCode(code) ?? { code };
+          return json(200, { station, direction: null, departures, fetchedAt: new Date().toISOString() });
+        }
         if (!isServiceId(service)) return error(400, 'Unknown service');
         const station = findStationByCode(departuresMatch[1]!, SERVICES[service].stations);
         if (!station) return error(404, 'Unknown station');

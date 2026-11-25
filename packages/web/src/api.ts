@@ -15,7 +15,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 /** All of a service's departures in the next 90 minutes, both directions. */
-export function fetchDepartures(code: string, service: ServiceId) {
+export function fetchDepartures(code: string, service: ServiceId | 'all') {
   return request<DeparturesResponse>(`/stations/${code}/departures?service=${service}`);
 }
 

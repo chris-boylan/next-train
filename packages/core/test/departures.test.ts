@@ -76,7 +76,7 @@ describe('parseDirection', () => {
 describe('departuresGoingTo', () => {
   const at = (destination: string, destinationCode: string, direction = 'Northbound') => ({
     trainCode: destinationCode, origin: '', destination, destinationCode, direction, dueInMins: 1,
-    expectedDepart: '', scheduledDepart: '', lateMins: 0, trainType: 'DART', lastLocation: '',
+    expectedDepart: '', scheduledDepart: '', lateMins: 0, trainType: 'DART', category: 'dart' as const, lastLocation: '',
   });
   const board = [at('Howth', 'HOWTH'), at('Malahide', 'MHIDE'), at('Bray', 'BRAY', 'Southbound'), at('Greystones', 'GSTNS', 'Southbound')];
 
@@ -88,5 +88,16 @@ describe('departuresGoingTo', () => {
   it('drops trains that terminate before the destination', () => {
     expect(departuresGoingTo(board, 'CNLLY', 'GSTNS').map((d) => d.destination)).toEqual(['Greystones']);
     expect(departuresGoingTo(board, 'CNLLY', 'BRAY').map((d) => d.destination)).toEqual(['Bray', 'Greystones']);
+  });
+});
+
+describe('trainCategory', () => {
+  it('labels DART, Enterprise, InterCity and commuter trains at Connolly', () => {
+    const all = toDepartures(parseStationData(fixture('connolly-midday.xml')), { includeTrains: true });
+    const byCategory = (c: string) => all.filter((d) => d.category === c);
+    expect(byCategory('dart').every((d) => d.trainType === 'DART')).toBe(true);
+    expect(byCategory('enterprise').every((d) => d.destination === 'Belfast')).toBe(true);
+    expect(byCategory('intercity').every((d) => d.trainCode.startsWith('A') && d.destination !== 'Belfast')).toBe(true);
+    expect(byCategory('commuter').length).toBeGreaterThan(0);
   });
 });

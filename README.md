@@ -75,6 +75,10 @@ The web app opens on a service picker: **DART** or **Enterprise** (Dublin Connol
 - The Enterprise calls at Connolly, Drogheda, Dundalk, Newry, Portadown and Belfast (Grand Central). That was verified against the stop lists of five trains in both directions; none called at Lisburn or Lurgan. The API has no Enterprise train type, so Enterprise trains are identified as the only Irish Rail trains running to or from Belfast.
 - Colours: DART tracks are green and orange. Enterprise tracks are deep violet (to Belfast) and lilac (to Dublin), set with `data-service` on `<html>`.
 
+## All stations
+
+**All stations** on the first page shows every Irish Rail station on one schematic (`web/src/NetworkMap.tsx`, laid out by `web/src/networkLayout.ts` from track connections that `npm run build-network -w @dart-times/core` derives from live trains). Tap a station for its departure board: every train in the next 90 minutes, grouped by direction, each labelled DART, Enterprise, InterCity or Commuter (`trainCategory` in `core/src/departures.ts`). The API only says "DART" or "Train", so the Enterprise is identified by its Belfast route, and InterCity by train codes starting with "A". That's an observed pattern, not documented.
+
 ## English and Irish
 
 The web app is bilingual: the options cog switches between **English** and **Gaeilge** (defaulting to Irish when the phone's language is Irish) and between light and dark.
