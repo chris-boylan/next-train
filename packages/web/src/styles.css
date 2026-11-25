@@ -2,10 +2,10 @@
 :root {
   --font: 'Inter Tight Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --bg: #ffffff;
-  --text: #000000;
-  --muted: #5c5c5c;
-  --border: #e2e2e2;
-  --rule: #000000;
+  --text: #1f1f21;
+  --muted: #5c5c5f;
+  --border: #e2e2e4;
+  --rule: #2c2c2e;
   /* Tricolour: green northbound, orange southbound. */
   --green: #169b62;
   --orange: #ff883e;
@@ -13,16 +13,17 @@
   --green-text: #0b7a4b;
   --orange-text: #b8520a;
   /* The station band inverts the page. */
-  --band-bg: #000000;
+  --band-bg: #2c2c2e;
   --band-text: #ffffff;
   --band-north: #3cc28a;
   --band-south: #ff9a57;
   --glyph-body: #ffffff;
-  --glyph-window: #000000;
+  --glyph-window: #2c2c2e;
+  --glyph-stroke: #1f1f21;
   --glyph-light: #ffd400;
   /* Signal colours for delay flags. */
   --minor-bg: #ffd400;
-  --minor-text: #000000;
+  --minor-text: #1f1f21;
   --major-bg: #e10600;
   --major-text: #ffffff;
   --star: #e0a800;
@@ -33,17 +34,17 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0a0a0a;
-    --text: #ffffff;
-    --muted: #a3a3a3;
-    --border: #262626;
-    --rule: #ffffff;
+    --bg: #1c1c1e;
+    --text: #f2f2f3;
+    --muted: #a5a5aa;
+    --border: #38383b;
+    --rule: #c7c7cc;
     --green-text: #3cc28a;
     --orange-text: #ff9a57;
-    --band-bg: #ffffff;
-    --band-text: #000000;
-    --band-north: #0b7a4b;
-    --band-south: #b8520a;
+    --band-bg: #e9e9eb;
+    --band-text: #1f1f21;
+    --band-north: #08683f;
+    --band-south: #9a4508;
     color-scheme: dark;
   }
 }
@@ -340,7 +341,7 @@ p {
 
 .glyph-body {
   fill: var(--glyph-body);
-  stroke: #000000;
+  stroke: var(--glyph-stroke);
   stroke-width: 3;
 }
 
