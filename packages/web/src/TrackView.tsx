@@ -117,7 +117,7 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
       <div className="tracks">
         {/* Top half: southbound trains on their way in, nearest at the bottom. Green arrow continues up to its termini. */}
         <section className="half half--top" aria-label={t.towards(t.direction.Southbound, list(south.map(nameOf)))}>
-          {/* Both lines run edge to edge; green's arrowhead sits halfway up, on the line. */}
+          {/* Orange runs edge to edge through its trains; green carries on past the platform to its arrowhead halfway up. */}
           {north.length > 0 && <Lane direction="Northbound" withHead dimmed={dimmed('Northbound')} />}
           <Lane direction="Southbound" dimmed={dimmed('Southbound')} />
           <p className={`terminus terminus--north${dimmed('Northbound') ? ' terminus--dimmed' : ''}`} aria-hidden>
@@ -151,7 +151,7 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
 
         {/* Bottom half: northbound trains on their way in, nearest at the top. Orange arrow continues down to its termini. */}
         <section className="half half--bottom" aria-label={t.towards(t.direction.Northbound, list(north.map(nameOf)))}>
-          {/* Both lines run edge to edge; orange's arrowhead sits halfway down, on the line. */}
+          {/* Green runs edge to edge through its trains; orange carries on past the platform to its arrowhead halfway down. */}
           <Lane direction="Northbound" dimmed={dimmed('Northbound')} />
           {south.length > 0 && <Lane direction="Southbound" withHead dimmed={dimmed('Southbound')} />}
           {trainsFor('Northbound', north)}
@@ -227,14 +227,15 @@ function Termini({ codes }: { codes: string[] }) {
 }
 
 /**
- * One half's piece of a track, running the full height of the half. In the half trains leave
- * towards, the arrowhead sits on the line halfway along. At a terminus that piece is left out,
- * so the track stops at the platform.
+ * One half's piece of a track. Where trains approach it runs the full height of the half. In the
+ * half trains leave towards, it runs from the platform and ends in the arrowhead halfway along: the
+ * line stops at the head's base so it never shows through the point. At a terminus that piece is
+ * left out, so the track stops at the platform.
  */
 function Lane({ direction, withHead = false, dimmed }: { direction: Direction; withHead?: boolean; dimmed: boolean }) {
   const side = direction === 'Northbound' ? 'north' : 'south';
   return (
-    <div className={`lane lane--${side}${dimmed ? ' lane--dimmed' : ''}`} aria-hidden>
+    <div className={`lane lane--${side}${withHead ? ' lane--departing' : ''}${dimmed ? ' lane--dimmed' : ''}`} aria-hidden>
       <div className="lane__shaft" />
       {withHead && <div className="lane__head" />}
     </div>
