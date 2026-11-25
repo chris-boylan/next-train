@@ -261,7 +261,7 @@ function Trains({
   if (!trains.length) {
     return (
       <p className={`trains-empty trains-empty--${side}`}>
-        {!ends.length ? t.terminateHere : goingToName ? t.noDartsTo(goingToName) : t.noDarts(t.direction[direction])}
+        {!ends.length ? t.terminateHere : goingToName ? t.noTrainsTo(goingToName) : t.noTrains(t.direction[direction])}
       </p>
     );
   }

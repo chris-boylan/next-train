@@ -44,10 +44,50 @@ for (const train of trains) {
   await new Promise((r) => setTimeout(r, 200)); // go easy on the API
 }
 
+// The API lists some stations several times under different codes (e.g. Hazelhatch as HZLCH, HAZEF
+// and HAZES), and different trains report different ones. Merge each name onto its busiest code.
+const uses = new Map<string, number>();
+for (const code of [...edges].flatMap((e) => e.split('|'))) uses.set(code, (uses.get(code) ?? 0) + 1);
+const canonical = new Map<string, string>();
+for (const s of allStations) {
+  const sameName = allStations.filter((o) => o.name.toLowerCase() === s.name.toLowerCase());
+  const best = sameName.reduce((a, o) => ((uses.get(o.code) ?? 0) > (uses.get(a.code) ?? 0) ? o : a));
+  canonical.set(s.code, best.code);
+}
+const merged = new Set<string>();
+for (const e of edges) {
+  const [a, b] = e.split('|').map((c) => canonical.get(c) ?? c) as [string, string];
+  if (a !== b) merged.add([a, b].sort().join('|'));
+}
+
+// A train whose stop list leaves out a station (e.g. new Woodbrook) adds a direct link that skips it.
+// Drop a link A–C when there's a station B with links A–B and B–C lying (roughly) between them.
+const position = new Map(allStations.filter((s) => s.lat !== 0).map((s) => [s.code, s]));
+const km = (a: string, b: string) => {
+  const p = position.get(a);
+  const q = position.get(b);
+  if (!p || !q) return undefined;
+  const x = (q.lon - p.lon) * Math.cos(((p.lat + q.lat) / 2) * (Math.PI / 180));
+  return Math.hypot(x, q.lat - p.lat) * 111;
+};
+const linked = (a: string, b: string) => merged.has([a, b].sort().join('|'));
+for (const e of [...merged]) {
+  const [a, c] = e.split('|') as [string, string];
+  const direct = km(a, c);
+  if (direct === undefined) continue;
+  const via = [...position.keys()].find((b) => {
+    if (b === a || b === c || !linked(a, b) || !linked(b, c)) return false;
+    const around = (km(a, b) ?? Infinity) + (km(b, c) ?? Infinity);
+    return around <= direct * 1.15;
+  });
+  if (via) merged.delete(e);
+}
+edges.clear();
+for (const e of merged) edges.add(e);
+
 const connected = new Set([...edges].flatMap((e) => e.split('|')));
 
-// The API lists some stations several times under different codes (e.g. Adamstown as ADMTN, ADAMS
-// and ADAMF); trains only report one. Keep the code trains use. Its all-capitals entries (e.g.
+// After merging, leave out the unused duplicate codes. The API's all-capitals entries (e.g.
 // "CITY JUNCTION", "PARK WEST") are junctions or duplicates, so they're dropped unless trains use them.
 const stations = allStations.filter((s) => {
   if (connected.has(s.code)) return true;
@@ -92,7 +132,8 @@ export const NETWORK_EDGES: [string, string][] = ${JSON.stringify([...edges].sor
 `,
 );
 console.log(`${stations.length} stations (from ${allStations.length} API entries), ${edges.size} connections`);
-console.log(`(${edges.size - previousCount} new from ${sampled}/${trains.length} trains sampled now) → ${out}`);
+const change = edges.size - previousCount;
+console.log(`(net ${change >= 0 ? '+' : ''}${change} after cleanup, from ${sampled}/${trains.length} trains sampled now) → ${out}`);
 console.log(`Unconnected (${unconnected.length}): ${unconnected.map((s) => s.name).join(', ')}`);
 console.log(`Position estimated from neighbours (${approximate.length}): ${approximate.join(', ') || 'none'}`);
 const dropped = stations.filter((s) => !located(s));
