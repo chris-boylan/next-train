@@ -10,6 +10,7 @@ import {
   terminiFrom,
 } from '@dart-times/core';
 import { formatTime, useNow } from './clock';
+import { ThemeToggle } from './ThemeToggle';
 import { useDepartures } from './useDepartures';
 
 const TRAINS_PER_DIRECTION = 3;
@@ -63,14 +64,17 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
             )}
           </p>
         </div>
-        <button
-          className={`star${isFavourite ? ' star--on' : ''}`}
-          onClick={onToggleFavourite}
-          aria-pressed={isFavourite}
-          aria-label={isFavourite ? `Remove ${station.shortName} from favourites` : `Add ${station.shortName} to favourites`}
-        >
-          {isFavourite ? '★' : '☆'}
-        </button>
+        <div className="track-view__actions">
+          <ThemeToggle />
+          <button
+            className={`star${isFavourite ? ' star--on' : ''}`}
+            onClick={onToggleFavourite}
+            aria-pressed={isFavourite}
+            aria-label={isFavourite ? `Remove ${station.shortName} from favourites` : `Add ${station.shortName} to favourites`}
+          >
+            {isFavourite ? '★' : '☆'}
+          </button>
+        </div>
       </header>
 
       <div className="tracks">

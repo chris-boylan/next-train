@@ -32,8 +32,9 @@
   color-scheme: light;
 }
 
+/* Dark tokens: used when the phone is in dark mode (unless the viewer picked Light), or when they picked Dark. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --bg: #1c1c1e;
     --text: #f2f2f3;
     --muted: #a5a5aa;
@@ -47,6 +48,21 @@
     --band-south: #9a4508;
     color-scheme: dark;
   }
+}
+
+:root[data-theme='dark'] {
+  --bg: #1c1c1e;
+  --text: #f2f2f3;
+  --muted: #a5a5aa;
+  --border: #38383b;
+  --rule: #c7c7cc;
+  --green-text: #3cc28a;
+  --orange-text: #ff9a57;
+  --band-bg: #e9e9eb;
+  --band-text: #1f1f21;
+  --band-north: #08683f;
+  --band-south: #9a4508;
+  color-scheme: dark;
 }
 
 * {
@@ -88,6 +104,16 @@ p {
   color: var(--star);
 }
 
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--rule);
+  background: none;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
 .chip {
   border: 2px solid var(--rule);
   background: none;
@@ -127,6 +153,12 @@ p {
 
 .track-view__bar > :last-child {
   justify-self: end;
+}
+
+.track-view__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .clock {
@@ -529,8 +561,14 @@ p {
   border-bottom: 2px solid var(--rule);
 }
 
-.picker__header h1 {
+.picker__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 12px;
+}
+
+.picker__header h1 {
   font-size: 2rem;
   font-weight: 900;
   letter-spacing: -0.03em;

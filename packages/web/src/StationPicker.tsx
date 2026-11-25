@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { searchStations, type Station } from '@dart-times/core';
 import { LineMap } from './LineMap';
+import { ThemeToggle } from './ThemeToggle';
 
 interface Props {
   favourites: Station[];
@@ -17,7 +18,10 @@ export function StationPicker({ favourites, currentCode, onSelect, onToggleFavou
   return (
     <div className="picker">
       <header className="picker__header">
-        <h1>DART Times</h1>
+        <div className="picker__title">
+          <h1>DART Times</h1>
+          <ThemeToggle />
+        </div>
         <input
           className="search"
           type="search"
