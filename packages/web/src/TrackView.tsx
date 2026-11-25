@@ -175,7 +175,16 @@ function Trains({
         <li key={d.trainCode} className={`train train--${side}${i === 0 ? ' train--next' : ''}`} aria-label={describeDeparture(d)}>
           <TrainGlyph />
           <div className="train__info">
-            <span className="train__due">{d.dueInMins <= 0 ? 'Due' : `${d.dueInMins} min`}</span>
+            <span className="train__due">
+              {d.dueInMins <= 0 ? (
+                'Due'
+              ) : (
+                <>
+                  {d.dueInMins}
+                  <span className="train__unit">min</span>
+                </>
+              )}
+            </span>
             <span className="train__dest">{d.destination}</span>
             {/* Late: scheduled time struck through, the delay, then the expected time (delay already included). */}
             <span className="train__meta">
@@ -196,14 +205,14 @@ function Trains({
   );
 }
 
-/** A DART seen head-on. */
+/** A DART seen head-on, drawn flat and square. */
 function TrainGlyph() {
   return (
     <svg className="train__glyph" viewBox="0 0 40 52" aria-hidden>
-      <rect x="2" y="2" width="36" height="48" rx="10" className="glyph-body" />
-      <rect x="8" y="9" width="24" height="15" rx="3" className="glyph-window" />
-      <circle cx="11" cy="38" r="3" className="glyph-light" />
-      <circle cx="29" cy="38" r="3" className="glyph-light" />
+      <rect x="2" y="2" width="36" height="48" rx="3" className="glyph-body" />
+      <rect x="7" y="9" width="26" height="14" className="glyph-window" />
+      <rect x="8" y="36" width="6" height="5" className="glyph-light" />
+      <rect x="26" y="36" width="6" height="5" className="glyph-light" />
     </svg>
   );
 }

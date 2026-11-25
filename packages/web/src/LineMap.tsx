@@ -68,15 +68,20 @@ export function LineMap({ favouriteCodes, currentCode, onSelect }: Props) {
           City centre
         </text>
 
-        {POINTS.map((p) => (
-          <circle
-            key={p.code}
-            cx={p.x}
-            cy={p.y}
-            r={ENDS.has(p.code) ? 9 : 7}
-            className={`line-map__dot${p.code === currentCode ? ' line-map__dot--current' : ''}`}
-          />
-        ))}
+        {/* Beck style: circles for termini, the junction and the current station; ticks for the rest. */}
+        {POINTS.map((p) =>
+          ENDS.has(p.code) || p.code === currentCode ? (
+            <circle
+              key={p.code}
+              cx={p.x}
+              cy={p.y}
+              r={9}
+              className={`line-map__dot${p.code === currentCode ? ' line-map__dot--current' : ''}`}
+            />
+          ) : (
+            <path key={p.code} d={tickPath(p)} className="line-map__tick" />
+          ),
+        )}
       </svg>
 
       {POINTS.map((p) => {
@@ -97,6 +102,12 @@ export function LineMap({ favouriteCodes, currentCode, onSelect }: Props) {
       })}
     </nav>
   );
+}
+
+/** A short tick from the line towards the station's label. */
+function tickPath(p: Point): string {
+  const towardsLabel = p.side === 'malahide' ? -1 : 1;
+  return `M${p.x},${p.y} h${towardsLabel * 12}`;
 }
 
 /** Each label is a full-height tap target covering its dot; Malahide labels sit left of their line, the rest right. */
