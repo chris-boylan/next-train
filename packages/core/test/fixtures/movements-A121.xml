@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfObjTrainMovements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://api.irishrail.ie/realtime/">
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>BFSTC</LocationCode>
+    <LocationFullName>Belfast</LocationFullName>
+    <LocationOrder>1</LocationOrder>
+    <LocationType>O</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>00:00:00</ScheduledArrival>
+    <ScheduledDeparture>16:00:00</ScheduledDeparture>
+    <ExpectedArrival>00:00:00</ExpectedArrival>
+    <ExpectedDeparture>16:00:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>LBURN</LocationCode>
+    <LocationFullName>Lisburn</LocationFullName>
+    <LocationOrder>2</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>16:10:00</ScheduledArrival>
+    <ScheduledDeparture>16:10:00</ScheduledDeparture>
+    <ExpectedArrival>16:10:00</ExpectedArrival>
+    <ExpectedDeparture>16:10:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>MOIRA</LocationCode>
+    <LocationFullName>MOIRA</LocationFullName>
+    <LocationOrder>3</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>16:18:00</ScheduledArrival>
+    <ScheduledDeparture>16:18:00</ScheduledDeparture>
+    <ExpectedArrival>16:18:00</ExpectedArrival>
+    <ExpectedDeparture>16:18:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>LURGN</LocationCode>
+    <LocationFullName>Lurgan</LocationFullName>
+    <LocationOrder>4</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>16:23:30</ScheduledArrival>
+    <ScheduledDeparture>16:23:30</ScheduledDeparture>
+    <ExpectedArrival>16:23:30</ExpectedArrival>
+    <ExpectedDeparture>16:23:30</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>PDOWN</LocationCode>
+    <LocationFullName>Portadown</LocationFullName>
+    <LocationOrder>5</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>16:29:30</ScheduledArrival>
+    <ScheduledDeparture>16:33:30</ScheduledDeparture>
+    <ExpectedArrival>16:29:30</ExpectedArrival>
+    <ExpectedDeparture>16:33:30</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>PPASS</LocationCode>
+    <LocationFullName>Poyntzpass</LocationFullName>
+    <LocationOrder>6</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>16:44:00</ScheduledArrival>
+    <ScheduledDeparture>16:44:00</ScheduledDeparture>
+    <ExpectedArrival>16:44:00</ExpectedArrival>
+    <ExpectedDeparture>16:44:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>NEWRY</LocationCode>
+    <LocationFullName>Newry</LocationFullName>
+    <LocationOrder>7</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>16:52:30</ScheduledArrival>
+    <ScheduledDeparture>16:56:30</ScheduledDeparture>
+    <ExpectedArrival>16:52:30</ExpectedArrival>
+    <ExpectedDeparture>16:56:30</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DDALK</LocationCode>
+    <LocationFullName>Dundalk</LocationFullName>
+    <LocationOrder>8</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>17:12:30</ScheduledArrival>
+    <ScheduledDeparture>17:16:30</ScheduledDeparture>
+    <ExpectedArrival>17:12:30</ExpectedArrival>
+    <ExpectedDeparture>17:13:06</ExpectedDeparture>
+    <Arrival>17:09:06</Arrival>
+    <Departure>17:14:30</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DD281</LocationCode>
+    <LocationFullName />
+    <LocationOrder>9</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>17:24:00</ScheduledArrival>
+    <ScheduledDeparture>17:24:00</ScheduledDeparture>
+    <ExpectedArrival>17:22:00</ExpectedArrival>
+    <ExpectedDeparture>17:22:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DA283</LocationCode>
+    <LocationFullName />
+    <LocationOrder>10</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>17:28:30</ScheduledArrival>
+    <ScheduledDeparture>17:28:30</ScheduledDeparture>
+    <ExpectedArrival>17:26:30</ExpectedArrival>
+    <ExpectedDeparture>17:26:30</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DA285</LocationCode>
+    <LocationFullName />
+    <LocationOrder>11</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>17:34:00</ScheduledArrival>
+    <ScheduledDeparture>17:34:00</ScheduledDeparture>
+    <ExpectedArrival>17:32:00</ExpectedArrival>
+    <ExpectedDeparture>17:32:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DGHDA</LocationCode>
+    <LocationFullName>Drogheda</LocationFullName>
+    <LocationOrder>12</LocationOrder>
+    <LocationType>S</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>17:36:00</ScheduledArrival>
+    <ScheduledDeparture>17:39:00</ScheduledDeparture>
+    <ExpectedArrival>17:34:00</ExpectedArrival>
+    <ExpectedDeparture>17:46:48</ExpectedDeparture>
+    <Arrival>17:43:48</Arrival>
+    <Departure>17:46:24</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>LTOWN</LocationCode>
+    <LocationFullName>Laytown</LocationFullName>
+    <LocationOrder>13</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>17:44:00</ScheduledArrival>
+    <ScheduledDeparture>17:44:00</ScheduledDeparture>
+    <ExpectedArrival>17:51:24</ExpectedArrival>
+    <ExpectedDeparture>17:51:00</ExpectedDeparture>
+    <Arrival>17:51:00</Arrival>
+    <Departure>17:51:42</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>MSNEY</LocationCode>
+    <LocationFullName>Mosney</LocationFullName>
+    <LocationOrder>14</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>17:45:00</ScheduledArrival>
+    <ScheduledDeparture>17:45:00</ScheduledDeparture>
+    <ExpectedArrival>17:52:42</ExpectedArrival>
+    <ExpectedDeparture>17:52:00</ExpectedDeparture>
+    <Arrival>17:52:00</Arrival>
+    <Departure>17:52:06</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>GSTON</LocationCode>
+    <LocationFullName>Gormanston</LocationFullName>
+    <LocationOrder>15</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>17:46:30</ScheduledArrival>
+    <ScheduledDeparture>17:46:30</ScheduledDeparture>
+    <ExpectedArrival>17:53:36</ExpectedArrival>
+    <ExpectedDeparture>17:53:18</ExpectedDeparture>
+    <Arrival>17:53:18</Arrival>
+    <Departure>17:54:00</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>BBRGN</LocationCode>
+    <LocationFullName>Balbriggan</LocationFullName>
+    <LocationOrder>16</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>17:48:30</ScheduledArrival>
+    <ScheduledDeparture>17:48:30</ScheduledDeparture>
+    <ExpectedArrival>17:56:00</ExpectedArrival>
+    <ExpectedDeparture>17:55:00</ExpectedDeparture>
+    <Arrival>17:55:00</Arrival>
+    <Departure>17:55:06</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SKRES</LocationCode>
+    <LocationFullName>Skerries</LocationFullName>
+    <LocationOrder>17</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>17:51:30</ScheduledArrival>
+    <ScheduledDeparture>17:51:30</ScheduledDeparture>
+    <ExpectedArrival>17:58:06</ExpectedArrival>
+    <ExpectedDeparture>17:57:48</ExpectedDeparture>
+    <Arrival>17:57:48</Arrival>
+    <Departure>17:58:00</Departure>
+    <AutoArrival>1</AutoArrival>
+    <AutoDepart>1</AutoDepart>
+    <StopType>C</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>RLUSK</LocationCode>
+    <LocationFullName>Rush and Lusk</LocationFullName>
+    <LocationOrder>18</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>17:54:00</ScheduledArrival>
+    <ScheduledDeparture>17:54:00</ScheduledDeparture>
+    <ExpectedArrival>18:00:30</ExpectedArrival>
+    <ExpectedDeparture>18:00:30</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>DBATE</LocationCode>
+    <LocationFullName>Donabate</LocationFullName>
+    <LocationOrder>19</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>17:55:30</ScheduledArrival>
+    <ScheduledDeparture>17:55:30</ScheduledDeparture>
+    <ExpectedArrival>18:02:00</ExpectedArrival>
+    <ExpectedDeparture>18:02:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>MHIDE</LocationCode>
+    <LocationFullName>Malahide</LocationFullName>
+    <LocationOrder>20</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>17:58:30</ScheduledArrival>
+    <ScheduledDeparture>17:58:30</ScheduledDeparture>
+    <ExpectedArrival>18:05:00</ExpectedArrival>
+    <ExpectedDeparture>18:05:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>PMNCK</LocationCode>
+    <LocationFullName>Portmarnock</LocationFullName>
+    <LocationOrder>21</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>18:00:30</ScheduledArrival>
+    <ScheduledDeparture>18:00:30</ScheduledDeparture>
+    <ExpectedArrival>18:07:00</ExpectedArrival>
+    <ExpectedDeparture>18:07:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>GRGRD</LocationCode>
+    <LocationFullName>Clongriffin</LocationFullName>
+    <LocationOrder>22</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>18:01:00</ScheduledArrival>
+    <ScheduledDeparture>18:01:00</ScheduledDeparture>
+    <ExpectedArrival>18:07:30</ExpectedArrival>
+    <ExpectedDeparture>18:07:30</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>HWTHJ</LocationCode>
+    <LocationFullName>Howth Junction</LocationFullName>
+    <LocationOrder>23</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>18:01:00</ScheduledArrival>
+    <ScheduledDeparture>18:01:00</ScheduledDeparture>
+    <ExpectedArrival>18:07:30</ExpectedArrival>
+    <ExpectedDeparture>18:07:30</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>KBRCK</LocationCode>
+    <LocationFullName>Kilbarrack</LocationFullName>
+    <LocationOrder>24</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>18:02:00</ScheduledArrival>
+    <ScheduledDeparture>18:02:00</ScheduledDeparture>
+    <ExpectedArrival>18:08:30</ExpectedArrival>
+    <ExpectedDeparture>18:08:30</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>RAHNY</LocationCode>
+    <LocationFullName>Raheny</LocationFullName>
+    <LocationOrder>25</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>18:03:00</ScheduledArrival>
+    <ScheduledDeparture>18:03:00</ScheduledDeparture>
+    <ExpectedArrival>18:09:30</ExpectedArrival>
+    <ExpectedDeparture>18:09:30</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>HTOWN</LocationCode>
+    <LocationFullName>Harmonstown</LocationFullName>
+    <LocationOrder>26</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>18:04:30</ScheduledArrival>
+    <ScheduledDeparture>18:04:30</ScheduledDeparture>
+    <ExpectedArrival>18:11:00</ExpectedArrival>
+    <ExpectedDeparture>18:11:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>KLSTR</LocationCode>
+    <LocationFullName>Killester</LocationFullName>
+    <LocationOrder>27</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>18:06:00</ScheduledArrival>
+    <ScheduledDeparture>18:06:00</ScheduledDeparture>
+    <ExpectedArrival>18:12:30</ExpectedArrival>
+    <ExpectedDeparture>18:12:30</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>CTARF</LocationCode>
+    <LocationFullName>Clontarf Road</LocationFullName>
+    <LocationOrder>28</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>18:08:00</ScheduledArrival>
+    <ScheduledDeparture>18:08:00</ScheduledDeparture>
+    <ExpectedArrival>18:14:30</ExpectedArrival>
+    <ExpectedDeparture>18:14:30</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>EWALL</LocationCode>
+    <LocationFullName />
+    <LocationOrder>29</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>18:09:30</ScheduledArrival>
+    <ScheduledDeparture>18:09:30</ScheduledDeparture>
+    <ExpectedArrival>18:16:00</ExpectedArrival>
+    <ExpectedDeparture>18:16:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>SUBJN</LocationCode>
+    <LocationFullName />
+    <LocationOrder>30</LocationOrder>
+    <LocationType>T</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>18:10:30</ScheduledArrival>
+    <ScheduledDeparture>18:10:30</ScheduledDeparture>
+    <ExpectedArrival>18:17:00</ExpectedArrival>
+    <ExpectedDeparture>18:17:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>-</StopType>
+  </objTrainMovements>
+  <objTrainMovements>
+    <TrainCode>A121 </TrainCode>
+    <TrainDate>25 Nov 2026</TrainDate>
+    <LocationCode>CNLLY</LocationCode>
+    <LocationFullName>Dublin Connolly</LocationFullName>
+    <LocationOrder>31</LocationOrder>
+    <LocationType>D</LocationType>
+    <TrainOrigin>Belfast</TrainOrigin>
+    <TrainDestination>Dublin Connolly</TrainDestination>
+    <ScheduledArrival>18:13:00</ScheduledArrival>
+    <ScheduledDeparture>00:00:00</ScheduledDeparture>
+    <ExpectedArrival>18:19:30</ExpectedArrival>
+    <ExpectedDeparture>00:00:00</ExpectedDeparture>
+    <Arrival />
+    <Departure />
+    <AutoArrival />
+    <AutoDepart />
+    <StopType>N</StopType>
+  </objTrainMovements>
+</ArrayOfObjTrainMovements>

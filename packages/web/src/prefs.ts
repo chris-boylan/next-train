@@ -1,4 +1,22 @@
 const LAST_STATION_KEY = 'dart-times:last-station';
+const LAST_SERVICE_KEY = 'dart-times:last-service';
+
+/** The service (DART or Enterprise) the app reopens on. */
+export function getLastService(): string | undefined {
+  try {
+    return localStorage.getItem(LAST_SERVICE_KEY) ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function setLastService(service: string): void {
+  try {
+    localStorage.setItem(LAST_SERVICE_KEY, service);
+  } catch {
+    // Not remembered this time; nothing else depends on it.
+  }
+}
 
 /** The station the app reopens on. Storage can be blocked (private mode), so failures are ignored. */
 export function getLastStation(): string | undefined {
@@ -27,15 +45,15 @@ function readGoingTo(): Record<string, string> {
   }
 }
 
-/** Where you usually go from a station, so your trip is set up next time. */
-export function getGoingTo(stationCode: string): string | undefined {
-  return readGoingTo()[stationCode];
+/** Where you usually go from a station, so your trip is set up next time. Keyed per service and station. */
+export function getGoingTo(key: string): string | undefined {
+  return readGoingTo()[key];
 }
 
-export function setGoingTo(stationCode: string, destination: string | undefined): void {
+export function setGoingTo(key: string, destination: string | undefined): void {
   const all = readGoingTo();
-  if (destination) all[stationCode] = destination;
-  else delete all[stationCode];
+  if (destination) all[key] = destination;
+  else delete all[key];
   try {
     localStorage.setItem(GOING_TO_KEY, JSON.stringify(all));
   } catch {

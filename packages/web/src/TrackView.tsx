@@ -6,6 +6,7 @@ import {
   departuresGoingTo,
   type Direction,
   directionBetween,
+  type Service,
   type Station,
   terminiFrom,
 } from '@dart-times/core';
@@ -21,6 +22,7 @@ const TRAINS_PER_DIRECTION = 3;
 const STALE_AFTER_MS = 90_000;
 
 interface Props {
+  service: Service;
   station: Station;
   isFavourite: boolean;
   onToggleFavourite: () => void;
@@ -32,29 +34,31 @@ interface Props {
  * The station on a double track: northbound (green) on the left, coming up from the bottom;
  * southbound (orange) on the right, coming down from the top. Nearest trains sit closest to the station.
  */
-export function TrackView({ station, isFavourite, onToggleFavourite, onChangeStation, onSelectStation }: Props) {
+export function TrackView({ service, station, isFavourite, onToggleFavourite, onChangeStation, onSelectStation }: Props) {
   const { t, stationName, nameOf, list } = useI18n();
-  const { data, error } = useDepartures(station.code);
+  const { data, error } = useDepartures(station.code, service.id);
+  const { line } = service;
   const now = useNow();
   const fetchedAt = data && new Date(data.fetchedAt);
   const stale = !!fetchedAt && now.getTime() - fetchedAt.getTime() > STALE_AFTER_MS;
 
   // "Going to": remembered per station. It sets the direction, dims the other track and hides trains that won't get you there.
+  const goingToKey = `${service.id}:${station.code}`;
   const [goingTo, setGoingToState] = useState(() => {
-    const saved = getGoingTo(station.code);
-    return saved && directionBetween(station.code, saved) ? saved : undefined;
+    const saved = getGoingTo(goingToKey);
+    return saved && directionBetween(station.code, saved, line) ? saved : undefined;
   });
   const chooseGoingTo = (code: string | undefined) => {
     setGoingToState(code);
-    setGoingTo(station.code, code);
+    setGoingTo(goingToKey, code);
   };
-  const goingDirection = goingTo ? directionBetween(station.code, goingTo) : undefined;
+  const goingDirection = goingTo ? directionBetween(station.code, goingTo, line) : undefined;
   // The full departures panel for one direction; it's also where the going-to filter is chosen.
   const [sheetDirection, setSheetDirection] = useState<Direction>();
 
   const allIn = (direction: Direction) => data?.departures.filter((d) => d.direction === direction) ?? [];
   const shownIn = (direction: Direction) =>
-    goingTo && goingDirection === direction ? departuresGoingTo(allIn(direction), station.code, goingTo) : allIn(direction);
+    goingTo && goingDirection === direction ? departuresGoingTo(allIn(direction), station.code, goingTo, line) : allIn(direction);
   const dimmed = (direction: Direction) => !!goingDirection && goingDirection !== direction;
   const goingToName = goingTo && nameOf(goingTo);
   const name = stationName(station);
@@ -75,9 +79,9 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
     );
   };
 
-  const north = terminiFrom(station.code, 'Northbound');
-  const south = terminiFrom(station.code, 'Southbound');
-  const neighbours = adjacentStations(station.code);
+  const north = terminiFrom(station.code, 'Northbound', line);
+  const south = terminiFrom(station.code, 'Southbound', line);
+  const neighbours = adjacentStations(station.code, line);
 
   return (
     <div className="track-view">
@@ -160,6 +164,7 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
       {sheetDirection && (
         <DeparturesSheet
           station={station}
+          line={line}
           direction={sheetDirection}
           departures={allIn(sheetDirection)}
           goingTo={goingDirection === sheetDirection ? goingTo : undefined}

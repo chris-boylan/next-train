@@ -4,6 +4,7 @@ import {
   delaySeverity,
   departuresGoingTo,
   type Direction,
+  type Line,
   type Station,
   terminiFrom,
 } from '@dart-times/core';
@@ -14,6 +15,7 @@ import { Sheet } from './Sheet';
 
 interface Props {
   station: Station;
+  line: Line;
   direction: Direction;
   /** All departures in this direction for the next 90 minutes. */
   departures: Departure[];
@@ -23,11 +25,11 @@ interface Props {
 }
 
 /** Every departure in one direction, with quick "going to" picks. */
-export function DeparturesSheet({ station, direction, departures, goingTo, onGoingTo, onClose }: Props) {
+export function DeparturesSheet({ station, line, direction, departures, goingTo, onGoingTo, onClose }: Props) {
   const { t, stationName, nameOf, destinationName, describe } = useI18n();
   const [choosingOther, setChoosingOther] = useState(false);
-  const quickPicks = terminiFrom(station.code, direction);
-  const shown = goingTo ? departuresGoingTo(departures, station.code, goingTo) : departures;
+  const quickPicks = terminiFrom(station.code, direction, line);
+  const shown = goingTo ? departuresGoingTo(departures, station.code, goingTo, line) : departures;
   const otherSelected = !!goingTo && !quickPicks.includes(goingTo);
 
   const chip = (label: string, code: string | undefined, pressed: boolean) => (
@@ -62,6 +64,7 @@ export function DeparturesSheet({ station, direction, departures, goingTo, onGoi
       {choosingOther ? (
         <DestinationList
           from={station.code}
+          line={line}
           directions={[direction]}
           selected={goingTo}
           onSelect={(code) => {

@@ -1,5 +1,6 @@
 import type { IrishRailClient, RawStationData } from './irishRailClient';
-import { callsAt } from './line';
+import { callsAt, type Line } from './line';
+import { SERVICES, type ServiceId } from './services';
 import { findStationByName } from './stations';
 import type { Departure, Direction } from './types';
 
@@ -8,7 +9,9 @@ export interface DepartureOptions {
   limit?: number;
   /** How far ahead to look, 5–90 minutes. */
   withinMins?: number;
-  /** Include mainline (non-DART) trains. */
+  /** Which service's trains to keep; defaults to the DART. */
+  service?: ServiceId;
+  /** Keep every train calling at the station, whatever the service. */
   includeTrains?: boolean;
 }
 
@@ -37,7 +40,7 @@ function toInt(value: string): number {
 export function toDepartures(raw: RawStationData[], options: DepartureOptions = {}): Departure[] {
   const departures = raw
     .filter((r) => !terminatesHere(r))
-    .filter((r) => options.includeTrains || r.Traintype === 'DART')
+    .filter((r) => options.includeTrains || SERVICES[options.service ?? 'dart'].matches(r))
     .filter((r) => !options.direction || r.Direction === options.direction)
     .map(
       (r): Departure => ({
@@ -73,6 +76,6 @@ export async function getDepartures(
  * not terminate before it (e.g. a Bray train doesn't help if you're going to Greystones, and a Malahide
  * train doesn't stop at Sutton).
  */
-export function departuresGoingTo(departures: Departure[], from: string, goingTo: string): Departure[] {
-  return departures.filter((d) => !!d.destinationCode && callsAt(from, d.destinationCode, goingTo));
+export function departuresGoingTo(departures: Departure[], from: string, goingTo: string, line?: Line): Departure[] {
+  return departures.filter((d) => !!d.destinationCode && callsAt(from, d.destinationCode, goingTo, line));
 }

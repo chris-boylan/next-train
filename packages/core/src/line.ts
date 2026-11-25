@@ -30,11 +30,29 @@ export const LINE_ORDER: string[] = [
   ...[...TRUNK].reverse(),
 ];
 
-/** Southern terminus to the end of a branch: every route a DART can run is a section of one of these. */
-const PATHS: string[][] = [
-  [...TRUNK, ...BRANCHES.howth],
-  [...TRUNK, ...BRANCHES.malahide],
-];
+/** A railway line: every route a train runs is a section of one of `paths` (each listed south to north). */
+export interface Line {
+  paths: string[][];
+  /** Where trains in each direction finish their run, including turn-backs like Bray. */
+  termini: Record<Direction, string[]>;
+}
+
+export const DART_LINE: Line = {
+  paths: [
+    [...TRUNK, ...BRANCHES.howth],
+    [...TRUNK, ...BRANCHES.malahide],
+  ],
+  termini: { Northbound: [BRANCHES.howth.at(-1)!, BRANCHES.malahide.at(-1)!], Southbound: ['BRAY', 'GSTNS'] },
+};
+
+/**
+ * Dublin–Belfast Enterprise, south to north. Verified (Nov 2026) against the stop lists of five
+ * Enterprise trains in both directions; none called at Lisburn or Lurgan.
+ */
+export const ENTERPRISE_LINE: Line = {
+  paths: [['CNLLY', 'DGHDA', 'DDALK', 'NEWRY', 'PDOWN', 'BFSTC']],
+  termini: { Northbound: ['BFSTC'], Southbound: ['CNLLY'] },
+};
 
 export function branchOf(code: string): Branch | undefined {
   if ((TRUNK as readonly string[]).includes(code)) return 'trunk';
@@ -44,11 +62,11 @@ export function branchOf(code: string): Branch | undefined {
 }
 
 /**
- * Stations from `from` to `to` inclusive, in travel order. Undefined when no DART runs between
- * them directly, i.e. between the Howth and Malahide branches (change at Howth Junction).
+ * Stations from `from` to `to` inclusive, in travel order. Undefined when no train runs between
+ * them directly, e.g. between the DART's Howth and Malahide branches (change at Howth Junction).
  */
-export function route(from: string, to: string): string[] | undefined {
-  for (const path of PATHS) {
+export function route(from: string, to: string, line: Line = DART_LINE): string[] | undefined {
+  for (const path of line.paths) {
     const i = path.indexOf(from);
     const j = path.indexOf(to);
     if (i >= 0 && j >= 0) return i <= j ? path.slice(i, j + 1) : path.slice(j, i + 1).reverse();
@@ -56,41 +74,35 @@ export function route(from: string, to: string): string[] | undefined {
   return undefined;
 }
 
-export function stopsBetween(from: string, to: string): number | undefined {
-  const r = route(from, to);
+export function stopsBetween(from: string, to: string, line: Line = DART_LINE): number | undefined {
+  const r = route(from, to, line);
   return r && r.length - 1;
 }
 
-export function directionBetween(from: string, to: string): Direction | undefined {
-  const r = route(from, to);
+export function directionBetween(from: string, to: string, line: Line = DART_LINE): Direction | undefined {
+  const r = route(from, to, line);
   if (!r || r.length < 2) return undefined;
-  const path = PATHS.find((p) => p.includes(from) && p.includes(to))!;
+  const path = line.paths.find((p) => p.includes(from) && p.includes(to))!;
   return path.indexOf(to) > path.indexOf(from) ? 'Northbound' : 'Southbound';
 }
 
 /** Whether a train now at `at` and running to `destination` will call at `stop` later on. */
-export function callsAt(at: string, destination: string, stop: string): boolean {
-  const r = route(at, destination);
+export function callsAt(at: string, destination: string, stop: string, line: Line = DART_LINE): boolean {
+  const r = route(at, destination, line);
   return !!r && stop !== at && r.includes(stop);
 }
 
-/** The next stations either side. North of the junction there are two: Bayside and Clongriffin. */
-export function adjacentStations(code: string): { north: string[]; south: string[] } {
-  const trunk = TRUNK as readonly string[];
-  const t = trunk.indexOf(code);
-  if (t >= 0) {
-    return {
-      north: code === JUNCTION ? [BRANCHES.howth[0], BRANCHES.malahide[0]] : [trunk[t + 1]!],
-      south: t > 0 ? [trunk[t - 1]!] : [],
-    };
+/** The next stations either side. On the DART, north of Howth Junction there are two: Bayside and Clongriffin. */
+export function adjacentStations(code: string, line: Line = DART_LINE): { north: string[]; south: string[] } {
+  const north = new Set<string>();
+  const south = new Set<string>();
+  for (const path of line.paths) {
+    const i = path.indexOf(code);
+    if (i < 0) continue;
+    if (i < path.length - 1) north.add(path[i + 1]!);
+    if (i > 0) south.add(path[i - 1]!);
   }
-  for (const branch of Object.values(BRANCHES) as readonly (readonly string[])[]) {
-    const b = branch.indexOf(code);
-    if (b >= 0) {
-      return { north: b < branch.length - 1 ? [branch[b + 1]!] : [], south: [b > 0 ? branch[b - 1]! : JUNCTION] };
-    }
-  }
-  return { north: [], south: [] };
+  return { north: [...north], south: [...south] };
 }
 
 /** The stations a train actually serves, in order: skips timing points (T) and cancelled stops (C). */
@@ -103,14 +115,13 @@ export function servedStops(movements: RawTrainMovement[]): string[] {
 }
 
 /** Where trains in a direction can end up, e.g. Connolly northbound → Howth and Malahide. Empty at a terminus. */
-export function terminiFrom(code: string, direction: Direction): string[] {
-  const ends = direction === 'Northbound' ? [BRANCHES.howth.at(-1)!, BRANCHES.malahide.at(-1)!] : ['BRAY', 'GSTNS'];
-  return ends.filter((end) => end !== code && directionBetween(code, end) === direction);
+export function terminiFrom(code: string, direction: Direction, line: Line = DART_LINE): string[] {
+  return line.termini[direction].filter((end) => end !== code && directionBetween(code, end, line) === direction);
 }
 
 /** Every station you can reach from `code` travelling in `direction`, in line order (nearest first on the trunk). */
-export function stationsAhead(code: string, direction: Direction): string[] {
-  return PATHS.flatMap((path) => {
+export function stationsAhead(code: string, direction: Direction, line: Line = DART_LINE): string[] {
+  return line.paths.flatMap((path) => {
     const i = path.indexOf(code);
     if (i < 0) return [];
     return direction === 'Northbound' ? path.slice(i + 1) : path.slice(0, i).reverse();

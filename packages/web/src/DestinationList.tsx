@@ -1,20 +1,21 @@
-import { type Direction, stationsAhead } from '@dart-times/core';
+import { type Direction, type Line, stationsAhead } from '@dart-times/core';
 import { useI18n } from './i18n';
 
 interface Props {
   from: string;
+  line: Line;
   directions: Direction[];
   selected?: string;
   onSelect: (code: string) => void;
 }
 
 /** Stations you can reach from `from`, grouped by direction, nearest first. */
-export function DestinationList({ from, directions, selected, onSelect }: Props) {
+export function DestinationList({ from, line, directions, selected, onSelect }: Props) {
   const { t, nameOf } = useI18n();
   return (
     <>
       {directions.map((direction) => {
-        const ahead = stationsAhead(from, direction);
+        const ahead = stationsAhead(from, direction, line);
         if (!ahead.length) return null;
         return (
           <section key={direction} className="destinations">

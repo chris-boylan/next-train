@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
+import type { ServiceId } from '@dart-times/core';
 import { type DeparturesResponse, fetchDepartures } from './api';
 
 const REFRESH_MS = 30_000;
 
 /** Live departures for a station, refreshed every 30s while the tab is visible. */
-export function useDepartures(code: string) {
+export function useDepartures(code: string, service: ServiceId) {
   const [data, setData] = useState<DeparturesResponse>();
   const [error, setError] = useState<string>();
 
@@ -15,7 +16,7 @@ export function useDepartures(code: string) {
 
     const load = () => {
       if (document.hidden) return;
-      fetchDepartures(code).then(
+      fetchDepartures(code, service).then(
         (res) => !cancelled && (setData(res), setError(undefined)),
         (err: Error) => !cancelled && setError(err.message),
       );
@@ -29,7 +30,7 @@ export function useDepartures(code: string) {
       clearInterval(timer);
       document.removeEventListener('visibilitychange', load);
     };
-  }, [code]);
+  }, [code, service]);
 
   return { data, error };
 }

@@ -6,7 +6,9 @@ import {
   findStationByCode,
   getDepartures,
   type IrishRailClient,
+  isServiceId,
   parseDirection,
+  SERVICES,
 } from '@dart-times/core';
 
 export interface ApiDeps {
@@ -46,11 +48,13 @@ export function createHandler({ client, favourites }: ApiDeps) {
 
       const departuresMatch = path.match(/^\/api\/stations\/([A-Za-z]+)\/departures$/);
       if (method === 'GET' && departuresMatch) {
-        const station = findStationByCode(departuresMatch[1]!);
+        const service = event.queryStringParameters?.service ?? 'dart';
+        if (!isServiceId(service)) return error(400, 'Unknown service');
+        const station = findStationByCode(departuresMatch[1]!, SERVICES[service].stations);
         if (!station) return error(404, 'Unknown station');
         const direction = parseDirection(event.queryStringParameters?.direction);
         const limit = Number(event.queryStringParameters?.limit) || undefined;
-        const departures = await getDepartures(client, station.code, { direction, limit });
+        const departures = await getDepartures(client, station.code, { direction, limit, service });
         return json(200, { station, direction: direction ?? null, departures, fetchedAt: new Date().toISOString() });
       }
 

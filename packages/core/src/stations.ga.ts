@@ -36,4 +36,12 @@ export const IRISH_NAMES: Record<string, { name: string; short?: string }> = {
   WBROK: { name: 'Sruthán na Coille' },
   BRAY: { name: 'Bré' },
   GSTNS: { name: 'Na Clocha Liatha' },
+  // Enterprise: town names as on Irish Rail's Irish station page and its bilingual Dublin–Belfast timetable
+  // (logainm.ie agrees). The timetable's honorific station names, e.g. "Stáisiún Uí Chléirigh, Dún Dealgan",
+  // aren't used, matching the English names from the API.
+  DGHDA: { name: 'Droichead Átha' },
+  DDALK: { name: 'Dún Dealgan' },
+  NEWRY: { name: 'An tIúr' },
+  PDOWN: { name: 'Port an Dúnáin' },
+  BFSTC: { name: 'Béal Feirste' },
 };

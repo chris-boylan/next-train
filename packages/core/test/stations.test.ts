@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DART_STATIONS, findStationByCode, findStationByName, resolveStation, searchStations } from '../src';
+import { ALL_STATIONS, DART_STATIONS, findStationByCode, findStationByName, resolveStation, searchStations } from '../src';
 
 describe('station data', () => {
   it('derives short names and splits parenthesised aliases', () => {
@@ -58,8 +58,8 @@ describe('searchStations', () => {
 });
 
 describe('Irish names', () => {
-  it('has an official Irish name for every station', () => {
-    expect(DART_STATIONS.filter((s) => !s.irishName).map((s) => s.code)).toEqual([]);
+  it('has an official Irish name for every station, DART and Enterprise', () => {
+    expect(ALL_STATIONS.filter((s) => !s.irishName).map((s) => s.code)).toEqual([]);
   });
 
   it('uses short forms that mirror the English short name', () => {

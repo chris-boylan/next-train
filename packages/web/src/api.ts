@@ -1,4 +1,4 @@
-import type { Departure, Direction, Station } from '@dart-times/core';
+import type { Departure, Direction, ServiceId, Station } from '@dart-times/core';
 
 export interface DeparturesResponse {
   station: Station;
@@ -14,9 +14,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return body as T;
 }
 
-/** All DART departures in the next 90 minutes, both directions. */
-export function fetchDepartures(code: string) {
-  return request<DeparturesResponse>(`/stations/${code}/departures`);
+/** All of a service's departures in the next 90 minutes, both directions. */
+export function fetchDepartures(code: string, service: ServiceId) {
+  return request<DeparturesResponse>(`/stations/${code}/departures?service=${service}`);
 }
 
 export function fetchFavourites(deviceId: string) {

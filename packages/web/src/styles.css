@@ -6,12 +6,12 @@
   --muted: #5c5c5f;
   --border: #e2e2e4;
   --rule: #2c2c2e;
-  /* Tricolour: green northbound, orange southbound. */
-  --green: #169b62;
-  --orange: #ff883e;
+  /* Track colours. DART: tricolour green northbound, orange southbound; each service overrides these. */
+  --north: #169b62;
+  --south: #ff883e;
   /* Text versions with enough contrast on --bg. */
-  --green-text: #0b7a4b;
-  --orange-text: #b8520a;
+  --north-text: #0b7a4b;
+  --south-text: #b8520a;
   /* The station band inverts the page. */
   --band-bg: #2c2c2e;
   --band-text: #ffffff;
@@ -40,8 +40,8 @@
     --muted: #a5a5aa;
     --border: #38383b;
     --rule: #c7c7cc;
-    --green-text: #3cc28a;
-    --orange-text: #ff9a57;
+    --north-text: #3cc28a;
+    --south-text: #ff9a57;
     --band-bg: #e9e9eb;
     --band-text: #1f1f21;
     --band-north: #08683f;
@@ -56,13 +56,44 @@
   --muted: #a5a5aa;
   --border: #38383b;
   --rule: #c7c7cc;
-  --green-text: #3cc28a;
-  --orange-text: #ff9a57;
+  --north-text: #3cc28a;
+  --south-text: #ff9a57;
   --band-bg: #e9e9eb;
   --band-text: #1f1f21;
   --band-north: #08683f;
   --band-south: #9a4508;
   color-scheme: dark;
+}
+
+/* Enterprise: deep violet northbound (to Belfast), lilac southbound (to Dublin). The two differ
+   strongly in lightness as well as hue, so they stay distinct for colour-blind viewers. */
+:root[data-service='enterprise'] {
+  --north: #5b2a86;
+  --south: #a273d2;
+  --north-text: #5b2a86;
+  --south-text: #8346b8;
+  --band-north: #d0abf2;
+  --band-south: #ead7fb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-service='enterprise']:not([data-theme='light']) {
+    --north: #8f5fcc;
+    --south: #d7b7f6;
+    --north-text: #c39cf0;
+    --south-text: #e2cbfa;
+    --band-north: #5b2a86;
+    --band-south: #7a3fae;
+  }
+}
+
+:root[data-service='enterprise'][data-theme='dark'] {
+  --north: #8f5fcc;
+  --south: #d7b7f6;
+  --north-text: #c39cf0;
+  --south-text: #e2cbfa;
+  --band-north: #5b2a86;
+  --band-south: #7a3fae;
 }
 
 * {
@@ -306,12 +337,12 @@ p {
 
 .lane--north {
   left: calc(50% - var(--lane-width) - var(--lane-gap) / 2);
-  --lane-color: var(--green);
+  --lane-color: var(--north);
 }
 
 .lane--south {
   left: calc(50% + var(--lane-gap) / 2);
-  --lane-color: var(--orange);
+  --lane-color: var(--south);
 }
 
 /* Past the platform the piece ends at the middle of the half: shaft, then head, tip at 50%. */
@@ -384,13 +415,13 @@ p {
   right: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
   align-items: flex-end;
   text-align: right;
-  color: var(--green-text);
+  color: var(--north-text);
 }
 
 .terminus--south {
   bottom: 50%;
   left: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
-  color: var(--orange-text);
+  color: var(--south-text);
 }
 
 .trains {
@@ -716,12 +747,12 @@ p {
 
 .line-map__track {
   fill: none;
-  stroke: var(--green);
+  stroke: var(--north);
   stroke-width: 10;
 }
 
 .line-map__tick {
-  stroke: var(--green);
+  stroke: var(--north);
   stroke-width: 5;
 }
 
@@ -732,7 +763,7 @@ p {
 }
 
 .line-map__dot--current {
-  fill: var(--orange);
+  fill: var(--south);
 }
 
 .line-map__bracket {
@@ -788,7 +819,7 @@ p {
 
 .line-map__stop--current {
   font-weight: 900;
-  color: var(--orange-text);
+  color: var(--south-text);
 }
 
 .line-map__fav {
@@ -1040,11 +1071,11 @@ p {
 }
 
 .destinations__heading--north {
-  color: var(--green-text);
+  color: var(--north-text);
 }
 
 .destinations__heading--south {
-  color: var(--orange-text);
+  color: var(--south-text);
 }
 
 .destinations__list {
@@ -1117,4 +1148,108 @@ p {
 .line-map__stop--trunk,
 .line-map__stop--howth {
   text-align: left;
+}
+
+/* ---------- Services ---------- */
+
+.picker__service {
+  margin: 4px 0 12px;
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.services__heading {
+  margin: 20px 0 10px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.services {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+/* Tiles carry their own service colours, since the page isn't in either service yet. */
+.service-tile--dart {
+  --tile-north: #169b62;
+  --tile-south: #ff883e;
+}
+
+.service-tile--enterprise {
+  --tile-north: #5b2a86;
+  --tile-south: #a273d2;
+}
+
+.service-tile {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 96px;
+  padding: 14px 16px;
+  border: 2px solid var(--rule);
+  background: var(--bg);
+  text-align: left;
+}
+
+.service-tile__stripes {
+  display: flex;
+  gap: 6px;
+  height: 64px;
+}
+
+.service-tile__north,
+.service-tile__south {
+  width: 14px;
+}
+
+.service-tile__north {
+  background: var(--tile-north);
+}
+
+.service-tile__south {
+  background: var(--tile-south);
+}
+
+.service-tile__text {
+  display: grid;
+  gap: 4px;
+}
+
+.service-tile__name {
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.service-tile__route {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.service-tile__go {
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+/* The Irish border on the Enterprise map. */
+.line-map__border {
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 5;
 }

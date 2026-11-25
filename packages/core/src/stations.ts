@@ -1,6 +1,7 @@
-import { branchOf, LINE_ORDER } from './line';
+import { branchOf, ENTERPRISE_LINE, LINE_ORDER } from './line';
 import type { Station } from './types';
 import { DART_STATION_DATA } from './stations.data';
+import { ENTERPRISE_STATION_DATA } from './stations.enterprise.data';
 import { IRISH_NAMES } from './stations.ga';
 
 export interface StationRecord {
@@ -65,13 +66,25 @@ export const DART_STATIONS: Station[] = LINE_ORDER.map((code) => {
   return toStation(record);
 });
 
-export function findStationByCode(code: string, stations: Station[] = DART_STATIONS): Station | undefined {
+/** Enterprise stations, north (Belfast) to south (Connolly); Connolly is the same object as on the DART. */
+export const ENTERPRISE_STATIONS: Station[] = [...ENTERPRISE_LINE.paths[0]!].reverse().map((code) => {
+  const shared = DART_STATIONS.find((s) => s.code === code);
+  if (shared) return shared;
+  const record = ENTERPRISE_STATION_DATA.find((r) => r.code === code);
+  if (!record) throw new Error(`Station ${code} is on the Enterprise but missing from stations.enterprise.data.ts`);
+  return toStation(record);
+});
+
+/** Every station the apps know about, across all services. Lookups by code or name use this. */
+export const ALL_STATIONS: Station[] = [...DART_STATIONS, ...ENTERPRISE_STATIONS.filter((s) => !DART_STATIONS.includes(s))];
+
+export function findStationByCode(code: string, stations: Station[] = ALL_STATIONS): Station | undefined {
   const wanted = code.trim().toUpperCase();
   return stations.find((s) => s.code === wanted);
 }
 
 /** Exact lookup by Irish Rail's full name, as used in departure origins and destinations. */
-export function findStationByName(name: string, stations: Station[] = DART_STATIONS): Station | undefined {
+export function findStationByName(name: string, stations: Station[] = ALL_STATIONS): Station | undefined {
   return stations.find((s) => s.name === name.trim());
 }
 

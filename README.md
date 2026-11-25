@@ -67,6 +67,14 @@ npm run deploy -- -c alexaSkillId=amzn1.ask.skill.xxxx
 
 Then test with `ask dialog --locale en-IE` from `packages/alexa`, e.g. "open dart times", "ask dart times when's the next train from Connolly going south", "add Pearse to my favourites", "when's my next train".
 
+## Services
+
+The web app opens on a service picker: **DART** or **Enterprise** (Dublin Connolly – Belfast), then that service's line map, then a station.
+
+- Lines are defined in `core/src/line.ts` (`DART_LINE`, `ENTERPRISE_LINE`) and services in `core/src/services.ts`. Line helpers take the line as a parameter and default to the DART, so the Alexa skill is unchanged.
+- The Enterprise calls at Connolly, Drogheda, Dundalk, Newry, Portadown and Belfast (Grand Central). That was verified against the stop lists of five trains in both directions; none called at Lisburn or Lurgan. The API has no Enterprise train type, so Enterprise trains are identified as the only Irish Rail trains running to or from Belfast.
+- Colours: DART tracks are green and orange. Enterprise tracks are deep violet (to Belfast) and lilac (to Dublin), set with `data-service` on `<html>`.
+
 ## English and Irish
 
 The web app is bilingual: the options cog switches between **English** and **Gaeilge** (defaulting to Irish when the phone's language is Irish) and between light and dark.

@@ -57,3 +57,17 @@ describe('API handler', () => {
     expect((await request('PUT', '/api/favourites/NOPE', device)).statusCode).toBe(404);
   });
 });
+
+describe('API handler: Enterprise', () => {
+  it('returns Belfast trains for ?service=enterprise', async () => {
+    const res = await request('GET', '/api/stations/CNLLY/departures?service=enterprise');
+    expect(res.statusCode).toBe(200);
+    expect(body(res).departures.every((d: { destination: string }) => d.destination === 'Belfast')).toBe(true);
+  });
+
+  it('rejects stations not on the service, and unknown services', async () => {
+    expect((await request('GET', '/api/stations/HOWTH/departures?service=enterprise')).statusCode).toBe(404);
+    expect((await request('GET', '/api/stations/NEWRY/departures')).statusCode).toBe(404);
+    expect((await request('GET', '/api/stations/CNLLY/departures?service=luas')).statusCode).toBe(400);
+  });
+});

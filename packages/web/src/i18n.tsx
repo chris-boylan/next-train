@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
-import { type Departure, type Direction, findStationByCode, type Station } from '@dart-times/core';
+import { type Departure, type Direction, findStationByCode, type ServiceId, type Station } from '@dart-times/core';
 
 export type Lang = 'en' | 'ga';
 
@@ -8,6 +8,11 @@ const KEY = 'dart-times:lang';
 // Irish phrasing uses "go dtí" (takes the nominative, so place names need no mutation) and avoids
 // counting nouns after numbers, whose mutations vary. Irish strings should be reviewed by a fluent speaker.
 const en = {
+  services: 'Services',
+  chooseService: 'Choose a service',
+  serviceNames: { dart: 'DART', enterprise: 'Enterprise' } as Record<ServiceId, string>,
+  dublinBelfast: 'Dublin – Belfast',
+  border: 'Border',
   stations: 'Stations',
   findStation: 'Find a station',
   favouriteStations: 'Favourite stations',
@@ -56,6 +61,12 @@ const en = {
 type Messages = typeof en;
 
 const ga: Messages = {
+  services: 'Seirbhísí',
+  chooseService: 'Roghnaigh seirbhís',
+  serviceNames: { dart: 'DART', enterprise: 'Enterprise' },
+  // As on Irish Rail's bilingual Dublin–Belfast timetable.
+  dublinBelfast: 'Baile Átha Cliath – Béal Feirste',
+  border: 'An Teorainn',
   stations: 'Stáisiúin',
   findStation: 'Aimsigh stáisiún',
   favouriteStations: 'Stáisiúin is fearr leat',

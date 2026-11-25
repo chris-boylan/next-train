@@ -1,29 +1,39 @@
 import { useState } from 'react';
-import { searchStations, type Station } from '@dart-times/core';
+import { searchStations, type Service, type Station } from '@dart-times/core';
 import { LineMap } from './LineMap';
 import { Caps, useI18n } from './i18n';
 import { OptionsMenu } from './OptionsMenu';
+import { SimpleLineMap } from './SimpleLineMap';
 
 interface Props {
+  service: Service;
+  onBack: () => void;
   favourites: Station[];
   currentCode?: string;
   onSelect: (code: string) => void;
   onToggleFavourite: (code: string) => void;
 }
 
-export function StationPicker({ favourites, currentCode, onSelect, onToggleFavourite }: Props) {
+/** A service's line map (or search results), where you pick a station. */
+export function StationPicker({ service, onBack, favourites: allFavourites, currentCode, onSelect, onToggleFavourite }: Props) {
   const { t, stationName } = useI18n();
   const [query, setQuery] = useState('');
+  // Favourites from this service only; Connolly counts for both.
+  const favourites = allFavourites.filter((f) => service.stations.some((s) => s.code === f.code));
   const isFavourite = (code: string) => favourites.some((s) => s.code === code);
-  const results = query.trim() ? searchStations(query) : [];
+  const results = query.trim() ? searchStations(query, service.stations) : [];
+  const mapProps = { favouriteCodes: favourites.map((s) => s.code), currentCode, onSelect };
 
   return (
     <div className="picker">
       <header className="picker__header">
         <div className="picker__title">
-          <h1>DART Times</h1>
+          <button className="chip" onClick={onBack}>
+            ‹ {t.services}
+          </button>
           <OptionsMenu />
         </div>
+        <h1 className="picker__service">{t.serviceNames[service.id]}</h1>
         <input
           className="search"
           type="search"
@@ -62,8 +72,10 @@ export function StationPicker({ favourites, currentCode, onSelect, onToggleFavou
           ))}
           {!results.length && <li className="picker__empty">{t.noMatch(query)}</li>}
         </ul>
+      ) : service.id === 'dart' ? (
+        <LineMap {...mapProps} />
       ) : (
-        <LineMap favouriteCodes={favourites.map((s) => s.code)} currentCode={currentCode} onSelect={onSelect} />
+        <SimpleLineMap service={service} {...mapProps} />
       )}
     </div>
   );
