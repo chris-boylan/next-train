@@ -7,6 +7,10 @@ export interface Station {
   name: string;
   /** Name without the `Dublin ` prefix, used for speech and compact UI. */
   shortName: string;
+  /** Official Irish name, when known; apps fall back to the English name without one. */
+  irishName?: string;
+  /** Shorter Irish form for compact display, like `shortName`. */
+  irishShortName?: string;
   /** Other names people use for the station, used for search and voice synonyms. */
   aliases: string[];
   /** Shared section, or one of the two northern branches beyond Howth Junction. */

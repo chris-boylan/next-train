@@ -31,7 +31,7 @@ export function applyTheme(override: Theme | undefined = readOverride()): void {
   else delete document.documentElement.dataset.theme;
 }
 
-/** The theme in use, and a toggle that switches to the other one. */
+/** The theme in use, and a setter. Choosing the phone's own setting drops the override so the app follows the phone again. */
 export function useTheme() {
   const [override, setOverride] = useState(readOverride);
   const [system, setSystem] = useState(systemTheme);
@@ -44,13 +44,11 @@ export function useTheme() {
   }, []);
 
   const theme = override ?? system;
-  const toggle = () => {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark';
-    // Switching back to the phone's own setting drops the override, so the app follows the phone again.
+  const setTheme = (next: Theme) => {
     const nextOverride = next === system ? undefined : next;
     setOverride(nextOverride);
     writeOverride(nextOverride);
     applyTheme(nextOverride);
   };
-  return { theme, toggle };
+  return { theme, setTheme };
 }

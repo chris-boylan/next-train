@@ -56,3 +56,20 @@ describe('searchStations', () => {
     expect(searchStations('sand').map((s) => s.code)).toEqual(expect.arrayContaining(['SMONT', 'SCOVE']));
   });
 });
+
+describe('Irish names', () => {
+  it('has an official Irish name for every station', () => {
+    expect(DART_STATIONS.filter((s) => !s.irishName).map((s) => s.code)).toEqual([]);
+  });
+
+  it('uses short forms that mirror the English short name', () => {
+    expect(findStationByCode('HWTHJ')!.irishShortName).toBe('Gabhal Bhinn Éadair');
+    expect(findStationByCode('BRAY')!.irishShortName).toBe('Bré');
+  });
+
+  it('finds stations by Irish name, with or without fadas', () => {
+    expect(resolveStation('Bré')?.code).toBe('BRAY');
+    expect(resolveStation('binn eadair')?.code).toBe('HOWTH');
+    expect(resolveStation('Na Clocha Liatha')?.code).toBe('GSTNS');
+  });
+});

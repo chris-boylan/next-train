@@ -1,6 +1,7 @@
 import { branchOf, LINE_ORDER } from './line';
 import type { Station } from './types';
 import { DART_STATION_DATA } from './stations.data';
+import { IRISH_NAMES } from './stations.ga';
 
 export interface StationRecord {
   code: string;
@@ -41,6 +42,8 @@ function toStation(record: StationRecord): Station {
     name: record.name,
     shortName,
     branch: branchOf(record.code) ?? 'trunk',
+    irishName: IRISH_NAMES[record.code]?.name,
+    irishShortName: IRISH_NAMES[record.code]?.short ?? IRISH_NAMES[record.code]?.name,
     aliases: aliases.filter((a) => {
       const key = a.toLowerCase();
       if (seen.has(key)) return false;
@@ -112,7 +115,9 @@ function scoreStation(query: string, station: Station): number {
   if (station.code === query.trim().toUpperCase()) return 100;
   const q = normaliseStationName(query);
   if (!q) return 0;
-  return Math.max(...[station.name, ...station.aliases].map((k) => scoreKey(q, normaliseStationName(k))));
+  // Irish names are searchable too (fadas optional), but kept out of `aliases` so they don't become Alexa synonyms.
+  const keys = [station.name, ...station.aliases, station.irishName, station.irishShortName].filter((k): k is string => !!k);
+  return Math.max(...keys.map((k) => scoreKey(q, normaliseStationName(k))));
 }
 
 /** Stations matching a free-text query, best match first. An empty query returns every station. */

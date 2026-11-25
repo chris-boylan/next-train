@@ -4,20 +4,18 @@ import {
   type Departure,
   delaySeverity,
   departuresGoingTo,
-  describeDeparture,
   type Direction,
   directionBetween,
-  findStationByCode,
-  joinList,
   type Station,
   terminiFrom,
 } from '@dart-times/core';
 import { formatTime, useNow } from './clock';
 import { DeparturesSheet } from './DeparturesSheet';
 import { DestinationList } from './DestinationList';
+import { Caps, useI18n } from './i18n';
+import { OptionsMenu } from './OptionsMenu';
 import { getGoingTo, setGoingTo } from './prefs';
 import { Sheet } from './Sheet';
-import { ThemeToggle } from './ThemeToggle';
 import { useDepartures } from './useDepartures';
 
 const TRAINS_PER_DIRECTION = 3;
@@ -32,13 +30,12 @@ interface Props {
   onSelectStation: (code: string) => void;
 }
 
-const shortNames = (codes: string[]) => codes.map((c) => findStationByCode(c)?.shortName ?? c);
-
 /**
  * The station on a double track: northbound (green) on the left, coming up from the bottom;
  * southbound (orange) on the right, coming down from the top. Nearest trains sit closest to the station.
  */
 export function TrackView({ station, isFavourite, onToggleFavourite, onChangeStation, onSelectStation }: Props) {
+  const { t, stationName, nameOf, list } = useI18n();
   const { data, error } = useDepartures(station.code);
   const now = useNow();
   const fetchedAt = data && new Date(data.fetchedAt);
@@ -60,7 +57,8 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
   const shownIn = (direction: Direction) =>
     goingTo && goingDirection === direction ? departuresGoingTo(allIn(direction), station.code, goingTo) : allIn(direction);
   const dimmed = (direction: Direction) => !!goingDirection && goingDirection !== direction;
-  const goingToName = goingTo && findStationByCode(goingTo)?.shortName;
+  const goingToName = goingTo && nameOf(goingTo);
+  const name = stationName(station);
 
   const trainsFor = (direction: Direction, ends: string[]) => {
     const shown = shownIn(direction);
@@ -86,30 +84,30 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
     <div className="track-view">
       <header className="track-view__bar">
         <button className="chip" onClick={onChangeStation}>
-          ‹ Stations
+          ‹ {t.stations}
         </button>
         <div className="clock">
           <p className="clock__now">
-            <span className="clock__label">Now</span> <time>{formatTime(now)}</time>
+            <span className="clock__label">{t.now}</span> <time>{formatTime(now)}</time>
           </p>
           <p className={`clock__updated${error || stale ? ' clock__updated--stale' : ''}`} role="status">
             {fetchedAt ? (
               <>
-                Updated <time>{formatTime(fetchedAt, true)}</time>
-                {error && ' · retrying'}
+                {t.updated} <time>{formatTime(fetchedAt, true)}</time>
+                {error && ` · ${t.retrying}`}
               </>
             ) : (
-              (error ?? 'Loading…')
+              (error ?? t.loading)
             )}
           </p>
         </div>
         <div className="track-view__actions">
-          <ThemeToggle />
+          <OptionsMenu />
           <button
             className={`star${isFavourite ? ' star--on' : ''}`}
             onClick={onToggleFavourite}
             aria-pressed={isFavourite}
-            aria-label={isFavourite ? `Remove ${station.shortName} from favourites` : `Add ${station.shortName} to favourites`}
+            aria-label={isFavourite ? t.removeFavourite(name) : t.addFavourite(name)}
           >
             {isFavourite ? '★' : '☆'}
           </button>
@@ -121,7 +119,7 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
         <Lane direction="Southbound" endsHere={!south.length} dimmed={dimmed('Southbound')} />
 
         {/* Top half: southbound trains on their way in, nearest at the bottom. Green arrow continues up to its termini. */}
-        <section className="half half--top" aria-label={`Southbound, towards ${joinList(shortNames(south))}`}>
+        <section className="half half--top" aria-label={t.towards(t.direction.Southbound, list(south.map(nameOf)))}>
           <p className={`terminus terminus--north${dimmed('Northbound') ? ' terminus--dimmed' : ''}`} aria-hidden>
             <Termini codes={north} />
           </p>
@@ -130,26 +128,29 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
 
         <div className="platform">
           <Neighbours codes={neighbours.north} direction="north" onSelect={onSelectStation} />
-          <h1 className="platform__name">{station.shortName}</h1>
+          {/* Some Irish names are long; step the size down so they fit on one line on a phone. */}
+          <h1 className={`platform__name${name.length > 20 ? ' platform__name--longer' : name.length > 13 ? ' platform__name--long' : ''}`}>
+            <Caps text={name} />
+          </h1>
           <Neighbours codes={neighbours.south} direction="south" onSelect={onSelectStation} />
           {goingTo ? (
             <div className="going-to going-to--set">
               <button className="going-to__name" onClick={() => setSheet({ kind: 'goingTo' })}>
-                {goingDirection === 'Northbound' ? '↑' : '↓'} Going to {goingToName}
+                {goingDirection === 'Northbound' ? '↑' : '↓'} <Caps text={t.goingTo(goingToName!)} />
               </button>
-              <button className="going-to__clear" onClick={() => chooseGoingTo(undefined)} aria-label="Show all trains">
+              <button className="going-to__clear" onClick={() => chooseGoingTo(undefined)} aria-label={t.showAll}>
                 ✕
               </button>
             </div>
           ) : (
             <button className="going-to" onClick={() => setSheet({ kind: 'goingTo' })}>
-              Going to…
+              {t.goingToPrompt}
             </button>
           )}
         </div>
 
         {/* Bottom half: northbound trains on their way in, nearest at the top. Orange arrow continues down to its termini. */}
-        <section className="half half--bottom" aria-label={`Northbound, towards ${joinList(shortNames(north))}`}>
+        <section className="half half--bottom" aria-label={t.towards(t.direction.Northbound, list(north.map(nameOf)))}>
           {trainsFor('Northbound', north)}
           <p className={`terminus terminus--south${dimmed('Southbound') ? ' terminus--dimmed' : ''}`} aria-hidden>
             <Termini codes={south} />
@@ -168,7 +169,7 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
         />
       )}
       {sheet?.kind === 'goingTo' && (
-        <Sheet title={`Going to · from ${station.shortName}`} onClose={() => setSheet(undefined)}>
+        <Sheet title={t.goingToTitle(name)} onClose={() => setSheet(undefined)}>
           <DestinationList
             from={station.code}
             directions={['Northbound', 'Southbound']}
@@ -194,12 +195,13 @@ function Neighbours({
   direction: 'north' | 'south';
   onSelect: (code: string) => void;
 }) {
+  const { t, nameOf } = useI18n();
   if (!codes.length) return null;
   return (
-    <nav className={`neighbours neighbours--${direction}`} aria-label={`Next station ${direction}`}>
+    <nav className={`neighbours neighbours--${direction}`} aria-label={t.nextStation[direction]}>
       {codes.map((code) => (
         <button key={code} className="neighbour" onClick={() => onSelect(code)}>
-          {direction === 'north' ? '↑' : '↓'} {findStationByCode(code)?.shortName ?? code}
+          {direction === 'north' ? '↑' : '↓'} <Caps text={nameOf(code)} />
         </button>
       ))}
     </nav>
@@ -207,12 +209,15 @@ function Neighbours({
 }
 
 function Termini({ codes }: { codes: string[] }) {
+  const { t, nameOf } = useI18n();
   if (!codes.length) return null;
   return (
     <>
-      <span className="terminus__to">to</span>
-      {shortNames(codes).map((name) => (
-        <span key={name}>{name}</span>
+      <span className="terminus__to">{t.to}</span>
+      {codes.map(nameOf).map((name) => (
+        <span key={name}>
+          <Caps text={name} />
+        </span>
       ))}
     </>
   );
@@ -251,22 +256,19 @@ function Trains({
   /** False while loading or after a failed first load; the status bar says which. */
   hasData: boolean;
 }) {
+  const { t, destinationName, describe } = useI18n();
   const side = direction === 'Northbound' ? 'north' : 'south';
   if (!hasData || hidden) return null;
   if (!trains.length) {
     return (
       <p className={`trains-empty trains-empty--${side}`}>
-        {!ends.length
-          ? 'Trains terminate here'
-          : goingToName
-            ? `No DARTs to ${goingToName} in the next 90 minutes`
-            : `No ${direction.toLowerCase()} DARTs in the next 90 minutes`}
+        {!ends.length ? t.terminateHere : goingToName ? t.noDartsTo(goingToName) : t.noDarts(t.direction[direction])}
       </p>
     );
   }
   const more = moreCount > 0 && (
     <button className={`more more--${side}`} onClick={onMore}>
-      + {moreCount} more
+      {t.more(moreCount)}
     </button>
   );
   // Southbound lists run bottom-up (nearest by the platform), so "more" goes at the far end: the top.
@@ -274,36 +276,38 @@ function Trains({
     <>
       {side === 'south' && more}
       <ol className={`trains trains--${side}`}>
-      {trains.map((d, i) => (
-        <li key={d.trainCode} className={`train train--${side}${i === 0 ? ' train--next' : ''}`} aria-label={describeDeparture(d)}>
-          <TrainGlyph />
-          <div className="train__info">
-            <span className="train__due">
-              {d.dueInMins <= 0 ? (
-                'Due'
-              ) : (
-                <>
-                  {d.dueInMins}
-                  <span className="train__unit">min</span>
-                </>
-              )}
-            </span>
-            <span className="train__dest">{d.destination}</span>
-            {/* Late: scheduled time struck through, the delay, then the expected time (delay already included). */}
-            <span className="train__meta">
-              {d.lateMins > 0 ? (
-                <>
-                  <s className="train__scheduled">{d.scheduledDepart}</s>
-                  <span className={`late late--${delaySeverity(d.lateMins)}`}>+{d.lateMins}</span>
-                  <span className="train__expected">{d.expectedDepart}</span>
-                </>
-              ) : (
-                d.expectedDepart
-              )}
-            </span>
-          </div>
-        </li>
-      ))}
+        {trains.map((d, i) => (
+          <li key={d.trainCode} className={`train train--${side}${i === 0 ? ' train--next' : ''}`} aria-label={describe(d)}>
+            <TrainGlyph />
+            <div className="train__info">
+              <span className={`train__due${d.dueInMins <= 0 ? ' train__due--now' : ''}`}>
+                {d.dueInMins <= 0 ? (
+                  t.due
+                ) : (
+                  <>
+                    {d.dueInMins}
+                    <span className="train__unit">{t.min}</span>
+                  </>
+                )}
+              </span>
+              <span className={`train__dest${destinationName(d).length > 12 ? ' train__dest--long' : ''}`}>
+                <Caps text={destinationName(d)} />
+              </span>
+              {/* Late: scheduled time struck through, the delay, then the expected time (delay already included). */}
+              <span className="train__meta">
+                {d.lateMins > 0 ? (
+                  <>
+                    <s className="train__scheduled">{d.scheduledDepart}</s>
+                    <span className={`late late--${delaySeverity(d.lateMins)}`}>+{d.lateMins}</span>
+                    <span className="train__expected">{d.expectedDepart}</span>
+                  </>
+                ) : (
+                  d.expectedDepart
+                )}
+              </span>
+            </div>
+          </li>
+        ))}
       </ol>
       {side === 'north' && more}
     </>

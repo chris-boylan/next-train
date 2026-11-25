@@ -67,6 +67,14 @@ npm run deploy -- -c alexaSkillId=amzn1.ask.skill.xxxx
 
 Then test with `ask dialog --locale en-IE` from `packages/alexa`, e.g. "open dart times", "ask dart times when's the next train from Connolly going south", "add Pearse to my favourites", "when's my next train".
 
+## English and Irish
+
+The web app is bilingual: the options cog switches between **English** and **Gaeilge** (defaulting to Irish when the phone's language is Irish) and between light and dark.
+
+- **Station names** come from `core/src/stations.ga.ts`: Iarnród Éireann's official Irish names, from its Irish timetables-by-station page, cross-checked against its bilingual DART timetable and logainm.ie. Irish names are searchable, with or without fadas.
+- **Interface text** lives in `web/src/i18n.tsx`. Irish phrasing uses "go dtí" (no mutation of place names) and avoids counting nouns after numbers. It should be reviewed by a fluent speaker.
+- **Capitals:** Irish prefixes stay lowercase in capitalised text ("CNOC AN tSALAINN"), handled by the `Caps` component.
+
 ## The line
 
 ```

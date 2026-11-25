@@ -104,7 +104,12 @@ p {
   color: var(--star);
 }
 
-.theme-toggle {
+/* Options: a cog that slides down a small panel with language and light/dark. */
+.options {
+  position: relative;
+}
+
+.options__cog {
   display: grid;
   place-items: center;
   width: 40px;
@@ -114,11 +119,87 @@ p {
   background: none;
 }
 
-.theme-toggle__icon {
-  width: 24px;
-  height: 24px;
+.options__cog--open {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.options__icon {
+  width: 22px;
+  height: 22px;
   fill: currentColor;
-  stroke: currentColor;
+  transition: transform 200ms ease;
+}
+
+.options__cog--open .options__icon {
+  transform: rotate(60deg);
+}
+
+.options__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  display: grid;
+  gap: 10px;
+  min-width: 220px;
+  padding: 12px;
+  background: var(--bg);
+  border: 2px solid var(--rule);
+  animation: options-down 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes options-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .options__panel,
+  .options__icon {
+    animation: none;
+    transition: none;
+  }
+}
+
+.options__row {
+  display: grid;
+  gap: 4px;
+}
+
+.options__label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.segmented {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  border: 2px solid var(--rule);
+}
+
+.segmented__option {
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 0;
+  background: none;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.segmented__option + .segmented__option {
+  border-left: 2px solid var(--rule);
+}
+
+.segmented__option--on {
+  background: var(--text);
+  color: var(--bg);
 }
 
 .chip {
@@ -520,6 +601,14 @@ p {
   letter-spacing: -0.03em;
   text-transform: uppercase;
   line-height: 1.05;
+}
+
+.platform__name--long {
+  font-size: 1.7rem;
+}
+
+.platform__name--longer {
+  font-size: 1.35rem;
 }
 
 .neighbours {
@@ -985,4 +1074,53 @@ p {
   font-weight: 900;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* ---------- Bilingual ---------- */
+
+/* Irish prefixes stay lowercase inside capitalised text: "CNOC AN tSALAINN". */
+.ga-prefix {
+  text-transform: none;
+}
+
+/* Irish names can be much longer than English ones, so names wrap rather than overflow. */
+.platform__name,
+.neighbour,
+.going-to__name,
+.terminus span {
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.line-map__stop {
+  white-space: normal;
+  line-height: 1.1;
+}
+
+.line-map__stop--malahide {
+  text-align: right;
+}
+
+/* "Due" / "Ag teacht" is a word, not a number: smaller than the minute numerals so it fits. */
+.train__due--now,
+.train--next .train__due--now {
+  font-size: 1.35rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.departure-row__due--now {
+  font-size: 0.95rem;
+  letter-spacing: 0;
+}
+
+/* Long destination names (mostly Irish) step down so they fit beside the track. */
+.train__dest--long {
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+}
+
+.line-map__stop--trunk,
+.line-map__stop--howth {
+  text-align: left;
 }

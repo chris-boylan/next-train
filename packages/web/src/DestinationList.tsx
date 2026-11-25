@@ -1,4 +1,5 @@
-import { type Direction, findStationByCode, stationsAhead } from '@dart-times/core';
+import { type Direction, stationsAhead } from '@dart-times/core';
+import { useI18n } from './i18n';
 
 interface Props {
   from: string;
@@ -9,6 +10,7 @@ interface Props {
 
 /** Stations you can reach from `from`, grouped by direction, nearest first. */
 export function DestinationList({ from, directions, selected, onSelect }: Props) {
+  const { t, nameOf } = useI18n();
   return (
     <>
       {directions.map((direction) => {
@@ -17,7 +19,7 @@ export function DestinationList({ from, directions, selected, onSelect }: Props)
         return (
           <section key={direction} className="destinations">
             <h3 className={`destinations__heading destinations__heading--${direction === 'Northbound' ? 'north' : 'south'}`}>
-              {direction === 'Northbound' ? '↑' : '↓'} {direction}
+              {direction === 'Northbound' ? '↑' : '↓'} {t.direction[direction]}
             </h3>
             <ul className="destinations__list">
               {ahead.map((code) => (
@@ -27,7 +29,7 @@ export function DestinationList({ from, directions, selected, onSelect }: Props)
                     aria-pressed={code === selected}
                     onClick={() => onSelect(code)}
                   >
-                    {findStationByCode(code)?.shortName ?? code}
+                    {nameOf(code)}
                   </button>
                 </li>
               ))}

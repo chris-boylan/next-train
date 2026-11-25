@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { BRANCHES, findStationByCode, JUNCTION, TRUNK } from '@dart-times/core';
+import { Caps, useI18n } from './i18n';
 
 interface Props {
   favouriteCodes: string[];
@@ -46,11 +47,12 @@ const cityBottom = Math.max(...POINTS.filter((p) => CITY_CENTRE.includes(p.code)
 
 /** The DART network as a tappable schematic map. */
 export function LineMap({ favouriteCodes, currentCode, onSelect }: Props) {
+  const { t, stationName } = useI18n();
   return (
-    <nav className="line-map" aria-label="DART stations map" style={{ width: WIDTH, height: HEIGHT }}>
+    <nav className="line-map" aria-label={t.mapLabel} style={{ width: WIDTH, height: HEIGHT }}>
       <svg className="line-map__svg" width={WIDTH} height={HEIGHT} aria-hidden>
         <text x={WIDTH - 14} y={18} textAnchor="end" className="line-map__compass">
-          N ↑
+          {t.compassNorth} ↑
         </text>
         <path d={branchPath(X.malahide)} className="line-map__track" />
         <path d={branchPath(X.howth)} className="line-map__track" />
@@ -65,7 +67,7 @@ export function LineMap({ favouriteCodes, currentCode, onSelect }: Props) {
           transform={`translate(${X.trunk - 38}, ${(cityTop + cityBottom) / 2}) rotate(-90)`}
           textAnchor="middle"
         >
-          City centre
+          {t.cityCentre}
         </text>
 
         {/* Beck style: circles for termini, the junction and the current station; ticks for the rest. */}
@@ -93,9 +95,11 @@ export function LineMap({ favouriteCodes, currentCode, onSelect }: Props) {
             className={`line-map__stop line-map__stop--${p.side}${p.code === currentCode ? ' line-map__stop--current' : ''}${ENDS.has(p.code) ? ' line-map__stop--major' : ''}`}
             style={stopStyle(p)}
             onClick={() => onSelect(p.code)}
-            aria-label={`${station.name}${favourite ? ', favourite' : ''}`}
+            aria-label={`${stationName(station, true)}${favourite ? `, ${t.favourite}` : ''}`}
           >
-            {station.shortName}
+            <span className="line-map__name">
+              <Caps text={stationName(station)} />
+            </span>
             {favourite && <span className="line-map__fav">★</span>}
           </button>
         );

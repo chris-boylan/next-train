@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect, useRef } from 'react';
+import { Caps, useI18n } from './i18n';
 
 interface Props {
   title: string;
@@ -8,6 +9,7 @@ interface Props {
 
 /** A panel that slides up from the bottom over the current screen. Closes on ✕, Escape or a tap outside. */
 export function Sheet({ title, onClose, children }: Props) {
+  const { t } = useI18n();
   const closeRef = useRef<HTMLButtonElement>(null);
   // The parent re-renders every second (the clock), so keep the latest onClose in a ref and
   // only focus once, on open, rather than re-running this effect and stealing focus each tick.
@@ -25,8 +27,10 @@ export function Sheet({ title, onClose, children }: Props) {
     <div className="sheet-backdrop" onClick={onClose}>
       <section className="sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
         <header className="sheet__header">
-          <h2 className="sheet__title">{title}</h2>
-          <button ref={closeRef} className="sheet__close" onClick={onClose} aria-label="Close">
+          <h2 className="sheet__title">
+            <Caps text={title} />
+          </h2>
+          <button ref={closeRef} className="sheet__close" onClick={onClose} aria-label={t.close}>
             ✕
           </button>
         </header>
