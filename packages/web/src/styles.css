@@ -29,6 +29,11 @@
   --star: #e0a800;
   --lane-width: 56px;
   --lane-gap: 10px;
+  /* Signage arrowheads: a right-angled tip (height = half the width), wider than the shaft. */
+  --head-width: 76px;
+  --head-height: 38px;
+  /* How far a head sticks out beyond its lane on each side; labels beside the heads clear it. */
+  --head-overhang: calc((var(--head-width) - var(--lane-width)) / 2);
   color-scheme: light;
 }
 
@@ -135,6 +140,8 @@ p {
   max-width: 560px;
   margin: 0 auto;
   overflow: hidden;
+  /* Keep the top bar and the bottom arrowhead clear of notches and the home bar. */
+  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
 }
 
 .track-view__bar {
@@ -231,8 +238,8 @@ p {
 }
 
 .lane__head {
-  width: 100%;
-  height: 44px;
+  width: var(--head-width);
+  height: var(--head-height);
   flex: none;
   background: var(--lane-color);
 }
@@ -289,16 +296,16 @@ p {
 
 /* Beside the green arrowhead (top left) and the orange arrowhead (bottom right). */
 .terminus--north {
-  top: 10px;
-  right: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
+  top: 8px;
+  right: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + var(--head-overhang) + 8px);
   align-items: flex-end;
   text-align: right;
   color: var(--green-text);
 }
 
 .terminus--south {
-  bottom: 10px;
-  left: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
+  bottom: 8px;
+  left: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + var(--head-overhang) + 8px);
   color: var(--orange-text);
 }
 
@@ -556,7 +563,7 @@ p {
   position: sticky;
   top: 0;
   z-index: 1;
-  padding: 16px 0 12px;
+  padding: calc(16px + env(safe-area-inset-top)) 0 12px;
   background: var(--bg);
   border-bottom: 2px solid var(--rule);
 }
