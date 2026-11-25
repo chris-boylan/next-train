@@ -115,11 +115,11 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
       </header>
 
       <div className="tracks">
-        <Lane direction="Northbound" endsHere={!north.length} dimmed={dimmed('Northbound')} />
-        <Lane direction="Southbound" endsHere={!south.length} dimmed={dimmed('Southbound')} />
-
         {/* Top half: southbound trains on their way in, nearest at the bottom. Green arrow continues up to its termini. */}
         <section className="half half--top" aria-label={t.towards(t.direction.Southbound, list(south.map(nameOf)))}>
+          {/* Both lines run edge to edge; green's arrowhead sits halfway up, on the line. */}
+          {north.length > 0 && <Lane direction="Northbound" withHead dimmed={dimmed('Northbound')} />}
+          <Lane direction="Southbound" dimmed={dimmed('Southbound')} />
           <p className={`terminus terminus--north${dimmed('Northbound') ? ' terminus--dimmed' : ''}`} aria-hidden>
             <Termini codes={north} />
           </p>
@@ -151,6 +151,9 @@ export function TrackView({ station, isFavourite, onToggleFavourite, onChangeSta
 
         {/* Bottom half: northbound trains on their way in, nearest at the top. Orange arrow continues down to its termini. */}
         <section className="half half--bottom" aria-label={t.towards(t.direction.Northbound, list(north.map(nameOf)))}>
+          {/* Both lines run edge to edge; orange's arrowhead sits halfway down, on the line. */}
+          <Lane direction="Northbound" dimmed={dimmed('Northbound')} />
+          {south.length > 0 && <Lane direction="Southbound" withHead dimmed={dimmed('Southbound')} />}
           {trainsFor('Northbound', north)}
           <p className={`terminus terminus--south${dimmed('Southbound') ? ' terminus--dimmed' : ''}`} aria-hidden>
             <Termini codes={south} />
@@ -223,13 +226,17 @@ function Termini({ codes }: { codes: string[] }) {
   );
 }
 
-/** A full-height arrow; at a terminus the track stops at the platform instead. */
-function Lane({ direction, endsHere, dimmed }: { direction: Direction; endsHere: boolean; dimmed: boolean }) {
+/**
+ * One half's piece of a track, running the full height of the half. In the half trains leave
+ * towards, the arrowhead sits on the line halfway along. At a terminus that piece is left out,
+ * so the track stops at the platform.
+ */
+function Lane({ direction, withHead = false, dimmed }: { direction: Direction; withHead?: boolean; dimmed: boolean }) {
   const side = direction === 'Northbound' ? 'north' : 'south';
   return (
-    <div className={`lane lane--${side}${endsHere ? ' lane--ends' : ''}${dimmed ? ' lane--dimmed' : ''}`} aria-hidden>
+    <div className={`lane lane--${side}${dimmed ? ' lane--dimmed' : ''}`} aria-hidden>
       <div className="lane__shaft" />
-      {!endsHere && <div className="lane__head" />}
+      {withHead && <div className="lane__head" />}
     </div>
   );
 }

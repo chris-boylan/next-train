@@ -292,56 +292,49 @@ p {
   min-height: 0;
 }
 
-/* The two arrows run the full height behind everything else: flat bars with sharp heads. */
+/* Tracks: each half draws its own piece behind the trains (see Lane in TrackView), edge to edge. */
 .lane {
   position: absolute;
   top: 0;
   bottom: 0;
   width: var(--lane-width);
   display: flex;
-  align-items: center;
+  justify-content: center;
 }
 
 .lane--north {
   left: calc(50% - var(--lane-width) - var(--lane-gap) / 2);
-  flex-direction: column-reverse; /* head at the top */
   --lane-color: var(--green);
 }
 
 .lane--south {
   left: calc(50% + var(--lane-gap) / 2);
-  flex-direction: column; /* head at the bottom */
   --lane-color: var(--orange);
 }
 
 .lane__shaft {
-  flex: 1;
   width: 30px;
+  height: 100%;
   background: var(--lane-color);
 }
 
+/* The arrowhead sits on the line halfway through the half, pointing the way trains leave. */
 .lane__head {
+  position: absolute;
+  left: 0;
   width: 100%;
   height: 44px;
-  flex: none;
   background: var(--lane-color);
 }
 
 .lane--north .lane__head {
+  top: 50%;
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
 
 .lane--south .lane__head {
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-}
-
-/* The halves are equal, so the platform sits at 50%: a terminating track runs only up to it. */
-.lane--north.lane--ends {
-  top: 50%;
-}
-
-.lane--south.lane--ends {
   bottom: 50%;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
 }
 
 .half {
@@ -379,7 +372,7 @@ p {
 
 /* Beside the green arrowhead (top left) and the orange arrowhead (bottom right). */
 .terminus--north {
-  top: 10px;
+  top: 50%;
   right: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
   align-items: flex-end;
   text-align: right;
@@ -387,7 +380,7 @@ p {
 }
 
 .terminus--south {
-  bottom: 10px;
+  bottom: 50%;
   left: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
   color: var(--orange-text);
 }
