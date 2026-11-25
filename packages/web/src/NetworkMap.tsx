@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { DART_LINE, findStationByCode } from '@dart-times/core';
+import { useMemo, useState } from 'react';
+import { DART_LINE, findStationByCode, searchStations, type Station } from '@dart-times/core';
 import { Caps, useI18n } from './i18n';
 import { NETWORK_EDGES, NETWORK_STATIONS } from './network.data';
 import { layoutNetwork } from './networkLayout';
@@ -27,9 +27,26 @@ const dartPairs = new Set(DART_LINE.paths.flatMap((path) => path.slice(1).map((c
 const dartStations = new Set(DART_LINE.paths.flat());
 const rawNames = new Map(NETWORK_STATIONS.map((s) => [s.code, s.name]));
 
+// Every station on the map in the shape the shared search expects. DART and Enterprise stations bring
+// their aliases and Irish names; the rest search by their Irish Rail name.
+const SEARCHABLE: Station[] = NETWORK_STATIONS.map(
+  (s) =>
+    findStationByCode(s.code) ?? {
+      code: s.code,
+      name: s.name,
+      shortName: s.name,
+      aliases: [],
+      branch: 'trunk',
+      lat: s.lat,
+      lon: s.lon,
+    },
+);
+
 /** Every Irish Rail station as one schematic, fitting the screen's width and scrolling down. Not linked to live times yet. */
 export function NetworkMap({ onBack, onSelectStation }: Props) {
   const { t, lang } = useI18n();
+  const [query, setQuery] = useState('');
+  const results = query.trim() ? searchStations(query, SEARCHABLE) : [];
   const layout = useMemo(() => layoutNetwork(NETWORK_EDGES, ROOT), []);
   const placed = useMemo(() => new Map(layout.stations.map((s) => [s.code, s])), [layout]);
   const degree = useMemo(() => {
@@ -60,56 +77,79 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
           <OptionsMenu />
         </div>
         <h1 className="picker__service">{t.allStations}</h1>
+        <input
+          className="search"
+          type="search"
+          placeholder={t.findStation}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          aria-label={t.findStation}
+        />
       </header>
 
-      <nav className="line-map network__map" style={{ width: WIDTH, height }} aria-label={t.allStations}>
-        <svg className="line-map__svg" width={WIDTH} height={height} aria-hidden>
-          {layout.segments.map(({ from, to }) => {
-            const p = placed.get(from)!;
-            const c = placed.get(to)!;
-            // Same column: straight down. Branch: the parent's line carries on, and the branch
-            // leaves it just above its first station.
-            const d =
-              c.col === p.col
-                ? `M${x(p.col)},${y(p.row)} V${y(c.row)}`
-                : `M${x(p.col)},${y(c.row) - ROW * 0.7} L${x(c.col)},${y(c.row)}`;
-            const waiting = c.col === p.col && c.row - p.row > LONG_WAIT;
-            const kind = waiting ? ' network__track--waiting' : dartPairs.has(pairKey(from, to)) ? ' network__track--dart' : '';
-            return <path key={`${from}|${to}`} d={d} className={`network__track${kind}`} />;
-          })}
-          {layout.stations.map((s) =>
-            major(s.code) ? (
-              <circle key={s.code} cx={x(s.col)} cy={y(s.row)} r={7} className="line-map__dot" />
-            ) : (
-              <path
-                key={s.code}
-                d={`M${x(s.col)},${y(s.row)} h10`}
-                className={`network__tick${dartStations.has(s.code) ? ' network__tick--dart' : ''}`}
-              />
-            ),
+      {query.trim() ? (
+        <ul className="station-list">
+          {results.map((s) => (
+            <li key={s.code} className="station-row">
+              <button className="station-row__name" onClick={() => onSelectStation(s.code, name(s.code))}>
+                {name(s.code)}
+              </button>
+            </li>
+          ))}
+          {!results.length && <li className="picker__empty">{t.noMatch(query)}</li>}
+        </ul>
+      ) : (
+        <>
+          <nav className="line-map network__map" style={{ width: WIDTH, height }} aria-label={t.allStations}>
+            <svg className="line-map__svg" width={WIDTH} height={height} aria-hidden>
+              {layout.segments.map(({ from, to }) => {
+                const p = placed.get(from)!;
+                const c = placed.get(to)!;
+                // Same column: straight down. Branch: the parent's line carries on, and the branch
+                // leaves it just above its first station.
+                const d =
+                  c.col === p.col
+                    ? `M${x(p.col)},${y(p.row)} V${y(c.row)}`
+                    : `M${x(p.col)},${y(c.row) - ROW * 0.7} L${x(c.col)},${y(c.row)}`;
+                const waiting = c.col === p.col && c.row - p.row > LONG_WAIT;
+                const kind = waiting ? ' network__track--waiting' : dartPairs.has(pairKey(from, to)) ? ' network__track--dart' : '';
+                return <path key={`${from}|${to}`} d={d} className={`network__track${kind}`} />;
+              })}
+              {layout.stations.map((s) =>
+                major(s.code) ? (
+                  <circle key={s.code} cx={x(s.col)} cy={y(s.row)} r={7} className="line-map__dot" />
+                ) : (
+                  <path
+                    key={s.code}
+                    d={`M${x(s.col)},${y(s.row)} h10`}
+                    className={`network__tick${dartStations.has(s.code) ? ' network__tick--dart' : ''}`}
+                  />
+                ),
+              )}
+            </svg>
+
+            {layout.stations.map((s) => {
+              const loop = layout.links.find((l) => l.from === s.code);
+              return (
+                <button
+                  key={s.code}
+                  className={`network__label${major(s.code) ? ' network__label--major' : ''}`}
+                  style={{ top: y(s.row) - ROW / 2, left: x(s.col) + 16 }}
+                  onClick={() => onSelectStation(s.code, name(s.code))}
+                >
+                  <Caps text={name(s.code)} />
+                  {loop && <span className="network__loop"> ↔ {name(loop.to)}</span>}
+                </button>
+              );
+            })}
+          </nav>
+
+          {unmapped.length > 0 && (
+            <p className="network__unmapped">
+              {t.notYetMapped}: {unmapped.map((s) => name(s.code)).join(', ')}
+            </p>
           )}
-        </svg>
-
-        {layout.stations.map((s) => {
-          const loop = layout.links.find((l) => l.from === s.code);
-          return (
-            <button
-              key={s.code}
-              className={`network__label${major(s.code) ? ' network__label--major' : ''}`}
-              style={{ top: y(s.row) - ROW / 2, left: x(s.col) + 16 }}
-              onClick={() => onSelectStation(s.code, name(s.code))}
-            >
-              <Caps text={name(s.code)} />
-              {loop && <span className="network__loop"> ↔ {name(loop.to)}</span>}
-            </button>
-          );
-        })}
-      </nav>
-
-      {unmapped.length > 0 && (
-        <p className="network__unmapped">
-          {t.notYetMapped}: {unmapped.map((s) => name(s.code)).join(', ')}
-        </p>
+        </>
       )}
     </div>
   );

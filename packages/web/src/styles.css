@@ -843,9 +843,8 @@ p {
 
 .station-list {
   list-style: none;
-  margin: 12px 0 0;
+  margin: 4px 0 0;
   padding: 0;
-  border-top: 2px solid var(--rule);
 }
 
 .station-row {
