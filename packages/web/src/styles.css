@@ -105,13 +105,20 @@ p {
 }
 
 .theme-toggle {
+  display: grid;
+  place-items: center;
   width: 40px;
   height: 40px;
+  padding: 0;
   border: 2px solid var(--rule);
   background: none;
-  font-size: 1rem;
-  font-weight: 900;
-  line-height: 1;
+}
+
+.theme-toggle__icon {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+  stroke: currentColor;
 }
 
 .chip {
