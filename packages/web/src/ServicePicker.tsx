@@ -4,10 +4,11 @@ import { OptionsMenu } from './OptionsMenu';
 
 interface Props {
   onSelect: (service: ServiceId) => void;
+  onOpenNetwork: () => void;
 }
 
 /** The top level: pick a service, then its map, then a station. */
-export function ServicePicker({ onSelect }: Props) {
+export function ServicePicker({ onSelect, onOpenNetwork }: Props) {
   const { t, nameOf } = useI18n();
   const routes: Record<ServiceId, string> = {
     dart: `${nameOf('HOWTH')} · ${nameOf('MHIDE')} – ${nameOf('GSTNS')}`,
@@ -44,6 +45,15 @@ export function ServicePicker({ onSelect }: Props) {
           </li>
         ))}
       </ul>
+      <button className="network-link" onClick={onOpenNetwork}>
+        <span className="network-link__text">
+          <span className="network-link__name">{t.allStations}</span>
+          <span className="service-tile__route">{t.allStationsNote}</span>
+        </span>
+        <span className="service-tile__go" aria-hidden>
+          ›
+        </span>
+      </button>
     </div>
   );
 }

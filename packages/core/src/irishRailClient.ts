@@ -129,6 +129,18 @@ export class IrishRailClient {
     return parseStationData(xml);
   }
 
+  /** Every station on the network (DART, commuter and InterCity). */
+  async getAllStations(): Promise<RawStation[]> {
+    const xml = await this.get('getAllStationsXML', {}, 24 * 60 * 60_000);
+    return parseStations(xml);
+  }
+
+  /** Every train currently running or due to start soon, of any type. */
+  async getCurrentTrains(): Promise<RawTrainPosition[]> {
+    const xml = await this.get('getCurrentTrainsXML', {}, this.departuresTtlMs);
+    return parseTrainPositions(xml);
+  }
+
   /** DARTs currently running or due to start soon. */
   async getCurrentDarts(): Promise<RawTrainPosition[]> {
     const xml = await this.get('getCurrentTrainsXML_WithTrainType', { TrainType: 'D' }, this.departuresTtlMs);

@@ -1260,3 +1260,115 @@ p {
   font-size: 2rem;
   font-weight: 900;
 }
+
+/* ---------- All-stations map ---------- */
+
+.network-link {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px 16px;
+  border: 2px dashed var(--rule);
+  background: none;
+  text-align: left;
+}
+
+.network-link__text {
+  display: grid;
+  gap: 4px;
+}
+
+.network-link__name {
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.network {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 16px 24px;
+}
+
+.network__zoom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.network__zoom .chip {
+  min-width: 44px;
+  font-size: 1.1rem;
+}
+
+.network__zoom .chip:disabled {
+  opacity: 0.35;
+}
+
+.network__scale {
+  min-width: 2.5em;
+  text-align: center;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.network__viewport {
+  margin-top: 12px;
+  overflow: auto;
+  max-height: 70dvh;
+  border: 2px solid var(--rule);
+  -webkit-overflow-scrolling: touch;
+}
+
+.network__svg {
+  display: block;
+}
+
+.network__track {
+  stroke: var(--text);
+  stroke-linecap: round;
+  opacity: 0.75;
+}
+
+.network__track--dart {
+  stroke: #169b62;
+  opacity: 1;
+}
+
+.network__station {
+  cursor: pointer;
+}
+
+.network__dot {
+  fill: var(--bg);
+  stroke: var(--text);
+}
+
+.network__dot--selected {
+  fill: #ff883e;
+}
+
+/* Stations no sampled train ran through: shown, but faded, so the gap is visible. */
+.network__dot--unlinked {
+  opacity: 0.35;
+}
+
+.network__label {
+  fill: var(--text);
+  font-family: var(--font);
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: var(--bg);
+}
+
+.network__selected {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { findStationByCode, isServiceId, SERVICES, type ServiceId, type Station } from '@dart-times/core';
 import { fetchFavourites, setFavourite } from './api';
 import { getDeviceId } from './deviceId';
+import { NetworkMap } from './NetworkMap';
 import { getLastService, getLastStation, setLastService, setLastStation } from './prefs';
 import { ServicePicker } from './ServicePicker';
 import { StationPicker } from './StationPicker';
@@ -22,6 +23,7 @@ export function App() {
     return service && code ? findStationByCode(code, service.stations)?.code : undefined;
   });
   const [favourites, setFavourites] = useState<Station[]>([]);
+  const [showNetwork, setShowNetwork] = useState(false);
   // Highlighted on the map when you go back to it.
   const [previousCode, setPreviousCode] = useState(stationCode);
 
@@ -51,7 +53,8 @@ export function App() {
   const toggleFavourite = (code: string) =>
     setFavourite(deviceId, code, !isFavourite(code)).then(setFavourites, (err: Error) => console.error(err));
 
-  if (!service) return <ServicePicker onSelect={selectService} />;
+  if (showNetwork) return <NetworkMap onBack={() => setShowNetwork(false)} />;
+  if (!service) return <ServicePicker onSelect={selectService} onOpenNetwork={() => setShowNetwork(true)} />;
 
   const station = stationCode ? findStationByCode(stationCode, service.stations) : undefined;
   return station ? (
