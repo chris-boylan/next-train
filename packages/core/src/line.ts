@@ -107,3 +107,12 @@ export function terminiFrom(code: string, direction: Direction): string[] {
   const ends = direction === 'Northbound' ? [BRANCHES.howth.at(-1)!, BRANCHES.malahide.at(-1)!] : ['BRAY', 'GSTNS'];
   return ends.filter((end) => end !== code && directionBetween(code, end) === direction);
 }
+
+/** Every station you can reach from `code` travelling in `direction`, in line order (nearest first on the trunk). */
+export function stationsAhead(code: string, direction: Direction): string[] {
+  return PATHS.flatMap((path) => {
+    const i = path.indexOf(code);
+    if (i < 0) return [];
+    return direction === 'Northbound' ? path.slice(i + 1) : path.slice(0, i).reverse();
+  }).filter((s, i, all) => all.indexOf(s) === i);
+}

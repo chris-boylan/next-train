@@ -10,6 +10,7 @@ import {
   parseTrainMovements,
   route,
   servedStops,
+  stationsAhead,
   stopsBetween,
   terminiFrom,
 } from '../src';
@@ -106,5 +107,13 @@ describe('route helpers', () => {
     expect(terminiFrom('BRAY', 'Southbound')).toEqual(['GSTNS']);
     expect(terminiFrom('GSTNS', 'Southbound')).toEqual([]);
     expect(terminiFrom('MHIDE', 'Northbound')).toEqual([]);
+  });
+
+  it('lists the stations ahead in each direction', () => {
+    expect(stationsAhead('KBRCK', 'Northbound')).toEqual(['HWTHJ', 'BYSDE', 'SUTTN', 'HOWTH', 'GRGRD', 'PMNCK', 'MHIDE']);
+    expect(stationsAhead('BRAY', 'Southbound')).toEqual(['GSTNS']);
+    expect(stationsAhead('SUTTN', 'Northbound')).toEqual(['HOWTH']);
+    expect(stationsAhead('GSTNS', 'Southbound')).toEqual([]);
+    expect(stationsAhead('CNLLY', 'Southbound')).toHaveLength(19);
   });
 });

@@ -1,4 +1,5 @@
 import type { IrishRailClient, RawStationData } from './irishRailClient';
+import { callsAt } from './line';
 import { findStationByName } from './stations';
 import type { Departure, Direction } from './types';
 
@@ -65,4 +66,13 @@ export async function getDepartures(
 ): Promise<Departure[]> {
   const raw = await client.getStationData(stationCode, options.withinMins ?? 90);
   return toDepartures(raw, options);
+}
+
+/**
+ * Departures that will take you from `from` to `goingTo`: the train must be heading the right way and
+ * not terminate before it (e.g. a Bray train doesn't help if you're going to Greystones, and a Malahide
+ * train doesn't stop at Sutton).
+ */
+export function departuresGoingTo(departures: Departure[], from: string, goingTo: string): Departure[] {
+  return departures.filter((d) => !!d.destinationCode && callsAt(from, d.destinationCode, goingTo));
 }

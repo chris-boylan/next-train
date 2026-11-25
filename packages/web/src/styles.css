@@ -733,3 +733,256 @@ p {
   padding: 14px 4px;
   color: var(--muted);
 }
+
+/* ---------- Going to & more departures ---------- */
+
+/* The other direction to where you're going fades back. */
+.lane--dimmed,
+.terminus--dimmed {
+  opacity: 0.2;
+}
+
+.going-to,
+.going-to__name,
+.going-to__clear {
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  min-height: 32px;
+}
+
+.going-to {
+  margin: 2px auto 4px;
+  padding: 4px 12px;
+  border: 1.5px solid currentColor;
+}
+
+.going-to--set {
+  display: inline-flex;
+  align-items: stretch;
+  margin: 2px auto 4px;
+  border: 1.5px solid currentColor;
+  padding: 0;
+}
+
+.going-to__name {
+  padding: 4px 10px;
+}
+
+.going-to__clear {
+  padding: 4px 10px;
+  border-left: 1.5px solid currentColor;
+}
+
+.more {
+  border: 0;
+  background: none;
+  min-height: 36px;
+  padding: 4px 0;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.more--north {
+  align-self: flex-end;
+  margin-right: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 8px);
+}
+
+.more--south {
+  align-self: flex-start;
+  margin-left: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 8px);
+}
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgb(0 0 0 / 0.45);
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  max-height: 85dvh;
+  background: var(--bg);
+  border-top: 4px solid var(--rule);
+  padding-bottom: env(safe-area-inset-bottom);
+  animation: sheet-up 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    animation: none;
+  }
+}
+
+.sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 2px solid var(--rule);
+}
+
+.sheet__title {
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.sheet__close {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--rule);
+  background: none;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.sheet__body {
+  overflow-y: auto;
+  padding: 12px 16px 20px;
+}
+
+.sheet__label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.sheet__empty,
+.hidden-note {
+  padding: 12px 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.filter-chip {
+  border: 2px solid var(--rule);
+  background: none;
+  padding: 6px 10px;
+  min-height: 36px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.filter-chip--on {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.departure-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 2px solid var(--rule);
+}
+
+.departure-row {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr auto;
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.departure-row__due {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.departure-row__dest {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.departure-row__time {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.destinations + .destinations {
+  margin-top: 16px;
+}
+
+.destinations__heading {
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--rule);
+}
+
+.destinations__heading--north {
+  color: var(--green-text);
+}
+
+.destinations__heading--south {
+  color: var(--orange-text);
+}
+
+.destinations__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.destinations__item {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 2px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: none;
+  text-align: left;
+  font-weight: 700;
+}
+
+.destinations__item--selected {
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getDepartures, parseDirection, parseStationData, toDepartures } from '../src';
+import { departuresGoingTo, getDepartures, parseDirection, parseStationData, toDepartures } from '../src';
 import { fixture, fixtureClient } from './fixtures';
 
 describe('toDepartures', () => {
@@ -70,5 +70,23 @@ describe('parseDirection', () => {
     [undefined, undefined],
   ])('%s -> %s', (input, expected) => {
     expect(parseDirection(input)).toBe(expected);
+  });
+});
+
+describe('departuresGoingTo', () => {
+  const at = (destination: string, destinationCode: string, direction = 'Northbound') => ({
+    trainCode: destinationCode, origin: '', destination, destinationCode, direction, dueInMins: 1,
+    expectedDepart: '', scheduledDepart: '', lateMins: 0, trainType: 'DART', lastLocation: '',
+  });
+  const board = [at('Howth', 'HOWTH'), at('Malahide', 'MHIDE'), at('Bray', 'BRAY', 'Southbound'), at('Greystones', 'GSTNS', 'Southbound')];
+
+  it('keeps only trains that stop at the destination', () => {
+    expect(departuresGoingTo(board, 'CNLLY', 'SUTTN').map((d) => d.destination)).toEqual(['Howth']);
+    expect(departuresGoingTo(board, 'CNLLY', 'RAHNY').map((d) => d.destination)).toEqual(['Howth', 'Malahide']);
+  });
+
+  it('drops trains that terminate before the destination', () => {
+    expect(departuresGoingTo(board, 'CNLLY', 'GSTNS').map((d) => d.destination)).toEqual(['Greystones']);
+    expect(departuresGoingTo(board, 'CNLLY', 'BRAY').map((d) => d.destination)).toEqual(['Bray', 'Greystones']);
   });
 });
