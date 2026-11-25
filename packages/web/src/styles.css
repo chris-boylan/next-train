@@ -29,11 +29,6 @@
   --star: #e0a800;
   --lane-width: 56px;
   --lane-gap: 10px;
-  /* Signage arrowheads: a right-angled tip (height = half the width), wider than the shaft. */
-  --head-width: 76px;
-  --head-height: 38px;
-  /* How far a head sticks out beyond its lane on each side; labels beside the heads clear it. */
-  --head-overhang: calc((var(--head-width) - var(--lane-width)) / 2);
   color-scheme: light;
 }
 
@@ -238,8 +233,8 @@ p {
 }
 
 .lane__head {
-  width: var(--head-width);
-  height: var(--head-height);
+  width: 100%;
+  height: 44px;
   flex: none;
   background: var(--lane-color);
 }
@@ -296,16 +291,16 @@ p {
 
 /* Beside the green arrowhead (top left) and the orange arrowhead (bottom right). */
 .terminus--north {
-  top: 8px;
-  right: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + var(--head-overhang) + 8px);
+  top: 10px;
+  right: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
   align-items: flex-end;
   text-align: right;
   color: var(--green-text);
 }
 
 .terminus--south {
-  bottom: 8px;
-  left: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + var(--head-overhang) + 8px);
+  bottom: 10px;
+  left: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
   color: var(--orange-text);
 }
 
