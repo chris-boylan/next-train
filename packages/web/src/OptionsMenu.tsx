@@ -39,11 +39,9 @@ export function OptionsMenu() {
             label={t.language}
             value={lang}
             onChange={setLang}
-            // Named in the current language, current language first: "English | Irish" or "Gaeilge | Béarla".
-            options={(lang === 'en' ? (['en', 'ga'] as const) : (['ga', 'en'] as const)).map((value) => ({
-              value,
-              label: t.languageNames[value],
-            }))}
+            // Fixed positions (like light/dark) so options don't jump when tapped; names follow the current
+            // language: "English | Irish" or "Béarla | Gaeilge".
+            options={(['en', 'ga'] as const).map((value) => ({ value, label: t.languageNames[value] }))}
           />
           <Choice<Theme>
             label={t.appearance}
