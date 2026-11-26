@@ -13,6 +13,13 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Screens designed to fit exactly (the station page) lock the page, so it never scrolls or bounces. */
+html.scroll-locked,
+html.scroll-locked body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 button {
   font: inherit;
   color: inherit;
