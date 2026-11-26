@@ -96,34 +96,35 @@
   --band-south: #7a3fae;
 }
 
-/* Cork Commuter: deep teal towards Cork and Mallow, light teal towards Cobh and Midleton. */
+/* Cork Commuter: Rebel red. Deep Cork red towards Cork and Mallow, light red towards Cobh and
+   Midleton; Irish Rail has no Cork-specific colours, so this is the app's own. */
 :root[data-service='cork'] {
-  --north: #00666c;
-  --south: #2aa198;
-  --north-text: #00666c;
-  --south-text: #00796b;
-  --band-north: #7fd6d0;
-  --band-south: #b9ece6;
+  --north: #b5121b;
+  --south: #e5636b;
+  --north-text: #b5121b;
+  --south-text: #c0313a;
+  --band-north: #ff9aa0;
+  --band-south: #ffd0d3;
 }
 
 @media (prefers-color-scheme: dark) {
   :root[data-service='cork']:not([data-theme='light']) {
-    --north: #2aa198;
-    --south: #8fded6;
-    --north-text: #5ccfc4;
-    --south-text: #a8e8e1;
-    --band-north: #00666c;
-    --band-south: #00695c;
+    --north: #e0323c;
+    --south: #f4a3a8;
+    --north-text: #ff7a82;
+    --south-text: #ffc2c6;
+    --band-north: #b5121b;
+    --band-south: #a3282f;
   }
 }
 
 :root[data-service='cork'][data-theme='dark'] {
-  --north: #2aa198;
-  --south: #8fded6;
-  --north-text: #5ccfc4;
-  --south-text: #a8e8e1;
-  --band-north: #00666c;
-  --band-south: #00695c;
+  --north: #e0323c;
+  --south: #f4a3a8;
+  --north-text: #ff7a82;
+  --south-text: #ffc2c6;
+  --band-north: #b5121b;
+  --band-south: #a3282f;
 }
 
 * {
@@ -1233,8 +1234,8 @@ p {
 }
 
 .service-tile--cork {
-  --tile-north: #00666c;
-  --tile-south: #2aa198;
+  --tile-north: #b5121b;
+  --tile-south: #e5636b;
 }
 
 .service-tile {
@@ -1466,4 +1467,38 @@ p {
 
 .badge--commuter {
   background: #8c1d40;
+}
+
+/* ---------- Hand-placed schematics (schematics.ts) ---------- */
+
+.schematic__stop {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.schematic__stop:hover,
+.schematic__stop:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+/* Names over a horizontal line are angled up and to the right, as on many transit maps. */
+.schematic__stop--angled {
+  height: 28px;
+  transform: rotate(-58deg);
+  transform-origin: left bottom;
+}
+
+.schematic__stop--below {
+  height: 28px;
 }

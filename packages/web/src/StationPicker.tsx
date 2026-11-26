@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { searchStations, type Service, type Station } from '@dart-times/core';
 import { BranchLineMap } from './BranchLineMap';
 import { LineMap } from './LineMap';
+import { SchematicMap } from './SchematicMap';
+import { SCHEMATICS } from './schematics';
 import { Caps, useI18n } from './i18n';
 import { OptionsMenu } from './OptionsMenu';
 import { SimpleLineMap } from './SimpleLineMap';
@@ -75,6 +77,8 @@ export function StationPicker({ service, onBack, favourites: allFavourites, curr
         </ul>
       ) : service.id === 'dart' ? (
         <LineMap {...mapProps} />
+      ) : SCHEMATICS[service.id] ? (
+        <SchematicMap service={service} schematic={SCHEMATICS[service.id]!} {...mapProps} />
       ) : service.line.paths.length > 1 ? (
         <BranchLineMap service={service} {...mapProps} />
       ) : (
