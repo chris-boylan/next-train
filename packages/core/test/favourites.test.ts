@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DART_STATIONS, describeDeparture, FavouriteError, FavouritesService, InMemoryFavouritesRepository, joinList, MAX_FAVOURITES } from '../src';
+import { ALL_STATIONS, DART_STATIONS, describeDeparture, FavouriteError, FavouritesService, InMemoryFavouritesRepository, joinList, MAX_FAVOURITES } from '../src';
 
 describe('FavouritesService', () => {
   const service = () => new FavouritesService(new InMemoryFavouritesRepository());
@@ -23,6 +23,14 @@ describe('FavouritesService', () => {
 
   it('rejects unknown stations', async () => {
     await expect(service().add('u1', 'NOPE')).rejects.toMatchObject({ reason: 'UNKNOWN_STATION' });
+  });
+
+  it('is DART-only by default (Alexa) but takes any service\'s stations when given them (web)', async () => {
+    await expect(service().add('u1', 'GALWY')).rejects.toMatchObject({ reason: 'UNKNOWN_STATION' });
+    const web = new FavouritesService(new InMemoryFavouritesRepository(), ALL_STATIONS);
+    await web.add('u1', 'GALWY');
+    await web.add('u1', 'CORK');
+    expect((await web.list('u1')).map((s) => s.code)).toEqual(['GALWY', 'CORK']);
   });
 
   it('enforces the limit', async () => {

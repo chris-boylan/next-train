@@ -87,6 +87,9 @@ const en = {
   appearance: 'Appearance',
   light: 'Light',
   dark: 'Dark',
+  favouritesPlace: 'Favourites',
+  favouritesInService: 'In each service',
+  favouritesOnHome: 'On home page',
   install: 'Install',
   // iOS isn't available in Irish, so its button names are quoted in English in both languages.
   installTip: 'Tap Share, then “Add to Home Screen”, to open Next Train? like an app.',
@@ -189,6 +192,9 @@ const ga: Messages = {
   appearance: 'Cuma',
   light: 'Geal',
   dark: 'Dorcha',
+  favouritesPlace: 'Ceanáin',
+  favouritesInService: 'I ngach seirbhís',
+  favouritesOnHome: 'Ar an leathanach baile',
   install: 'Suiteáil',
   installTip: 'Brúigh “Share”, ansin “Add to Home Screen”, chun Next Train? a oscailt mar aip.',
   describe: (destination, dueInMins, lateMins) =>

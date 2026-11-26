@@ -33,7 +33,7 @@ export class FavouritesService {
 
   async add(userId: string, stationCode: string): Promise<Station> {
     const station = findStationByCode(stationCode, this.stations);
-    if (!station) throw new FavouriteError('UNKNOWN_STATION', `Unknown DART station: ${stationCode}`);
+    if (!station) throw new FavouriteError('UNKNOWN_STATION', `Unknown station: ${stationCode}`);
     const existing = await this.repo.list(userId);
     if (existing.includes(station.code)) return station;
     if (existing.length >= MAX_FAVOURITES) {
