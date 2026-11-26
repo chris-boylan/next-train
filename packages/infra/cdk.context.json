@@ -1,0 +1,10 @@
+{
+  "hosted-zone:account=908534697230:domainName=nexttrain.ie:region=us-east-1": {
+    "Id": "/hostedzone/Z02762911EIQT1G4S4IXP",
+    "Name": "nexttrain.ie."
+  },
+  "hosted-zone:account=908534697230:domainName=nexttrain.ie:region=eu-west-1": {
+    "Id": "/hostedzone/Z02762911EIQT1G4S4IXP",
+    "Name": "nexttrain.ie."
+  }
+}
