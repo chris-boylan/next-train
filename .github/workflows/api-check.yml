@@ -1,0 +1,47 @@
+# Daily check that Irish Rail's live API still returns what the app expects (it has no versioning or notice
+# of changes). On failure it opens a GitHub issue (or comments on the open one), which emails the repo owner.
+name: Irish Rail API check
+
+on:
+  schedule:
+    - cron: '0 9 * * *' # 09:00 UTC: 9am in winter, 10am in summer, when plenty of trains are running
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Check the live API (one retry after 5 minutes, in case of a blip)
+        id: check
+        run: |
+          npm run api-check -w @dart-times/core 2>&1 | tee "$RUNNER_TEMP/check.log" && exit 0
+          echo "First attempt failed; retrying in 5 minutes."
+          sleep 300
+          npm run api-check -w @dart-times/core 2>&1 | tee "$RUNNER_TEMP/check.log"
+      - name: Open or update an issue
+        if: failure() && steps.check.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title="Irish Rail API check failing"
+          body="$(printf 'The daily check against the live Irish Rail API failed on %s.\n\n```\n%s\n```\n\nRun: %s' \
+            "$(date -u +'%Y-%m-%d')" "$(tail -n 30 "$RUNNER_TEMP/check.log")" "$RUN_URL")"
+          existing="$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body"
+          fi

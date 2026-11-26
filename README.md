@@ -29,6 +29,8 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feature/pwa-deploy` | Installable PWA, optional custom domain, API Gateway replaced by a Lambda Function URL, 20 s edge cache on departures, budget alert |
 | `refactor/web-structure` | Web app organised into `screens/`, `components/`, `maps/`, `lib/` and per-area `styles/` |
 | `feature/cicd` | GitHub Actions CI/CD with an approval gate and keyless (OIDC) AWS deploys |
+| `chore/daily-api-check` | Daily live check of the Irish Rail API, opening an issue on failure |
+| `fix/small-screens` | Station page fits iPhone SE and 320px-wide phones |
 | `feature/favourites-home` | Options choice to show favourites in each service or together on the home page; favourites for every service's stations |
 
 ## Using the web app
@@ -217,6 +219,10 @@ Then test with `ask dialog --locale en-IE` from `packages/alexa`.
 - **That role lives in its own stack,** `NextTrainGitHubDeploy`, deployed by hand once (`npm run deploy:github -w @dart-times/infra -- --profile <profile>`). `npm run deploy` only deploys the `DartTimes*` stacks, so the pipeline can't change its own permissions.
 - **Settings on the `production` environment:** variable `AWS_DEPLOY_ROLE_ARN` (output of that stack), optional variable `DOMAIN_NAME`, and optional secret `BUDGET_EMAIL`.
 - **Domain lookups in CI:** after the first local deploy with `-c domainName=…`, commit `packages/infra/cdk.context.json`, so CI doesn't need Route 53 lookup permissions.
+
+### Daily API check
+
+The Irish Rail API has no versioning or notice of changes, so `.github/workflows/api-check.yml` runs `npm run api-check -w @dart-times/core` every morning at 09:00 UTC. It checks the station list (and that every station the app uses is still in it), that trains are running, and that departures at Connolly, Pearse, Heuston, Cork and Belfast have the expected fields and match our services. After a failed attempt and one retry, it opens a GitHub issue titled "Irish Rail API check failing" (or comments on the open one), which emails you. Run it any time from the Actions tab. GitHub pauses scheduled workflows after 60 days without repo activity; re-enable it from the Actions tab if that happens.
 
 ### Later: an App Store app
 
