@@ -1,13 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#169b62"/>
-  <!-- Train front, centred within the maskable safe zone (inner 80%). -->
-  <g fill="#ffffff">
-    <path d="M176 112h160a48 48 0 0 1 48 48v152a48 48 0 0 1-48 48H176a48 48 0 0 1-48-48V160a48 48 0 0 1 48-48Z"/>
-    <path d="M196 360h36l-32 52h-36Zm120 0h-36l32 52h36Z"/>
-  </g>
-  <g fill="#169b62">
-    <rect x="164" y="152" width="184" height="88" rx="16"/>
-    <circle cx="192" cy="296" r="20"/>
-    <circle cx="320" cy="296" r="20"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#fff"/><path fill="#169b62" d="M174.0 80 L244.0 192 H212.0 V432 H136.0 V192 H104.0 Z"/><path fill="#ff883e" d="M300.0 80 H376.0 V320 H408.0 L338.0 432 L268.0 320 H300.0 Z"/><rect y="206" width="512" height="100" fill="#2c2c2e"/><rect x="166" y="248" width="180" height="16" rx="2" fill="#fff"/></svg>
