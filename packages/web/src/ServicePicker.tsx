@@ -20,7 +20,7 @@ export function ServicePicker({ onSelect, onOpenNetwork }: Props) {
     <div className="picker">
       <header className="picker__header">
         <div className="picker__title">
-          <h1>Next Train</h1>
+          <h1>Next Train?</h1>
           <OptionsMenu />
         </div>
       </header>

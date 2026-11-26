@@ -55,7 +55,7 @@ export function BranchLineMap({ service, favouriteCodes, currentCode, onSelect }
           const d =
             c.col === p.col
               ? `M${x(p.col)},${y(p.row)} V${y(c.row)}`
-              : `M${x(p.col)},${y(c.row) - ROW * 0.7} L${x(c.col)},${y(c.row)}`;
+              : `M${x(p.col)},${y(c.row) - ROW * 0.7} C${x(p.col)},${y(c.row) - ROW * 0.25} ${x(c.col)},${y(c.row) - ROW * 0.45} ${x(c.col)},${y(c.row)}`;
           return <path key={`${from}|${to}`} d={d} className="line-map__track" />;
         })}
         {layout.stations.map((s) =>

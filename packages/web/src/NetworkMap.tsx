@@ -110,7 +110,7 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
                 const d =
                   c.col === p.col
                     ? `M${x(p.col)},${y(p.row)} V${y(c.row)}`
-                    : `M${x(p.col)},${y(c.row) - ROW * 0.7} L${x(c.col)},${y(c.row)}`;
+                    : `M${x(p.col)},${y(c.row) - ROW * 0.7} C${x(p.col)},${y(c.row) - ROW * 0.25} ${x(c.col)},${y(c.row) - ROW * 0.45} ${x(c.col)},${y(c.row)}`;
                 const waiting = c.col === p.col && c.row - p.row > LONG_WAIT;
                 const kind = waiting ? ' network__track--waiting' : dartPairs.has(pairKey(from, to)) ? ' network__track--dart' : '';
                 return <path key={`${from}|${to}`} d={d} className={`network__track${kind}`} />;

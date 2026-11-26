@@ -18,6 +18,11 @@ export interface Schematic {
   width: number;
   height: number;
   points: Record<string, SchematicPoint>;
+  /**
+   * Corners a connection passes through between two stations, keyed "FROM|TO" in drawing order.
+   * Every corner is drawn rounded, so lines sweep rather than meet at right angles.
+   */
+  bends?: Record<string, [number, number][]>;
 }
 
 export const SCHEMATICS: Partial<Record<ServiceId, Schematic>> = {
@@ -29,15 +34,21 @@ export const SCHEMATICS: Partial<Record<ServiceId, Schematic>> = {
     points: {
       // Spaced so the longest angled name (Irish "Mainistir na Corann") still fits a phone's width.
       MLLOW: { x: 34, y: 50, label: 'right' },
-      CORK: { x: 34, y: 260, label: 'below' },
-      LSLND: { x: 86, y: 260, label: 'angled' },
-      GHANE: { x: 138, y: 260, label: 'angled' },
-      CGTWL: { x: 192, y: 260, label: 'angled' },
-      MDLTN: { x: 244, y: 260, label: 'angled' },
-      FOTA: { x: 138, y: 330, label: 'right' },
-      CGLOE: { x: 138, y: 390, label: 'right' },
-      RBROK: { x: 138, y: 450, label: 'right' },
-      COBH: { x: 138, y: 500, label: 'right' },
+      CORK: { x: 76, y: 260, label: 'below' },
+      LSLND: { x: 118, y: 260, label: 'angled' },
+      GHANE: { x: 160, y: 260, label: 'angled' },
+      CGTWL: { x: 204, y: 260, label: 'angled' },
+      MDLTN: { x: 248, y: 260, label: 'angled' },
+      FOTA: { x: 196, y: 340, label: 'right' },
+      CGLOE: { x: 196, y: 395, label: 'right' },
+      RBROK: { x: 196, y: 450, label: 'right' },
+      COBH: { x: 196, y: 500, label: 'right' },
+    },
+    bends: {
+      // The Mallow line comes south and sweeps east into Cork.
+      'MLLOW|CORK': [[34, 260]],
+      // The Cobh line leaves Glounthaune heading east, then curves south past Fota.
+      'GHANE|FOTA': [[196, 260]],
     },
   },
 };

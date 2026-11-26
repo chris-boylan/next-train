@@ -794,6 +794,7 @@ p {
   fill: none;
   stroke: var(--north);
   stroke-width: 10;
+  stroke-linejoin: round;
 }
 
 .line-map__tick {
