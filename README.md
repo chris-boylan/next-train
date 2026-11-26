@@ -2,7 +2,7 @@
 
 Live Irish Rail train times as a **mobile-first web app** and an **Alexa skill**, sharing one TypeScript core. Data comes from the free [Irish Rail real-time API](http://api.irishrail.ie/realtime/).
 
-- **Web app:** DART, Enterprise (Dublin–Belfast), Cork Commuter, Dublin Commuter and InterCity, each with its own map and live station pages. There's also a departure board for every Irish Rail station, reached from an all-stations map. English and Irish, light and dark.
+- **Web app:** DART, Enterprise (Dublin–Belfast), Cork Commuter, Dublin Commuter and InterCity, each with its own map and live station pages. There's also a departure board for every Irish Rail station, reached from an all-stations map. English and Irish, light and dark. Installable on the phone's home screen (PWA).
 - **Alexa skill:** DART departures and favourites by voice (DART only so far).
 
 It's unofficial and not affiliated with Iarnród Éireann.
@@ -13,7 +13,7 @@ packages/
   api/    Lambda JSON API for the web app (+ local dev server)
   web/    React + Vite frontend
   alexa/  Alexa skill Lambda + generated interaction model
-  infra/  AWS CDK stack (eu-west-1): DynamoDB, Lambdas, HTTP API, S3 + CloudFront
+  infra/  AWS CDK stack (eu-west-1): DynamoDB, Lambdas (API via Function URL), S3 + CloudFront
 ```
 
 ## Branches
@@ -25,7 +25,8 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feature/network-map` | All-stations map, station boards for every station, search, "Next Train?" name |
 | `feature/cork-commuter` | Cork Commuter (Rebel red, geography-inspired map), curved map corners |
 | `feature/dublin-commuter` | Dublin Commuter service: geography-inspired map, live boards grouped by route, tappable map dots |
-| `feature/intercity` (in progress) | InterCity service: six routes, live boards grouped by route |
+| `feature/intercity` | InterCity service: six routes, live boards grouped by route, map drawn from the all-stations layout |
+| `feature/pwa-deploy` | Installable PWA, optional custom domain, API Gateway replaced by a Lambda Function URL, 20 s edge cache on departures, budget alert |
 
 ## Using the web app
 
@@ -39,7 +40,8 @@ The app always opens on the **service picker**: DART, Enterprise, Cork Commuter,
   - **Header:** the live clock (Irish time), with the last update time turning red if the data goes stale.
   - **Refresh:** every 30 s while the tab is visible.
 - **Going-to filter:** each section ends in "+ N more" (or "Filter"), which opens every departure that way for the next 90 minutes with "going to" chips. Choosing a destination hides trains that won't get you there and dims the other track. A chip under the station name clears it. The choice is remembered per station.
-- **Options cog:** language (English | Irish) and appearance (Light | Dark). Light/dark follows the phone unless you choose.
+- **Options cog:** language (English | Irish) and appearance (Light | Dark). Light/dark follows the phone unless you choose. On an iPhone or iPad in Safari it also explains how to install the app.
+- **Install (PWA):** on iPhone, Safari → Share → **Add to Home Screen**; Android/Chrome offers "Install app". It then opens full-screen with its own icon. A service worker (`vite-plugin-pwa`, configured in `web/vite.config.ts`) caches the app itself so it opens instantly; live times always come from the network. On iOS a home-screen app has its own storage, separate from Safari, so favourites and settings start fresh after installing. Icons are generated from `web/public/icon.svg` with `npx pwa-assets-generator` in `packages/web`, and committed.
 - **Links:** `?service=enterprise&station=DDALK` opens a station directly. Without a link, the app opens on the service picker.
 
 ## Services
@@ -180,12 +182,18 @@ npm run alexa:model                      # regenerate the Alexa interaction mode
 
 Needs AWS credentials, and an [Amazon developer account](https://developer.amazon.com/alexa/console/ask) for the skill.
 
+**What runs where:** CloudFront serves the site from S3 and sends `/api/*` to the API Lambda's Function URL. The Function URL only accepts requests signed by this distribution, so there's no API Gateway and no per-request API charge. `/api/stations/*` (live departures) is cached at the edge for 20 s, so a busy station costs one Lambda call per 20 s. Favourites are never cached. At hobby traffic this all sits within AWS's always-free allowances, apart from $0.50/month for a Route 53 hosted zone if you use a custom domain.
+
+**Optional deploy flags** (add them to every `npm run deploy`, or put them in `packages/infra/cdk.json` under `context`):
+- `-c domainName=example.ie`: serve the site on your own domain (and `www.`). Buy the domain in Route 53 (Registered domains), which creates its hosted zone. The certificate goes in a small extra stack in us-east-1, because CloudFront only accepts certificates from there. Bootstrap us-east-1 once as well.
+- `-c budgetEmail=you@example.com`: a $5/month AWS Budgets alert, emailed at 80% of actual spend and if the forecast goes over. Don't commit the email.
+
 ```bash
-# 1. First time only, per account/region
-npx cdk bootstrap aws://<account-id>/eu-west-1 -a "npx tsx packages/infra/bin/app.ts"
+# 1. First time only, per account/region (add us-east-1 if you use a custom domain)
+npx cdk bootstrap aws://<account-id>/eu-west-1 aws://<account-id>/us-east-1 -a "npx tsx packages/infra/bin/app.ts"
 
 # 2. Deploy web + API + Alexa Lambda (prints SiteUrl and AlexaFunctionArn)
-npm run deploy
+npm run deploy -- -c domainName=example.ie -c budgetEmail=you@example.com   # flags optional
 
 # 3. Create/update the skill
 npm i -g ask-cli && ask configure
@@ -197,6 +205,15 @@ npm run deploy -- -c alexaSkillId=amzn1.ask.skill.xxxx
 ```
 
 Then test with `ask dialog --locale en-IE` from `packages/alexa`.
+
+### Later: an App Store app
+
+The plan is to wrap this same web build in a native iOS app with [Capacitor](https://capacitorjs.com/), once the web version has proven itself. It will need:
+- The Apple Developer Program ($99/year), and Xcode.
+- An absolute API base URL in `web/src/api.ts` (e.g. a `VITE_API_BASE` env var), because the app's pages are served from `capacitor://localhost`, not the site.
+- CORS headers for `capacitor://localhost` on `/api/*`, from the handler or a CloudFront response headers policy.
+- App icons, reusing `web/public/icon.svg`.
+- At least one genuinely native feature (a home-screen widget, haptics), because Apple rejects apps that are only a website in a wrapper.
 
 ## API quirks handled
 

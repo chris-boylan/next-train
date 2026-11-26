@@ -87,6 +87,9 @@ const en = {
   appearance: 'Appearance',
   light: 'Light',
   dark: 'Dark',
+  install: 'Install',
+  // iOS isn't available in Irish, so its button names are quoted in English in both languages.
+  installTip: 'Tap Share, then “Add to Home Screen”, to open Next Train? like an app.',
   describe: (destination: string, dueInMins: number, lateMins: number) =>
     `to ${destination} ${dueInMins <= 0 ? 'due now' : `in ${dueInMins} minute${dueInMins === 1 ? '' : 's'}`}` +
     (lateMins > 0 ? `, running ${lateMins} minute${lateMins === 1 ? '' : 's'} late` : ''),
@@ -186,6 +189,8 @@ const ga: Messages = {
   appearance: 'Cuma',
   light: 'Geal',
   dark: 'Dorcha',
+  install: 'Suiteáil',
+  installTip: 'Brúigh “Share”, ansin “Add to Home Screen”, chun Next Train? a oscailt mar aip.',
   describe: (destination, dueInMins, lateMins) =>
     `go dtí ${destination}, ${dueInMins <= 0 ? 'ag teacht anois' : `i gceann ${dueInMins} nóiméad`}` +
     (lateMins > 0 ? `, ${lateMins} nóiméad déanach` : ''),

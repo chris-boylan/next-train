@@ -28,6 +28,9 @@ function json(statusCode: number, body: unknown, cacheControl = 'no-store'): Res
   };
 }
 
+/** Live times are shared by everyone, so CloudFront may serve them for 20 s (the Irish Rail client caches for 30 s). */
+const DEPARTURES_CACHE = 'public, max-age=20';
+
 const error = (statusCode: number, message: string) => json(statusCode, { error: message });
 
 /** Favourites are keyed per browser; the prefix keeps them apart from Alexa users in the shared table. */
@@ -54,7 +57,7 @@ export function createHandler({ client, favourites }: ApiDeps) {
           const code = departuresMatch[1]!.toUpperCase();
           const departures = await getDepartures(client, code, { includeTrains: true });
           const station = findStationByCode(code) ?? { code };
-          return json(200, { station, direction: null, departures, fetchedAt: new Date().toISOString() });
+          return json(200, { station, direction: null, departures, fetchedAt: new Date().toISOString() }, DEPARTURES_CACHE);
         }
         if (!isServiceId(service)) return error(400, 'Unknown service');
         const station = findStationByCode(departuresMatch[1]!, SERVICES[service].stations);
@@ -62,7 +65,7 @@ export function createHandler({ client, favourites }: ApiDeps) {
         const direction = parseDirection(event.queryStringParameters?.direction);
         const limit = Number(event.queryStringParameters?.limit) || undefined;
         const departures = await getDepartures(client, station.code, { direction, limit, service });
-        return json(200, { station, direction: direction ?? null, departures, fetchedAt: new Date().toISOString() });
+        return json(200, { station, direction: direction ?? null, departures, fetchedAt: new Date().toISOString() }, DEPARTURES_CACHE);
       }
 
       const favouriteMatch = path.match(/^\/api\/favourites(?:\/([A-Za-z]+))?$/);

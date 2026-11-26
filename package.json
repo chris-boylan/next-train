@@ -18,8 +18,8 @@
     "dev:web": "npm run dev -w @dart-times/web --",
     "build:web": "npm run build -w @dart-times/web",
     "alexa:model": "npm run build-model -w @dart-times/alexa",
-    "synth": "npm run build:web && npm run synth -w @dart-times/infra",
-    "deploy": "npm run build:web && npm run deploy -w @dart-times/infra"
+    "synth": "npm run build:web && npm run synth -w @dart-times/infra --",
+    "deploy": "npm run build:web && npm run deploy -w @dart-times/infra --"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",

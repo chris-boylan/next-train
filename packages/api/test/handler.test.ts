@@ -39,6 +39,15 @@ describe('API handler', () => {
     expect(data.departures.every((d: { direction: string }) => d.direction === 'Southbound')).toBe(true);
   });
 
+  it('lets the edge cache departures briefly, but never favourites or errors', async () => {
+    const departures = await request('GET', '/api/stations/CNLLY/departures');
+    expect(departures.headers?.['cache-control']).toBe('public, max-age=20');
+    const all = await request('GET', '/api/stations/CNLLY/departures?service=all');
+    expect(all.headers?.['cache-control']).toBe('public, max-age=20');
+    expect((await request('GET', '/api/stations/NOPE/departures')).headers?.['cache-control']).toBe('no-store');
+    expect((await request('GET', '/api/favourites', device)).headers?.['cache-control']).toBe('no-store');
+  });
+
   it('404s on unknown stations', async () => {
     expect((await request('GET', '/api/stations/NOPE/departures')).statusCode).toBe(404);
   });
