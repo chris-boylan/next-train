@@ -41,20 +41,23 @@ function roundedPath(points: [number, number][]): string {
 
 /** Ticks point towards the label. */
 function tick(p: SchematicPoint): string {
-  if (p.label === 'angled') return `M${p.x},${p.y} v-12`;
+  if (p.label === 'angled' || p.label === 'above') return `M${p.x},${p.y} v-12`;
   if (p.label === 'left') return `M${p.x},${p.y} h-12`;
   return `M${p.x},${p.y} h12`;
 }
 
 function labelStyle(p: SchematicPoint, circle: boolean, maxWidth?: number): CSSProperties {
+  const dx = p.labelDx ?? 0;
   switch (p.label) {
     case 'right':
-      return { left: p.x + 14, top: p.y - 22, maxWidth };
+      return { left: p.x + 14 + dx, top: p.y - 22, maxWidth };
     case 'left':
       // Anchored on its right edge, so it grows leftwards away from the line.
-      return { right: `calc(100% - ${p.x - 14}px)`, top: p.y - 22, maxWidth, textAlign: 'right' };
+      return { right: `calc(100% - ${p.x - 14 + dx}px)`, top: p.y - 22, maxWidth, textAlign: 'right' };
     case 'below':
-      return { left: p.x - 24, top: p.y + 12, maxWidth };
+      return { left: p.x - 24 + dx, top: p.y + 12, maxWidth };
+    case 'above':
+      return { left: p.x - 24 + dx, top: p.y - 40, maxWidth };
     case 'angled':
       // Start clear of a full station circle; a tick needs less room.
       return circle ? { left: p.x + 10, top: p.y - 44 } : { left: p.x + 2, top: p.y - 30 };

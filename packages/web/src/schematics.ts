@@ -5,13 +5,15 @@
  */
 import type { ServiceId } from '@dart-times/core';
 
-/** Where a station's name sits: either side of a vertical line, under the dot, or angled above a horizontal line. */
-export type LabelPlacement = 'right' | 'left' | 'below' | 'angled';
+/** Where a station's name sits: either side of a vertical line, under or over the dot, or angled above a horizontal line. */
+export type LabelPlacement = 'right' | 'left' | 'below' | 'above' | 'angled';
 
 export interface SchematicPoint {
   x: number;
   y: number;
   label: LabelPlacement;
+  /** Shift the label sideways (px) to clear a nearby line, e.g. a negative value moves it left. */
+  labelDx?: number;
 }
 
 export interface Schematic {

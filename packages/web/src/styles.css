@@ -1494,7 +1494,8 @@ p {
   transform-origin: left bottom;
 }
 
-.schematic__stop--below {
+.schematic__stop--below,
+.schematic__stop--above {
   height: 28px;
 }
 

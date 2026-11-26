@@ -33,16 +33,19 @@ column(
   1,
 );
 
-// The junctions west of Connolly, joined at 45° so the lines flow rather than turn square. Each name
-// sits on a side clear of the other lines; Docklands' is angled along its spur, as on the Cork map.
-points.DCDRA = { x: 178, y: 668, label: 'left' };
-points.BBRDG = { x: 123, y: 613, label: 'left' }; // 45° up-left from Drumcondra
-points.DCKLS = { x: 163, y: 573, label: 'angled' }; // 45° up-right from Broombridge, back towards the city
+// Connolly, Drumcondra and Broombridge sit on one straight 45° line heading north-west, which carries on
+// until it curves up into the Western line by Pelletstown. Each name sits on a side clear of the lines.
+const DIAGONAL = (dx: number): [number, number] => [COAST_X - dx, CONNOLLY_Y - dx];
+points.DCDRA = { x: DIAGONAL(50)[0], y: DIAGONAL(50)[1], label: 'left' };
+points.BBRDG = { x: DIAGONAL(105)[0], y: DIAGONAL(105)[1], label: 'left' };
+// Docklands' spur leaves Broombridge at 45°, then curves round to run east towards the city. Its name sits
+// above, where there's more room between the diagonal and the coastal line.
+points.DCKLS = { x: 178, y: 570, label: 'above', labelDx: -40 };
 
 // Western: north-west to Clonsilla, then Maynooth carries straight on while M3 Parkway branches right.
-column(['PELTN', 'ASHTN', 'PHNPK', 'CNOCK', 'CMINE', 'CLSLA'], WEST_X, 500, -1);
-column(['HAFLD', 'DBYNE', 'M3WAY'], 100, 260, -1);
-column(['LXCON', 'LXLSA', 'MYNTH'], WEST_X, 150, -1);
+column(['PELTN', 'ASHTN', 'PHNPK', 'CNOCK', 'CMINE', 'CLSLA'], WEST_X, 460, -1);
+column(['HAFLD', 'DBYNE', 'M3WAY'], 100, 220, -1);
+column(['LXCON', 'LXLSA', 'MYNTH'], WEST_X, 110, -1);
 
 // Heuston, west of Connolly, and South Western to Kildare.
 // Heuston sits east of Park West. As on the real track, its line and the Phoenix Park tunnel line from
@@ -53,15 +56,16 @@ points.HSTON = { x: 138, y: 790, label: 'right' };
 column(['CHORC', 'CLDKN', 'KISHO', 'ADAMF', 'HZLCH', 'SALNS', 'NBRGE', 'CURAH', 'KDARE'], WEST_X, 840, 1);
 
 const bends: Record<string, [number, number][]> = {
-  // Broombridge carries on at 45° up-left, curving into the north-west column.
-  'BBRDG|PELTN': [[WEST_X, 520]],
+  // The 45° line carries straight on from Broombridge, then curves up into the Western line.
+  'BBRDG|PELTN': [DIAGONAL(COAST_X - WEST_X)],
+  'BBRDG|DCKLS': [[150, 570]],
   // Heuston's line runs west to the junction; the tunnel line comes down to it from Drumcondra.
   'HSTON|CHORC': [HEUSTON_JUNCTION],
   'DCDRA|CHORC': [HEUSTON_JUNCTION],
   // M3 Parkway peels off right just north of Clonsilla.
   'CLSLA|HAFLD': [
-    [WEST_X, 300],
-    [100, 300],
+    [WEST_X, 260],
+    [100, 260],
   ],
 };
 
