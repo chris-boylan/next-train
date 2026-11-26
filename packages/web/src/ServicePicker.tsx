@@ -5,10 +5,11 @@ import { OptionsMenu } from './OptionsMenu';
 interface Props {
   onSelect: (service: ServiceId) => void;
   onOpenNetwork: () => void;
+  onOpenCommuterPreview: () => void;
 }
 
 /** The top level: pick a service, then its map, then a station. */
-export function ServicePicker({ onSelect, onOpenNetwork }: Props) {
+export function ServicePicker({ onSelect, onOpenNetwork, onOpenCommuterPreview }: Props) {
   const { t, nameOf } = useI18n();
   const routes: Record<ServiceId, string> = {
     dart: `${nameOf('HOWTH')} · ${nameOf('MHIDE')} – ${nameOf('GSTNS')}`,
@@ -46,6 +47,15 @@ export function ServicePicker({ onSelect, onOpenNetwork }: Props) {
           </li>
         ))}
       </ul>
+      <button className="network-link" onClick={onOpenCommuterPreview}>
+        <span className="network-link__text">
+          <span className="network-link__name">{t.dublinCommuter}</span>
+          <span className="service-tile__route">{t.previewNote}</span>
+        </span>
+        <span className="service-tile__go" aria-hidden>
+          ›
+        </span>
+      </button>
       <button className="network-link" onClick={onOpenNetwork}>
         <span className="network-link__text">
           <span className="network-link__name">{t.allStations}</span>

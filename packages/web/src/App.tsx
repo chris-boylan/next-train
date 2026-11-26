@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { findStationByCode, isServiceId, SERVICES, type ServiceId, type Station } from '@dart-times/core';
 import { fetchFavourites, setFavourite } from './api';
 import { getDeviceId } from './deviceId';
+import { CommuterPreview } from './CommuterPreview';
 import { NetworkMap } from './NetworkMap';
 import { getLastService, getLastStation, setLastService, setLastStation } from './prefs';
 import { ServicePicker } from './ServicePicker';
@@ -25,6 +26,7 @@ export function App() {
   });
   const [favourites, setFavourites] = useState<Station[]>([]);
   const [showNetwork, setShowNetwork] = useState(false);
+  const [showCommuterPreview, setShowCommuterPreview] = useState(false);
   // A station opened from the all-stations map.
   const [boardStation, setBoardStation] = useState<{ code: string; name: string }>();
   // Highlighted on the map when you go back to it.
@@ -62,7 +64,16 @@ export function App() {
   if (showNetwork) {
     return <NetworkMap onBack={() => setShowNetwork(false)} onSelectStation={(code, name) => setBoardStation({ code, name })} />;
   }
-  if (!service) return <ServicePicker onSelect={selectService} onOpenNetwork={() => setShowNetwork(true)} />;
+  if (showCommuterPreview) return <CommuterPreview onBack={() => setShowCommuterPreview(false)} />;
+  if (!service) {
+    return (
+      <ServicePicker
+        onSelect={selectService}
+        onOpenNetwork={() => setShowNetwork(true)}
+        onOpenCommuterPreview={() => setShowCommuterPreview(true)}
+      />
+    );
+  }
 
   const station = stationCode ? findStationByCode(stationCode, service.stations) : undefined;
   return station ? (

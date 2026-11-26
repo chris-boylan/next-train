@@ -1341,10 +1341,6 @@ p {
   stroke-linejoin: round;
 }
 
-.network__track--dart {
-  stroke: #169b62;
-}
-
 /* A line running on past branches before its next station: quiet, so the real sections stand out. */
 .network__track--waiting {
   stroke: var(--muted);
@@ -1357,9 +1353,7 @@ p {
   stroke-width: 4;
 }
 
-.network__tick--dart {
-  stroke: #169b62;
-}
+
 
 .network__label {
   position: absolute;
@@ -1502,4 +1496,55 @@ p {
 
 .schematic__stop--below {
   height: 28px;
+}
+
+/* ---------- Dublin Commuter preview ---------- */
+
+.preview__note {
+  margin: -4px 0 10px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.preview__mode {
+  margin-top: 4px;
+}
+
+.preview__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.preview__legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.preview__swatch {
+  width: 18px;
+  height: 6px;
+}
+
+.preview__back {
+  margin-top: 14px;
+}
+
+.preview__route {
+  margin: 12px 0 0;
+  padding-left: 10px;
+  border-left: 8px solid;
+  font-size: 1.4rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.preview__route-name {
+  font-size: 1.4rem;
 }
