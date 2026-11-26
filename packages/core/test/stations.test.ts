@@ -58,7 +58,7 @@ describe('searchStations', () => {
 });
 
 describe('Irish names', () => {
-  it('has an official Irish name for every station, DART and Enterprise', () => {
+  it('has an official Irish name for every station, on every service', () => {
     expect(ALL_STATIONS.filter((s) => !s.irishName).map((s) => s.code)).toEqual([]);
   });
 

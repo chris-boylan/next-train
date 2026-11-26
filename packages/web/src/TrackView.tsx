@@ -56,7 +56,11 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
   // The full departures panel for one direction; it's also where the going-to filter is chosen.
   const [sheetDirection, setSheetDirection] = useState<Direction>();
 
-  const allIn = (direction: Direction) => data?.departures.filter((d) => d.direction === direction) ?? [];
+  // Direction from our own line layout (here → the train's destination), so services whose API directions
+  // read "To Cork" rather than Northbound/Southbound still land on the right track. Falls back to the API.
+  const directionOf = (d: { destinationCode?: string; direction: string }) =>
+    (d.destinationCode && directionBetween(station.code, d.destinationCode, line)) || d.direction;
+  const allIn = (direction: Direction) => data?.departures.filter((d) => directionOf(d) === direction) ?? [];
   const shownIn = (direction: Direction) =>
     goingTo && goingDirection === direction ? departuresGoingTo(allIn(direction), station.code, goingTo, line) : allIn(direction);
   const dimmed = (direction: Direction) => !!goingDirection && goingDirection !== direction;

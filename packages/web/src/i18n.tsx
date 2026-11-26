@@ -10,7 +10,7 @@ const KEY = 'dart-times:lang';
 const en = {
   services: 'Services',
   chooseService: 'Choose a service',
-  serviceNames: { dart: 'DART', enterprise: 'Enterprise' } as Record<ServiceId, string>,
+  serviceNames: { dart: 'DART', enterprise: 'Enterprise', cork: 'Cork Commuter' } as Record<ServiceId, string>,
   dublinBelfast: 'Dublin – Belfast',
   allStations: 'All stations',
   allStationsNote: 'Every Irish Rail station on one map',
@@ -69,7 +69,8 @@ type Messages = typeof en;
 const ga: Messages = {
   services: 'Seirbhísí',
   chooseService: 'Roghnaigh seirbhís',
-  serviceNames: { dart: 'DART', enterprise: 'Enterprise' },
+  // Service names stay as Irish Rail's brands. "Cork Commuter" has no confirmed Irish form yet.
+  serviceNames: { dart: 'DART', enterprise: 'Enterprise', cork: 'Cork Commuter' },
   // As on Irish Rail's bilingual Dublin–Belfast timetable.
   dublinBelfast: 'Baile Átha Cliath – Béal Feirste',
   allStations: 'Gach stáisiún',

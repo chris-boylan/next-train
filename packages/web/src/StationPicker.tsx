@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { searchStations, type Service, type Station } from '@dart-times/core';
+import { BranchLineMap } from './BranchLineMap';
 import { LineMap } from './LineMap';
 import { Caps, useI18n } from './i18n';
 import { OptionsMenu } from './OptionsMenu';
@@ -74,6 +75,8 @@ export function StationPicker({ service, onBack, favourites: allFavourites, curr
         </ul>
       ) : service.id === 'dart' ? (
         <LineMap {...mapProps} />
+      ) : service.line.paths.length > 1 ? (
+        <BranchLineMap service={service} {...mapProps} />
       ) : (
         <SimpleLineMap service={service} {...mapProps} />
       )}

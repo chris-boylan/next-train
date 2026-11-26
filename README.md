@@ -69,11 +69,13 @@ Then test with `ask dialog --locale en-IE` from `packages/alexa`, e.g. "open dar
 
 ## Services
 
-The web app opens on a service picker: **DART** or **Enterprise** (Dublin Connolly – Belfast), then that service's line map, then a station.
+The web app opens on a service picker: **DART**, **Enterprise** (Dublin Connolly – Belfast) or **Cork Commuter** (Cork – Cobh, Midleton and Mallow), then that service's line map, then a station.
 
 - Lines are defined in `core/src/line.ts` (`DART_LINE`, `ENTERPRISE_LINE`) and services in `core/src/services.ts`. Line helpers take the line as a parameter and default to the DART, so the Alexa skill is unchanged.
 - The Enterprise calls at Connolly, Drogheda, Dundalk, Newry, Portadown and Belfast (Grand Central). That was verified against the stop lists of five trains in both directions; none called at Lisburn or Lurgan. The API has no Enterprise train type, so Enterprise trains are identified as the only Irish Rail trains running to or from Belfast.
-- Colours: DART tracks are green and orange. Enterprise tracks are deep violet (to Belfast) and lilac (to Dublin), set with `data-service` on `<html>`.
+- Cork Commuter runs from Cobh and Midleton, which meet at Glounthaune, through Cork Kent to Mallow (`CORK_LINE`). "Northbound" there means towards Cork and Mallow, and Cork is a turn-back like Bray. Its line was taken from Cork trains recorded by the network script; confirm it with live trains in daytime. Cork trains are commuter (not "A"-code) trains starting or ending at Cork, Cobh, Midleton or Mallow.
+- The station page works out each train's direction from the line layout (here → its destination), so services whose API directions read "To Cork" still sort onto the right track. Branching services other than the DART get their map from `BranchLineMap`, laid out automatically from the line's paths.
+- Colours: DART tracks are green and orange, Enterprise deep violet (to Belfast) and lilac (to Dublin), and Cork Commuter deep and light teal. They're set with `data-service` on `<html>`.
 
 ## All stations
 

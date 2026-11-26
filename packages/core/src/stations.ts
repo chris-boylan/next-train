@@ -1,6 +1,7 @@
-import { branchOf, ENTERPRISE_LINE, LINE_ORDER } from './line';
+import { branchOf, CORK_LINE, ENTERPRISE_LINE, LINE_ORDER } from './line';
 import type { Station } from './types';
 import { DART_STATION_DATA } from './stations.data';
+import { CORK_STATION_DATA } from './stations.cork.data';
 import { ENTERPRISE_STATION_DATA } from './stations.enterprise.data';
 import { IRISH_NAMES } from './stations.ga';
 
@@ -75,8 +76,19 @@ export const ENTERPRISE_STATIONS: Station[] = [...ENTERPRISE_LINE.paths[0]!].rev
   return toStation(record);
 });
 
+/** Cork commuter stations in map order: Mallow (north) first, then Cork, then the Cobh and Midleton lines. */
+export const CORK_STATIONS: Station[] = CORK_STATION_DATA.map(toStation);
+// Every Cork station must be on the line (and vice versa), or the map and the line disagree.
+for (const code of new Set(CORK_LINE.paths.flat())) {
+  if (!CORK_STATIONS.some((s) => s.code === code)) throw new Error(`Station ${code} is on the Cork line but missing from stations.cork.data.ts`);
+}
+
 /** Every station the apps know about, across all services. Lookups by code or name use this. */
-export const ALL_STATIONS: Station[] = [...DART_STATIONS, ...ENTERPRISE_STATIONS.filter((s) => !DART_STATIONS.includes(s))];
+export const ALL_STATIONS: Station[] = [
+  ...DART_STATIONS,
+  ...ENTERPRISE_STATIONS.filter((s) => !DART_STATIONS.includes(s)),
+  ...CORK_STATIONS,
+];
 
 export function findStationByCode(code: string, stations: Station[] = ALL_STATIONS): Station | undefined {
   const wanted = code.trim().toUpperCase();

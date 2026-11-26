@@ -96,6 +96,36 @@
   --band-south: #7a3fae;
 }
 
+/* Cork Commuter: deep teal towards Cork and Mallow, light teal towards Cobh and Midleton. */
+:root[data-service='cork'] {
+  --north: #00666c;
+  --south: #2aa198;
+  --north-text: #00666c;
+  --south-text: #00796b;
+  --band-north: #7fd6d0;
+  --band-south: #b9ece6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-service='cork']:not([data-theme='light']) {
+    --north: #2aa198;
+    --south: #8fded6;
+    --north-text: #5ccfc4;
+    --south-text: #a8e8e1;
+    --band-north: #00666c;
+    --band-south: #00695c;
+  }
+}
+
+:root[data-service='cork'][data-theme='dark'] {
+  --north: #2aa198;
+  --south: #8fded6;
+  --north-text: #5ccfc4;
+  --south-text: #a8e8e1;
+  --band-north: #00666c;
+  --band-south: #00695c;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -1200,6 +1230,11 @@ p {
 .service-tile--enterprise {
   --tile-north: #5b2a86;
   --tile-south: #a273d2;
+}
+
+.service-tile--cork {
+  --tile-north: #00666c;
+  --tile-south: #2aa198;
 }
 
 .service-tile {

@@ -54,6 +54,19 @@ export const ENTERPRISE_LINE: Line = {
   termini: { Northbound: ['BFSTC'], Southbound: ['CNLLY'] },
 };
 
+/**
+ * Cork commuter, from Cobh and Midleton (south) through Cork Kent to Mallow (north); the two lines
+ * meet at Glounthaune. Taken from the stop lists of Cork trains (Nov 2026). "Northbound" here means
+ * towards Cork and Mallow. Many trains finish at Cork, like Bray on the DART.
+ */
+export const CORK_LINE: Line = {
+  paths: [
+    ['COBH', 'RBROK', 'CGLOE', 'FOTA', 'GHANE', 'LSLND', 'CORK', 'MLLOW'],
+    ['MDLTN', 'CGTWL', 'GHANE', 'LSLND', 'CORK', 'MLLOW'],
+  ],
+  termini: { Northbound: ['CORK', 'MLLOW'], Southbound: ['COBH', 'MDLTN'] },
+};
+
 export function branchOf(code: string): Branch | undefined {
   if ((TRUNK as readonly string[]).includes(code)) return 'trunk';
   if ((BRANCHES.howth as readonly string[]).includes(code)) return 'howth';

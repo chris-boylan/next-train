@@ -44,4 +44,17 @@ export const IRISH_NAMES: Record<string, { name: string; short?: string }> = {
   NEWRY: { name: 'An tIúr' },
   PDOWN: { name: 'Port an Dúnáin' },
   BFSTC: { name: 'Béal Feirste' },
+  // Cork commuter: as on Irish Rail's Irish station page, paired with English names using its bilingual
+  // Mallow–Cork–Midleton–Cobh timetable (valid from 14.12.2025). The timetable's honorific form for Cork,
+  // "STÁISIÚN CHEANNT, CORCAIGH", isn't used, matching the English name from the API.
+  CORK: { name: 'Corcaigh' },
+  LSLND: { name: 'An tOileán Beag' },
+  GHANE: { name: 'An Gleanntán' },
+  FOTA: { name: 'Fóta' },
+  CGLOE: { name: 'Carraig an Lua' },
+  RBROK: { name: 'Rinn an Chabhlaigh' },
+  COBH: { name: 'An Cóbh' },
+  CGTWL: { name: 'Carraig Thuathail' },
+  MDLTN: { name: 'Mainistir na Corann' },
+  MLLOW: { name: 'Mala' },
 };

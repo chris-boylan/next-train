@@ -13,6 +13,7 @@ export function ServicePicker({ onSelect, onOpenNetwork }: Props) {
   const routes: Record<ServiceId, string> = {
     dart: `${nameOf('HOWTH')} · ${nameOf('MHIDE')} – ${nameOf('GSTNS')}`,
     enterprise: t.dublinBelfast,
+    cork: `${nameOf('CORK')} – ${nameOf('COBH')} · ${nameOf('MDLTN')} · ${nameOf('MLLOW')}`,
   };
 
   return (
