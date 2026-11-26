@@ -67,7 +67,7 @@ describe('route helpers', () => {
   });
 
   it('splits north of Howth Junction', () => {
-    expect(adjacentStations('HWTHJ')).toEqual({ north: ['BYSDE', 'GRGRD'], south: ['KBRCK'] });
+    expect(adjacentStations('HWTHJ')).toEqual({ north: ['GRGRD', 'BYSDE'], south: ['KBRCK'] });
     expect(adjacentStations('BYSDE')).toEqual({ north: ['SUTTN'], south: ['HWTHJ'] });
     expect(adjacentStations('GSTNS')).toEqual({ north: ['BRAY'], south: [] });
     expect(adjacentStations('MHIDE')).toEqual({ north: [], south: ['PMNCK'] });
@@ -110,7 +110,7 @@ describe('route helpers', () => {
   });
 
   it('lists the stations ahead in each direction', () => {
-    expect(stationsAhead('KBRCK', 'Northbound')).toEqual(['HWTHJ', 'BYSDE', 'SUTTN', 'HOWTH', 'GRGRD', 'PMNCK', 'MHIDE']);
+    expect(stationsAhead('KBRCK', 'Northbound')).toEqual(['HWTHJ', 'GRGRD', 'PMNCK', 'MHIDE', 'BYSDE', 'SUTTN', 'HOWTH']);
     expect(stationsAhead('BRAY', 'Southbound')).toEqual(['GSTNS']);
     expect(stationsAhead('SUTTN', 'Northbound')).toEqual(['HOWTH']);
     expect(stationsAhead('GSTNS', 'Southbound')).toEqual([]);

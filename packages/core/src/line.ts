@@ -38,9 +38,11 @@ export interface Line {
 }
 
 export const DART_LINE: Line = {
+  // Malahide first, matching the map (Malahide branch on the left, Howth on the right), so Howth Junction's
+  // "next station" links read Clongriffin, then Bayside.
   paths: [
-    [...TRUNK, ...BRANCHES.howth],
     [...TRUNK, ...BRANCHES.malahide],
+    [...TRUNK, ...BRANCHES.howth],
   ],
   termini: { Northbound: [BRANCHES.howth.at(-1)!, BRANCHES.malahide.at(-1)!], Southbound: ['BRAY', 'GSTNS'] },
 };
