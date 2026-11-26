@@ -52,10 +52,10 @@
 }
 
 /* Dublin Commuter has no Irish Rail colour of its own (its "Commuter" livery was retired by 2014), so its tile
-   takes Dublin's blues: sky blue, then a mid blue. */
+   takes Dublin's blues: the deeper mid blue first, then sky blue, matching the other tiles (darker stripe left). */
 .service-tile--commuter {
-  --tile-north: #69b3e7;
-  --tile-south: #2f6fb5;
+  --tile-north: #2f6fb5;
+  --tile-south: #69b3e7;
 }
 
 .service-tile {
