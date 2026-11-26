@@ -1,17 +1,25 @@
-# Checks every pull request and every push to main. It never deploys: deploying is a separate, manual workflow
-# (deploy.yml). The job name is a required status check in main's branch protection, so keep it as is.
-name: CI
+# Checks every pull request. On main (each merge, or Run workflow by hand) it then deploys to AWS straight away
+# if the checks pass: there's no approval step. The check job's name is a required status check in main's branch
+# protection, so keep it as is.
+#
+# The deploy runs in the `production` environment (Settings → Environments), which holds:
+#   vars.AWS_DEPLOY_ROLE_ARN  role from the NextTrainGitHubDeploy stack (no AWS keys are stored in GitHub)
+#   vars.DOMAIN_NAME          custom domain, e.g. nexttrain.ie
+#   secrets.BUDGET_EMAIL      where budget alerts and help-page feedback are emailed
+# The deploy role only trusts jobs in that environment, and the environment only allows the main branch.
+name: CI/CD
 
 on:
   pull_request:
     branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
-# A new push to a pull request cancels that PR's older checks; pushes to main each run on their own.
+# A new push to a pull request cancels that PR's older checks; runs on main each get their own group.
 concurrency:
   group: ${{ github.event_name == 'pull_request' && format('ci-pr-{0}', github.ref) || format('ci-run-{0}', github.run_id) }}
   cancel-in-progress: true
@@ -33,3 +41,39 @@ jobs:
       # Synth without AWS credentials catches infra mistakes on pull requests too.
       - run: npx cdk synth --quiet
         working-directory: packages/infra
+
+  deploy:
+    name: Deploy to AWS
+    needs: check
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.site_url }}
+    # One deploy at a time. A newer one waits for a running one to finish (it isn't interrupted); if several pile
+    # up, GitHub keeps only the newest waiting one, which includes everything before it.
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write # lets the job ask GitHub for the token AWS trusts
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: eu-west-1
+      - run: npm ci
+      - id: deploy
+        env:
+          DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+          BUDGET_EMAIL: ${{ secrets.BUDGET_EMAIL }}
+        run: |
+          npm run deploy -- --require-approval never --outputs-file "$RUNNER_TEMP/outputs.json" \
+            -c "domainName=$DOMAIN_NAME" -c "budgetEmail=$BUDGET_EMAIL"
+          echo "site_url=$(jq -r '.DartTimes.SiteUrl' "$RUNNER_TEMP/outputs.json")" >> "$GITHUB_OUTPUT"

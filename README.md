@@ -218,10 +218,7 @@ Then test with `ask dialog --locale en-IE` from `packages/alexa`.
 
 ### CI/CD (GitHub Actions)
 
-Two workflows:
-
-- **CI** (`.github/workflows/ci.yml`): typecheck, tests, the web build and `cdk synth` on every pull request and every push to `main`. It never deploys.
-- **Deploy to AWS** (`.github/workflows/deploy.yml`): manual only. Actions → **Deploy to AWS** → **Run workflow** runs the same checks on `main`, then deploys it. Deploys go one at a time; a second waits for the first.
+`.github/workflows/ci.yml` runs typecheck, tests, the web build and `cdk synth` on every pull request. On `main` (each merge, or Actions → CI/CD → **Run workflow** to redeploy) it then deploys to AWS straight away if the checks pass; there's no approval step. Deploys go one at a time; a newer one waits for a running one rather than interrupting it.
 
 - **No AWS keys in GitHub:** the deploy job swaps a GitHub-signed token for short-lived credentials for the `next-train-github-deploy` role. Only this repo's `production` environment can assume it, and it can only hand off to CDK's bootstrap roles.
 - **That role lives in its own stack,** `NextTrainGitHubDeploy`, deployed by hand once (`npm run deploy:github -w @dart-times/infra -- --profile <profile>`). `npm run deploy` only deploys the `DartTimes*` stacks, so the pipeline can't change its own permissions.
