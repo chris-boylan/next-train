@@ -1,0 +1,73 @@
+# Checks every pull request and push; deploys main to AWS after a manual approval.
+#
+# Deploys use the `production` environment (Settings → Environments), which requires an approval and holds:
+#   vars.AWS_DEPLOY_ROLE_ARN  role from the NextTrainGitHubDeploy stack (no AWS keys are stored in GitHub)
+#   vars.DOMAIN_NAME          optional custom domain, e.g. nexttrain.ie
+#   secrets.BUDGET_EMAIL      optional address for the AWS Budgets alert
+name: CI/CD
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: Test, typecheck, build, synth
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22 # matches the Lambda runtime
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build:web
+      # Synth without AWS credentials catches infra mistakes on pull requests too.
+      - run: npx cdk synth --quiet
+        working-directory: packages/infra
+
+  deploy:
+    name: Deploy to AWS
+    needs: check
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.site_url }}
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write # lets the job ask GitHub for the token AWS trusts
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: eu-west-1
+      - run: npm ci
+      - id: deploy
+        env:
+          DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+          BUDGET_EMAIL: ${{ secrets.BUDGET_EMAIL }}
+        run: |
+          npm run deploy -- --require-approval never --outputs-file "$RUNNER_TEMP/outputs.json" \
+            -c "domainName=$DOMAIN_NAME" -c "budgetEmail=$BUDGET_EMAIL"
+          echo "site_url=$(jq -r '.DartTimes.SiteUrl' "$RUNNER_TEMP/outputs.json")" >> "$GITHUB_OUTPUT"

@@ -20,7 +20,7 @@ npm run build:web                          # typecheck + vite build
 
 Live-API scripts (hit the real Irish Rail API): `npm run smoke -- connolly south`, `npm run verify-line`, `npm run build-network -w @dart-times/core`, `npm run update-stations -w @dart-times/core`. After `update-stations`, regenerate the Alexa model with `npm run alexa:model`.
 
-Deploy: `npm run deploy` (builds web, then CDK deploy to eu-west-1). Needs AWS credentials — don't run without being asked.
+Deploy: normally via GitHub Actions on `main`. By hand: `npm run deploy -- --profile next-train` (builds web, then CDK deploy to eu-west-1). Needs AWS credentials — don't run without being asked.
 
 ## Architecture
 
@@ -34,6 +34,7 @@ Deploy: `npm run deploy` (builds web, then CDK deploy to eu-west-1). Needs AWS c
 - **i18n:** UI strings in `web/src/lib/i18n.tsx` (English + Irish). Irish prefixes stay lowercase in capitalised text via the `Caps` component.
 - **PWA:** `vite-plugin-pwa` in `web/vite.config.ts` generates the manifest and a service worker that precaches the app shell; `/api/*` is network-only. Icons in `web/public/` come from `icon.svg` via `npx pwa-assets-generator` (config `web/pwa-assets.config.ts`).
 - **Hosting:** CloudFront → S3 for the site; `/api/stations/*` (cached 20 s, the handler sends `max-age=20`) and `/api/*` (uncached) → the API Lambda's Function URL with origin access control. No API Gateway. Optional `-c domainName=` adds a us-east-1 `CertStack`; `-c budgetEmail=` adds a budget alert. Pass CDK flags as `npm run deploy -- -c key=value`.
+- **CI/CD:** `.github/workflows/ci-cd.yml` checks every PR/push and deploys `main` after approval via the OIDC role in `infra/lib/github-deploy-stack.ts` (stack `NextTrainGitHubDeploy`, deployed by hand; `npm run deploy` only targets `DartTimes*`).
 - **Favourites:** one DynamoDB table keyed `web:<device id>` / `alexa:<user id>`; web sends `x-device-id`.
 
 ## Tests
@@ -42,4 +43,4 @@ Unit tests run against XML fixtures recorded from the real API in `packages/core
 
 ## Branches
 
-Everything is merged into `main` (the old `feature/network-map`, `feature/cork-commuter`, `feature/dublin-commuter`, `feature/intercity`, `feature/pwa-deploy` and `refactor/web-structure` branches are kept for history). New work goes on a feature branch off `main`. Keep the README's branch table in sync when adding one.
+Everything is merged into `main` (the old `feature/network-map`, `feature/cork-commuter`, `feature/dublin-commuter`, `feature/intercity`, `feature/pwa-deploy`, `refactor/web-structure` and `feature/cicd` branches are kept for history). New work goes on a feature branch off `main`. Keep the README's branch table in sync when adding one.

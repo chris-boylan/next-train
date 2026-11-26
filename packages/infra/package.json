@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "synth": "cdk synth",
-    "deploy": "cdk deploy --all",
-    "typecheck": "tsc --noEmit -p ."
+    "deploy": "cdk deploy 'DartTimes*'",
+    "typecheck": "tsc --noEmit -p .",
+    "deploy:github": "cdk deploy NextTrainGitHubDeploy"
   },
   "devDependencies": {
     "aws-cdk": "^2.170.0",

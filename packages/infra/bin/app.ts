@@ -1,6 +1,7 @@
 import { App } from 'aws-cdk-lib';
 import { CertStack } from '../lib/cert-stack';
 import { DartTimesStack } from '../lib/dart-times-stack';
+import { GitHubDeployStack } from '../lib/github-deploy-stack';
 
 const app = new App();
 const account = process.env.CDK_DEFAULT_ACCOUNT;
@@ -19,4 +20,11 @@ new DartTimesStack(app, 'DartTimes', {
   alexaSkillId: context('alexaSkillId'),
   domain: domainName && cert ? { name: domainName, certificate: cert.certificate } : undefined,
   budgetEmail: context('budgetEmail'),
+});
+
+// The GitHub Actions deploy role. Not matched by `DartTimes*`, so the pipeline never deploys (or changes) it.
+new GitHubDeployStack(app, 'NextTrainGitHubDeploy', {
+  env: { account, region: 'eu-west-1' },
+  repo: context('githubRepo') ?? 'chris-boylan/next-train',
+  environment: 'production',
 });
