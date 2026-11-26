@@ -3,6 +3,7 @@ import {
   DART_STATIONS,
   FavouriteError,
   type FavouritesService,
+  type FeedbackService,
   findStationByCode,
   getDepartures,
   type IrishRailClient,
@@ -14,6 +15,7 @@ import {
 export interface ApiDeps {
   client: IrishRailClient;
   favourites: FavouritesService;
+  feedback: FeedbackService;
 }
 
 type Result = APIGatewayProxyStructuredResultV2;
@@ -31,6 +33,17 @@ function json(statusCode: number, body: unknown, cacheControl = 'no-store'): Res
 /** Live times are shared by everyone, so CloudFront may serve them for 20 s (the Irish Rail client caches for 30 s). */
 const DEPARTURES_CACHE = 'public, max-age=20';
 
+/** The request's JSON body as an object, or undefined if it isn't one (or is unreasonably large). */
+function parseBody(event: APIGatewayProxyEventV2): Record<string, unknown> | undefined {
+  if (!event.body || event.body.length > 20_000) return undefined;
+  try {
+    const value: unknown = JSON.parse(event.isBase64Encoded ? Buffer.from(event.body, 'base64').toString('utf8') : event.body);
+    return value && typeof value === 'object' && !Array.isArray(value) ? (value as Record<string, unknown>) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 const error = (statusCode: number, message: string) => json(statusCode, { error: message });
 
 /** Favourites are keyed per browser; the prefix keeps them apart from Alexa users in the shared table. */
@@ -39,7 +52,7 @@ function webUserId(event: APIGatewayProxyEventV2): string | undefined {
   return id && DEVICE_ID.test(id) ? `web:${id}` : undefined;
 }
 
-export function createHandler({ client, favourites }: ApiDeps) {
+export function createHandler({ client, favourites, feedback }: ApiDeps) {
   return async (event: APIGatewayProxyEventV2): Promise<Result> => {
     const method = event.requestContext.http.method;
     const path = event.rawPath.replace(/\/+$/, '');
@@ -66,6 +79,17 @@ export function createHandler({ client, favourites }: ApiDeps) {
         const limit = Number(event.queryStringParameters?.limit) || undefined;
         const departures = await getDepartures(client, station.code, { direction, limit, service });
         return json(200, { station, direction: direction ?? null, departures, fetchedAt: new Date().toISOString() }, DEPARTURES_CACHE);
+      }
+
+      if (path === '/api/feedback') {
+        if (method !== 'POST') return error(405, 'Method not allowed');
+        const deviceId = event.headers['x-device-id'];
+        if (!deviceId || !DEVICE_ID.test(deviceId)) return error(400, 'Missing or invalid x-device-id header');
+        const input = parseBody(event);
+        if (!input) return error(400, 'Expected a JSON body');
+        const result = await feedback.submit(deviceId, input, { userAgent: event.headers['user-agent'] });
+        if (result.ok) return json(200, { ok: true });
+        return error(result.reason === 'RATE_LIMITED' ? 429 : 400, result.message);
       }
 
       const favouriteMatch = path.match(/^\/api\/favourites(?:\/([A-Za-z]+))?$/);

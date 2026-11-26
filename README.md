@@ -32,6 +32,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `chore/daily-api-check` | Daily live check of the Irish Rail API, opening an issue on failure |
 | `fix/small-screens` | Station page fits iPhone SE and 320px-wide phones |
 | `feat/custom-domain` | Site served at https://nexttrain.ie (and www) |
+| `feat/help-page` | Help & about page with a feedback form (DynamoDB + SNS email) |
 | `feature/favourites-home` | Options choice to show favourites in each service or together on the home page; favourites for every service's stations |
 
 ## Using the web app
@@ -47,6 +48,7 @@ The app always opens on the **service picker**: DART, Enterprise, Cork Commuter,
   - **Refresh:** every 30 s while the tab is visible.
 - **Going-to filter:** each section ends in "+ N more" (or "Filter"), which opens every departure that way for the next 90 minutes with "going to" chips. Choosing a destination hides trains that won't get you there and dims the other track. A chip under the station name clears it. The choice is remembered per station.
 - **Options cog:** language (English | Irish) and appearance (Light | Dark). Light/dark follows the phone unless you choose. On an iPhone or iPad in Safari it also explains how to install the app.
+- **Help & about** (options cog, or `?help`): how to read a station page, tips, where the times come from, privacy, and a **questions & feedback** form. Messages go to `POST /api/feedback`, are stored in the `Feedback` DynamoDB table for a year, and emailed to the owner through an SNS topic (subscribed to `budgetEmail`; AWS sends a one-off "Confirm subscription" email that must be clicked). Spam limits: a hidden honeypot field, at least 3 s on the form, 3 messages per device per hour and 50 a day in total (`FEEDBACK_LIMITS` in `core/src/feedback.ts`). The help page also shows the build date and commit.
 - **Install (PWA):** on iPhone, Safari → Share → **Add to Home Screen**; Android/Chrome offers "Install app". It then opens full-screen with its own icon. A service worker (`vite-plugin-pwa`, configured in `web/vite.config.ts`) caches the app itself so it opens instantly; live times always come from the network. On iOS a home-screen app has its own storage, separate from Safari, so favourites and settings start fresh after installing. Icons are generated from `web/public/icon.svg` with `npx pwa-assets-generator` in `packages/web`, and committed.
 - **Links:** `?service=enterprise&station=DDALK` opens a station directly. Without a link, the app opens on the service picker.
 
@@ -192,7 +194,7 @@ Needs AWS credentials, and an [Amazon developer account](https://developer.amazo
 
 **Optional deploy flags** (add them to every `npm run deploy`, or put them in `packages/infra/cdk.json` under `context`):
 - `-c domainName=example.ie`: serve the site on your own domain (and `www.`). Buy the domain in Route 53 (Registered domains), which creates its hosted zone. The certificate goes in a small extra stack in us-east-1, because CloudFront only accepts certificates from there. Bootstrap us-east-1 once as well.
-- `-c budgetEmail=you@example.com`: a $5/month AWS Budgets alert, emailed at 80% of actual spend and if the forecast goes over. Don't commit the email.
+- `-c budgetEmail=you@example.com`: where help-page feedback is emailed, and a $5/month AWS Budgets alert, emailed at 80% of actual spend and if the forecast goes over. Don't commit the email.
 
 ```bash
 # 1. First time only, per account/region (add us-east-1 if you use a custom domain)

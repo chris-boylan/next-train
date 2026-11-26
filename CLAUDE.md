@@ -35,6 +35,7 @@ Deploy: normally via GitHub Actions on `main`. By hand: `npm run deploy -- --pro
 - **PWA:** `vite-plugin-pwa` in `web/vite.config.ts` generates the manifest and a service worker that precaches the app shell; `/api/*` is network-only. Icons in `web/public/` come from `icon.svg` via `npx pwa-assets-generator` (config `web/pwa-assets.config.ts`).
 - **Hosting:** CloudFront → S3 for the site; `/api/stations/*` (cached 20 s, the handler sends `max-age=20`) and `/api/*` (uncached) → the API Lambda's Function URL with origin access control. No API Gateway. Optional `-c domainName=` adds a us-east-1 `CertStack`; `-c budgetEmail=` adds a budget alert. Pass CDK flags as `npm run deploy -- -c key=value`.
 - **CI/CD:** `.github/workflows/ci-cd.yml` checks every PR/push and deploys `main` after approval via the OIDC role in `infra/lib/github-deploy-stack.ts` (stack `NextTrainGitHubDeploy`, deployed by hand; `npm run deploy` only targets `DartTimes*`).
+- **Help & feedback:** `web/src/screens/HelpPage.tsx`, opened via `HelpContext` (`lib/help.ts`) from the options cog or `?help`. The form posts to `/api/feedback` (`FeedbackService` in `core/src/feedback.ts`, Dynamo storage in `core/src/dynamo.ts`, SNS email in `api/src/index.ts`). POSTs through CloudFront's OAC need an `x-amz-content-sha256` header, which `sendFeedback` in `lib/api.ts` adds.
 - **Favourites:** one DynamoDB table keyed `web:<device id>` / `alexa:<user id>`; web sends `x-device-id`.
 
 ## Tests

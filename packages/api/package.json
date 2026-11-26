@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit -p ."
   },
   "dependencies": {
+    "@aws-sdk/client-sns": "^3.1178.0",
     "@dart-times/core": "0.1.0"
   },
   "devDependencies": {

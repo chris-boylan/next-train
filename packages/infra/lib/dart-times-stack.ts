@@ -13,6 +13,8 @@ import { AaaaRecord, ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-r
 import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
 import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, CacheControl, Source } from 'aws-cdk-lib/aws-s3-deployment';
+import { Topic } from 'aws-cdk-lib/aws-sns';
+import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import type { Construct } from 'constructs';
 
 const repoPath = (relative: string) => fileURLToPath(new URL(`../../../${relative}`, import.meta.url));
@@ -22,7 +24,10 @@ export interface DartTimesStackProps extends StackProps {
   alexaSkillId?: string;
   /** Custom domain (apex; www is added too) with a Route 53 hosted zone. Without it the site uses the CloudFront URL. */
   domain?: { name: string; certificate: ICertificate };
-  /** Where to email AWS Budgets alerts. No budget is created without it. */
+  /**
+   * The owner's email: AWS Budgets alerts and help-page feedback go here. Without it there's no budget, and
+   * feedback is stored but not emailed. AWS sends a one-off "confirm subscription" email for the feedback topic.
+   */
   budgetEmail?: string;
 }
 
@@ -47,13 +52,32 @@ export class DartTimesStack extends Stack {
       bundling: { minify: true, sourceMap: true },
     };
 
+    // Questions and feedback from the help page. Messages expire after a year (TTL on expiresAt).
+    const feedback = new Table(this, 'Feedback', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      sortKey: { name: 'sk', type: AttributeType.STRING },
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      timeToLiveAttribute: 'expiresAt',
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+    // Each message is emailed to the owner through this topic.
+    const feedbackTopic = new Topic(this, 'FeedbackTopic', { displayName: 'Next Train? feedback' });
+    if (props.budgetEmail) feedbackTopic.addSubscription(new EmailSubscription(props.budgetEmail));
+
     const apiFn = new NodejsFunction(this, 'ApiFunction', {
       ...lambdaDefaults,
       entry: repoPath('packages/api/src/index.ts'),
       logGroup: new LogGroup(this, 'ApiLogs', { retention: RetentionDays.ONE_MONTH }),
       timeout: Duration.seconds(10),
+      environment: {
+        ...lambdaDefaults.environment,
+        FEEDBACK_TABLE: feedback.tableName,
+        FEEDBACK_TOPIC_ARN: feedbackTopic.topicArn,
+      },
     });
     favourites.grantReadWriteData(apiFn);
+    feedback.grantReadWriteData(apiFn);
+    feedbackTopic.grantPublish(apiFn);
 
     // CloudFront calls the Lambda directly through a Function URL (no API Gateway, so no per-request charge).
     // AWS_IAM + origin access control means only this distribution can invoke it.
