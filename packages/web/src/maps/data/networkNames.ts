@@ -1,5 +1,5 @@
 import { findStationByCode, irishNameFor } from '@dart-times/core';
-import { useI18n } from './i18n';
+import { useI18n } from '../../lib/i18n';
 import { NETWORK_STATIONS } from './network.data';
 import { NI_STATIONS } from './northernStations';
 

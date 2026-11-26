@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { NETWORK_EDGES } from '../src/network.data';
-import { layoutNetwork } from '../src/networkLayout';
+import { NETWORK_EDGES } from '../src/maps/data/network.data';
+import { layoutNetwork } from '../src/maps/networkLayout';
 
 describe('layoutNetwork', () => {
   it('puts a simple line in one column and a branch one column over', () => {
@@ -42,8 +42,8 @@ describe('layoutNetwork', () => {
 
 describe('Dublin commuter preview schematic', () => {
   it('places every commuter station', async () => {
-    const { COMMUTER_ROUTE_MAP } = await import('../src/commuterRoutes');
-    const { COMMUTER_SCHEMATIC } = await import('../src/commuterSchematic');
+    const { COMMUTER_ROUTE_MAP } = await import('../src/maps/data/commuterRoutes');
+    const { COMMUTER_SCHEMATIC } = await import('../src/maps/data/commuterSchematic');
     const missing = [...new Set(COMMUTER_ROUTE_MAP.allEdges.flat())].filter((code) => !COMMUTER_SCHEMATIC.points[code]);
     expect(missing).toEqual([]);
   });

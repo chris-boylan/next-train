@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { findStationByCode, isServiceId, SERVICES, type ServiceId, type Station } from '@dart-times/core';
-import { fetchFavourites, setFavourite } from './api';
-import { getDeviceId } from './deviceId';
-import { useI18n } from './i18n';
-import { NetworkMap } from './NetworkMap';
-import type { RoutesView } from './RoutesMap';
-import { ServicePicker } from './ServicePicker';
-import { StationBoard } from './StationBoard';
-import { StationPicker } from './StationPicker';
-import { TrackView } from './TrackView';
+import { fetchFavourites, setFavourite } from './lib/api';
+import { getDeviceId } from './lib/deviceId';
+import { useI18n } from './lib/i18n';
+import { NetworkMap } from './maps/NetworkMap';
+import type { RoutesView } from './maps/RoutesMap';
+import { ServicePicker } from './screens/ServicePicker';
+import { StationBoard } from './screens/StationBoard';
+import { StationPicker } from './screens/StationPicker';
+import { TrackView } from './screens/TrackView';
 
 /** Service → line map → station. Always opens on the service picker; ?service=&station= links go straight in. */
 export function App() {

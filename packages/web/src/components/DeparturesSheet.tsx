@@ -10,7 +10,7 @@ import {
 } from '@dart-times/core';
 import { DestinationList } from './DestinationList';
 import { HiddenNote } from './HiddenNote';
-import { Caps, useI18n } from './i18n';
+import { Caps, useI18n } from '../lib/i18n';
 import { Sheet } from './Sheet';
 
 interface Props {

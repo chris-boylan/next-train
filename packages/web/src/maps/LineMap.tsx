@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import { BRANCHES, findStationByCode, JUNCTION, TRUNK } from '@dart-times/core';
-import { Caps, useI18n } from './i18n';
+import { Caps, useI18n } from '../lib/i18n';
 import { MapHits } from './MapHits';
 
 interface Props {

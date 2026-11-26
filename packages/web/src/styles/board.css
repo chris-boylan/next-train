@@ -1,0 +1,65 @@
+/* The station board for any station, grouped by route, with train-type badges. */
+
+/* ---------- Station board (any station) ---------- */
+
+.board {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  max-width: 560px;
+  margin: 0 auto;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.board__sign {
+  padding: 14px 16px;
+  background: var(--band-bg);
+  color: var(--band-text);
+  text-align: center;
+}
+
+.board__body {
+  padding: 8px 16px 32px;
+}
+
+.board__group {
+  margin-top: 16px;
+}
+
+.board__row {
+  grid-template-columns: 4.5rem 1fr auto;
+}
+
+.board__what {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* Train type labels, in each service's colour (InterCity navy and Commuter burgundy as proposed). */
+.badge {
+  padding: 1px 6px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.badge--dart {
+  background: #0b7a4b;
+}
+
+.badge--enterprise {
+  background: #5b2a86;
+}
+
+.badge--intercity {
+  background: #1d3f8f;
+}
+
+.badge--commuter {
+  background: #8c1d40;
+}

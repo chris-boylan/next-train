@@ -1,0 +1,117 @@
+/* The service picker and its tiles. */
+
+/* ---------- Services ---------- */
+
+.picker__service {
+  margin: 4px 0 12px;
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.services__heading {
+  margin: 20px 0 10px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.services {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+/* Tiles carry their own service colours, since the page isn't in either service yet. */
+.service-tile--dart {
+  --tile-north: #169b62;
+  --tile-south: #ff883e;
+}
+
+.service-tile--enterprise {
+  --tile-north: #5b2a86;
+  --tile-south: #a273d2;
+}
+
+.service-tile--cork {
+  --tile-north: #b5121b;
+  --tile-south: #e5636b;
+}
+
+/* InterCity: the colours of Irish Rail's InterCity trains, dark green and silver-grey (a deeper green than the
+   DART's, so the two tiles stay distinct). */
+.service-tile--intercity {
+  --tile-north: #00573f;
+  --tile-south: #a7a9ac;
+}
+
+/* Dublin Commuter has no Irish Rail colour of its own (its "Commuter" livery was retired by 2014), so its tile
+   takes Dublin's blues: sky blue, then a mid blue. */
+.service-tile--commuter {
+  --tile-north: #69b3e7;
+  --tile-south: #2f6fb5;
+}
+
+.service-tile {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 96px;
+  padding: 14px 16px;
+  border: 2px solid var(--rule);
+  background: var(--bg);
+  text-align: left;
+}
+
+.service-tile__stripes {
+  display: flex;
+  gap: 6px;
+  height: 64px;
+}
+
+.service-tile__north,
+.service-tile__south {
+  width: 14px;
+}
+
+.service-tile__north {
+  background: var(--tile-north);
+}
+
+.service-tile__south {
+  background: var(--tile-south);
+}
+
+.service-tile__text {
+  display: grid;
+  gap: 4px;
+}
+
+.service-tile__name {
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.service-tile__route {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.service-tile__go {
+  font-size: 2rem;
+  font-weight: 900;
+}

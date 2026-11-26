@@ -1,5 +1,5 @@
 import type { Departure } from '@dart-times/core';
-import { useI18n } from './i18n';
+import { useI18n } from '../lib/i18n';
 
 /** "5 trains to Malahide hidden": says what the going-to filter removed, so nothing silently disappears. */
 export function HiddenNote({ all, shown }: { all: Departure[]; shown: Departure[] }) {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { type Lang, useI18n } from './i18n';
-import { type Theme, useTheme } from './theme';
+import { type Lang, useI18n } from '../lib/i18n';
+import { type Theme, useTheme } from '../lib/theme';
 
 /** iPhone/iPad Safari, not already opened from the home screen. iOS has no install prompt, so we explain how. */
 function canAddToHomeScreen(): boolean {

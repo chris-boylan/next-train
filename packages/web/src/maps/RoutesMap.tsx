@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import type { Service } from '@dart-times/core';
-import { type Lang, useI18n } from './i18n';
+import { type Lang, useI18n } from '../lib/i18n';
 import { PositionedMap } from './PositionedMap';
-import type { RouteMap } from './routeMaps';
-import type { Schematic } from './schematics';
+import type { RouteMap } from './data/routeMaps';
+import type { Schematic } from './data/schematics';
 import { TreeMap } from './TreeMap';
 
 /** Which view the map is showing: every route, the list of routes, or one route. Kept by the app, so coming

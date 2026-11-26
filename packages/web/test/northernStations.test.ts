@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { NETWORK_EDGES } from '../src/network.data';
-import { NETWORK_SCHEMATIC } from '../src/networkSchematic';
-import { hasNoData, NI_STATIONS, withNorthernTrack } from '../src/northernStations';
+import { NETWORK_EDGES } from '../src/maps/data/network.data';
+import { NETWORK_SCHEMATIC } from '../src/maps/data/networkSchematic';
+import { hasNoData, NI_STATIONS, withNorthernTrack } from '../src/maps/data/northernStations';
 
 describe('Northern Ireland track', () => {
   const edges = withNorthernTrack(NETWORK_EDGES);

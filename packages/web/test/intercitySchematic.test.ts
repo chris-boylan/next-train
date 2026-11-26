@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { INTERCITY_STATION_CODES } from '@dart-times/core';
-import { intercitySchematic } from '../src/intercitySchematic';
-import { NETWORK_SCHEMATIC } from '../src/networkSchematic';
+import { intercitySchematic } from '../src/maps/data/intercitySchematic';
+import { NETWORK_SCHEMATIC } from '../src/maps/data/networkSchematic';
 
 describe('InterCity map', () => {
   const map = intercitySchematic();

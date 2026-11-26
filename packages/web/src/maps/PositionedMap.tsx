@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
-import { Caps, useI18n } from './i18n';
-import type { Schematic, SchematicPoint } from './schematics';
+import { Caps, useI18n } from '../lib/i18n';
+import type { Schematic, SchematicPoint } from './data/schematics';
 import { MapHits } from './MapHits';
 
 interface Props {

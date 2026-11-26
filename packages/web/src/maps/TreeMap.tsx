@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Caps } from './i18n';
+import { Caps } from '../lib/i18n';
 import { layoutNetwork } from './networkLayout';
 import { MapHits } from './MapHits';
 

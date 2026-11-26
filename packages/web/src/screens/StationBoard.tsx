@@ -7,12 +7,12 @@ import {
   route as routeBetween,
   type TrainCategory,
 } from '@dart-times/core';
-import { formatTime, useNow } from './clock';
-import { COMMUTER_ROUTE_MAP } from './commuterRoutes';
-import { INTERCITY_ROUTE_MAP } from './intercityRoutes';
-import { Caps, useI18n } from './i18n';
-import { OptionsMenu } from './OptionsMenu';
-import { useDepartures } from './useDepartures';
+import { formatTime, useNow } from '../lib/clock';
+import { COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
+import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
+import { Caps, useI18n } from '../lib/i18n';
+import { OptionsMenu } from '../components/OptionsMenu';
+import { useDepartures } from '../lib/useDepartures';
 
 interface Props {
   code: string;

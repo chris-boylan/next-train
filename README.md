@@ -11,7 +11,7 @@ It's unofficial and not affiliated with Iarnród Éireann.
 packages/
   core/   Irish Rail client, lines and services, stations (English + Irish), departures, favourites (shared)
   api/    Lambda JSON API for the web app (+ local dev server)
-  web/    React + Vite frontend
+  web/    React + Vite frontend: screens/, components/, maps/ (+ maps/data/), lib/, styles/
   alexa/  Alexa skill Lambda + generated interaction model
   infra/  AWS CDK stack (eu-west-1): DynamoDB, Lambdas (API via Function URL), S3 + CloudFront
 ```
@@ -33,7 +33,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 The app always opens on the **service picker**: DART, Enterprise, Cork Commuter, Dublin Commuter, InterCity, or **All stations**. Choosing a service opens its map, then a station.
 
 - **Line maps:** tap a station to open it. Search finds stations by English or Irish name, fadas optional, and tolerates small typos ("connoly"). Favourites appear as chips.
-- **Station page** (`web/src/TrackView.tsx`):
+- **Station page** (`web/src/screens/TrackView.tsx`):
   - **Tracks:** a fixed-size station sign sits between two tracks. The darker northbound track runs up the left, the lighter southbound track runs down the right, and each arrowhead names where trains in that direction end up.
   - **Trains:** the next 3 trains each way approach the platform. Late trains show ~~scheduled~~ `+delay` expected.
   - **Next stations:** links above and below the station name step to the next station north or south. At a junction, both branches are shown.
@@ -69,10 +69,10 @@ The app always opens on the **service picker**: DART, Enterprise, Cork Commuter,
 
 ## All stations and station boards
 
-- **All stations** shows every Irish Rail station on one vertical schematic that fits a phone's width (`web/src/NetworkMap.tsx`), with search.
-- **Station boards:** tap a station for its board (`web/src/StationBoard.tsx`). It shows every train in the next 90 minutes, grouped by the direction the API gives, each labelled **DART**, **Enterprise**, **InterCity** or **Commuter** (`trainCategory` in `core/src/departures.ts`).
+- **All stations** shows every Irish Rail station on one vertical schematic that fits a phone's width (`web/src/maps/NetworkMap.tsx`), with search.
+- **Station boards:** tap a station for its board (`web/src/screens/StationBoard.tsx`). It shows every train in the next 90 minutes, grouped by the direction the API gives, each labelled **DART**, **Enterprise**, **InterCity** or **Commuter** (`trainCategory` in `core/src/departures.ts`).
 - **InterCity vs Commuter:** InterCity is identified by train codes starting with "A". That's an observed pattern, not documented by Irish Rail.
-- **Where the network data comes from:** the API lists station locations but not how they connect. `npm run build-network -w @dart-times/core` samples every running train's stop list, which includes stations passed without stopping, and writes the connections to `web/src/network.data.ts`. Each run adds to earlier ones, so run it at different times to fill gaps. It also merges duplicate station codes, drops links that skip a station, and estimates missing positions. About 16 stations on lightly used lines (Nenagh, Clonmel, Gort…) aren't connected yet.
+- **Where the network data comes from:** the API lists station locations but not how they connect. `npm run build-network -w @dart-times/core` samples every running train's stop list, which includes stations passed without stopping, and writes the connections to `web/src/maps/data/network.data.ts`. Each run adds to earlier ones, so run it at different times to fill gaps. It also merges duplicate station codes, drops links that skip a station, and estimates missing positions. About 16 stations on lightly used lines (Nenagh, Clonmel, Gort…) aren't connected yet.
 
 ## Dublin Commuter
 
@@ -85,7 +85,7 @@ Four routes, defined in `core/src/commuter.ts` with each route's paths running c
 | **South Western** | Heuston, or Grand Canal Dock via Connolly and the Phoenix Park tunnel, to Park West – Hazelhatch – Kildare – Portlaoise |
 | **South Eastern** | Connolly – down the DART line – Greystones – Wicklow – Arklow – Gorey |
 
-- **Map** (`web/src/RoutesMap.tsx`, shared with InterCity): a toggle switches between **All routes**, one geography-inspired map with Connolly and Heuston as hubs (`web/src/commuterSchematic.ts`), and **By route**, which shows one route at a time.
+- **Map** (`web/src/maps/RoutesMap.tsx`, shared with InterCity): a toggle switches between **All routes**, one geography-inspired map with Connolly and Heuston as hubs (`web/src/maps/data/commuterSchematic.ts`), and **By route**, which shows one route at a time.
 - **Station boards:** commuter stations can be on several routes (Connolly is on four), so tapping one opens a board grouped by route and direction, e.g. "Northern · towards Drogheda / Dundalk", rather than the two-track page.
   - **How trains are placed** (`commuterHeading`): on a route serving both this station and the destination if there is one. Otherwise, a train heading into the city centre goes under this station's route, and a train running through the city goes under its destination's route.
   - **Inbound groups** read "towards Dublin", except at city-centre stations, where they name the destination.
@@ -107,7 +107,7 @@ Six routes, defined in `core/src/intercity.ts`. Each route's paths run from its 
 
 - **Station boards** are grouped by route and by the next station each train runs to, so trains leaving in different directions get their own groups even on one route (at Mallow: towards Cork, towards Tralee, towards Heuston). Each group names where its trains are going.
   - **How trains are placed** (`intercityHeading`): on a route serving both this station and the destination. Routes share track (Heuston to Limerick Junction carries Cork, Kerry and Limerick trains), so the route that also serves the train's origin wins.
-- **Map:** **All routes** is drawn from the all-stations map (`web/src/intercitySchematic.ts`), in its compact type: each station keeps its place there, and each connection follows the same track, through the commuter stations InterCity trains skip. Shared track shows each route's colour side by side. Stations the all-stations map doesn't place yet (the Nenagh line, Gort–Craughwell, Limerick Junction–Waterford) are listed under the map and appear once it places them. **By route** shows one route at a time, with every station.
+- **Map:** **All routes** is drawn from the all-stations map (`web/src/maps/data/intercitySchematic.ts`), in its compact type: each station keeps its place there, and each connection follows the same track, through the commuter stations InterCity trains skip. Shared track shows each route's colour side by side. Stations the all-stations map doesn't place yet (the Nenagh line, Gort–Craughwell, Limerick Junction–Waterford) are listed under the map and appear once it places them. **By route** shows one route at a time, with every station.
 - **Left out:** Campile, Ballycullane, Wellingtonbridge and Bridgetown are in the API's station list, but the Rosslare–Waterford line has had no passenger trains since 2010.
 
 ## Maps
@@ -148,7 +148,7 @@ Both apps store favourites in one table, keyed `web:<device id>` or `alexa:<user
 ## English and Irish
 
 - **Station names** are Iarnród Éireann's official Irish names, for every station on every service, from Irish Rail's Irish station page (or, for Curragh and Manulla Junction, its station sign and Irish station page). On the all-stations map, Northern Ireland stations show the official Irish name of the place they're named after, from logainm.ie, where there is one; stations named after buildings or developments (City Hospital, Lanyon Place…) stay in English. They come from that page, cross-checked against its bilingual timetables and logainm.ie (sources are noted in `stations.ga.ts`). Stations elsewhere on the network show their English name.
-- **Interface text** is in `web/src/i18n.tsx`. Irish phrasing uses "go dtí", which doesn't change place names, and avoids nouns after numbers.
+- **Interface text** is in `web/src/lib/i18n.tsx`. Irish phrasing uses "go dtí", which doesn't change place names, and avoids nouns after numbers.
 - **Capitals:** Irish prefixes stay lowercase in capitalised text ("CNOC AN tSALAINN"), via the `Caps` component.
 - **For a fluent speaker to review:**
   - All interface wording.
@@ -210,7 +210,7 @@ Then test with `ask dialog --locale en-IE` from `packages/alexa`.
 
 The plan is to wrap this same web build in a native iOS app with [Capacitor](https://capacitorjs.com/), once the web version has proven itself. It will need:
 - The Apple Developer Program ($99/year), and Xcode.
-- An absolute API base URL in `web/src/api.ts` (e.g. a `VITE_API_BASE` env var), because the app's pages are served from `capacitor://localhost`, not the site.
+- An absolute API base URL in `web/src/lib/api.ts` (e.g. a `VITE_API_BASE` env var), because the app's pages are served from `capacitor://localhost`, not the site.
 - CORS headers for `capacitor://localhost` on `/api/*`, from the handler or a CloudFront response headers policy.
 - App icons, reusing `web/public/icon.svg`.
 - At least one genuinely native feature (a home-screen widget, haptics), because Apple rejects apps that are only a website in a wrapper.

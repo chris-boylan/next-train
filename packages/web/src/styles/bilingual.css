@@ -1,0 +1,50 @@
+/* Irish and English: lowercase Irish prefixes, wrapping long names. */
+
+/* ---------- Bilingual ---------- */
+
+/* Irish prefixes stay lowercase inside capitalised text: "CNOC AN tSALAINN". */
+.ga-prefix {
+  text-transform: none;
+}
+
+/* Irish names can be much longer than English ones, so names wrap rather than overflow. */
+.platform__name,
+.neighbour,
+.going-to__name,
+.terminus span {
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.line-map__stop {
+  white-space: normal;
+  line-height: 1.1;
+}
+
+.line-map__stop--malahide {
+  text-align: right;
+}
+
+/* "Due" / "Ag teacht" is a word, not a number: smaller than the minute numerals so it fits. */
+.train__due--now,
+.train--next .train__due--now {
+  font-size: 1.35rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.departure-row__due--now {
+  font-size: 0.95rem;
+  letter-spacing: 0;
+}
+
+/* Long destination names (mostly Irish) step down so they fit beside the track. */
+.train__dest--long {
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+}
+
+.line-map__stop--trunk,
+.line-map__stop--howth {
+  text-align: left;
+}

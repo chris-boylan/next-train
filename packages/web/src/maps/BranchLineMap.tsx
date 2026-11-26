@@ -1,5 +1,5 @@
 import type { Service } from '@dart-times/core';
-import { Caps, useI18n } from './i18n';
+import { Caps, useI18n } from '../lib/i18n';
 import { layoutNetwork } from './networkLayout';
 import { MapHits } from './MapHits';
 

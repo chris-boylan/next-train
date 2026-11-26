@@ -11,7 +11,7 @@
  */
 import { INTERCITY_STATION_CODES } from '@dart-times/core';
 import { INTERCITY_ROUTE_MAP } from './intercityRoutes';
-import { MAP_EDGES } from './NetworkMap';
+import { MAP_EDGES } from '../NetworkMap';
 import { networkSchematic } from './networkSchematic';
 import type { Schematic, SchematicPoint } from './schematics';
 

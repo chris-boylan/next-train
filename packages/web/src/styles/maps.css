@@ -1,0 +1,337 @@
+/* Network and route maps: all stations, hand-placed schematics, Dublin Commuter, interchanges. */
+
+/* ---------- All-stations map ---------- */
+
+.network-link {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px 16px;
+  border: 2px dashed var(--rule);
+  background: none;
+  text-align: left;
+}
+
+.network-link__text {
+  display: grid;
+  gap: 4px;
+}
+
+.network-link__name {
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.network {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 16px 32px;
+}
+
+.network__map {
+  margin-top: 16px;
+}
+
+.network__track {
+  stroke: var(--text);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* A line running on past branches before its next station: quiet, so the real sections stand out. */
+.network__track--waiting {
+  stroke: var(--muted);
+  stroke-width: 2;
+  stroke-dasharray: 2 6;
+}
+
+.network__tick {
+  stroke: var(--text);
+  stroke-width: 4;
+}
+
+
+
+.network__label {
+  position: absolute;
+  right: 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.network__label--major {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.network__loop {
+  margin-left: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+
+.station-row__name--no-data {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.network__no-data-note {
+  font-size: 0.8rem;
+}
+
+.network__unmapped {
+  margin-top: 16px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.network__label:hover,
+.network__label:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- Hand-placed schematics (schematics.ts) ---------- */
+
+.schematic__stop {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.schematic__stop:hover,
+.schematic__stop:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+/* Names over a horizontal line are angled up and to the right, as on many transit maps. */
+.schematic__stop--angled {
+  height: 28px;
+  transform: rotate(-58deg);
+  transform-origin: left bottom;
+}
+
+.schematic__stop--below,
+.schematic__stop--above {
+  height: 28px;
+}
+
+/* ---------- Compact geographic maps (all stations) ---------- */
+
+/* A whole network on a phone's width: smaller names, and junction names in bold without capitals. */
+.schematic--compact .schematic__stop {
+  font-size: 0.7rem;
+}
+
+.schematic--compact .line-map__stop--major {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* All stations: track in the text colour, with only the DART in its green. */
+.schematic--network .line-map__track,
+.schematic--network .line-map__tick {
+  stroke: var(--text);
+}
+
+/* Angled names never wrap, even beside the screen edge: they run up and away from their line. */
+.schematic__stop--angled.schematic__stop--wrap {
+  white-space: nowrap;
+}
+
+.schematic__stop--no-data {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* ---------- Dublin Commuter ---------- */
+
+.commuter__mode {
+  margin-top: 12px;
+}
+
+.commuter__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.commuter__legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.commuter__swatch {
+  width: 18px;
+  height: 6px;
+}
+
+.commuter__back {
+  margin-top: 14px;
+}
+
+.commuter__route {
+  margin: 12px 0 0;
+  padding-left: 10px;
+  border-left: 8px solid;
+  font-size: 1.4rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.commuter__route-name {
+  font-size: 1.4rem;
+}
+
+/* Labels on maps with lines side by side wrap onto a second line instead of running into the next line. */
+.schematic__stop--wrap {
+  height: auto;
+  min-height: 44px;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.1;
+  font-size: 0.82rem;
+}
+
+.schematic__stop--left {
+  justify-content: flex-end;
+}
+
+/* Route colour beside each group heading on a commuter station's board. */
+.board__route-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 6px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Tap targets over the station dots (MapHits): only the circles take taps, the rest of the layer lets
+   them through to the names underneath. */
+.line-map__hits {
+  pointer-events: none;
+}
+
+.line-map__hit {
+  fill: transparent;
+  pointer-events: all;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- Service line colours (all-stations map) ---------- */
+/* The same colours as the service tiles, lightened in dark mode where a deep colour would vanish. NI Railways
+   is muted: it has no live times yet. */
+:root {
+  --svc-dart: #169b62;
+  --svc-commuter: #2f6fb5;
+  --svc-intercity: #00573f;
+  --svc-cork: #b5121b;
+  --svc-enterprise: #5b2a86;
+  --svc-ni: #a3a3a8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --svc-commuter: #5b9ad8;
+    --svc-intercity: #93c4b1;
+    --svc-cork: #e0323c;
+    --svc-enterprise: #8f5fcc;
+    --svc-ni: #6e6e73;
+  }
+}
+
+:root[data-theme='dark'] {
+  --svc-commuter: #5b9ad8;
+  --svc-intercity: #93c4b1;
+  --svc-cork: #e0323c;
+  --svc-enterprise: #8f5fcc;
+  --svc-ni: #6e6e73;
+}
+
+/* ---------- Interchanges (Connolly, Heuston, Belfast) ---------- */
+/* A bigger, heavier circle and a bolder, larger name, to draw the eye to the big stations. */
+.line-map__dot--hub {
+  stroke-width: 6;
+}
+
+.schematic__stop--hub,
+.schematic--compact .schematic__stop--hub {
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* On the compact maps (all stations, InterCity), names are tightly packed: bold and a little larger, but
+   not in capitals, which run much wider. */
+.schematic--compact .schematic__stop--hub {
+  font-size: 0.8rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.schematic--compact .schematic__stop--hub-small {
+  font-size: 0.7rem;
+}
+
+/* Its padding already clears the bigger circle, and every pixel counts between the two lines. */
+.schematic__stop--hub.schematic__stop--hub-small.schematic__stop--right {
+  margin-left: 0;
+}
+
+/* Clear of the larger circle. */
+.schematic__stop--hub.schematic__stop--right {
+  margin-left: 5px;
+}
+
+.schematic__stop--hub.schematic__stop--left {
+  margin-right: 5px;
+}
+
+.schematic__stop--hub.schematic__stop--below {
+  margin-top: 4px;
+}
+
+.schematic__stop--hub.schematic__stop--above {
+  margin-top: -4px;
+}

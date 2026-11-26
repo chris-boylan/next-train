@@ -1,0 +1,130 @@
+/* Colour tokens: light and dark, and each service's theme on <html data-service>. */
+
+/* Bold Swiss: flat colour, heavy grotesk type, strict rules, no shadows or rounded pills. */
+:root {
+  --font: 'Inter Tight Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --bg: #ffffff;
+  --text: #1f1f21;
+  --muted: #5c5c5f;
+  --border: #e2e2e4;
+  --rule: #2c2c2e;
+  /* Track colours. DART: tricolour green northbound, orange southbound; each service overrides these. */
+  --north: #169b62;
+  --south: #ff883e;
+  /* Text versions with enough contrast on --bg. */
+  --north-text: #0b7a4b;
+  --south-text: #b8520a;
+  /* The station band inverts the page. */
+  --band-bg: #2c2c2e;
+  --band-text: #ffffff;
+  --band-north: #3cc28a;
+  --band-south: #ff9a57;
+  --glyph-body: #ffffff;
+  --glyph-window: #2c2c2e;
+  --glyph-stroke: #1f1f21;
+  --glyph-light: #ffd400;
+  /* Signal colours for delay flags. */
+  --minor-bg: #ffd400;
+  --minor-text: #1f1f21;
+  --major-bg: #e10600;
+  --major-text: #ffffff;
+  --star: #e0a800;
+  --lane-width: 56px;
+  --lane-gap: 10px;
+  color-scheme: light;
+}
+
+/* Dark tokens: used when the phone is in dark mode (unless the viewer picked Light), or when they picked Dark. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #1c1c1e;
+    --text: #f2f2f3;
+    --muted: #a5a5aa;
+    --border: #38383b;
+    --rule: #c7c7cc;
+    --north-text: #3cc28a;
+    --south-text: #ff9a57;
+    --band-bg: #e9e9eb;
+    --band-text: #1f1f21;
+    --band-north: #08683f;
+    --band-south: #9a4508;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #1c1c1e;
+  --text: #f2f2f3;
+  --muted: #a5a5aa;
+  --border: #38383b;
+  --rule: #c7c7cc;
+  --north-text: #3cc28a;
+  --south-text: #ff9a57;
+  --band-bg: #e9e9eb;
+  --band-text: #1f1f21;
+  --band-north: #08683f;
+  --band-south: #9a4508;
+  color-scheme: dark;
+}
+
+/* Enterprise: deep violet northbound (to Belfast), lilac southbound (to Dublin). The two differ
+   strongly in lightness as well as hue, so they stay distinct for colour-blind viewers. */
+:root[data-service='enterprise'] {
+  --north: #5b2a86;
+  --south: #a273d2;
+  --north-text: #5b2a86;
+  --south-text: #8346b8;
+  --band-north: #d0abf2;
+  --band-south: #ead7fb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-service='enterprise']:not([data-theme='light']) {
+    --north: #8f5fcc;
+    --south: #d7b7f6;
+    --north-text: #c39cf0;
+    --south-text: #e2cbfa;
+    --band-north: #5b2a86;
+    --band-south: #7a3fae;
+  }
+}
+
+:root[data-service='enterprise'][data-theme='dark'] {
+  --north: #8f5fcc;
+  --south: #d7b7f6;
+  --north-text: #c39cf0;
+  --south-text: #e2cbfa;
+  --band-north: #5b2a86;
+  --band-south: #7a3fae;
+}
+
+/* Cork Commuter: Rebel red. Deep Cork red towards Cork and Mallow, light red towards Cobh and
+   Midleton; Irish Rail has no Cork-specific colours, so this is the app's own. */
+:root[data-service='cork'] {
+  --north: #b5121b;
+  --south: #e5636b;
+  --north-text: #b5121b;
+  --south-text: #c0313a;
+  --band-north: #ff9aa0;
+  --band-south: #ffd0d3;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-service='cork']:not([data-theme='light']) {
+    --north: #e0323c;
+    --south: #f4a3a8;
+    --north-text: #ff7a82;
+    --south-text: #ffc2c6;
+    --band-north: #b5121b;
+    --band-south: #a3282f;
+  }
+}
+
+:root[data-service='cork'][data-theme='dark'] {
+  --north: #e0323c;
+  --south: #f4a3a8;
+  --north-text: #ff7a82;
+  --south-text: #ffc2c6;
+  --band-north: #b5121b;
+  --band-south: #a3282f;
+}

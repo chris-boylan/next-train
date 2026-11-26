@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useRef } from 'react';
-import { Caps, useI18n } from './i18n';
+import { Caps, useI18n } from '../lib/i18n';
 
 interface Props {
   title: string;

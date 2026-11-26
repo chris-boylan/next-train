@@ -1,6 +1,6 @@
 import type { ServiceId } from '@dart-times/core';
-import { Caps, useI18n } from './i18n';
-import { OptionsMenu } from './OptionsMenu';
+import { Caps, useI18n } from '../lib/i18n';
+import { OptionsMenu } from '../components/OptionsMenu';
 
 interface Props {
   onSelect: (service: ServiceId) => void;

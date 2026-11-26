@@ -9,7 +9,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { IrishRailClient } from '../src/irishRailClient';
 
-const out = fileURLToPath(new URL('../../web/src/network.data.ts', import.meta.url));
+const out = fileURLToPath(new URL('../../web/src/maps/data/network.data.ts', import.meta.url));
 const client = new IrishRailClient({ timeoutMs: 15_000 });
 const allStations = (await client.getAllStations()).map((s) => ({
   code: s.StationCode.trim(),

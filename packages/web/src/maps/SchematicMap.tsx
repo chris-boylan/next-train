@@ -1,7 +1,7 @@
 import type { Service } from '@dart-times/core';
-import { useI18n } from './i18n';
+import { useI18n } from '../lib/i18n';
 import { PositionedMap } from './PositionedMap';
-import type { Schematic } from './schematics';
+import type { Schematic } from './data/schematics';
 
 interface Props {
   service: Service;

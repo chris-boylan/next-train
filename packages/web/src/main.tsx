@@ -2,9 +2,9 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@fontsource-variable/inter-tight';
 import { App } from './App';
-import { LangProvider } from './i18n';
-import './styles.css';
-import { applyTheme } from './theme';
+import { LangProvider } from './lib/i18n';
+import './styles/index.css';
+import { applyTheme } from './lib/theme';
 
 applyTheme();
 

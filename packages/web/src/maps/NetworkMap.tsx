@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react';
 import { findStationByCode, searchStations, type Station } from '@dart-times/core';
-import { useI18n } from './i18n';
-import { NETWORK_EDGES, NETWORK_STATIONS } from './network.data';
-import { useNetworkName } from './networkNames';
-import { NETWORK_TERMINI, networkSchematic, withBreaks } from './networkSchematic';
-import { servicesByTrack, SERVICE_LINE_COLOURS, trackColours, type MapService } from './networkColours';
-import { hasNoData, isNorthern, NI_STATIONS, withNorthernTrack } from './northernStations';
-import { OptionsMenu } from './OptionsMenu';
+import { useI18n } from '../lib/i18n';
+import { NETWORK_EDGES, NETWORK_STATIONS } from './data/network.data';
+import { useNetworkName } from './data/networkNames';
+import { NETWORK_TERMINI, networkSchematic, withBreaks } from './data/networkSchematic';
+import { servicesByTrack, SERVICE_LINE_COLOURS, trackColours, type MapService } from './data/networkColours';
+import { hasNoData, isNorthern, NI_STATIONS, withNorthernTrack } from './data/northernStations';
+import { OptionsMenu } from '../components/OptionsMenu';
 import { PositionedMap } from './PositionedMap';
-import { Sheet } from './Sheet';
+import { Sheet } from '../components/Sheet';
 
 interface Props {
   onBack: () => void;

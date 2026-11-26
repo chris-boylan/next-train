@@ -10,12 +10,12 @@ import {
   type Station,
   terminiFrom,
 } from '@dart-times/core';
-import { formatTime, useNow } from './clock';
-import { DeparturesSheet } from './DeparturesSheet';
-import { Caps, useI18n } from './i18n';
-import { OptionsMenu } from './OptionsMenu';
-import { getGoingTo, setGoingTo } from './prefs';
-import { useDepartures } from './useDepartures';
+import { formatTime, useNow } from '../lib/clock';
+import { DeparturesSheet } from '../components/DeparturesSheet';
+import { Caps, useI18n } from '../lib/i18n';
+import { OptionsMenu } from '../components/OptionsMenu';
+import { getGoingTo, setGoingTo } from '../lib/prefs';
+import { useDepartures } from '../lib/useDepartures';
 
 const TRAINS_PER_DIRECTION = 3;
 /** Data refreshes every 30s; older than this and something's wrong (e.g. no signal). */

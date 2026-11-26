@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { searchStations, type Service, type Station } from '@dart-times/core';
-import { BranchLineMap } from './BranchLineMap';
-import { COMMUTER_ROUTE_MAP } from './commuterRoutes';
-import { commuterSchematicFor } from './commuterSchematic';
-import { INTERCITY_ROUTE_MAP } from './intercityRoutes';
-import { intercitySchematic } from './intercitySchematic';
-import { NETWORK_TERMINI, withBreaks } from './networkSchematic';
-import { LineMap } from './LineMap';
-import { SchematicMap } from './SchematicMap';
-import { SCHEMATICS } from './schematics';
-import { Caps, useI18n } from './i18n';
-import { OptionsMenu } from './OptionsMenu';
-import { RoutesMap, type RoutesView } from './RoutesMap';
-import { SimpleLineMap } from './SimpleLineMap';
+import { BranchLineMap } from '../maps/BranchLineMap';
+import { COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
+import { commuterSchematicFor } from '../maps/data/commuterSchematic';
+import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
+import { intercitySchematic } from '../maps/data/intercitySchematic';
+import { NETWORK_TERMINI, withBreaks } from '../maps/data/networkSchematic';
+import { LineMap } from '../maps/LineMap';
+import { SchematicMap } from '../maps/SchematicMap';
+import { SCHEMATICS } from '../maps/data/schematics';
+import { Caps, useI18n } from '../lib/i18n';
+import { OptionsMenu } from '../components/OptionsMenu';
+import { RoutesMap, type RoutesView } from '../maps/RoutesMap';
+import { SimpleLineMap } from '../maps/SimpleLineMap';
 
 interface Props {
   service: Service;
