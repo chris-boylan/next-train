@@ -15,6 +15,8 @@ interface Props {
   direction: Direction;
   stationCode: string;
   origin?: JourneyOrigin;
+  /** Where the track and train are on the station page now, to glide back to when closing. */
+  returnTo: () => Partial<JourneyOrigin> | undefined;
   closing: boolean;
   onClose: () => void;
 }
@@ -27,15 +29,33 @@ const GLIDE = { duration: 850, delay: 80, easing: EASE, fill: 'backwards' } as c
 /** When the stops start appearing (after the glide has mostly settled), and the gap between each. */
 const STOPS_FROM_MS = 700;
 const STOP_STEP_MS = 55;
+/** Closing is the opening in reverse: stops fade first, then the track and train glide back (mirrored curve). */
+const RETURN = { duration: 750, delay: 160, easing: 'cubic-bezier(0.8, 0, 0.55, 1)', fill: 'forwards' } as const;
 /** How long closing takes; TrackView waits this long before removing the view. */
-export const JOURNEY_CLOSE_MS = 350;
+export const JOURNEY_CLOSE_MS = RETURN.delay + RETURN.duration + 40;
+
+/** The transforms that put the centred track and train back where they are on the station page. */
+function placeAt(lane: HTMLElement, glyph: HTMLElement, at: Partial<JourneyOrigin>, side: 'north' | 'south') {
+  const to = lane.getBoundingClientRect();
+  const g = glyph.getBoundingClientRect();
+  return {
+    // The station page's track runs from its edge of the screen to the platform, so it scales from that end.
+    origin: `50% ${side === 'north' ? 'bottom' : 'top'}`,
+    lane:
+      at.lane &&
+      `translateX(${at.lane.left + at.lane.width / 2 - (to.left + to.width / 2)}px) scaleY(${at.lane.height / to.height})`,
+    glyph:
+      at.glyph &&
+      `translate(${at.glyph.left + at.glyph.width / 2 - (g.left + g.width / 2)}px, ${at.glyph.top + at.glyph.height / 2 - (g.top + g.height / 2)}px) scale(${at.glyph.width / g.width})`,
+  };
+}
 
 /**
  * A train's look-ahead, drawn over the station page: its track moves to the centre and runs the full height,
  * the train sits at the end it's coming from, and its stops to the terminus line the track with expected times.
  * Northbound trains travel up, so the train sits at the bottom with the stops above; southbound, the reverse.
  */
-export function JourneyView({ train, direction, stationCode, origin, closing, onClose }: Props) {
+export function JourneyView({ train, direction, stationCode, origin, returnTo, closing, onClose }: Props) {
   const { t, nameOf, destinationName } = useI18n();
   const { journey, error } = useJourney(train.trainCode, stationCode);
   const side = direction === 'Northbound' ? 'north' : 'south';
@@ -51,33 +71,32 @@ export function JourneyView({ train, direction, stationCode, origin, closing, on
     const lane = laneRef.current;
     const glyph = glyphRef.current;
     if (!origin || !lane || !glyph || reduceMotion()) return;
-    const to = lane.getBoundingClientRect();
-    const anchor = side === 'north' ? 'bottom' : 'top';
-    const dx = origin.lane.left + origin.lane.width / 2 - (to.left + to.width / 2);
-    const laneAnimation = lane.animate(
-      [
-        { transform: `translateX(${dx}px) scaleY(${origin.lane.height / to.height})`, transformOrigin: `50% ${anchor}` },
-        { transform: 'none', transformOrigin: `50% ${anchor}` },
-      ],
-      GLIDE,
-    );
-    const g = glyph.getBoundingClientRect();
-    const scale = origin.glyph.width / g.width;
-    const glyphAnimation = glyph.animate(
-      [
-        {
-          transform: `translate(${origin.glyph.left + origin.glyph.width / 2 - (g.left + g.width / 2)}px, ${origin.glyph.top + origin.glyph.height / 2 - (g.top + g.height / 2)}px) scale(${scale})`,
-        },
-        { transform: 'none' },
-      ],
-      GLIDE,
-    );
+    const from = placeAt(lane, glyph, origin, side);
+    const animations = [
+      lane.animate([{ transform: from.lane, transformOrigin: from.origin }, { transform: 'none', transformOrigin: from.origin }], GLIDE),
+      glyph.animate([{ transform: from.glyph }, { transform: 'none' }], GLIDE),
+    ];
     // Cancelled if the effect runs again, so the next measurement isn't taken mid-animation.
-    return () => {
-      laneAnimation.cancel();
-      glyphAnimation.cancel();
-    };
+    return () => animations.forEach((a) => a.cancel());
   }, [origin, side]);
+
+  // Closing: the same glide in reverse, back to where the track and train are now. If the train has left the
+  // station page's list meanwhile, it fades instead.
+  useLayoutEffect(() => {
+    const lane = laneRef.current;
+    const glyph = glyphRef.current;
+    if (!closing || !lane || !glyph || reduceMotion()) return;
+    const to = placeAt(lane, glyph, returnTo() ?? {}, side);
+    const animations = [
+      to.lane
+        ? lane.animate([{ transform: 'none', transformOrigin: to.origin }, { transform: to.lane, transformOrigin: to.origin }], RETURN)
+        : lane.animate([{ opacity: 1 }, { opacity: 0 }], RETURN),
+      to.glyph
+        ? glyph.animate([{ transform: 'none' }, { transform: to.glyph }], RETURN)
+        : glyph.animate([{ opacity: 1 }, { opacity: 0 }], RETURN),
+    ];
+    return () => animations.forEach((a) => a.cancel());
+  }, [closing, returnTo, side]);
 
   useEffect(() => {
     glyphRef.current?.focus({ preventScroll: true });

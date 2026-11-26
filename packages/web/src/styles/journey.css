@@ -38,9 +38,16 @@
   --journey-color: var(--south);
 }
 
-.journey--closing {
+/* Closing: the stops and the "now" line fade first, then the track and train glide back (see JourneyView). */
+.journey--closing .journey__stop,
+.journey--closing .journey__now {
   opacity: 0;
-  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 220ms ease-in;
+}
+
+/* …while the station page fades back in, starting as the track begins to move. */
+.tracks--returning > :not(.journey) {
+  transition-delay: 160ms;
 }
 
 .journey__lane {

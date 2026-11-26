@@ -72,6 +72,13 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
       setClosingJourney(false);
     }, JOURNEY_CLOSE_MS);
   }, []);
+  // Where the train's track and the train itself are on the station page right now (for the glide back).
+  const returnTo = useCallback(() => {
+    if (!journey) return undefined;
+    const lane = document.querySelector(journey.direction === 'Northbound' ? '.half--bottom .lane--north' : '.half--top .lane--south');
+    const glyph = document.querySelector(`.train[data-train="${CSS.escape(journey.train.trainCode)}"] .train__glyph`);
+    return { lane: lane?.getBoundingClientRect(), glyph: glyph?.getBoundingClientRect() };
+  }, [journey]);
   const openJourney = (train: Departure, direction: Direction, glyph: Element | null) => {
     // Northbound trains come up the green track in the bottom half; southbound down the orange one at the top.
     const lane = document.querySelector(direction === 'Northbound' ? '.half--bottom .lane--north' : '.half--top .lane--south');
@@ -161,7 +168,7 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
         </div>
       </header>
 
-      <div className={`tracks${journey && !closingJourney ? ' tracks--journey' : ''}`}>
+      <div className={`tracks${journey && !closingJourney ? ' tracks--journey' : ''}${closingJourney ? ' tracks--returning' : ''}`}>
         {/* Top half: southbound trains on their way in, nearest at the bottom. Green arrow continues up to its termini. */}
         <section className="half half--top" aria-label={t.towards(t.direction.Southbound, list(south.map(nameOf)))}>
           {/* Orange runs edge to edge through its trains; green carries on past the platform to its arrowhead halfway up. */}
@@ -213,6 +220,7 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
             direction={journey.direction}
             stationCode={station.code}
             origin={journey.origin}
+            returnTo={returnTo}
             closing={closingJourney}
             onClose={closeJourney}
           />
@@ -335,7 +343,7 @@ function Trains({
       {side === 'south' && more}
       <ol className={`trains trains--${side}`}>
         {trains.map((d, i) => (
-          <li key={d.trainCode} className={`train train--${side}${i === 0 ? ' train--next' : ''}`} aria-label={describe(d)}>
+          <li key={d.trainCode} data-train={d.trainCode} className={`train train--${side}${i === 0 ? ' train--next' : ''}`} aria-label={describe(d)}>
             {/* The whole row opens the train's look-ahead. */}
             <button
               className="train__open"
