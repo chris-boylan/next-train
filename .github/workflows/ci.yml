@@ -1,0 +1,35 @@
+# Checks every pull request and every push to main. It never deploys: deploying is a separate, manual workflow
+# (deploy.yml). The job name is a required status check in main's branch protection, so keep it as is.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels that PR's older checks; pushes to main each run on their own.
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('ci-pr-{0}', github.ref) || format('ci-run-{0}', github.run_id) }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Test, typecheck, build, synth
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22 # matches the Lambda runtime
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build:web
+      # Synth without AWS credentials catches infra mistakes on pull requests too.
+      - run: npx cdk synth --quiet
+        working-directory: packages/infra
