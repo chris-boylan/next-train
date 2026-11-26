@@ -38,23 +38,6 @@
   --journey-color: var(--south);
 }
 
-/* Closing, the track slides back under the station sign, as it sits on the station page. */
-.journey--closing {
-  z-index: 1;
-}
-
-/* Closing: the stops and the "now" line fade first, then the track and train glide back (see JourneyView). */
-.journey--closing .journey__stop,
-.journey--closing .journey__now {
-  animation: journey-out 240ms ease-in forwards;
-  animation-delay: 0ms !important;
-}
-
-@keyframes journey-out {
-  to {
-    opacity: 0;
-  }
-}
 
 /* …and only once they're back in place does the rest of the station page fade in (timings in JourneyView). */
 .tracks--returning > :not(.journey) {
@@ -219,6 +202,26 @@
   font-weight: 700;
   line-height: 1.25;
   animation: journey-stop-in 500ms ease both;
+}
+
+/* Closing, the track slides back under the station sign, as it sits on the station page. */
+.journey--closing {
+  z-index: 1;
+}
+
+/* Closing: the stops and the "now" line fade first, then the track and train glide back (see JourneyView). */
+/* Placed last and made more specific than the entrance rules (including the southbound one), so closing
+   always wins in both directions. */
+.journey.journey--closing .journey__stop,
+.journey.journey--closing .journey__now {
+  animation: journey-out 240ms ease-in forwards;
+  animation-delay: 0ms;
+}
+
+@keyframes journey-out {
+  to {
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

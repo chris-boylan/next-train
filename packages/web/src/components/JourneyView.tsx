@@ -124,7 +124,7 @@ export function JourneyView({ train, direction, stationCode, origin, returnTo, c
         <button ref={glyphRef} className="journey__glyph" onClick={onClose} aria-label={t.journey.close}>
           <TrainGlyph />
         </button>
-        <p className="journey__now" role="status" style={{ animationDelay: `${STOPS_FROM_MS + 150}ms` }}>
+        <p className="journey__now" role="status" style={closing ? undefined : { animationDelay: `${STOPS_FROM_MS + 150}ms` }}>
           {journey ? <NowLine now={journey.now} name={(code, fallback) => (nameOf(code) !== code ? nameOf(code) : fallback)} /> : error ? t.journey.unavailable : t.journey.loading}
         </p>
       </div>
@@ -137,7 +137,8 @@ export function JourneyView({ train, direction, stationCode, origin, returnTo, c
             <li
               key={stop.code}
               className={`journey__stop${here ? ' journey__stop--here' : ''}${end ? ' journey__stop--end' : ''}${stop.cancelled ? ' journey__stop--cancelled' : ''}`}
-              style={{ animationDelay: `${firstDelay + Math.min(i, 16) * STOP_STEP_MS}ms` }}
+              // The entrance delay staggers the stops in; closing drops it so they all fade out straight away.
+              style={closing ? undefined : { animationDelay: `${firstDelay + Math.min(i, 16) * STOP_STEP_MS}ms` }}
             >
               <span className="journey__name">
                 <Caps text={label(stop)} />
