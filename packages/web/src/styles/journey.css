@@ -3,7 +3,7 @@
 
 /* The station page fades away under the look-ahead (the tapped train and its track glide into place). */
 .tracks > :not(.journey) {
-  transition: opacity 450ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 600ms cubic-bezier(0.45, 0, 0.55, 1);
 }
 
 .tracks--journey > :not(.journey) {
