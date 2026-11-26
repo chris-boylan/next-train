@@ -1239,6 +1239,12 @@ p {
   --tile-south: #e5636b;
 }
 
+/* Dublin Commuter's tile shows its first two route colours (Northern teal, Western blue). */
+.service-tile--commuter {
+  --tile-north: #00897b;
+  --tile-south: #3f51b5;
+}
+
 .service-tile {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -1499,19 +1505,13 @@ p {
   height: 28px;
 }
 
-/* ---------- Dublin Commuter preview ---------- */
+/* ---------- Dublin Commuter ---------- */
 
-.preview__note {
-  margin: -4px 0 10px;
-  font-size: 0.75rem;
-  color: var(--muted);
+.commuter__mode {
+  margin-top: 12px;
 }
 
-.preview__mode {
-  margin-top: 4px;
-}
-
-.preview__legend {
+.commuter__legend {
   display: flex;
   flex-wrap: wrap;
   gap: 6px 14px;
@@ -1522,22 +1522,22 @@ p {
   font-weight: 700;
 }
 
-.preview__legend li {
+.commuter__legend li {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.preview__swatch {
+.commuter__swatch {
   width: 18px;
   height: 6px;
 }
 
-.preview__back {
+.commuter__back {
   margin-top: 14px;
 }
 
-.preview__route {
+.commuter__route {
   margin: 12px 0 0;
   padding-left: 10px;
   border-left: 8px solid;
@@ -1546,7 +1546,7 @@ p {
   text-transform: uppercase;
 }
 
-.preview__route-name {
+.commuter__route-name {
   font-size: 1.4rem;
 }
 
@@ -1555,10 +1555,20 @@ p {
   height: auto;
   min-height: 44px;
   white-space: normal;
+  text-align: left;
   line-height: 1.1;
   font-size: 0.82rem;
 }
 
 .schematic__stop--left {
   justify-content: flex-end;
+}
+
+/* Route colour beside each group heading on a commuter station's board. */
+.board__route-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 6px;
+  margin-right: 8px;
+  vertical-align: middle;
 }

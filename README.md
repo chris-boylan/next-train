@@ -2,7 +2,7 @@
 
 Live Irish Rail train times as a **mobile-first web app** and an **Alexa skill**, sharing one TypeScript core. Data comes from the free [Irish Rail real-time API](http://api.irishrail.ie/realtime/).
 
-- **Web app:** DART, Enterprise (Dublin–Belfast) and Cork Commuter, each with its own line map and live station pages. There's also a departure board for every Irish Rail station, reached from an all-stations map, and a preview of Dublin Commuter. English and Irish, light and dark.
+- **Web app:** DART, Enterprise (Dublin–Belfast), Cork Commuter and Dublin Commuter, each with its own map and live station pages. There's also a departure board for every Irish Rail station, reached from an all-stations map. English and Irish, light and dark.
 - **Alexa skill:** DART departures and favourites by voice (DART only so far).
 
 It's unofficial and not affiliated with Iarnród Éireann.
@@ -25,11 +25,11 @@ Recent work is on stacked branches, each building on the one before. Merge them 
 | `main` | DART, Enterprise, Bold Swiss design, bilingual, going-to filter |
 | `feature/network-map` | All-stations map, station boards for every station, search, "Next Train?" name |
 | `feature/cork-commuter` | Cork Commuter (Rebel red, geography-inspired map), curved map corners |
-| `preview/dublin-commuter` | Dublin Commuter preview (all routes vs by route) |
+| `feature/dublin-commuter` | Dublin Commuter service: geography-inspired map, live boards grouped by route |
 
 ## Using the web app
 
-The first page is a **service picker**: DART, Enterprise or Cork Commuter, plus **Dublin Commuter (preview)** and **All stations**. Choosing a service opens its line map, then a station.
+The app always opens on the **service picker**: DART, Enterprise, Cork Commuter, Dublin Commuter, or **All stations**. Choosing a service opens its map, then a station.
 
 - **Line maps:** tap a station to open it. Search finds stations by English or Irish name, fadas optional, and tolerates small typos ("connoly"). Favourites appear as chips.
 - **Station page** (`web/src/TrackView.tsx`):
@@ -40,7 +40,7 @@ The first page is a **service picker**: DART, Enterprise or Cork Commuter, plus 
   - **Refresh:** every 30 s while the tab is visible.
 - **Going-to filter:** each section ends in "+ N more" (or "Filter"), which opens every departure that way for the next 90 minutes with "going to" chips. Choosing a destination hides trains that won't get you there and dims the other track. A chip under the station name clears it. The choice is remembered per station.
 - **Options cog:** language (English | Irish) and appearance (Light | Dark). Light/dark follows the phone unless you choose.
-- **Links:** `?service=enterprise&station=DDALK` opens a station directly. The app reopens where you left off.
+- **Links:** `?service=enterprise&station=DDALK` opens a station directly. Without a link, the app opens on the service picker.
 
 ## Services
 
@@ -49,11 +49,13 @@ The first page is a **service picker**: DART, Enterprise or Cork Commuter, plus 
 | **DART** | Greystones–Bray–Connolly–Howth Junction, then Howth or Malahide | 32 | `LineMap` (hand-drawn) | Green / orange |
 | **Enterprise** | Connolly–Drogheda–Dundalk–Newry–Portadown–Belfast | 6 | `SimpleLineMap` | Deep violet / lilac |
 | **Cork Commuter** | Cobh and Midleton, meeting at Glounthaune, then Cork Kent and Mallow | 10 | `SchematicMap` (geography-inspired) | Deep / light Rebel red |
+| **Dublin Commuter** | Four routes from Connolly and Heuston (below) | 70 | `CommuterMap` (geography-inspired) | One colour per route |
 
 - **Where they're defined:** lines are in `core/src/line.ts` (`DART_LINE`, `ENTERPRISE_LINE`, `CORK_LINE`) and services in `core/src/services.ts`. Line helpers take a line and default to the DART, so the Alexa skill is unaffected.
 - **Identifying trains:** the API only says "DART" or "Train".
   - **Enterprise:** trains to or from Belfast.
   - **Cork:** commuter (non-"A"-code) trains starting or ending at Cork, Cobh, Midleton or Mallow.
+  - **Dublin Commuter:** other commuter trains (not DART, not "A"-code InterCity, not Enterprise or Cork).
 - **Directions:** the station page works out each train's direction from the line layout (from here to its destination). That's because some services' API directions read "To Cork" rather than Northbound/Southbound. On Cork, "northbound" means towards Cork and Mallow, and Cork is a turn-back like Bray.
 - **Verification:**
   - **DART:** checked against live trains (`npm run verify-line`).
@@ -68,15 +70,23 @@ The first page is a **service picker**: DART, Enterprise or Cork Commuter, plus 
 - **InterCity vs Commuter:** InterCity is identified by train codes starting with "A". That's an observed pattern, not documented by Irish Rail.
 - **Where the network data comes from:** the API lists station locations but not how they connect. `npm run build-network -w @dart-times/core` samples every running train's stop list, which includes stations passed without stopping, and writes the connections to `web/src/network.data.ts`. Each run adds to earlier ones, so run it at different times to fill gaps. It also merges duplicate station codes, drops links that skip a station, and estimates missing positions. About 16 stations on lightly used lines (Nenagh, Clonmel, Gort…) aren't connected yet.
 
-## Dublin Commuter (preview)
+## Dublin Commuter
 
-Linked from the first page. A toggle compares two presentations:
-- **All routes:** one geography-inspired map, with Connolly and Heuston as the hubs (`web/src/commuterSchematic.ts`).
-- **By route:** pick Northern, Western, South Western or South Eastern first, and see just that route.
+Four routes, defined in `core/src/commuter.ts` with each route's paths running city end first:
 
-**How the routes are built:** they're traced through the recorded track connections (`web/src/commuterRoutes.ts`).
+| Route | Runs |
+|---|---|
+| **Northern** | Connolly – Malahide – Drogheda – Dundalk |
+| **Western** | Connolly – Drumcondra – Broombridge – Clonsilla – Maynooth, with M3 Parkway (from Clonsilla) and Docklands (from Broombridge) |
+| **South Western** | Heuston, or Grand Canal Dock via Connolly and the Phoenix Park tunnel, to Park West – Hazelhatch – Kildare – Portlaoise |
+| **South Eastern** | Connolly – down the DART line – Greystones – Wicklow – Arklow – Gorey |
 
-**Status:** layout only for now. There are no live times, station names aren't tappable, and the route colours are provisional.
+- **Map** (`web/src/CommuterMap.tsx`): a toggle switches between **All routes**, one geography-inspired map with Connolly and Heuston as hubs (`web/src/commuterSchematic.ts`), and **By route**, which shows one route at a time.
+- **Station boards:** commuter stations can be on several routes (Connolly is on four), so tapping one opens a board grouped by route and direction, e.g. "Northern · towards Drogheda / Dundalk", rather than the two-track page.
+  - **How trains are placed** (`commuterHeading`): on a route serving both this station and the destination if there is one. Otherwise, a train heading into the city centre goes under this station's route, and a train running through the city goes under its destination's route.
+  - **Inbound groups** read "towards Dublin", except at city-centre stations, where they name the destination.
+  - **Unplaced trains:** those to places off the network (e.g. Longford) are grouped by the API's own direction.
+- **Verification:** the routes were traced from track connections recorded from live trains. All 70 station codes answer in the departures feed (Curragh and Gorey were quiet at 10:00, which is expected).
 
 ## Maps
 
@@ -84,9 +94,9 @@ Linked from the first page. A toggle compares two presentations:
 |---|---|---|
 | `LineMap` | DART | Hand-drawn branches |
 | `SimpleLineMap` | Enterprise (single line) | One straight line |
-| `SchematicMap` → `PositionedMap` | Cork, Dublin Commuter preview | Hand-placed positions in `schematics.ts` / `commuterSchematic.ts`, with bend points drawn as curves |
+| `SchematicMap` → `PositionedMap` | Cork, Dublin Commuter (all routes) | Hand-placed positions in `schematics.ts` / `commuterSchematic.ts`, with bend points drawn as curves |
 | `BranchLineMap` | Any other branching service | Automatic, from the line's paths (`networkLayout.ts`) |
-| `TreeMap` | All stations, commuter "by route" | Automatic: the longest branch carries straight on and shorter branches step right, so it fits a phone's width |
+| `TreeMap` | All stations, Dublin Commuter "by route" | Automatic: the longest branch carries straight on and shorter branches step right, so it fits a phone's width |
 
 All maps share the flat "Bold Swiss" style: circles for ends of lines, junctions and turn-backs, ticks for other stations, and curved corners.
 
@@ -109,19 +119,21 @@ Both apps store favourites in one table, keyed `web:<device id>` or `alexa:<user
 ## API
 
 - **`GET /api/stations`:** DART stations.
-- **`GET /api/stations/:code/departures?service=dart|enterprise|cork&direction=&limit=`:** a service's trains at one of its stations.
+- **`GET /api/stations/:code/departures?service=dart|enterprise|cork|commuter&direction=&limit=`:** a service's trains at one of its stations.
 - **`GET /api/stations/:code/departures?service=all`:** every train at any Irish Rail station, with categories.
 - **`GET | PUT | DELETE /api/favourites[/:code]`:** needs an `x-device-id` header.
 
 ## English and Irish
 
-- **Station names** are Iarnród Éireann's official Irish names, for all DART, Enterprise and Cork stations. They come from its Irish-language timetables-by-station page, cross-checked against its bilingual timetables and logainm.ie (sources are noted in `stations.ga.ts`). Other stations show their English name.
+- **Station names** are Iarnród Éireann's official Irish names, for every DART, Enterprise, Cork and Dublin Commuter station except Curragh, which has none on Irish Rail's Irish page or timetables. They come from that page, cross-checked against its bilingual timetables and logainm.ie (sources are noted in `stations.ga.ts`). Stations elsewhere on the network show their English name.
 - **Interface text** is in `web/src/i18n.tsx`. Irish phrasing uses "go dtí", which doesn't change place names, and avoids nouns after numbers.
 - **Capitals:** Irish prefixes stay lowercase in capitalised text ("CNOC AN tSALAINN"), via the `Caps` component.
 - **For a fluent speaker to review:**
   - All interface wording.
   - The short forms for Howth Junction and Sandycove.
   - Grand Canal Dock: Irish Rail uses both "Dug" and "Duga".
+  - Places where Irish Rail's own sources disagree (Docklands "Dugthailte" vs "Ceantar na nDugaí", Drumcondra, Newbridge, M3 Parkway). We use the station page's form.
+  - Our short forms for Clondalkin, Hazelhatch and Sallins, which mirror the English API names.
   - Service and route names, which are kept in English for now ("Cork Commuter", "Dublin Commuter", "Northern"…).
 
 ## Alexa skill

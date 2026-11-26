@@ -5,16 +5,16 @@ import { OptionsMenu } from './OptionsMenu';
 interface Props {
   onSelect: (service: ServiceId) => void;
   onOpenNetwork: () => void;
-  onOpenCommuterPreview: () => void;
 }
 
 /** The top level: pick a service, then its map, then a station. */
-export function ServicePicker({ onSelect, onOpenNetwork, onOpenCommuterPreview }: Props) {
+export function ServicePicker({ onSelect, onOpenNetwork }: Props) {
   const { t, nameOf } = useI18n();
   const routes: Record<ServiceId, string> = {
     dart: `${nameOf('HOWTH')} · ${nameOf('MHIDE')} – ${nameOf('GSTNS')}`,
     enterprise: t.dublinBelfast,
     cork: `${nameOf('CORK')} – ${nameOf('COBH')} · ${nameOf('MDLTN')} · ${nameOf('MLLOW')}`,
+    commuter: `${nameOf('DDALK')} · ${nameOf('MYNTH')} · ${nameOf('PTLSE')} · ${nameOf('GOREY')}`,
   };
 
   return (
@@ -47,15 +47,6 @@ export function ServicePicker({ onSelect, onOpenNetwork, onOpenCommuterPreview }
           </li>
         ))}
       </ul>
-      <button className="network-link" onClick={onOpenCommuterPreview}>
-        <span className="network-link__text">
-          <span className="network-link__name">{t.dublinCommuter}</span>
-          <span className="service-tile__route">{t.previewNote}</span>
-        </span>
-        <span className="service-tile__go" aria-hidden>
-          ›
-        </span>
-      </button>
       <button className="network-link" onClick={onOpenNetwork}>
         <span className="network-link__text">
           <span className="network-link__name">{t.allStations}</span>

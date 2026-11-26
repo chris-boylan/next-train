@@ -4,5 +4,6 @@ export * from './line';
 export * from './stations';
 export * from './departures';
 export * from './services';
+export * from './commuter';
 export * from './describe';
 export * from './favourites';

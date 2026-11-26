@@ -53,7 +53,7 @@ column(['LXCON', 'LXLSA', 'MYNTH'], WEST_X, 110, -1);
 // other or Park West's name.
 const HEUSTON_JUNCTION: [number, number] = [WEST_X, 790];
 points.HSTON = { x: 138, y: 790, label: 'right' };
-column(['CHORC', 'CLDKN', 'KISHO', 'ADAMF', 'HZLCH', 'SALNS', 'NBRGE', 'CURAH', 'KDARE'], WEST_X, 840, 1);
+column(['CHORC', 'CLDKN', 'KISHO', 'ADAMF', 'HZLCH', 'SALNS', 'NBRGE', 'CURAH', 'KDARE', 'MONVN', 'PTRTN', 'PTLSE'], WEST_X, 840, 1);
 
 const bends: Record<string, [number, number][]> = {
   // The 45° line carries straight on from Broombridge, then curves up into the Western line.

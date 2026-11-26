@@ -12,7 +12,9 @@ describe('station data', () => {
 
   it('looks up stations by their exact Irish Rail name', () => {
     expect(findStationByName('Dublin Connolly')?.code).toBe('CNLLY');
-    expect(findStationByName('Kilcoole')).toBeUndefined();
+    // Kilcoole isn't on the DART (the API lists it there by mistake) but is on the South Eastern commuter line.
+    expect(findStationByName('Kilcoole')?.code).toBe('KCOOL');
+    expect(DART_STATIONS.some((s) => s.code === 'KCOOL')).toBe(false);
   });
 });
 
@@ -59,7 +61,8 @@ describe('searchStations', () => {
 
 describe('Irish names', () => {
   it('has an official Irish name for every station, on every service', () => {
-    expect(ALL_STATIONS.filter((s) => !s.irishName).map((s) => s.code)).toEqual([]);
+    // Curragh has no Irish name on Irish Rail's Irish station page or in any of its timetables.
+    expect(ALL_STATIONS.filter((s) => !s.irishName).map((s) => s.code)).toEqual(['CURAH']);
   });
 
   it('uses short forms that mirror the English short name', () => {

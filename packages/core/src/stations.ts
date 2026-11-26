@@ -1,6 +1,7 @@
 import { branchOf, CORK_LINE, ENTERPRISE_LINE, LINE_ORDER } from './line';
 import type { Station } from './types';
 import { DART_STATION_DATA } from './stations.data';
+import { COMMUTER_STATION_DATA } from './stations.commuter.data';
 import { CORK_STATION_DATA } from './stations.cork.data';
 import { ENTERPRISE_STATION_DATA } from './stations.enterprise.data';
 import { IRISH_NAMES } from './stations.ga';
@@ -83,11 +84,15 @@ for (const code of new Set(CORK_LINE.paths.flat())) {
   if (!CORK_STATIONS.some((s) => s.code === code)) throw new Error(`Station ${code} is on the Cork line but missing from stations.cork.data.ts`);
 }
 
+/** Commuter stations not already on the DART or Enterprise. `COMMUTER_STATIONS` (services.ts) adds the shared ones. */
+export const COMMUTER_ONLY_STATIONS: Station[] = COMMUTER_STATION_DATA.map(toStation);
+
 /** Every station the apps know about, across all services. Lookups by code or name use this. */
 export const ALL_STATIONS: Station[] = [
   ...DART_STATIONS,
   ...ENTERPRISE_STATIONS.filter((s) => !DART_STATIONS.includes(s)),
   ...CORK_STATIONS,
+  ...COMMUTER_ONLY_STATIONS,
 ];
 
 export function findStationByCode(code: string, stations: Station[] = ALL_STATIONS): Station | undefined {

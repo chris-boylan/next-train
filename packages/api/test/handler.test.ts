@@ -80,3 +80,18 @@ describe('API handler: all trains', () => {
     expect(categories).toEqual(new Set(['dart', 'enterprise', 'intercity', 'commuter']));
   });
 });
+
+describe('API handler: Dublin Commuter', () => {
+  it('returns only commuter trains for ?service=commuter', async () => {
+    const res = await request('GET', '/api/stations/CNLLY/departures?service=commuter');
+    expect(res.statusCode).toBe(200);
+    const departures = body(res).departures as { category: string }[];
+    expect(departures.length).toBeGreaterThan(0);
+    expect(departures.every((d) => d.category === 'commuter')).toBe(true);
+  });
+
+  it('accepts commuter-only stations and rejects ones off the network', async () => {
+    expect((await request('GET', '/api/stations/MYNTH/departures?service=commuter')).statusCode).toBe(200);
+    expect((await request('GET', '/api/stations/HOWTH/departures?service=commuter')).statusCode).toBe(404);
+  });
+});
