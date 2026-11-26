@@ -16,8 +16,12 @@ import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
 import { getGoingTo, setGoingTo } from '../lib/prefs';
 import { useDepartures } from '../lib/useDepartures';
+import { useMediaQuery } from '../lib/useMediaQuery';
 
+/** Trains shown on each track; very short screens (e.g. 320×568 phones) only fit two above the "more" link. */
 const TRAINS_PER_DIRECTION = 3;
+const TRAINS_PER_DIRECTION_SHORT = 2;
+const SHORT_SCREEN = '(max-height: 600px)';
 /** Data refreshes every 30s; older than this and something's wrong (e.g. no signal). */
 const STALE_AFTER_MS = 90_000;
 
@@ -67,13 +71,14 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
   const goingToName = goingTo && nameOf(goingTo);
   const name = stationName(station);
 
+  const perDirection = useMediaQuery(SHORT_SCREEN) ? TRAINS_PER_DIRECTION_SHORT : TRAINS_PER_DIRECTION;
   const trainsFor = (direction: Direction, ends: string[]) => {
     const shown = shownIn(direction);
     return (
       <Trains
         direction={direction}
-        trains={dimmed(direction) ? [] : shown.slice(0, TRAINS_PER_DIRECTION)}
-        moreCount={dimmed(direction) ? 0 : Math.max(0, shown.length - TRAINS_PER_DIRECTION)}
+        trains={dimmed(direction) ? [] : shown.slice(0, perDirection)}
+        moreCount={dimmed(direction) ? 0 : Math.max(0, shown.length - perDirection)}
         onMore={() => setSheetDirection(direction)}
         ends={ends}
         goingToName={goingDirection === direction ? goingToName : undefined}
