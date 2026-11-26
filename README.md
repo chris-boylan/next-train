@@ -189,7 +189,7 @@ Needs AWS credentials, and an [Amazon developer account](https://developer.amazo
 
 **Optional deploy flags** (add them to every `npm run deploy`, or put them in `packages/infra/cdk.json` under `context`):
 - `-c domainName=example.ie`: serve the site on your own domain (and `www.`). Buy the domain in Route 53 (Registered domains), which creates its hosted zone. The certificate goes in a small extra stack in us-east-1, because CloudFront only accepts certificates from there. Bootstrap us-east-1 once as well.
-- `-c budgetEmail=you@example.com`: a $5/month AWS Budgets alert, emailed at 80% of actual spend and if the forecast goes over. Don't commit the email.
+- `-c budgetEmail=you@example.com`: a $5/month AWS Budgets alert, emailed when actual spend passes $4 (80%) and $5, and when the month's forecast goes over $5. Don't commit the email.
 
 ```bash
 # 1. First time only, per account/region (add us-east-1 if you use a custom domain)

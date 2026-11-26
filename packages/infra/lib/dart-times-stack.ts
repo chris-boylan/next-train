@@ -170,6 +170,7 @@ export class DartTimesStack extends Stack {
         },
         notificationsWithSubscribers: [
           { notification: { notificationType: 'ACTUAL', comparisonOperator: 'GREATER_THAN', threshold: 80 }, subscribers },
+          { notification: { notificationType: 'ACTUAL', comparisonOperator: 'GREATER_THAN', threshold: 100 }, subscribers },
           { notification: { notificationType: 'FORECASTED', comparisonOperator: 'GREATER_THAN', threshold: 100 }, subscribers },
         ],
       });
