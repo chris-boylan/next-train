@@ -46,7 +46,7 @@ function tick(p: SchematicPoint): string {
   return `M${p.x},${p.y} h12`;
 }
 
-function labelStyle(p: SchematicPoint, maxWidth?: number): CSSProperties {
+function labelStyle(p: SchematicPoint, circle: boolean, maxWidth?: number): CSSProperties {
   switch (p.label) {
     case 'right':
       return { left: p.x + 14, top: p.y - 22, maxWidth };
@@ -56,7 +56,8 @@ function labelStyle(p: SchematicPoint, maxWidth?: number): CSSProperties {
     case 'below':
       return { left: p.x - 24, top: p.y + 12, maxWidth };
     case 'angled':
-      return { left: p.x + 2, top: p.y - 30 };
+      // Start clear of a full station circle; a tick needs less room.
+      return circle ? { left: p.x + 10, top: p.y - 44 } : { left: p.x + 2, top: p.y - 30 };
   }
 }
 
@@ -133,14 +134,14 @@ export function PositionedMap({
           <button
             key={code}
             className={className}
-            style={labelStyle(p, labelMaxWidth)}
+            style={labelStyle(p, major(code) || code === currentCode, labelMaxWidth)}
             onClick={() => onSelect(code)}
             aria-label={`${name(code)}${favourite ? `, ${t.favourite}` : ''}`}
           >
             {content}
           </button>
         ) : (
-          <span key={code} className={className} style={labelStyle(p, labelMaxWidth)}>
+          <span key={code} className={className} style={labelStyle(p, major(code) || code === currentCode, labelMaxWidth)}>
             {content}
           </span>
         );
