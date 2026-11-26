@@ -18,14 +18,13 @@ packages/
 
 ## Branches
 
-Recent work is on stacked branches, each building on the one before. Merge them in order when they're ready:
+Everything is merged into `main`. New work goes on a feature branch off `main`. The feature branches below have all been merged in, and are kept for history:
 
-| Branch | Adds |
+| Branch | Added |
 |---|---|
-| `main` | DART, Enterprise, Bold Swiss design, bilingual, going-to filter |
 | `feature/network-map` | All-stations map, station boards for every station, search, "Next Train?" name |
 | `feature/cork-commuter` | Cork Commuter (Rebel red, geography-inspired map), curved map corners |
-| `feature/dublin-commuter` | Dublin Commuter service: geography-inspired map, live boards grouped by route |
+| `feature/dublin-commuter` | Dublin Commuter service: geography-inspired map, live boards grouped by route, tappable map dots |
 
 ## Using the web app
 

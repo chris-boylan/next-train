@@ -39,4 +39,4 @@ Unit tests run against XML fixtures recorded from the real API in `packages/core
 
 ## Branches
 
-Work is on stacked branches meant to merge in order: `main` → `feature/network-map` → `feature/cork-commuter` → `feature/dublin-commuter`. Keep the README's branch table in sync when adding one.
+Everything is merged into `main` (the old `feature/network-map`, `feature/cork-commuter` and `feature/dublin-commuter` branches are kept for history). New work goes on a feature branch off `main`. Keep the README's branch table in sync when adding one.
