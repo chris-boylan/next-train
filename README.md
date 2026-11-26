@@ -29,12 +29,13 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feature/pwa-deploy` | Installable PWA, optional custom domain, API Gateway replaced by a Lambda Function URL, 20 s edge cache on departures, budget alert |
 | `refactor/web-structure` | Web app organised into `screens/`, `components/`, `maps/`, `lib/` and per-area `styles/` |
 | `feature/cicd` | GitHub Actions CI/CD with an approval gate and keyless (OIDC) AWS deploys |
+| `feature/favourites-home` | Options choice to show favourites in each service or together on the home page; favourites for every service's stations |
 
 ## Using the web app
 
 The app always opens on the **service picker**: DART, Enterprise, Cork Commuter, Dublin Commuter, InterCity, or **All stations**. Choosing a service opens its map, then a station.
 
-- **Line maps:** tap a station to open it. Search finds stations by English or Irish name, fadas optional, and tolerates small typos ("connoly"). Favourites appear as chips.
+- **Line maps:** tap a station to open it. Search finds stations by English or Irish name, fadas optional, and tolerates small typos ("connoly"). Favourites appear as chips: on each service's page, or all together on the home page if the options cog says so (a home-page favourite opens every train at that station).
 - **Station page** (`web/src/screens/TrackView.tsx`):
   - **Tracks:** a fixed-size station sign sits between two tracks. The darker northbound track runs up the left, the lighter southbound track runs down the right, and each arrowhead names where trains in that direction end up.
   - **Trains:** the next 3 trains each way approach the platform. Late trains show ~~scheduled~~ `+delay` expected.

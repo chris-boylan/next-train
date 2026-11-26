@@ -1,13 +1,13 @@
 // Local development server: runs the Lambda handler on http://localhost:3001 with in-memory favourites.
 import { createServer } from 'node:http';
 import type { APIGatewayProxyEventV2 } from 'aws-lambda';
-import { FavouritesService, InMemoryFavouritesRepository, IrishRailClient } from '@dart-times/core';
+import { ALL_STATIONS, FavouritesService, InMemoryFavouritesRepository, IrishRailClient } from '@dart-times/core';
 import { createHandler } from './handler';
 
 const port = Number(process.env.PORT ?? 3001);
 const handler = createHandler({
   client: new IrishRailClient(),
-  favourites: new FavouritesService(new InMemoryFavouritesRepository()),
+  favourites: new FavouritesService(new InMemoryFavouritesRepository(), ALL_STATIONS),
 });
 
 createServer(async (req, res) => {

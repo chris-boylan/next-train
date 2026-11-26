@@ -1,10 +1,14 @@
-import type { ServiceId } from '@dart-times/core';
+import type { ServiceId, Station } from '@dart-times/core';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
+import { useFavouritesPlace } from '../lib/prefs';
 
 interface Props {
   onSelect: (service: ServiceId) => void;
   onOpenNetwork: () => void;
+  /** Every favourite, shown here when the options say favourites go on the home page. */
+  favourites: Station[];
+  onSelectFavourite: (station: Station) => void;
 }
 
 /**
@@ -15,8 +19,9 @@ interface Props {
 export const SERVICE_ORDER: ServiceId[] = ['dart', 'commuter', 'intercity', 'cork', 'enterprise'];
 
 /** The top level: pick a service, then its map, then a station. */
-export function ServicePicker({ onSelect, onOpenNetwork }: Props) {
-  const { t, nameOf } = useI18n();
+export function ServicePicker({ onSelect, onOpenNetwork, favourites, onSelectFavourite }: Props) {
+  const { t, nameOf, stationName } = useI18n();
+  const [favouritesPlace] = useFavouritesPlace();
   const routes: Record<ServiceId, string> = {
     dart: `${nameOf('HOWTH')} · ${nameOf('MHIDE')} – ${nameOf('GSTNS')}`,
     enterprise: t.dublinBelfast,
@@ -33,6 +38,18 @@ export function ServicePicker({ onSelect, onOpenNetwork }: Props) {
           <OptionsMenu />
         </div>
       </header>
+      {favouritesPlace === 'home' && favourites.length > 0 && (
+        <>
+          <h2 className="services__heading">{t.favouriteStations}</h2>
+          <div className="favourites favourites--home" aria-label={t.favouriteStations}>
+            {favourites.map((s) => (
+              <button key={s.code} className="chip chip--fav" onClick={() => onSelectFavourite(s)}>
+                ★ <Caps text={stationName(s)} />
+              </button>
+            ))}
+          </div>
+        </>
+      )}
       <h2 className="services__heading">{t.chooseService}</h2>
       <ul className="services">
         {SERVICE_ORDER.map((id) => (

@@ -26,8 +26,8 @@ export function App() {
   });
   const [favourites, setFavourites] = useState<Station[]>([]);
   const [showNetwork, setShowNetwork] = useState(false);
-  // A station opened from the all-stations map.
-  const [boardStation, setBoardStation] = useState<{ code: string; name: string }>();
+  // A station opened from the all-stations map, or from a favourite on the home page.
+  const [boardStation, setBoardStation] = useState<{ code: string; name: string; from: 'map' | 'home' }>();
   // Highlighted on the map when you go back to it.
   const [previousCode, setPreviousCode] = useState(stationCode);
   // Each route-based service's map view (all routes, the route list, or one route), kept here so coming back
@@ -64,15 +64,31 @@ export function App() {
         code={boardStation.code}
         name={boardStation.name}
         mode="all"
-        backLabel={t.map}
+        backLabel={boardStation.from === 'home' ? t.services : t.map}
         onBack={() => setBoardStation(undefined)}
+        // Stations only on the all-stations map (no live data from Irish Rail) can't be favourites.
+        favourite={
+          findStationByCode(boardStation.code)
+            ? { on: isFavourite(boardStation.code), toggle: () => toggleFavourite(boardStation.code) }
+            : undefined
+        }
       />
     );
   }
   if (showNetwork) {
-    return <NetworkMap onBack={() => setShowNetwork(false)} onSelectStation={(code, name) => setBoardStation({ code, name })} />;
+    return <NetworkMap onBack={() => setShowNetwork(false)} onSelectStation={(code, name) => setBoardStation({ code, name, from: 'map' })} />;
   }
-  if (!service) return <ServicePicker onSelect={selectService} onOpenNetwork={() => setShowNetwork(true)} />;
+  if (!service) {
+    // A home-page favourite isn't tied to one service (Connolly is on four), so it opens every train there.
+    return (
+      <ServicePicker
+        onSelect={selectService}
+        onOpenNetwork={() => setShowNetwork(true)}
+        favourites={favourites}
+        onSelectFavourite={(s) => setBoardStation({ code: s.code, name: stationName(s), from: 'home' })}
+      />
+    );
+  }
 
   const station = stationCode ? findStationByCode(stationCode, service.stations) : undefined;
   const routesView = routesViews[service.id] ?? { mode: 'all' };
