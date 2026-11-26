@@ -3,7 +3,7 @@
 
 /* The station page fades away under the look-ahead (the tapped train and its track glide into place). */
 .tracks > :not(.journey) {
-  transition: opacity 200ms ease;
+  transition: opacity 450ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tracks--journey > :not(.journey) {
@@ -40,7 +40,7 @@
 
 .journey--closing {
   opacity: 0;
-  transition: opacity 200ms ease;
+  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .journey__lane {
@@ -77,13 +77,25 @@
   column-gap: 12px;
   min-height: 52px;
   flex: none;
-  animation: journey-stop-in 320ms ease both;
+  animation: journey-stop-in 500ms cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+
+/* Northbound stops rise into place (the train is below them); southbound ones drop into place. */
+.journey--south .journey__stop {
+  animation-name: journey-stop-in-down;
 }
 
 @keyframes journey-stop-in {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(10px);
+  }
+}
+
+@keyframes journey-stop-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
 }
 
@@ -186,7 +198,7 @@
   font-size: 0.8rem;
   font-weight: 700;
   line-height: 1.25;
-  animation: journey-stop-in 320ms 260ms ease both;
+  animation: journey-stop-in 500ms ease both;
 }
 
 @media (prefers-reduced-motion: reduce) {

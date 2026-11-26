@@ -20,7 +20,15 @@ interface Props {
 }
 
 const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const EASE = 'cubic-bezier(0.2, 0.8, 0.2, 1)';
+// A soft ease-in-out: starts gently, glides, and settles gently. The track and train move together, a moment
+// after the station page starts fading; the stops then appear one by one, from the train towards the terminus.
+const EASE = 'cubic-bezier(0.45, 0, 0.2, 1)';
+const GLIDE = { duration: 850, delay: 80, easing: EASE, fill: 'backwards' } as const;
+/** When the stops start appearing (after the glide has mostly settled), and the gap between each. */
+const STOPS_FROM_MS = 700;
+const STOP_STEP_MS = 55;
+/** How long closing takes; TrackView waits this long before removing the view. */
+export const JOURNEY_CLOSE_MS = 350;
 
 /**
  * A train's look-ahead, drawn over the station page: its track moves to the centre and runs the full height,
@@ -33,6 +41,10 @@ export function JourneyView({ train, direction, stationCode, origin, closing, on
   const side = direction === 'Northbound' ? 'north' : 'south';
   const laneRef = useRef<HTMLDivElement>(null);
   const glyphRef = useRef<HTMLButtonElement>(null);
+  // Stops appear once the glide has settled, timed from opening (not from when the data arrives), and fixed the
+  // first time they render so a refresh never replays them.
+  const openedAt = useRef(performance.now());
+  const stopsDelay = useRef<number>();
 
   // The station page's track and train glide to their new places (FLIP: start where they were, animate to here).
   useLayoutEffect(() => {
@@ -47,7 +59,7 @@ export function JourneyView({ train, direction, stationCode, origin, closing, on
         { transform: `translateX(${dx}px) scaleY(${origin.lane.height / to.height})`, transformOrigin: `50% ${anchor}` },
         { transform: 'none', transformOrigin: `50% ${anchor}` },
       ],
-      { duration: 450, easing: EASE },
+      GLIDE,
     );
     const g = glyph.getBoundingClientRect();
     const scale = origin.glyph.width / g.width;
@@ -58,7 +70,7 @@ export function JourneyView({ train, direction, stationCode, origin, closing, on
         },
         { transform: 'none' },
       ],
-      { duration: 450, easing: EASE },
+      GLIDE,
     );
     // Cancelled if the effect runs again, so the next measurement isn't taken mid-animation.
     return () => {
@@ -77,6 +89,10 @@ export function JourneyView({ train, direction, stationCode, origin, closing, on
   const destination = destinationName(train);
   const label = (stop: JourneyStop) => (nameOf(stop.code) !== stop.code ? nameOf(stop.code) : stop.name);
   const stops = journey?.stops ?? [];
+  if (stops.length && stopsDelay.current === undefined) {
+    stopsDelay.current = Math.max(0, STOPS_FROM_MS - (performance.now() - openedAt.current));
+  }
+  const firstDelay = stopsDelay.current ?? 0;
 
   return (
     <section className={`journey journey--${side}${closing ? ' journey--closing' : ''}`} aria-label={t.journey.stops(destination)}>
@@ -86,7 +102,7 @@ export function JourneyView({ train, direction, stationCode, origin, closing, on
         <button ref={glyphRef} className="journey__glyph" onClick={onClose} aria-label={t.journey.close}>
           <TrainGlyph />
         </button>
-        <p className="journey__now" role="status">
+        <p className="journey__now" role="status" style={{ animationDelay: `${STOPS_FROM_MS + 150}ms` }}>
           {journey ? <NowLine now={journey.now} name={(code, fallback) => (nameOf(code) !== code ? nameOf(code) : fallback)} /> : error ? t.journey.unavailable : t.journey.loading}
         </p>
       </div>
@@ -99,7 +115,7 @@ export function JourneyView({ train, direction, stationCode, origin, closing, on
             <li
               key={stop.code}
               className={`journey__stop${here ? ' journey__stop--here' : ''}${end ? ' journey__stop--end' : ''}${stop.cancelled ? ' journey__stop--cancelled' : ''}`}
-              style={{ animationDelay: `${180 + Math.min(i, 14) * 28}ms` }}
+              style={{ animationDelay: `${firstDelay + Math.min(i, 16) * STOP_STEP_MS}ms` }}
             >
               <span className="journey__name">
                 <Caps text={label(stop)} />

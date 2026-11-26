@@ -12,7 +12,7 @@ import {
 } from '@dart-times/core';
 import { formatTime, useNow } from '../lib/clock';
 import { DeparturesSheet } from '../components/DeparturesSheet';
-import { type JourneyOrigin, JourneyView } from '../components/JourneyView';
+import { JOURNEY_CLOSE_MS, type JourneyOrigin, JourneyView } from '../components/JourneyView';
 import { TrainGlyph } from '../components/TrainGlyph';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
@@ -70,7 +70,7 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
     setTimeout(() => {
       setJourney(undefined);
       setClosingJourney(false);
-    }, 200);
+    }, JOURNEY_CLOSE_MS);
   }, []);
   const openJourney = (train: Departure, direction: Direction, glyph: Element | null) => {
     // Northbound trains come up the green track in the bottom half; southbound down the orange one at the top.
