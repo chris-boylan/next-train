@@ -42,4 +42,4 @@ Unit tests run against XML fixtures recorded from the real API in `packages/core
 
 ## Branches
 
-Everything is merged into `main` (the old `feature/network-map`, `feature/cork-commuter`, `feature/dublin-commuter`, `feature/intercity` and `feature/pwa-deploy` branches are kept for history). New work goes on a feature branch off `main`. Keep the README's branch table in sync when adding one.
+Everything is merged into `main` (the old `feature/network-map`, `feature/cork-commuter`, `feature/dublin-commuter`, `feature/intercity`, `feature/pwa-deploy` and `refactor/web-structure` branches are kept for history). New work goes on a feature branch off `main`. Keep the README's branch table in sync when adding one.

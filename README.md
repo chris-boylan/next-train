@@ -27,6 +27,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feature/dublin-commuter` | Dublin Commuter service: geography-inspired map, live boards grouped by route, tappable map dots |
 | `feature/intercity` | InterCity service: six routes, live boards grouped by route, map drawn from the all-stations layout |
 | `feature/pwa-deploy` | Installable PWA, optional custom domain, API Gateway replaced by a Lambda Function URL, 20 s edge cache on departures, budget alert |
+| `refactor/web-structure` | Web app organised into `screens/`, `components/`, `maps/`, `lib/` and per-area `styles/` |
 
 ## Using the web app
 
