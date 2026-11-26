@@ -14,6 +14,8 @@ export interface SchematicPoint {
   label: LabelPlacement;
   /** Shift the label sideways (px) to clear a nearby line, e.g. a negative value moves it left. */
   labelDx?: number;
+  /** Wrap this label wider than this; overrides the map's labelMaxWidth. */
+  labelWidth?: number;
 }
 
 export interface Schematic {

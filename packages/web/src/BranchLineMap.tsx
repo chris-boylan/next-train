@@ -1,6 +1,7 @@
 import type { Service } from '@dart-times/core';
 import { Caps, useI18n } from './i18n';
 import { layoutNetwork } from './networkLayout';
+import { MapHits } from './MapHits';
 
 interface Props {
   service: Service;
@@ -91,6 +92,12 @@ export function BranchLineMap({ service, favouriteCodes, currentCode, onSelect }
           </button>
         );
       })}
+      <MapHits
+        width={WIDTH}
+        height={height}
+        points={layout.stations.map((s) => ({ code: s.code, x: x(s.col), y: y(s.row) }))}
+        onSelect={onSelect}
+      />
     </nav>
   );
 }

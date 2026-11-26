@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { BRANCHES, findStationByCode, JUNCTION, TRUNK } from '@dart-times/core';
 import { Caps, useI18n } from './i18n';
+import { MapHits } from './MapHits';
 
 interface Props {
   favouriteCodes: string[];
@@ -104,6 +105,7 @@ export function LineMap({ favouriteCodes, currentCode, onSelect }: Props) {
           </button>
         );
       })}
+      <MapHits width={WIDTH} height={HEIGHT} points={POINTS} onSelect={onSelect} />
     </nav>
   );
 }

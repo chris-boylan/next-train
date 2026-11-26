@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { type CommuterRouteId, type Service } from '@dart-times/core';
-import { ALL_COMMUTER_EDGES, COMMUTER_MAP_ROUTES, routeOf } from './commuterRoutes';
-import { COMMUTER_SCHEMATIC } from './commuterSchematic';
+import { ALL_COMMUTER_EDGES, COMMUTER_MAP_ROUTES, routeColoursOf } from './commuterRoutes';
+import { commuterSchematic } from './commuterSchematic';
 import { useI18n } from './i18n';
 import { PositionedMap } from './PositionedMap';
 import { TreeMap } from './TreeMap';
@@ -18,7 +18,9 @@ interface Props {
  * choose a route and see only its stations. Tap a station for its departures.
  */
 export function CommuterMap({ service, favouriteCodes, currentCode, onSelect }: Props) {
-  const { t, stationName } = useI18n();
+  const { t, lang, stationName } = useI18n();
+  // Irish names are longer and wrap onto more lines, so stations sit further apart in Irish.
+  const schematic = useMemo(() => commuterSchematic(lang === 'ga' ? 50 : 34), [lang]);
   const [mode, setMode] = useState<'all' | 'byRoute'>('all');
   const [routeId, setRouteId] = useState<CommuterRouteId>();
   const route = COMMUTER_MAP_ROUTES.find((r) => r.id === routeId);
@@ -55,12 +57,12 @@ export function CommuterMap({ service, favouriteCodes, currentCode, onSelect }: 
             ))}
           </ul>
           <PositionedMap
-            schematic={COMMUTER_SCHEMATIC}
+            schematic={schematic}
             edges={ALL_COMMUTER_EDGES}
             codes={service.stations.map((s) => s.code)}
             name={name}
             major={(code) => ALL_COMMUTER_EDGES.filter((e) => e.includes(code)).length !== 2}
-            colourOf={(a, b) => routeOf(a, b)?.colour}
+            colourOf={routeColoursOf}
             favouriteCodes={favouriteCodes}
             currentCode={currentCode}
             onSelect={onSelect}

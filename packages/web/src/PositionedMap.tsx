@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { Caps, useI18n } from './i18n';
 import type { Schematic, SchematicPoint } from './schematics';
+import { MapHits } from './MapHits';
 
 interface Props {
   schematic: Schematic;
@@ -10,8 +11,9 @@ interface Props {
   name: (code: string) => string;
   /** Circles for ends of lines, junctions and turn-backs; ticks for the rest. */
   major: (code: string) => boolean;
-  /** Colour for a connection; undefined uses the default line colour. Ticks take their line's colour. */
-  colourOf?: (a: string, b: string) => string | undefined;
+  /** Colour for a connection; undefined uses the default line colour. Ticks take their line's colour. Track
+   *  shared by several routes takes a list, drawn as stripes side by side. */
+  colourOf?: (a: string, b: string) => string | string[] | undefined;
   favouriteCodes?: string[];
   currentCode?: string;
   /** Makes station names tappable. */
@@ -20,6 +22,27 @@ interface Props {
 }
 
 const CORNER_RADIUS = 28;
+/** Matches .line-map__track's stroke-width. */
+const TRACK_WIDTH = 10;
+
+/** Shifts a line sideways by `by` (positive: to its left, travelling along it), keeping corners mitred. */
+function offsetLine(points: [number, number][], by: number): [number, number][] {
+  const normal = (a: [number, number], b: [number, number]): [number, number] => {
+    const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    return [(a[1] - b[1]) / len, (b[0] - a[0]) / len];
+  };
+  return points.map((p, i) => {
+    const before = i > 0 ? normal(points[i - 1]!, p) : undefined;
+    const after = i < points.length - 1 ? normal(p, points[i + 1]!) : undefined;
+    const n1 = before ?? after!;
+    const n2 = after ?? before!;
+    // At a corner, shift along the average of the two sides' normals, stretched so both sides keep the gap.
+    const mx = n1[0] + n2[0];
+    const my = n1[1] + n2[1];
+    const scale = by / ((mx * n1[0] + my * n1[1]) || 1);
+    return [p[0] + mx * scale, p[1] + my * scale];
+  });
+}
 
 /** A line through `points`, with each corner replaced by a curve of up to CORNER_RADIUS. */
 function roundedPath(points: [number, number][]): string {
@@ -46,8 +69,9 @@ function tick(p: SchematicPoint): string {
   return `M${p.x},${p.y} h12`;
 }
 
-function labelStyle(p: SchematicPoint, circle: boolean, maxWidth?: number): CSSProperties {
+function labelStyle(p: SchematicPoint, circle: boolean, mapMaxWidth?: number): CSSProperties {
   const dx = p.labelDx ?? 0;
+  const maxWidth = p.labelWidth ?? mapMaxWidth;
   switch (p.label) {
     case 'right':
       return { left: p.x + 14 + dx, top: p.y - 22, maxWidth };
@@ -79,9 +103,13 @@ export function PositionedMap({
 }: Props) {
   const { t } = useI18n();
   const { points, width, height, bends = {}, labelMaxWidth } = schematic;
+  const coloursOf = (a: string, b: string): (string | undefined)[] => {
+    const c = colourOf?.(a, b);
+    return Array.isArray(c) && c.length > 0 ? c : [typeof c === 'string' ? c : undefined];
+  };
   const tickStyle = (code: string) => {
     const edge = edges.find((e) => e.includes(code));
-    const colour = edge && colourOf?.(...edge);
+    const colour = edge && coloursOf(...edge)[0];
     return colour ? { stroke: colour } : undefined;
   };
   // A connection's full route: from, any corners (reversed if drawn the other way), to.
@@ -96,16 +124,34 @@ export function PositionedMap({
         <text x={width - 14} y={18} textAnchor="end" className="line-map__compass">
           {t.compassNorth} ↑
         </text>
-        {edges.map(([a, b]) => {
-          const colour = colourOf?.(a, b);
-          return (
+        {edges.flatMap(([a, b]) => {
+          const colours = coloursOf(a, b);
+          const line = routeOf(a, b);
+          if (colours.length === 1) {
+            const colour = colours[0];
+            return [
+              <path
+                key={`${a}|${b}`}
+                d={roundedPath(line)}
+                className="line-map__track"
+                style={colour ? { stroke: colour } : undefined}
+              />,
+            ];
+          }
+          // Shared track: one stripe per route, side by side across the track's width. Lines all run top to
+          // bottom (then left to right) first, so each route's stripe stays on the same side from one
+          // connection to the next.
+          const [first, last] = [line[0]!, line.at(-1)!];
+          const ordered = first[1] < last[1] || (first[1] === last[1] && first[0] < last[0]) ? line : [...line].reverse();
+          const stripe = TRACK_WIDTH / colours.length;
+          return colours.map((colour, i) => (
             <path
-              key={`${a}|${b}`}
-              d={roundedPath(routeOf(a, b))}
+              key={`${a}|${b}|${i}`}
+              d={roundedPath(offsetLine(ordered, (i - (colours.length - 1) / 2) * stripe))}
               className="line-map__track"
-              style={colour ? { stroke: colour } : undefined}
+              style={{ strokeWidth: stripe, strokeLinejoin: 'miter', ...(colour ? { stroke: colour } : {}) }}
             />
-          );
+          ));
         })}
         {codes.map((code) => {
           const p = points[code]!;
@@ -129,7 +175,11 @@ export function PositionedMap({
         const className = `schematic__stop schematic__stop--${p.label}${labelMaxWidth ? ' schematic__stop--wrap' : ''}${major(code) ? ' line-map__stop--major' : ''}${code === currentCode ? ' line-map__stop--current' : ''}`;
         const content = (
           <>
-            <Caps text={name(code)} />
+            {/* One span for the whole name: Caps puts Irish prefixes in their own spans, which the flex
+                label would otherwise lay out as separate, scattered pieces. */}
+            <span className="schematic__name">
+              <Caps text={name(code)} />
+            </span>
             {favourite && <span className="line-map__fav">★</span>}
           </>
         );
@@ -149,6 +199,14 @@ export function PositionedMap({
           </span>
         );
       })}
+      {onSelect && (
+        <MapHits
+          width={width}
+          height={height}
+          points={codes.map((code) => ({ code, ...points[code]! }))}
+          onSelect={onSelect}
+        />
+      )}
     </nav>
   );
 }

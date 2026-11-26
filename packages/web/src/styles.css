@@ -1572,3 +1572,16 @@ p {
   margin-right: 8px;
   vertical-align: middle;
 }
+
+/* Tap targets over the station dots (MapHits): only the circles take taps, the rest of the layer lets
+   them through to the names underneath. */
+.line-map__hits {
+  pointer-events: none;
+}
+
+.line-map__hit {
+  fill: transparent;
+  pointer-events: all;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}

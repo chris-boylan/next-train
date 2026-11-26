@@ -40,7 +40,7 @@ export function routeColour(id: CommuterRouteId): string {
   return COLOURS[id];
 }
 
-/** The first route (in COMMUTER_ROUTES order) that uses a connection, for colouring the combined map. */
-export function routeOf(a: string, b: string): CommuterMapRoute | undefined {
-  return COMMUTER_MAP_ROUTES.find((r) => r.edges.some((e) => pairKey(...e) === pairKey(a, b)));
+/** The colours of every route using a connection (in COMMUTER_ROUTES order), so shared track shows them all. */
+export function routeColoursOf(a: string, b: string): string[] {
+  return COMMUTER_MAP_ROUTES.filter((r) => r.edges.some((e) => pairKey(...e) === pairKey(a, b))).map((r) => r.colour);
 }

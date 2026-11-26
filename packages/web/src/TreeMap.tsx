@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Caps } from './i18n';
 import { layoutNetwork } from './networkLayout';
+import { MapHits } from './MapHits';
 
 interface Props {
   edges: [string, string][];
@@ -83,7 +84,10 @@ export function TreeMap({ edges, root, name, colourOf, tickColourOf, onSelect, l
         const style = { top: y(s.row) - ROW / 2, left: x(s.col) + 16 };
         const content = (
           <>
-            <Caps text={name(s.code)} />
+            {/* One span for the name, so Irish prefixes (their own spans inside Caps) don't scatter in the flex label. */}
+            <span>
+              <Caps text={name(s.code)} />
+            </span>
             {loop && <span className="network__loop"> ↔ {name(loop.to)}</span>}
           </>
         );
@@ -97,6 +101,18 @@ export function TreeMap({ edges, root, name, colourOf, tickColourOf, onSelect, l
           </span>
         );
       })}
+      {onSelect && (
+        <MapHits
+          width={WIDTH}
+          height={height}
+          points={layout.stations.map((s) => ({
+            code: s.code,
+            x: x(s.col),
+            y: y(s.row),
+          }))}
+          onSelect={(code) => onSelect(code, name(code))}
+        />
+      )}
     </nav>
   );
 }
