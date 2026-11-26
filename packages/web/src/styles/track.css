@@ -355,6 +355,58 @@
   background: var(--major-bg);
 }
 
+/* Short phones (iPhone SE: 667px tall): tighter rows, so three trains and the "more" link fit each half. */
+@media (max-height: 740px) {
+  .half {
+    padding: 4px 0;
+  }
+
+  .trains {
+    gap: 2px;
+  }
+
+  .train {
+    height: 60px;
+  }
+
+  .train--next {
+    height: 72px;
+  }
+
+  .train__due {
+    font-size: 1.75rem;
+  }
+
+  .train--next .train__due {
+    font-size: 2.25rem;
+  }
+
+  .train__dest {
+    margin-top: 0;
+  }
+
+  .more {
+    min-height: 32px;
+  }
+}
+
+/* Narrow phones (320px): the delay and expected time say it all, so the struck-out scheduled time goes. */
+@media (max-width: 359px) {
+  .train__scheduled {
+    display: none;
+  }
+
+  /* Keep the header on one line: "NOW" goes (the clock speaks for itself) and the back chip doesn't wrap. */
+  .clock__label {
+    display: none;
+  }
+
+  .track-view__bar .chip {
+    white-space: nowrap;
+    padding-inline: 8px;
+  }
+}
+
 .trains-empty {
   font-size: 0.75rem;
   font-weight: 700;
