@@ -1,21 +1,25 @@
 import { describe, expect, it } from 'vitest';
 import type { APIGatewayProxyEventV2 } from 'aws-lambda';
-import { FavouritesService, InMemoryFavouritesRepository } from '@dart-times/core';
+import { type FeedbackEntry, FavouritesService, FeedbackService, InMemoryFavouritesRepository, InMemoryFeedbackRepository } from '@dart-times/core';
 import { fixtureClient } from '../../core/test/fixtures';
 import { createHandler } from '../src/handler';
 
+const feedbackRepo = new InMemoryFeedbackRepository();
+const emailed: FeedbackEntry[] = [];
 const handler = createHandler({
   client: fixtureClient('connolly-midday.xml'),
   favourites: new FavouritesService(new InMemoryFavouritesRepository()),
+  feedback: new FeedbackService(feedbackRepo, { notify: async (e) => void emailed.push(e) }),
 });
 
-function request(method: string, path: string, headers: Record<string, string> = {}) {
+function request(method: string, path: string, headers: Record<string, string> = {}, body?: string) {
   const url = new URL(path, 'http://x');
   return handler({
     rawPath: url.pathname,
     queryStringParameters: Object.fromEntries(url.searchParams),
     headers,
     requestContext: { http: { method } },
+    body,
   } as unknown as APIGatewayProxyEventV2);
 }
 
@@ -117,5 +121,32 @@ describe('API handler: Intercity', () => {
   it('accepts Intercity-only stations and rejects ones off the network', async () => {
     expect((await request('GET', '/api/stations/GALWY/departures?service=intercity')).statusCode).toBe(200);
     expect((await request('GET', '/api/stations/HOWTH/departures?service=intercity')).statusCode).toBe(404);
+  });
+});
+
+describe('API handler: feedback', () => {
+  const send = (body: unknown, headers: Record<string, string> = { 'x-device-id': 'feedback-device-1', 'user-agent': 'Safari' }) =>
+    request('POST', '/api/feedback', headers, typeof body === 'string' ? body : JSON.stringify(body));
+
+  it('saves and emails a message', async () => {
+    const res = await send({ message: 'Love the app', email: 'me@example.ie', elapsedMs: 9000, lang: 'en' });
+    expect(res.statusCode).toBe(200);
+    expect(body(res)).toEqual({ ok: true });
+    expect(res.headers?.['cache-control']).toBe('no-store');
+    expect(feedbackRepo.entries.at(-1)).toMatchObject({ deviceId: 'feedback-device-1', message: 'Love the app', email: 'me@example.ie', userAgent: 'Safari' });
+    expect(emailed.at(-1)?.message).toBe('Love the app');
+  });
+
+  it('rejects bad requests', async () => {
+    expect((await send({ message: 'hi', elapsedMs: 9000 })).statusCode).toBe(400);
+    expect((await send('not json')).statusCode).toBe(400);
+    expect((await send({ message: 'Hello there', elapsedMs: 9000 }, {})).statusCode).toBe(400);
+    expect((await request('GET', '/api/feedback', device)).statusCode).toBe(405);
+  });
+
+  it('answers 429 once a device has sent too many', async () => {
+    const headers = { 'x-device-id': 'feedback-device-busy' };
+    for (let i = 0; i < 3; i++) expect((await send({ message: `Message ${i}`, elapsedMs: 9000 }, headers)).statusCode).toBe(200);
+    expect((await send({ message: 'One more', elapsedMs: 9000 }, headers)).statusCode).toBe(429);
   });
 });

@@ -1,10 +1,22 @@
+import { execSync } from 'node:child_process';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 const GREEN = '#169b62';
 
+/** e.g. "2026-11-26 · 45232c5": the build date and commit, shown on the help page. */
+function appVersion(): string {
+  const date = new Date().toISOString().slice(0, 10);
+  try {
+    return `${date} · ${execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim()}`;
+  } catch {
+    return date;
+  }
+}
+
 export default defineConfig({
+  define: { __APP_VERSION__: JSON.stringify(appVersion()) },
   plugins: [
     react(),
     // Installable on the home screen ("Add to Home Screen" on iOS). The service worker precaches the app shell so
