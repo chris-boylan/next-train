@@ -221,6 +221,7 @@ Then test with `ask dialog --locale en-IE` from `packages/alexa`.
 `.github/workflows/ci-cd.yml` runs typecheck, tests, the web build and `cdk synth` on every pull request and push. On `main` it then deploys, after an approval in GitHub (the `production` environment: Settings → Environments).
 
 - **No AWS keys in GitHub:** the deploy job swaps a GitHub-signed token for short-lived credentials for the `next-train-github-deploy` role. Only this repo's `production` environment can assume it, and it can only hand off to CDK's bootstrap roles.
+- **Approvals:** only the latest deploy matters. Merging again cancels an older deploy still waiting for approval, and checks on `main` never queue behind it.
 - **That role lives in its own stack,** `NextTrainGitHubDeploy`, deployed by hand once (`npm run deploy:github -w @dart-times/infra -- --profile <profile>`). `npm run deploy` only deploys the `DartTimes*` stacks, so the pipeline can't change its own permissions.
 - **Settings on the `production` environment:** variable `AWS_DEPLOY_ROLE_ARN` (output of that stack), optional variable `DOMAIN_NAME`, and optional secret `BUDGET_EMAIL`.
 - **Domain lookups in CI:** after the first local deploy with `-c domainName=…`, commit `packages/infra/cdk.context.json`, so CI doesn't need Route 53 lookup permissions.

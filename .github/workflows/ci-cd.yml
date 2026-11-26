@@ -16,9 +16,11 @@ on:
 permissions:
   contents: read
 
+# Pull requests: a new push cancels that PR's older checks. Pushes to main each get their own group, so checks on
+# main never wait behind an earlier run (such as one whose deploy is waiting for approval).
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: ${{ github.event_name == 'pull_request' && format('ci-pr-{0}', github.ref) || format('ci-run-{0}', github.run_id) }}
+  cancel-in-progress: true
 
 jobs:
   check:
@@ -46,9 +48,11 @@ jobs:
     environment:
       name: production
       url: ${{ steps.deploy.outputs.site_url }}
+    # One deploy at a time, and the newest wins: merging again cancels a deploy that's still waiting for approval
+    # (you only ever need to approve the latest main, which includes everything before it).
     concurrency:
       group: deploy-production
-      cancel-in-progress: false
+      cancel-in-progress: true
     permissions:
       contents: read
       id-token: write # lets the job ask GitHub for the token AWS trusts
