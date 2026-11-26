@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   adjacentStations,
   type Departure,
@@ -70,6 +70,12 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
   const dimmed = (direction: Direction) => !!goingDirection && goingDirection !== direction;
   const goingToName = goingTo && nameOf(goingTo);
   const name = stationName(station);
+
+  // This page is laid out to fit one screen, so the page itself never scrolls (the "more" sheet scrolls inside).
+  useEffect(() => {
+    document.documentElement.classList.add('scroll-locked');
+    return () => document.documentElement.classList.remove('scroll-locked');
+  }, []);
 
   const perDirection = useMediaQuery(SHORT_SCREEN) ? TRAINS_PER_DIRECTION_SHORT : TRAINS_PER_DIRECTION;
   const trainsFor = (direction: Direction, ends: string[]) => {
