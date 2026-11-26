@@ -31,8 +31,11 @@ const STOPS_FROM_MS = 700;
 const STOP_STEP_MS = 55;
 /** Closing is the opening in reverse: stops fade first, then the track and train glide back (mirrored curve). */
 const RETURN = { duration: 750, delay: 160, easing: 'cubic-bezier(0.8, 0, 0.55, 1)', fill: 'forwards' } as const;
-/** How long closing takes; TrackView waits this long before removing the view. */
-export const JOURNEY_CLOSE_MS = RETURN.delay + RETURN.duration + 40;
+/** Then the rest of the station page fades in (journey.css reads these as --return-fade-*). */
+export const RETURN_FADE_DELAY_MS = RETURN.delay + RETURN.duration;
+export const RETURN_FADE_MS = 450;
+/** How long closing takes; the track and train stay on top until the page is back, then TrackView removes the view. */
+export const JOURNEY_CLOSE_MS = RETURN_FADE_DELAY_MS + RETURN_FADE_MS + 30;
 
 /** The transforms that put the centred track and train back where they are on the station page. */
 function placeAt(lane: HTMLElement, glyph: HTMLElement, at: Partial<JourneyOrigin>, side: 'north' | 'south') {

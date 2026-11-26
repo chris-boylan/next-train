@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { type CSSProperties, useCallback, useEffect, useState } from 'react';
 import {
   adjacentStations,
   type Departure,
@@ -12,7 +12,7 @@ import {
 } from '@dart-times/core';
 import { formatTime, useNow } from '../lib/clock';
 import { DeparturesSheet } from '../components/DeparturesSheet';
-import { JOURNEY_CLOSE_MS, type JourneyOrigin, JourneyView } from '../components/JourneyView';
+import { JOURNEY_CLOSE_MS, type JourneyOrigin, JourneyView, RETURN_FADE_DELAY_MS, RETURN_FADE_MS } from '../components/JourneyView';
 import { TrainGlyph } from '../components/TrainGlyph';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
@@ -168,7 +168,10 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
         </div>
       </header>
 
-      <div className={`tracks${journey && !closingJourney ? ' tracks--journey' : ''}${closingJourney ? ' tracks--returning' : ''}`}>
+      <div
+        className={`tracks${journey && !closingJourney ? ' tracks--journey' : ''}${closingJourney ? ' tracks--returning' : ''}`}
+        style={{ '--return-fade-delay': `${RETURN_FADE_DELAY_MS}ms`, '--return-fade-ms': `${RETURN_FADE_MS}ms` } as CSSProperties}
+      >
         {/* Top half: southbound trains on their way in, nearest at the bottom. Green arrow continues up to its termini. */}
         <section className="half half--top" aria-label={t.towards(t.direction.Southbound, list(south.map(nameOf)))}>
           {/* Orange runs edge to edge through its trains; green carries on past the platform to its arrowhead halfway up. */}

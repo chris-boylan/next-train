@@ -56,9 +56,10 @@
   }
 }
 
-/* …while the station page fades back in, starting as the track begins to move. */
+/* …and only once they're back in place does the rest of the station page fade in (timings in JourneyView). */
 .tracks--returning > :not(.journey) {
-  transition-delay: 160ms;
+  transition-delay: var(--return-fade-delay, 910ms);
+  transition-duration: var(--return-fade-ms, 450ms);
 }
 
 .journey__lane {
