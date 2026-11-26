@@ -1,9 +1,12 @@
-# Checks every pull request and push; deploys main to AWS after a manual approval.
+# Checks every pull request. On main (each merge, or Run workflow by hand) it then deploys to AWS straight away
+# if the checks pass: there's no approval step. The check job's name is a required status check in main's branch
+# protection, so keep it as is.
 #
-# Deploys use the `production` environment (Settings → Environments), which requires an approval and holds:
+# The deploy runs in the `production` environment (Settings → Environments), which holds:
 #   vars.AWS_DEPLOY_ROLE_ARN  role from the NextTrainGitHubDeploy stack (no AWS keys are stored in GitHub)
-#   vars.DOMAIN_NAME          optional custom domain, e.g. nexttrain.ie
-#   secrets.BUDGET_EMAIL      optional address for the AWS Budgets alert
+#   vars.DOMAIN_NAME          custom domain, e.g. nexttrain.ie
+#   secrets.BUDGET_EMAIL      where budget alerts and help-page feedback are emailed
+# The deploy role only trusts jobs in that environment, and the environment only allows the main branch.
 name: CI/CD
 
 on:
@@ -16,9 +19,10 @@ on:
 permissions:
   contents: read
 
+# A new push to a pull request cancels that PR's older checks; runs on main each get their own group.
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: ${{ github.event_name == 'pull_request' && format('ci-pr-{0}', github.ref) || format('ci-run-{0}', github.run_id) }}
+  cancel-in-progress: true
 
 jobs:
   check:
@@ -46,6 +50,8 @@ jobs:
     environment:
       name: production
       url: ${{ steps.deploy.outputs.site_url }}
+    # One deploy at a time. A newer one waits for a running one to finish (it isn't interrupted); if several pile
+    # up, GitHub keeps only the newest waiting one, which includes everything before it.
     concurrency:
       group: deploy-production
       cancel-in-progress: false
