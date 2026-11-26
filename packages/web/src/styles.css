@@ -231,6 +231,13 @@ p {
   gap: 4px;
 }
 
+.options__note {
+  margin: 0;
+  max-width: 220px;
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
 .options__label {
   font-size: 0.65rem;
   font-weight: 800;

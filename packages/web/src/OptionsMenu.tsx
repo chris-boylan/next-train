@@ -2,7 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import { type Lang, useI18n } from './i18n';
 import { type Theme, useTheme } from './theme';
 
-/** A cog that slides down a small panel with language and light/dark choices. */
+/** iPhone/iPad Safari, not already opened from the home screen. iOS has no install prompt, so we explain how. */
+function canAddToHomeScreen(): boolean {
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const standalone =
+    (navigator as Navigator & { standalone?: boolean }).standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+  return ios && !standalone;
+}
+
+/** A cog that slides down a small panel with language and light/dark choices (and, on iOS, how to install). */
 export function OptionsMenu() {
   const { lang, setLang, t } = useI18n();
   const { theme, setTheme } = useTheme();
@@ -52,6 +60,12 @@ export function OptionsMenu() {
               { value: 'dark', label: t.dark },
             ]}
           />
+          {canAddToHomeScreen() && (
+            <div className="options__row">
+              <span className="options__label">{t.install}</span>
+              <p className="options__note">{t.installTip}</p>
+            </div>
+          )}
         </div>
       )}
     </div>
