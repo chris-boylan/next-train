@@ -16,6 +16,12 @@ export interface StationRecord {
   lon: number;
 }
 
+// The station's own name where Irish Rail's API still uses an older or shorter one. Belfast's station has been
+// Belfast Grand Central since it replaced Great Victoria Street in 2025; the API still calls it "Belfast".
+const DISPLAY_NAMES: Record<string, string> = {
+  BFSTC: 'Belfast Grand Central',
+};
+
 // Names people (and Alexa's speech recognition) use that the API doesn't know about.
 const EXTRA_ALIASES: Record<string, string[]> = {
   CNLLY: ['Connolly Station', 'Amiens Street'],
@@ -27,6 +33,7 @@ const EXTRA_ALIASES: Record<string, string[]> = {
   SHILL: ['Salthill', 'Monkstown'],
   SCOVE: ['Glasthule'],
   CTARF: ['Clontarf'],
+  BFSTC: ['Belfast', 'Grand Central', 'Great Victoria Street'],
   HWTHJ: ['Donaghmede'],
 };
 
@@ -38,12 +45,14 @@ function splitAlias(alias: string): string[] {
 }
 
 function toStation(record: StationRecord): Station {
-  const shortName = record.name.replace(/^Dublin\s+/i, '');
+  const name = DISPLAY_NAMES[record.code] ?? record.name;
+  const shortName = name.replace(/^Dublin\s+/i, '');
   const aliases = [shortName, ...splitAlias(record.apiAlias), ...(EXTRA_ALIASES[record.code] ?? [])];
-  const seen = new Set([record.name.toLowerCase()]);
+  const seen = new Set([name.toLowerCase()]);
   return {
     code: record.code,
-    name: record.name,
+    name,
+    ...(name !== record.name && { apiName: record.name }),
     shortName,
     branch: branchOf(record.code) ?? 'trunk',
     irishName: IRISH_NAMES[record.code]?.name,
@@ -100,6 +109,11 @@ export const ALL_STATIONS: Station[] = [
   ...INTERCITY_ONLY_STATIONS,
 ];
 
+/** The official Irish name for any station code, including stations only on the all-stations map. */
+export function irishNameFor(code: string): string | undefined {
+  return IRISH_NAMES[code]?.name;
+}
+
 export function findStationByCode(code: string, stations: Station[] = ALL_STATIONS): Station | undefined {
   const wanted = code.trim().toUpperCase();
   return stations.find((s) => s.code === wanted);
@@ -107,7 +121,8 @@ export function findStationByCode(code: string, stations: Station[] = ALL_STATIO
 
 /** Exact lookup by Irish Rail's full name, as used in departure origins and destinations. */
 export function findStationByName(name: string, stations: Station[] = ALL_STATIONS): Station | undefined {
-  return stations.find((s) => s.name === name.trim());
+  const wanted = name.trim();
+  return stations.find((s) => s.name === wanted || s.apiName === wanted);
 }
 
 export function normaliseStationName(input: string): string {

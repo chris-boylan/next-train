@@ -15,6 +15,9 @@ export interface Station {
   irishShortName?: string;
   /** Other names people use for the station, used for search and voice synonyms. */
   aliases: string[];
+  /** Irish Rail's name for the station, when the app shows a newer or fuller one (Belfast Grand Central is
+   *  "Belfast" in the API). Departure origins and destinations use this name. */
+  apiName?: string;
   /** Shared section, or one of the two northern branches beyond Howth Junction. */
   branch: 'trunk' | 'howth' | 'malahide';
   lat: number;

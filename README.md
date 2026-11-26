@@ -50,7 +50,7 @@ The app always opens on the **service picker**: DART, Enterprise, Cork Commuter,
 | **Enterprise** | Connolly–Drogheda–Dundalk–Newry–Portadown–Belfast | 6 | `SimpleLineMap` | Deep violet / lilac |
 | **Cork Commuter** | Cobh and Midleton, meeting at Glounthaune, then Cork Kent and Mallow | 10 | `SchematicMap` (geography-inspired) | Deep / light Rebel red |
 | **Dublin Commuter** | Four routes from Connolly and Heuston (below) | 70 | `RoutesMap` (geography-inspired) | One colour per route |
-| **InterCity** | Six routes from Heuston and Connolly (below) | 85 | `RoutesMap` (tree drawing) | One colour per route |
+| **InterCity** | Six routes from Heuston and Connolly (below) | 85 | `RoutesMap` (geography-inspired, from the all-stations map) | One colour per route |
 
 - **Where they're defined:** lines are in `core/src/line.ts` (`DART_LINE`, `ENTERPRISE_LINE`, `CORK_LINE`) and services in `core/src/services.ts`. Line helpers take a line and default to the DART, so the Alexa skill is unaffected.
 - **Identifying trains:** the API only says "DART" or "Train".
@@ -105,7 +105,7 @@ Six routes, defined in `core/src/intercity.ts`. Each route's paths run from its 
 
 - **Station boards** are grouped by route and by the next station each train runs to, so trains leaving in different directions get their own groups even on one route (at Mallow: towards Cork, towards Tralee, towards Heuston). Each group names where its trains are going.
   - **How trains are placed** (`intercityHeading`): on a route serving both this station and the destination. Routes share track (Heuston to Limerick Junction carries Cork, Kerry and Limerick trains), so the route that also serves the train's origin wins.
-- **Map:** **All routes** draws Heuston's and Connolly's networks as trees for now; **By route** shows one route at a time. A geography-inspired map like Dublin Commuter's doesn't fit a phone's width with every name shown: around 52.8°N five lines run side by side (Ennis, Nenagh, Cork, Kilkenny, the coast).
+- **Map:** **All routes** is drawn from the all-stations map (`web/src/intercitySchematic.ts`), in its compact type: each station keeps its place there, and each connection follows the same track, through the commuter stations InterCity trains skip. Shared track shows each route's colour side by side. Stations the all-stations map doesn't place yet (the Nenagh line, Gort–Craughwell, Limerick Junction–Waterford) are listed under the map and appear once it places them. **By route** shows one route at a time, with every station.
 - **Left out:** Campile, Ballycullane, Wellingtonbridge and Bridgetown are in the API's station list, but the Rosslare–Waterford line has had no passenger trains since 2010.
 
 ## Maps
@@ -114,9 +114,9 @@ Six routes, defined in `core/src/intercity.ts`. Each route's paths run from its 
 |---|---|---|
 | `LineMap` | DART | Hand-drawn branches |
 | `SimpleLineMap` | Enterprise (single line) | One straight line |
-| `SchematicMap` → `PositionedMap` | Cork, Dublin Commuter (all routes) | Hand-placed positions in `schematics.ts` / `commuterSchematic.ts`, with bend points drawn as curves |
+| `SchematicMap` → `PositionedMap` | Cork, Dublin Commuter and InterCity (all routes) | Hand-placed positions in `schematics.ts` / `commuterSchematic.ts`, with bend points drawn as curves |
 | `BranchLineMap` | Any other branching service | Automatic, from the line's paths (`networkLayout.ts`) |
-| `TreeMap` | All stations, InterCity "all routes", Dublin Commuter and InterCity "by route" | Automatic: the longest branch carries straight on and shorter branches step right, so it fits a phone's width |
+| `TreeMap` | Dublin Commuter and InterCity "by route" | Automatic: the longest branch carries straight on and shorter branches step right, so it fits a phone's width |
 
 All maps share the flat "Bold Swiss" style: circles for ends of lines, junctions and turn-backs, ticks for other stations, and curved corners.
 
@@ -145,7 +145,7 @@ Both apps store favourites in one table, keyed `web:<device id>` or `alexa:<user
 
 ## English and Irish
 
-- **Station names** are Iarnród Éireann's official Irish names, for every station on every service except Curragh and Manulla Junction, which have none on Irish Rail's Irish page or timetables. They come from that page, cross-checked against its bilingual timetables and logainm.ie (sources are noted in `stations.ga.ts`). Stations elsewhere on the network show their English name.
+- **Station names** are Iarnród Éireann's official Irish names, for every station on every service, from Irish Rail's Irish station page (or, for Curragh and Manulla Junction, its station sign and Irish station page). On the all-stations map, Northern Ireland stations show the official Irish name of the place they're named after, from logainm.ie, where there is one; stations named after buildings or developments (City Hospital, Lanyon Place…) stay in English. They come from that page, cross-checked against its bilingual timetables and logainm.ie (sources are noted in `stations.ga.ts`). Stations elsewhere on the network show their English name.
 - **Interface text** is in `web/src/i18n.tsx`. Irish phrasing uses "go dtí", which doesn't change place names, and avoids nouns after numbers.
 - **Capitals:** Irish prefixes stay lowercase in capitalised text ("CNOC AN tSALAINN"), via the `Caps` component.
 - **For a fluent speaker to review:**
@@ -154,7 +154,7 @@ Both apps store favourites in one table, keyed `web:<device id>` or `alexa:<user
   - Grand Canal Dock: Irish Rail uses both "Dug" and "Duga".
   - Places where Irish Rail's own sources disagree (Docklands "Dugthailte" vs "Ceantar na nDugaí", Drumcondra, Newbridge, M3 Parkway). We use the station page's form.
   - Our short forms for Clondalkin, Hazelhatch and Sallins, which mirror the English API names.
-  - Service and route names, which are kept in English for now ("Cork Commuter", "Dublin Commuter", "Northern"…).
+  - Service and route names. InterCity and Commuter use Irish Rail's own Irish labels ("Idirchathrach", "Comaitéara"); "Comaitéara Bhaile Átha Cliath / Chorcaí" and the commuter route names ("Líne an Tuaiscirt"…) are our own wording, as Irish Rail publishes none. DART and Enterprise are brand names.
 
 ## Alexa skill
 

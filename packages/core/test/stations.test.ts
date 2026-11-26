@@ -61,8 +61,7 @@ describe('searchStations', () => {
 
 describe('Irish names', () => {
   it('has an official Irish name for every station, on every service', () => {
-    // Curragh and Manulla Junction have no Irish name on Irish Rail's Irish station page or in any of its timetables.
-    expect(ALL_STATIONS.filter((s) => !s.irishName).map((s) => s.code)).toEqual(['CURAH', 'MNLAJ']);
+    expect(ALL_STATIONS.filter((s) => !s.irishName).map((s) => s.code)).toEqual([]);
   });
 
   it('uses short forms that mirror the English short name', () => {
@@ -74,5 +73,15 @@ describe('Irish names', () => {
     expect(resolveStation('Bré')?.code).toBe('BRAY');
     expect(resolveStation('binn eadair')?.code).toBe('HOWTH');
     expect(resolveStation('Na Clocha Liatha')?.code).toBe('GSTNS');
+  });
+});
+
+describe('Belfast Grand Central', () => {
+  it("shows the station's own name but still matches the API's \"Belfast\"", () => {
+    const station = findStationByName('Belfast');
+    expect(station?.code).toBe('BFSTC');
+    expect(station?.name).toBe('Belfast Grand Central');
+    expect(findStationByName('Belfast Grand Central')?.code).toBe('BFSTC');
+    expect(searchStations('grand central', ALL_STATIONS).map((s) => s.code)).toContain('BFSTC');
   });
 });

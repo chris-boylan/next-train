@@ -47,8 +47,9 @@ export function commuterSchematic(row: number): Schematic {
   // Connolly, Drumcondra and Broombridge sit on one straight 45° line heading north-west, which carries on
   // until it curves up into the Western line by Pelletstown. Each name sits on a side clear of the lines.
   const diagonal = (dx: number): [number, number] => [COAST_X - dx, CONNOLLY_Y - dx];
-  points.DCDRA = { x: diagonal(50)[0], y: diagonal(50)[1], label: 'left', labelWidth: 110 };
-  points.BBRDG = { x: diagonal(105)[0], y: diagonal(105)[1], label: 'left', labelWidth: 110 };
+  // Nudged out of the wedges between the lines at each station.
+  points.DCDRA = { x: diagonal(50)[0], y: diagonal(50)[1], label: 'left', labelWidth: 110, labelDx: -16, labelDy: -3 };
+  points.BBRDG = { x: diagonal(105)[0], y: diagonal(105)[1], label: 'left', labelWidth: 110, labelDy: 6 };
   // Docklands' spur leaves Broombridge at 45°, then curves round to run east towards the city. Its name sits
   // above, where there's more room between the diagonal and the coastal line.
   points.DCKLS = { x: 178, y: 570, label: 'above', labelDx: -40, labelWidth: 110 };
@@ -59,15 +60,17 @@ export function commuterSchematic(row: number): Schematic {
   column(['PELTN', 'ASHTN', 'PHNPK', 'CNOCK', 'CMINE', 'CLSLA'], WEST_X, westernStart, -1, WEST_LABEL);
   const clonsillaY = westernStart - 5 * row;
   const m3BendY = clonsillaY - 40;
-  column(['HAFLD', 'DBYNE', 'M3WAY'], M3_X, m3BendY - 40, -1, M3_LABEL);
-  const m3TopY = m3BendY - 40 - 2 * row;
+  column(['HAFLD', 'DBYNE', 'M3WAY'], M3_X, m3BendY - 50, -1, M3_LABEL);
+  const m3TopY = m3BendY - 50 - 2 * row;
   column(['LXCON', 'LXLSA', 'MYNTH'], WEST_X, m3TopY - 50, -1, WEST_LABEL);
 
   // Heuston sits east of Park West. As on the real track, its line and the Phoenix Park tunnel line from
   // Drumcondra meet at a junction just above Park West and run into it together, so neither crosses the
   // other or Park West's name.
-  const heustonJunction: [number, number] = [WEST_X, 790];
-  points.HSTON = { x: 138, y: 790, label: 'right', labelWidth: 80 };
+  // A little above Park West, so both lines have room to sweep into it.
+  const heustonJunction: [number, number] = [WEST_X, 770];
+  // Far enough from the coastal line for Heuston's interchange-sized name.
+  points.HSTON = { x: 120, y: 770, label: 'right', labelWidth: 96 };
   column(['CHORC', 'CLDKN', 'KISHO', 'ADAMF', 'HZLCH', 'SALNS', 'NBRGE', 'CURAH', 'KDARE', 'MONVN', 'PTRTN', 'PTLSE'], WEST_X, 840, 1, WEST_LABEL);
 
   const bends: Record<string, [number, number][]> = {
@@ -77,11 +80,8 @@ export function commuterSchematic(row: number): Schematic {
     // Heuston's line runs west to the junction; the tunnel line comes down to it from Drumcondra.
     'HSTON|CHORC': [heustonJunction],
     'DCDRA|CHORC': [heustonJunction],
-    // M3 Parkway peels off right just north of Clonsilla.
-    'CLSLA|HAFLD': [
-      [WEST_X, m3BendY],
-      [M3_X, m3BendY],
-    ],
+    // M3 Parkway leaves Clonsilla itself at 45° (the dot sits on the split), then runs north.
+    'CLSLA|HAFLD': [[M3_X, clonsillaY - (M3_X - WEST_X)]],
   };
 
   // Lift everything so the northernmost stations (Dundalk, Maynooth) sit near the top of the map.
@@ -91,6 +91,8 @@ export function commuterSchematic(row: number): Schematic {
     width: 340,
     height: Math.max(...ys) - lift + 50,
     points: Object.fromEntries(Object.entries(points).map(([code, p]) => [code, { ...p, y: p.y - lift }])),
+    // The Drumcondra (Phoenix Park) line and Heuston's sweep into the Park West line in wide curves.
+    curves: { 'DCDRA|CHORC': 60, 'HSTON|CHORC': 60 },
     bends: Object.fromEntries(
       Object.entries(bends).map(([key, corners]) => [key, corners.map(([x, y]): [number, number] => [x, y - lift])]),
     ),
@@ -99,5 +101,7 @@ export function commuterSchematic(row: number): Schematic {
   };
 }
 
-/** The English spacing; Irish uses wider rows (see CommuterMap). */
+/** The English spacing; Irish names wrap onto more lines, so stations sit further apart in Irish. */
 export const COMMUTER_SCHEMATIC = commuterSchematic(34);
+
+export const commuterSchematicFor = (lang: 'en' | 'ga') => commuterSchematic(lang === 'ga' ? 50 : 34);

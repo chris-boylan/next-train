@@ -1,20 +1,35 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import type { Service } from '@dart-times/core';
-import { useI18n } from './i18n';
+import { type Lang, useI18n } from './i18n';
 import { PositionedMap } from './PositionedMap';
 import type { RouteMap } from './routeMaps';
 import type { Schematic } from './schematics';
 import { TreeMap } from './TreeMap';
 
+/** Which view the map is showing: every route, the list of routes, or one route. Kept by the app, so coming
+ *  back from a station returns to the same view. */
+export interface RoutesView {
+  mode: 'all' | 'byRoute';
+  routeId?: string;
+}
+
 interface Props<Id extends string> {
+  view: RoutesView;
+  onViewChange: (view: RoutesView) => void;
   service: Service;
   routeMap: RouteMap<Id>;
   routeName: (id: Id) => string;
-  /** Hand-placed map of every route, given the gap between stations (Irish names need more room). Without
-   *  one, "All routes" draws each hub's network as a tree. */
-  schematic?: (row: number) => Schematic;
+  /** Hand-placed map of every route, for a language (Irish names are longer and need more room). Without one,
+   *  "All routes" draws each hub's network as a tree. */
+  schematic?: (lang: Lang) => Schematic;
   /** Where the networks start (e.g. Heuston and Connolly), for the tree drawing. */
   hubs: string[];
+  /** Extra class for the all-routes map, e.g. `schematic--compact` for smaller names. */
+  mapClassName?: string;
+  /** Adjusts a name for the all-routes map, e.g. where a long word may break between two lines. */
+  mapName?: (name: string) => string;
+  /** Stations drawn as circles even mid-line on the all-routes map, e.g. termini like Limerick. */
+  mapTermini?: ReadonlySet<string>;
   favouriteCodes: string[];
   currentCode?: string;
   onSelect: (code: string) => void;
@@ -40,28 +55,38 @@ function componentOf(edges: [string, string][], root: string): [string, string][
  * and see only its stations. Tap a station for its departures.
  */
 export function RoutesMap<Id extends string>({
+  view,
+  onViewChange,
   service,
   routeMap,
   routeName,
   schematic: makeSchematic,
   hubs,
+  mapClassName,
+  mapName = (n) => n,
+  mapTermini,
   favouriteCodes,
   currentCode,
   onSelect,
 }: Props<Id>) {
   const { t, lang, stationName } = useI18n();
-  // Irish names are longer and wrap onto more lines, so stations sit further apart in Irish.
-  const schematic = useMemo(() => makeSchematic?.(lang === 'ga' ? 50 : 34), [makeSchematic, lang]);
-  const [mode, setMode] = useState<'all' | 'byRoute'>('all');
-  const [routeId, setRouteId] = useState<Id>();
-  const route = routeMap.routes.find((r) => r.id === routeId);
+  const schematic = useMemo(() => makeSchematic?.(lang), [makeSchematic, lang]);
+  const { mode } = view;
+  const setMode = (m: RoutesView['mode']) => onViewChange({ ...view, mode: m });
+  const setRouteId = (id: Id | undefined) => onViewChange({ ...view, routeId: id });
+  const route = mode === 'byRoute' ? routeMap.routes.find((r) => r.id === view.routeId) : undefined;
   const byCode = new Map(service.stations.map((s) => [s.code, s]));
   const name = (code: string) => {
     const station = byCode.get(code);
     return station ? stationName(station) : code;
   };
   const { allEdges, coloursOf } = routeMap;
-  const degree = (code: string) => allEdges.filter((e) => e.includes(code)).length;
+  // A hand-placed map may not place every station yet (InterCity's comes from the all-stations map): draw
+  // what it places and list the rest, which are still on the route maps.
+  const placed = schematic && service.stations.filter((s) => schematic.points[s.code]).map((s) => s.code);
+  const unplaced = schematic ? service.stations.filter((s) => !schematic.points[s.code]) : [];
+  const drawnEdges = schematic ? allEdges.filter(([a, b]) => schematic.points[a] && schematic.points[b]) : allEdges;
+  const degree = (code: string) => drawnEdges.filter((e) => e.includes(code)).length;
 
   return (
     <>
@@ -90,18 +115,26 @@ export function RoutesMap<Id extends string>({
             ))}
           </ul>
           {schematic ? (
-            <PositionedMap
-              schematic={schematic}
-              edges={allEdges}
-              codes={service.stations.map((s) => s.code)}
-              name={name}
-              major={(code) => degree(code) !== 2}
-              colourOf={coloursOf}
-              favouriteCodes={favouriteCodes}
-              currentCode={currentCode}
-              onSelect={onSelect}
-              label={t.allRoutes}
-            />
+            <>
+              <PositionedMap
+                schematic={schematic}
+                edges={drawnEdges}
+                codes={placed!}
+                name={(code) => mapName(name(code))}
+                major={(code) => degree(code) !== 2 || !!mapTermini?.has(code)}
+                colourOf={coloursOf}
+                favouriteCodes={favouriteCodes}
+                currentCode={currentCode}
+                onSelect={onSelect}
+                className={mapClassName}
+                label={t.allRoutes}
+              />
+              {unplaced.length > 0 && (
+                <p className="network__unmapped">
+                  {t.notYetMapped}: {unplaced.map((s) => stationName(s)).join(', ')}
+                </p>
+              )}
+            </>
           ) : (
             hubs.map((hub) => (
               <TreeMap
@@ -136,7 +169,9 @@ export function RoutesMap<Id extends string>({
           />
         </>
       ) : (
-        <ul className="services commuter__routes">
+        // Room between the All routes / By route switch and the route tiles. (Inline for now: styles.css has
+        // another session's uncommitted changes; move to a .commuter__routes rule once those land.)
+        <ul className="services commuter__routes" style={{ marginTop: 20 }}>
           {routeMap.routes.map((r) => (
             <li key={r.id}>
               <button className="service-tile" onClick={() => setRouteId(r.id)}>

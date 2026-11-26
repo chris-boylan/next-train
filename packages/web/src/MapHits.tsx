@@ -17,7 +17,8 @@ export function MapHits({ width, height, points, onSelect }: Props) {
   return (
     <svg className="line-map__svg line-map__hits" width={width} height={height} aria-hidden>
       {points.map((p) => (
-        <circle key={p.code} cx={p.x} cy={p.y} r={HIT} className="line-map__hit" onClick={() => onSelect(p.code)} />
+        <circle key={p.code} cx={p.x} cy={p.y} r={HIT} className="line-map__hit"
+          data-code={p.code} onClick={() => onSelect(p.code)} />
       ))}
     </svg>
   );

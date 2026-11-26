@@ -23,6 +23,12 @@ const en = {
   allStations: 'All stations',
   allStationsNote: 'Every Irish Rail station on one map',
   notYetMapped: 'Not yet mapped (no train seen on these lines yet)',
+  italicStations: 'Stations in italics',
+  noLiveDataNote: 'have no live times yet: in Northern Ireland, Irish Rail only has data for the Enterprise.',
+  noLiveData: 'no live times yet',
+  noLiveDataTitle: 'No live times yet',
+  niRailways: 'NI Railways',
+  noLiveDataExplained: 'There are no live times for this station yet. In Northern Ireland, Irish Rail only has live data for the Enterprise.',
   noTrainsAnyDirection: 'No trains in the next 90 minutes.',
   map: 'Map',
   allRoutes: 'All routes',
@@ -91,19 +97,41 @@ type Messages = typeof en;
 const ga: Messages = {
   services: 'Seirbhísí',
   chooseService: 'Roghnaigh seirbhís',
-  // Service names stay as Irish Rail's brands. "Cork Commuter" has no confirmed Irish form yet.
-  serviceNames: { dart: 'DART', enterprise: 'Enterprise', cork: 'Cork Commuter', commuter: 'Dublin Commuter', intercity: 'InterCity' },
+  // Irish Rail's own Irish labels: "Idirchathrach" (InterCity) and "Comaitéara" (Commuter), from its Irish live
+  // maps (irishrail.ie/ga-ie/train-timetables/commuter-live-map). The two commuter services add the cities in the
+  // genitive as Irish Rail writes them ("Léarscáil Iarnróid Bhaile Átha Cliath / Chorcaí"); those compounds are
+  // ours and should be checked by a fluent speaker. DART and Enterprise are brand names.
+  serviceNames: {
+    dart: 'DART',
+    enterprise: 'Enterprise',
+    cork: 'Comaitéara Chorcaí',
+    commuter: 'Comaitéara Bhaile Átha Cliath',
+    intercity: 'Idirchathrach',
+  },
   // As on Irish Rail's bilingual Dublin–Belfast timetable.
   dublinBelfast: 'Baile Átha Cliath – Béal Feirste',
   allStations: 'Gach stáisiún',
   allStationsNote: 'Gach stáisiún de chuid Iarnród Éireann ar léarscáil amháin',
   notYetMapped: 'Gan mapáil fós (níor feiceadh traein ar na línte seo fós)',
+  italicStations: 'Stáisiúin i gcló iodálach:',
+  noLiveDataNote: 'níl amanna beo againn dóibh fós. I dTuaisceart Éireann, níl sonraí ag Iarnród Éireann ach don Enterprise.',
+  noLiveData: 'gan amanna beo fós',
+  noLiveDataTitle: 'Gan amanna beo fós',
+  // Translink's brand name, kept as is.
+  niRailways: 'NI Railways',
+  noLiveDataExplained: 'Níl amanna beo againn don stáisiún seo fós. I dTuaisceart Éireann, níl sonraí ag Iarnród Éireann ach don Enterprise.',
   noTrainsAnyDirection: 'Níl aon traein sna 90 nóiméad atá romhainn.',
   map: 'Léarscáil',
   allRoutes: 'Gach bealach',
   byRoute: 'De réir bealaigh',
-  // Route names as Irish Rail brands them; Irish forms not yet confirmed.
-  commuterRoutes: { northern: 'Northern', western: 'Western', southWestern: 'South Western', southEastern: 'South Eastern' },
+  // Irish Rail publishes no Irish names for its commuter routes, so these use the standard compass regions
+  // (tuaisceart, iarthar, iardheisceart, oirdheisceart) in the genitive: "the Northern line" and so on.
+  commuterRoutes: {
+    northern: 'Líne an Tuaiscirt',
+    western: 'Líne an Iarthair',
+    southWestern: 'Líne an Iardheiscirt',
+    southEastern: 'Líne an Oirdheiscirt',
+  },
   // Named after the places they serve, so they take the places' Irish names.
   intercityRoutes: {
     corkKerry: 'Corcaigh agus Ciarraí',
@@ -116,8 +144,8 @@ const ga: Messages = {
   stationCount: (n) => `${n} stáisiún`,
   dublin: 'Baile Átha Cliath',
   towards2: (place) => `go dtí ${place}`,
-  // Irish Rail's service brands, kept as brand names in both languages.
-  categories: { dart: 'DART', enterprise: 'Enterprise', intercity: 'InterCity', commuter: 'Commuter' },
+  // As Irish Rail labels them on its Irish pages; DART and Enterprise are brand names.
+  categories: { dart: 'DART', enterprise: 'Enterprise', intercity: 'Idirchathrach', commuter: 'Comaitéara' },
   stations: 'Stáisiúin',
   findStation: 'Aimsigh stáisiún',
   favouriteStations: 'Stáisiúin is fearr leat',

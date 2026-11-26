@@ -18,10 +18,17 @@ interface Props {
   currentCode?: string;
   /** Makes station names tappable. */
   onSelect?: (code: string) => void;
+  /** Stations with no live times: named in italics. They're still tappable, so the caller can explain why. */
+  noData?: (code: string) => boolean;
+  /** Extra class for the map, e.g. for a smaller type size. */
+  className?: string;
   label: string;
 }
 
 const CORNER_RADIUS = 28;
+/** The big stations, drawn larger with bolder names to draw the eye: Dublin's two termini, Belfast, the main
+ *  city termini (Cork, Limerick, Galway, Waterford, Rosslare Europort) and Kilkenny. */
+export const INTERCHANGES: ReadonlySet<string> = new Set(['CNLLY', 'HSTON', 'BFSTC', 'CORK', 'LMRCK', 'GALWY', 'WFORD', 'RLEPT', 'KKNNY']);
 /** Matches .line-map__track's stroke-width. */
 const TRACK_WIDTH = 10;
 
@@ -45,7 +52,7 @@ function offsetLine(points: [number, number][], by: number): [number, number][] 
 }
 
 /** A line through `points`, with each corner replaced by a curve of up to CORNER_RADIUS. */
-function roundedPath(points: [number, number][]): string {
+function roundedPath(points: [number, number][], radius = CORNER_RADIUS): string {
   let d = `M${points[0]![0]},${points[0]![1]}`;
   for (let i = 1; i < points.length - 1; i++) {
     const [px, py] = points[i - 1]!;
@@ -54,7 +61,7 @@ function roundedPath(points: [number, number][]): string {
     const into = Math.hypot(cx - px, cy - py);
     const out = Math.hypot(nx - cx, ny - cy);
     // Never round further than halfway along either side, so curves don't overrun stations.
-    const r = Math.min(CORNER_RADIUS, into / 2, out / 2);
+    const r = Math.min(radius, into / 2, out / 2);
     d += ` L${cx - ((cx - px) / into) * r},${cy - ((cy - py) / into) * r}`;
     d += ` Q${cx},${cy} ${cx + ((nx - cx) / out) * r},${cy + ((ny - cy) / out) * r}`;
   }
@@ -70,6 +77,11 @@ function tick(p: SchematicPoint): string {
 }
 
 function labelStyle(p: SchematicPoint, circle: boolean, mapMaxWidth?: number): CSSProperties {
+  const style = placeLabel(p, circle, mapMaxWidth);
+  return p.labelDy ? { ...style, top: (style.top as number) + p.labelDy } : style;
+}
+
+function placeLabel(p: SchematicPoint, circle: boolean, mapMaxWidth?: number): CSSProperties {
   const dx = p.labelDx ?? 0;
   const maxWidth = p.labelWidth ?? mapMaxWidth;
   switch (p.label) {
@@ -99,10 +111,13 @@ export function PositionedMap({
   favouriteCodes = [],
   currentCode,
   onSelect,
+  noData = () => false,
+  className = '',
   label,
 }: Props) {
   const { t } = useI18n();
-  const { points, width, height, bends = {}, labelMaxWidth } = schematic;
+  const { points, width, height, bends = {}, curves = {}, labelMaxWidth } = schematic;
+  const curveOf = (a: string, b: string) => curves[`${a}|${b}`] ?? curves[`${b}|${a}`] ?? CORNER_RADIUS;
   const coloursOf = (a: string, b: string): (string | undefined)[] => {
     const c = colourOf?.(a, b);
     return Array.isArray(c) && c.length > 0 ? c : [typeof c === 'string' ? c : undefined];
@@ -119,7 +134,7 @@ export function PositionedMap({
   };
 
   return (
-    <nav className="line-map schematic" aria-label={label} style={{ width, height }}>
+    <nav className={`line-map schematic ${className}`} aria-label={label} style={{ width, height }}>
       <svg className="line-map__svg" width={width} height={height} aria-hidden>
         <text x={width - 14} y={18} textAnchor="end" className="line-map__compass">
           {t.compassNorth} ↑
@@ -132,7 +147,7 @@ export function PositionedMap({
             return [
               <path
                 key={`${a}|${b}`}
-                d={roundedPath(line)}
+                d={roundedPath(line, curveOf(a, b))}
                 className="line-map__track"
                 style={colour ? { stroke: colour } : undefined}
               />,
@@ -147,7 +162,7 @@ export function PositionedMap({
           return colours.map((colour, i) => (
             <path
               key={`${a}|${b}|${i}`}
-              d={roundedPath(offsetLine(ordered, (i - (colours.length - 1) / 2) * stripe))}
+              d={roundedPath(offsetLine(ordered, (i - (colours.length - 1) / 2) * stripe), curveOf(a, b))}
               className="line-map__track"
               style={{ strokeWidth: stripe, strokeLinejoin: 'miter', ...(colour ? { stroke: colour } : {}) }}
             />
@@ -155,13 +170,14 @@ export function PositionedMap({
         })}
         {codes.map((code) => {
           const p = points[code]!;
-          return major(code) || code === currentCode ? (
+          const hub = INTERCHANGES.has(code);
+          return hub || major(code) || code === currentCode ? (
             <circle
               key={code}
               cx={p.x}
               cy={p.y}
-              r={9}
-              className={`line-map__dot${code === currentCode ? ' line-map__dot--current' : ''}`}
+              r={hub ? 12 : 9}
+              className={`line-map__dot${hub ? ' line-map__dot--hub' : ''}${code === currentCode ? ' line-map__dot--current' : ''}`}
             />
           ) : (
             <path key={code} d={tick(p)} className="line-map__tick" style={tickStyle(code)} />
@@ -172,7 +188,7 @@ export function PositionedMap({
       {codes.map((code) => {
         const p = points[code]!;
         const favourite = favouriteCodes.includes(code);
-        const className = `schematic__stop schematic__stop--${p.label}${labelMaxWidth ? ' schematic__stop--wrap' : ''}${major(code) ? ' line-map__stop--major' : ''}${code === currentCode ? ' line-map__stop--current' : ''}`;
+        const className = `schematic__stop schematic__stop--${p.label}${labelMaxWidth ? ' schematic__stop--wrap' : ''}${major(code) || INTERCHANGES.has(code) ? ' line-map__stop--major' : ''}${INTERCHANGES.has(code) ? ` schematic__stop--hub${p.smallHubLabel ? ' schematic__stop--hub-small' : ''}` : ''}${code === currentCode ? ' line-map__stop--current' : ''}${noData(code) ? ' schematic__stop--no-data' : ''}`;
         const content = (
           <>
             {/* One span for the whole name: Caps puts Irish prefixes in their own spans, which the flex
@@ -189,7 +205,7 @@ export function PositionedMap({
             className={className}
             style={labelStyle(p, major(code) || code === currentCode, labelMaxWidth)}
             onClick={() => onSelect(code)}
-            aria-label={`${name(code)}${favourite ? `, ${t.favourite}` : ''}`}
+            aria-label={`${name(code)}${noData(code) ? `, ${t.noLiveData}` : ''}${favourite ? `, ${t.favourite}` : ''}`}
           >
             {content}
           </button>

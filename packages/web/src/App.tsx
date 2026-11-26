@@ -4,6 +4,7 @@ import { fetchFavourites, setFavourite } from './api';
 import { getDeviceId } from './deviceId';
 import { useI18n } from './i18n';
 import { NetworkMap } from './NetworkMap';
+import type { RoutesView } from './RoutesMap';
 import { ServicePicker } from './ServicePicker';
 import { StationBoard } from './StationBoard';
 import { StationPicker } from './StationPicker';
@@ -29,6 +30,9 @@ export function App() {
   const [boardStation, setBoardStation] = useState<{ code: string; name: string }>();
   // Highlighted on the map when you go back to it.
   const [previousCode, setPreviousCode] = useState(stationCode);
+  // Each route-based service's map view (all routes, the route list, or one route), kept here so coming back
+  // from a station returns to the route you picked it from.
+  const [routesViews, setRoutesViews] = useState<Partial<Record<ServiceId, RoutesView>>>({});
 
   useEffect(() => {
     fetchFavourites(deviceId).then(setFavourites, (err: Error) => console.error(err));
@@ -71,7 +75,12 @@ export function App() {
   if (!service) return <ServicePicker onSelect={selectService} onOpenNetwork={() => setShowNetwork(true)} />;
 
   const station = stationCode ? findStationByCode(stationCode, service.stations) : undefined;
+  const routesView = routesViews[service.id] ?? { mode: 'all' };
   if (station && (service.id === 'commuter' || service.id === 'intercity')) {
+    // Back goes to the route the station was picked from, when there is one.
+    const routeId = routesView.mode === 'byRoute' ? routesView.routeId : undefined;
+    const routeNames: Record<string, string> = service.id === 'commuter' ? t.commuterRoutes : t.intercityRoutes;
+    const backLabel = (routeId && routeNames[routeId]) || t.stations;
     // Commuter and Intercity stations can sit on several routes (Connolly is on four commuter routes), so they
     // get a board grouped by route and direction rather than the two-track page.
     return (
@@ -80,7 +89,7 @@ export function App() {
         code={station.code}
         name={stationName(station)}
         mode={service.id}
-        backLabel={t.stations}
+        backLabel={backLabel}
         onBack={() => setStationCode(undefined)}
         favourite={{ on: isFavourite(station.code), toggle: () => toggleFavourite(station.code) }}
       />
@@ -104,6 +113,8 @@ export function App() {
       currentCode={previousCode}
       onSelect={selectStation}
       onToggleFavourite={toggleFavourite}
+      routesView={routesView}
+      onRoutesViewChange={(view) => setRoutesViews((views) => ({ ...views, [service.id]: view }))}
     />
   );
 }

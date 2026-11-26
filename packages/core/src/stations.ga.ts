@@ -165,4 +165,52 @@ export const IRISH_NAMES: Record<string, { name: string; short?: string }> = {
   WXFRD: { name: 'Loch Garman' },
   RLSTD: { name: 'Trá Ros Láir' },
   RLEPT: { name: 'Calafort Ros Láir' },
+  // Not on Irish Rail's Irish station list: Curragh from its station sign and logainm.ie ("An Currach",
+  // logainm 1165990); Manulla Junction from its Irish station page (irishrail.ie/ga-ie/station/manulla-junction).
+  CURAH: { name: 'An Currach' },
+  MNLAJ: { name: 'Gabhal Mhaigh Nulla' },
+  // Rosslare–Waterford line (closed to passengers since 2010; shown on the all-stations map): station signs and logainm.ie.
+  CPILE: { name: 'Ceann Poill' },
+  BCLAN: { name: 'Baile Uí Choileáin' },
+  WBDGE: { name: 'Droichead Eoin' },
+  BRGTN: { name: 'Baile an Droichid' },
+  // Northern Ireland: Irish Rail's Irish page for Lurgan; elsewhere the official Irish name of the town or
+  // place each station is named after, from logainm.ie (Nov 2026), which covers Northern Ireland too.
+  // Lisburn: logainm's validated "Lios na gCearrbhach" (Irish Rail's page heading reads "Lion a gCearrbhach").
+  // Left in English, with no source for an Irish name: stations named after buildings or developments (City
+  // Hospital, Botanic, Adelaide, Lanyon Place, Titanic Quarter, Yorkgate, Downshire, University), places
+  // logainm has no Irish form for (Hilden, Marino, Seahill, Jordanstown, Trooperslane), compounds with no
+  // source as a whole (Bangor West, Larne Town, Mossley West), and logainm forms not yet validated
+  // (Balmoral, Carnalea, Clipperstown, Dhu Varren).
+  LBURN: { name: 'Lios na gCearrbhach' },
+  LURGN: { name: 'An Lorgain' },
+  MOIRA: { name: 'Maigh Rath' },
+  NI_FINAG: { name: 'An Fionnachadh' },
+  NI_DUNMU: { name: 'Dún Muirígh' },
+  NI_DERRI: { name: 'Doire Eachaidh' },
+  NI_LAMBE: { name: 'Lann Bheag' },
+  NI_SCARV: { name: 'Scarbhach' },
+  NI_POYNT: { name: 'Pas an Phointe' },
+  NI_WABBY: { name: 'An Mhainistir Fhionn' },
+  NI_SYDEN: { name: 'Suideanam' },
+  NI_HWOOD: { name: 'Ard Mhic Nasca' },
+  NI_CULTR: { name: 'Cúl Trá' },
+  NI_HELEN: { name: 'Cuan Héilin' },
+  NI_BANGR: { name: 'Beannchar' },
+  NI_GRNIS: { name: 'Inis Glas' },
+  NI_CFERG: { name: 'Carraig Fhearghais' },
+  NI_WHEAD: { name: 'An Cionn Bán' },
+  NI_BCARY: { name: 'Baile Cora' },
+  NI_MAGHM: { name: 'Machaire Morna' },
+  NI_GLYNN: { name: 'An Gleann' },
+  NI_LARNH: { name: 'Calafort Latharna' },
+  NI_ANTRM: { name: 'Aontroim' },
+  NI_BMENA: { name: 'An Baile Meánach' },
+  NI_CULLY: { name: 'Coill na Baice' },
+  NI_BMONY: { name: 'Baile Monaidh' },
+  NI_COLER: { name: 'Cúil Raithin' },
+  NI_CROCK: { name: 'Carraig Ceasail' },
+  NI_BELLA: { name: 'Baile an Mhargaidh' },
+  NI_DERRY: { name: 'Doire' },
+  NI_PRUSH: { name: 'Port Rois' },
 };

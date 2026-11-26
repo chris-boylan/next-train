@@ -1,4 +1,4 @@
-import { SERVICES, type ServiceId } from '@dart-times/core';
+import type { ServiceId } from '@dart-times/core';
 import { Caps, useI18n } from './i18n';
 import { OptionsMenu } from './OptionsMenu';
 
@@ -6,6 +6,13 @@ interface Props {
   onSelect: (service: ServiceId) => void;
   onOpenNetwork: () => void;
 }
+
+/**
+ * Most-used first, by passenger journeys on the NTA's 2024 National Rail Census day: DART 87,058; Dublin
+ * commuter 62,857; InterCity 50,753; Cork commuter and regional 9,617; Enterprise 6,214 (Tables 8 and 12).
+ * The app keeps no usage stats of its own.
+ */
+export const SERVICE_ORDER: ServiceId[] = ['dart', 'commuter', 'intercity', 'cork', 'enterprise'];
 
 /** The top level: pick a service, then its map, then a station. */
 export function ServicePicker({ onSelect, onOpenNetwork }: Props) {
@@ -28,7 +35,7 @@ export function ServicePicker({ onSelect, onOpenNetwork }: Props) {
       </header>
       <h2 className="services__heading">{t.chooseService}</h2>
       <ul className="services">
-        {(Object.keys(SERVICES) as ServiceId[]).map((id) => (
+        {SERVICE_ORDER.map((id) => (
           <li key={id}>
             <button className={`service-tile service-tile--${id}`} onClick={() => onSelect(id)}>
               <span className="service-tile__stripes" aria-hidden>

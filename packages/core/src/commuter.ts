@@ -17,13 +17,17 @@ export interface CommuterRoute {
 
 const SOUTH_WESTERN_MAIN = ['CHORC', 'CLDKN', 'KISHO', 'ADAMF', 'HZLCH', 'SALNS', 'NBRGE', 'CURAH', 'KDARE', 'MONVN', 'PTRTN', 'PTLSE'];
 const WESTERN_TRUNK = ['CNLLY', 'DCDRA', 'BBRDG', 'PELTN', 'ASHTN', 'PHNPK', 'CNOCK', 'CMINE', 'CLSLA'];
+const NORTHERN_MAIN = ['CNLLY', 'CTARF', 'KLSTR', 'HTOWN', 'RAHNY', 'KBRCK', 'HWTHJ', 'GRGRD', 'PMNCK', 'MHIDE', 'DBATE', 'RLUSK', 'SKRES', 'BBRGN', 'GSTON', 'LTOWN', 'DGHDA', 'DDALK'];
+/** Many Northern, Western and South Western trains run through Connolly to Tara Street, Pearse and Grand Canal Dock. */
+const CITY_THROUGH = ['GCDK', 'PERSE', 'TARA'];
 
 export const COMMUTER_ROUTES: CommuterRoute[] = [
   {
     id: 'northern',
     line: {
-      paths: [['CNLLY', 'CTARF', 'KLSTR', 'HTOWN', 'RAHNY', 'KBRCK', 'HWTHJ', 'GRGRD', 'PMNCK', 'MHIDE', 'DBATE', 'RLUSK', 'SKRES', 'BBRGN', 'GSTON', 'LTOWN', 'DGHDA', 'DDALK']],
-      termini: { Northbound: ['DGHDA', 'DDALK'], Southbound: ['CNLLY'] },
+      // From Connolly, and through from Grand Canal Dock (live trains, Nov 2026: Drogheda–Grand Canal Dock).
+      paths: [NORTHERN_MAIN, [...CITY_THROUGH, ...NORTHERN_MAIN]],
+      termini: { Northbound: ['DGHDA', 'DDALK'], Southbound: ['CNLLY', 'GCDK'] },
     },
     outer: ['DGHDA', 'DDALK'],
   },
@@ -32,10 +36,12 @@ export const COMMUTER_ROUTES: CommuterRoute[] = [
     line: {
       paths: [
         [...WESTERN_TRUNK, 'LXCON', 'LXLSA', 'MYNTH'],
+        // Through from Grand Canal Dock (live trains: Maynooth–Grand Canal Dock).
+        [...CITY_THROUGH, ...WESTERN_TRUNK, 'LXCON', 'LXLSA', 'MYNTH'],
         [...WESTERN_TRUNK, 'HAFLD', 'DBYNE', 'M3WAY'],
         ['CNLLY', 'DCDRA', 'BBRDG', 'DCKLS'],
       ],
-      termini: { Northbound: ['MYNTH', 'M3WAY'], Southbound: ['CNLLY', 'DCKLS'] },
+      termini: { Northbound: ['MYNTH', 'M3WAY'], Southbound: ['CNLLY', 'DCKLS', 'GCDK'] },
     },
     outer: ['MYNTH', 'M3WAY'],
   },
@@ -75,7 +81,8 @@ const onRoute = (route: CommuterRoute, code: string) => route.line.paths.some((p
 
 /**
  * Which route a departure from `stationCode` is on, and whether it's heading out of Dublin:
- * 1. a route serving both this station and the destination;
+ * 1. a route serving both this station and the destination (routes share track through the city, so the one
+ *    that also serves the train's origin wins: a Drogheda–Grand Canal Dock train at Connolly is a Northern one);
  * 2. a train heading into the city centre is on this station's route, even if its city terminus is on
  *    another route too (Malahide to Grand Canal Dock is a Northern train heading in);
  * 3. a train running through the city to another route (Pearse to Drogheda) is on the destination's route.
@@ -86,7 +93,9 @@ export function commuterHeading(stationCode: string, departure: Departure): { ro
   const destination = departure.destinationCode;
   if (!destination) return undefined;
   const serving = COMMUTER_ROUTES.filter((r) => onRoute(r, destination));
-  const both = serving.find((r) => onRoute(r, stationCode) && directionBetween(stationCode, destination, r.line));
+  const candidates = serving.filter((r) => onRoute(r, stationCode) && directionBetween(stationCode, destination, r.line));
+  const origin = departure.originCode;
+  const both = (origin && candidates.find((r) => onRoute(r, origin))) || candidates[0];
   if (both) return { route: both, outbound: directionBetween(stationCode, destination, both.line) === 'Northbound' };
   const here = COMMUTER_ROUTES.find((r) => onRoute(r, stationCode));
   if (here && CITY.has(destination)) return { route: here, outbound: false };

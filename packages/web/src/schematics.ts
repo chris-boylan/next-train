@@ -14,6 +14,10 @@ export interface SchematicPoint {
   label: LabelPlacement;
   /** Shift the label sideways (px) to clear a nearby line, e.g. a negative value moves it left. */
   labelDx?: number;
+  /** Shift the label up (negative) or down (px), e.g. to sit just above a line leaving sideways. */
+  labelDy?: number;
+  /** A big station whose name keeps the map's usual size (still bold), where a larger one wouldn't fit. */
+  smallHubLabel?: boolean;
   /** Wrap this label wider than this; overrides the map's labelMaxWidth. */
   labelWidth?: number;
 }
@@ -27,6 +31,8 @@ export interface Schematic {
    * Every corner is drawn rounded, so lines sweep rather than meet at right angles.
    */
   bends?: Record<string, [number, number][]>;
+  /** Curve radius for a connection's corners, keyed "A|B" like bends, where it should sweep wider than usual. */
+  curves?: Record<string, number>;
   /** Wrap names wider than this onto a second line (for maps with lines side by side). */
   labelMaxWidth?: number;
 }
@@ -54,7 +60,8 @@ export const SCHEMATICS: Partial<Record<ServiceId, Schematic>> = {
       // The Mallow line comes south and sweeps east into Cork.
       'MLLOW|CORK': [[34, 260]],
       // The Cobh line leaves Glounthaune heading east, then curves south past Fota.
-      'GHANE|FOTA': [[196, 260]],
+      // Leaves Glounthaune itself at 45°, so the dot sits on the split.
+      'GHANE|FOTA': [[196, 296]],
     },
   },
 };

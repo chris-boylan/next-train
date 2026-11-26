@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { searchStations, type Service, type Station } from '@dart-times/core';
 import { BranchLineMap } from './BranchLineMap';
 import { COMMUTER_ROUTE_MAP } from './commuterRoutes';
-import { commuterSchematic } from './commuterSchematic';
+import { commuterSchematicFor } from './commuterSchematic';
 import { INTERCITY_ROUTE_MAP } from './intercityRoutes';
+import { intercitySchematic } from './intercitySchematic';
+import { NETWORK_TERMINI, withBreaks } from './networkSchematic';
 import { LineMap } from './LineMap';
 import { SchematicMap } from './SchematicMap';
 import { SCHEMATICS } from './schematics';
 import { Caps, useI18n } from './i18n';
 import { OptionsMenu } from './OptionsMenu';
-import { RoutesMap } from './RoutesMap';
+import { RoutesMap, type RoutesView } from './RoutesMap';
 import { SimpleLineMap } from './SimpleLineMap';
 
 interface Props {
@@ -19,10 +21,22 @@ interface Props {
   currentCode?: string;
   onSelect: (code: string) => void;
   onToggleFavourite: (code: string) => void;
+  /** For route-based services (Dublin Commuter, InterCity): the map's view, kept by the app. */
+  routesView: RoutesView;
+  onRoutesViewChange: (view: RoutesView) => void;
 }
 
 /** A service's line map (or search results), where you pick a station. */
-export function StationPicker({ service, onBack, favourites: allFavourites, currentCode, onSelect, onToggleFavourite }: Props) {
+export function StationPicker({
+  service,
+  onBack,
+  favourites: allFavourites,
+  currentCode,
+  onSelect,
+  onToggleFavourite,
+  routesView,
+  onRoutesViewChange,
+}: Props) {
   const { t, stationName } = useI18n();
   const [query, setQuery] = useState('');
   // Favourites from this service only; Connolly counts for both.
@@ -83,18 +97,27 @@ export function StationPicker({ service, onBack, favourites: allFavourites, curr
         <LineMap {...mapProps} />
       ) : service.id === 'commuter' ? (
         <RoutesMap
+          view={routesView}
+          onViewChange={onRoutesViewChange}
           service={service}
           routeMap={COMMUTER_ROUTE_MAP}
           routeName={(id) => t.commuterRoutes[id]}
-          schematic={commuterSchematic}
+          schematic={commuterSchematicFor}
           hubs={['CNLLY', 'HSTON']}
           {...mapProps}
         />
       ) : service.id === 'intercity' ? (
         <RoutesMap
+          view={routesView}
+          onViewChange={onRoutesViewChange}
           service={service}
           routeMap={INTERCITY_ROUTE_MAP}
           routeName={(id) => t.intercityRoutes[id]}
+          // Drawn from the all-stations map, in its compact type, so the two look alike.
+          schematic={intercitySchematic}
+          mapClassName="schematic--compact"
+          mapName={withBreaks}
+          mapTermini={NETWORK_TERMINI}
           hubs={['HSTON', 'CNLLY']}
           {...mapProps}
         />

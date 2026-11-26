@@ -46,6 +46,19 @@ describe('commuterHeading', () => {
     expect(commuterHeading('PERSE', to('Drogheda', 'DGHDA'))).toMatchObject({ route: { id: 'northern' }, outbound: true });
   });
 
+  it('tells apart the routes running through the city by where the train started', () => {
+    const from = (origin: string, originCode: string, destination: string, destinationCode: string): Departure => ({
+      ...to(destination, destinationCode),
+      origin,
+      originCode,
+    });
+    // Live patterns (Nov 2026): Drogheda, Maynooth and Hazelhatch trains all run through Connolly to Grand Canal Dock.
+    expect(commuterHeading('CNLLY', from('Drogheda', 'DGHDA', 'Grand Canal Dock', 'GCDK'))).toMatchObject({ route: { id: 'northern' } });
+    expect(commuterHeading('CNLLY', from('Maynooth', 'MYNTH', 'Grand Canal Dock', 'GCDK'))).toMatchObject({ route: { id: 'western' } });
+    expect(commuterHeading('CNLLY', from('Hazelhatch', 'HZLCH', 'Grand Canal Dock', 'GCDK'))).toMatchObject({ route: { id: 'southWestern' } });
+    expect(commuterHeading('TARA', to('Maynooth', 'MYNTH'))).toMatchObject({ route: { id: 'western' }, outbound: true });
+  });
+
   it('gives up on destinations off the commuter network', () => {
     expect(commuterHeading('CNLLY', to('Longford'))).toBeUndefined();
   });

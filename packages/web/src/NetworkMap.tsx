@@ -1,26 +1,40 @@
 import { useMemo, useState } from 'react';
-import { DART_LINE, findStationByCode, searchStations, type Station } from '@dart-times/core';
+import { findStationByCode, searchStations, type Station } from '@dart-times/core';
 import { useI18n } from './i18n';
 import { NETWORK_EDGES, NETWORK_STATIONS } from './network.data';
 import { useNetworkName } from './networkNames';
+import { NETWORK_TERMINI, networkSchematic, withBreaks } from './networkSchematic';
+import { servicesByTrack, SERVICE_LINE_COLOURS, trackColours, type MapService } from './networkColours';
+import { hasNoData, isNorthern, NI_STATIONS, withNorthernTrack } from './northernStations';
 import { OptionsMenu } from './OptionsMenu';
-import { TreeMap } from './TreeMap';
+import { PositionedMap } from './PositionedMap';
+import { Sheet } from './Sheet';
 
 interface Props {
   onBack: () => void;
   onSelectStation: (code: string, name: string) => void;
 }
 
-const ROOT = 'CNLLY';
-const DART_GREEN = '#169b62';
 const pairKey = (a: string, b: string) => [a, b].sort().join('|');
-const dartPairs = new Set(DART_LINE.paths.flatMap((path) => path.slice(1).map((code, i) => pairKey(path[i]!, code))));
-const dartStations = new Set(DART_LINE.paths.flat());
-const connected = new Set(NETWORK_EDGES.flat());
+/**
+ * Track to draw. Limerick–Thurles comes from stop lists that skip Limerick Junction; there's no such
+ * line (trains go via the junction), so it's left off.
+ */
+export const MAP_EDGES = withNorthernTrack(NETWORK_EDGES).filter(([a, b]) => pairKey(a, b) !== pairKey('LMRCK', 'THRLS'));
+const connected = new Set(MAP_EDGES.flat());
+// Each piece of track in the colours of the services using it (see networkColours.ts).
+const SERVICES_BY_TRACK = servicesByTrack(MAP_EDGES, isNorthern);
+const LEGEND: MapService[] = ['dart', 'commuter', 'intercity', 'cork', 'enterprise', 'ni'];
+const MAP_CODES = [...connected];
+const degree = new Map<string, number>();
+for (const [a, b] of MAP_EDGES) for (const c of [a, b]) degree.set(c, (degree.get(c) ?? 0) + 1);
+// Circles for ends of lines, junctions and termini, ticks for the rest.
+const major = (code: string) => degree.get(code) !== 2 || NETWORK_TERMINI.has(code);
 
 // Every station on the map in the shape the shared search expects. DART and Enterprise stations bring
-// their aliases and Irish names; the rest search by their Irish Rail name.
-const SEARCHABLE: Station[] = NETWORK_STATIONS.map(
+// their aliases and Irish names; the rest search by their Irish Rail name. Search doesn't use positions,
+// so the hand-added NI stations (which have none) get 0, 0.
+const SEARCHABLE: Station[] = [...NETWORK_STATIONS, ...NI_STATIONS.map((s) => ({ ...s, lat: 0, lon: 0 }))].map(
   (s) =>
     findStationByCode(s.code) ?? {
       code: s.code,
@@ -35,11 +49,16 @@ const SEARCHABLE: Station[] = NETWORK_STATIONS.map(
 
 /** Every Irish Rail station as one schematic, fitting the screen's width and scrolling down. Not linked to live times yet. */
 export function NetworkMap({ onBack, onSelectStation }: Props) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const name = useNetworkName();
+  // Irish names are longer and wrap onto more lines, so the Irish map is taller.
+  const schematic = useMemo(() => networkSchematic(lang), [lang]);
   const [query, setQuery] = useState('');
   const results = query.trim() ? searchStations(query, SEARCHABLE) : [];
   const unmapped = useMemo(() => NETWORK_STATIONS.filter((s) => !connected.has(s.code)), []);
+  // Northern Ireland stations without live times open a note saying so, rather than an empty board.
+  const [noDataCode, setNoDataCode] = useState<string>();
+  const open = (code: string) => (hasNoData(code) ? setNoDataCode(code) : onSelectStation(code, name(code)));
 
   return (
     <div className="network">
@@ -65,30 +84,58 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
         <ul className="station-list">
           {results.map((s) => (
             <li key={s.code} className="station-row">
-              <button className="station-row__name" onClick={() => onSelectStation(s.code, name(s.code))}>
-                {name(s.code)}
-              </button>
+              {hasNoData(s.code) ? (
+                <button className="station-row__name station-row__name--no-data" onClick={() => open(s.code)}>
+                  {name(s.code)} <span className="network__no-data-note">· {t.noLiveData}</span>
+                </button>
+              ) : (
+                <button className="station-row__name" onClick={() => open(s.code)}>
+                  {name(s.code)}
+                </button>
+              )}
             </li>
           ))}
           {!results.length && <li className="picker__empty">{t.noMatch(query)}</li>}
         </ul>
       ) : (
         <>
-          <TreeMap
-            edges={NETWORK_EDGES}
-            root={ROOT}
-            name={name}
-            colourOf={(a, b) => (dartPairs.has(pairKey(a, b)) ? DART_GREEN : undefined)}
-            tickColourOf={(code) => (dartStations.has(code) ? DART_GREEN : undefined)}
-            onSelect={onSelectStation}
+          <ul className="commuter__legend">
+            {LEGEND.map((s) => (
+              <li key={s}>
+                <span className="commuter__swatch" style={{ background: SERVICE_LINE_COLOURS[s] }} />
+                {s === 'ni' ? `${t.niRailways} (${t.noLiveData})` : t.serviceNames[s]}
+              </li>
+            ))}
+          </ul>
+          <PositionedMap
+            schematic={schematic}
+            edges={MAP_EDGES}
+            codes={MAP_CODES}
+            name={(code) => withBreaks(name(code))}
+            major={major}
+            colourOf={(a, b) => trackColours(SERVICES_BY_TRACK, a, b)}
+            onSelect={open}
+            noData={hasNoData}
+            className="schematic--compact schematic--network"
             label={t.allStations}
           />
+          <p className="network__unmapped">
+            <em>{t.italicStations}</em> {t.noLiveDataNote}
+          </p>
           {unmapped.length > 0 && (
             <p className="network__unmapped">
               {t.notYetMapped}: {unmapped.map((s) => name(s.code)).join(', ')}
             </p>
           )}
         </>
+      )}
+
+      {noDataCode && (
+        <Sheet title={name(noDataCode)} onClose={() => setNoDataCode(undefined)}>
+          <p className="sheet__note">
+            <strong>{t.noLiveDataTitle}.</strong> {t.noLiveDataExplained}
+          </p>
+        </Sheet>
       )}
     </div>
   );

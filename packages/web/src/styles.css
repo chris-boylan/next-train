@@ -399,12 +399,16 @@ p {
   background: var(--lane-color);
 }
 
+/* The head overlaps the shaft by 2px: where they meet between pixels, two separate edges would each be
+   softened and leave a faint seam. (The head is wider than the shaft, so the overlap doesn't show.) */
 .lane--north .lane__head {
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  margin-bottom: -2px;
 }
 
 .lane--south .lane__head {
   clip-path: polygon(0 0, 100% 0, 50% 100%);
+  margin-top: -2px;
 }
 
 .half {
@@ -1033,6 +1037,13 @@ p {
   margin-bottom: 6px;
 }
 
+/* A sentence or two in a sheet, e.g. why a station has no live times. */
+.sheet__note {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
 .sheet__empty,
 .hidden-note {
   padding: 12px 0 0;
@@ -1239,16 +1250,18 @@ p {
   --tile-south: #e5636b;
 }
 
-/* InterCity's tile shows its first two route colours (Cork & Kerry red, Galway & Mayo purple). */
+/* InterCity: the colours of Irish Rail's InterCity trains, dark green and silver-grey (a deeper green than the
+   DART's, so the two tiles stay distinct). */
 .service-tile--intercity {
-  --tile-north: #c62828;
-  --tile-south: #7b1fa2;
+  --tile-north: #00573f;
+  --tile-south: #a7a9ac;
 }
 
-/* Dublin Commuter's tile shows its first two route colours (Northern teal, Western blue). */
+/* Dublin Commuter has no Irish Rail colour of its own (its "Commuter" livery was retired by 2014), so its tile
+   takes Dublin's blues: sky blue, then a mid blue. */
 .service-tile--commuter {
-  --tile-north: #00897b;
-  --tile-south: #3f51b5;
+  --tile-north: #69b3e7;
+  --tile-south: #2f6fb5;
 }
 
 .service-tile {
@@ -1400,6 +1413,16 @@ p {
   color: var(--muted);
 }
 
+.station-row__name--no-data {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.network__no-data-note {
+  font-size: 0.8rem;
+}
+
 .network__unmapped {
   margin-top: 16px;
   font-size: 0.8rem;
@@ -1511,6 +1534,35 @@ p {
   height: 28px;
 }
 
+/* ---------- Compact geographic maps (all stations) ---------- */
+
+/* A whole network on a phone's width: smaller names, and junction names in bold without capitals. */
+.schematic--compact .schematic__stop {
+  font-size: 0.7rem;
+}
+
+.schematic--compact .line-map__stop--major {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* All stations: track in the text colour, with only the DART in its green. */
+.schematic--network .line-map__track,
+.schematic--network .line-map__tick {
+  stroke: var(--text);
+}
+
+/* Angled names never wrap, even beside the screen edge: they run up and away from their line. */
+.schematic__stop--angled.schematic__stop--wrap {
+  white-space: nowrap;
+}
+
+.schematic__stop--no-data {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--muted);
+}
+
 /* ---------- Dublin Commuter ---------- */
 
 .commuter__mode {
@@ -1590,4 +1642,82 @@ p {
   pointer-events: all;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- Service line colours (all-stations map) ---------- */
+/* The same colours as the service tiles, lightened in dark mode where a deep colour would vanish. NI Railways
+   is muted: it has no live times yet. */
+:root {
+  --svc-dart: #169b62;
+  --svc-commuter: #2f6fb5;
+  --svc-intercity: #00573f;
+  --svc-cork: #b5121b;
+  --svc-enterprise: #5b2a86;
+  --svc-ni: #a3a3a8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --svc-commuter: #5b9ad8;
+    --svc-intercity: #93c4b1;
+    --svc-cork: #e0323c;
+    --svc-enterprise: #8f5fcc;
+    --svc-ni: #6e6e73;
+  }
+}
+
+:root[data-theme='dark'] {
+  --svc-commuter: #5b9ad8;
+  --svc-intercity: #93c4b1;
+  --svc-cork: #e0323c;
+  --svc-enterprise: #8f5fcc;
+  --svc-ni: #6e6e73;
+}
+
+/* ---------- Interchanges (Connolly, Heuston, Belfast) ---------- */
+/* A bigger, heavier circle and a bolder, larger name, to draw the eye to the big stations. */
+.line-map__dot--hub {
+  stroke-width: 6;
+}
+
+.schematic__stop--hub,
+.schematic--compact .schematic__stop--hub {
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* On the compact maps (all stations, InterCity), names are tightly packed: bold and a little larger, but
+   not in capitals, which run much wider. */
+.schematic--compact .schematic__stop--hub {
+  font-size: 0.8rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.schematic--compact .schematic__stop--hub-small {
+  font-size: 0.7rem;
+}
+
+/* Its padding already clears the bigger circle, and every pixel counts between the two lines. */
+.schematic__stop--hub.schematic__stop--hub-small.schematic__stop--right {
+  margin-left: 0;
+}
+
+/* Clear of the larger circle. */
+.schematic__stop--hub.schematic__stop--right {
+  margin-left: 5px;
+}
+
+.schematic__stop--hub.schematic__stop--left {
+  margin-right: 5px;
+}
+
+.schematic__stop--hub.schematic__stop--below {
+  margin-top: 4px;
+}
+
+.schematic__stop--hub.schematic__stop--above {
+  margin-top: -4px;
 }
