@@ -25,6 +25,7 @@ new DartTimesStack(app, 'DartTimes', {
 // The GitHub Actions deploy role. Not matched by `DartTimes*`, so the pipeline never deploys (or changes) it.
 new GitHubDeployStack(app, 'NextTrainGitHubDeploy', {
   env: { account, region: 'eu-west-1' },
-  repo: context('githubRepo') ?? 'chris-boylan/next-train',
+  // chris-boylan/next-train, in GitHub's immutable subject format (see GitHubDeployStackProps.repo).
+  repo: context('githubRepo') ?? 'chris-boylan@271568683/next-train@1473275948',
   environment: 'production',
 });
