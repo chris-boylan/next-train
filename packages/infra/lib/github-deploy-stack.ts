@@ -3,7 +3,11 @@ import { Effect, OidcProviderNative, PolicyStatement, Role, WebIdentityPrincipal
 import type { Construct } from 'constructs';
 
 export interface GitHubDeployStackProps extends StackProps {
-  /** `owner/name` of the GitHub repo allowed to deploy. */
+  /**
+   * The repo as it appears in GitHub's OIDC `sub` claim. This repo uses GitHub's immutable subject format,
+   * `owner@ownerId/name@repoId`, so a renamed or re-created repo with the same name can't assume the role.
+   * Check it with `gh api repos/OWNER/REPO/actions/oidc/customization/sub` (`sub_claim_prefix`, minus `repo:`).
+   */
   repo: string;
   /** The GitHub Actions environment the deploy job runs in (where the approval gate lives). */
   environment: string;
