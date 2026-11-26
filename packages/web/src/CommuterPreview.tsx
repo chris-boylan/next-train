@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { ALL_COMMUTER_EDGES, COMMUTER_ROUTES, type CommuterRouteId, routeOf } from './commuterRoutes';
+import { COMMUTER_SCHEMATIC } from './commuterSchematic';
 import { useI18n } from './i18n';
 import { useNetworkName } from './networkNames';
 import { OptionsMenu } from './OptionsMenu';
+import { PositionedMap } from './PositionedMap';
 import { TreeMap } from './TreeMap';
 
 interface Props {
@@ -56,10 +58,12 @@ export function CommuterPreview({ onBack }: Props) {
               </li>
             ))}
           </ul>
-          <TreeMap
+          <PositionedMap
+            schematic={COMMUTER_SCHEMATIC}
             edges={ALL_COMMUTER_EDGES}
-            root="CNLLY"
+            codes={[...new Set(ALL_COMMUTER_EDGES.flat())]}
             name={name}
+            major={(code) => ALL_COMMUTER_EDGES.filter((e) => e.includes(code)).length !== 2}
             colourOf={(a, b) => routeOf(a, b)?.colour}
             label={t.allRoutes}
           />

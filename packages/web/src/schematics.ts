@@ -5,8 +5,8 @@
  */
 import type { ServiceId } from '@dart-times/core';
 
-/** Where a station's name sits: beside a vertical line, under the dot, or angled above a horizontal line. */
-export type LabelPlacement = 'right' | 'below' | 'angled';
+/** Where a station's name sits: either side of a vertical line, under the dot, or angled above a horizontal line. */
+export type LabelPlacement = 'right' | 'left' | 'below' | 'angled';
 
 export interface SchematicPoint {
   x: number;
@@ -23,6 +23,8 @@ export interface Schematic {
    * Every corner is drawn rounded, so lines sweep rather than meet at right angles.
    */
   bends?: Record<string, [number, number][]>;
+  /** Wrap names wider than this onto a second line (for maps with lines side by side). */
+  labelMaxWidth?: number;
 }
 
 export const SCHEMATICS: Partial<Record<ServiceId, Schematic>> = {

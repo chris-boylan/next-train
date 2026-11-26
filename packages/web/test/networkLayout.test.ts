@@ -39,3 +39,12 @@ describe('layoutNetwork', () => {
     expect(layout.columns).toBeLessThanOrEqual(7);
   });
 });
+
+describe('Dublin commuter preview schematic', () => {
+  it('places every commuter station', async () => {
+    const { ALL_COMMUTER_EDGES } = await import('../src/commuterRoutes');
+    const { COMMUTER_SCHEMATIC } = await import('../src/commuterSchematic');
+    const missing = [...new Set(ALL_COMMUTER_EDGES.flat())].filter((code) => !COMMUTER_SCHEMATIC.points[code]);
+    expect(missing).toEqual([]);
+  });
+});
