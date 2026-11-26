@@ -3,14 +3,18 @@
 /* ---------- Track view ---------- */
 
 .track-view {
+  /* Pinned to the screen rather than sized with 100dvh: installed on iOS, 100dvh can come out taller than the
+     screen, which made the page scroll a little and let iOS blur the header under the status bar. */
+  position: fixed;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  height: 100dvh;
   max-width: 560px;
   margin: 0 auto;
   overflow: hidden;
-  /* Keep the top bar and the bottom arrowhead clear of notches and the home bar. */
-  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  /* The top bar clears the notch / Dynamic Island; at the bottom the tracks run to the edge of the screen and
+     only the trains and links keep clear of the home bar (see .half--bottom). */
+  padding-top: env(safe-area-inset-top);
 }
 
 .track-view__bar {
@@ -150,6 +154,7 @@
 
 .half--bottom {
   justify-content: flex-start;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
 }
 
 .terminus {
@@ -359,6 +364,10 @@
 @media (max-height: 740px) {
   .half {
     padding: 4px 0;
+  }
+
+  .half--bottom {
+    padding-bottom: calc(4px + env(safe-area-inset-bottom));
   }
 
   .trains {
