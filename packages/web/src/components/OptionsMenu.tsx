@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useOpenHelp } from '../lib/help';
 import { type Lang, useI18n } from '../lib/i18n';
 import { type FavouritesPlace, useFavouritesPlace } from '../lib/prefs';
 import { type Theme, useTheme } from '../lib/theme';
@@ -15,6 +16,7 @@ function canAddToHomeScreen(): boolean {
 export function OptionsMenu() {
   const { lang, setLang, t } = useI18n();
   const { theme, setTheme } = useTheme();
+  const openHelp = useOpenHelp();
   const [favouritesPlace, setFavouritesPlace] = useFavouritesPlace();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -71,6 +73,15 @@ export function OptionsMenu() {
               { value: 'home', label: t.favouritesOnHome },
             ]}
           />
+          <button
+            className="options__link"
+            onClick={() => {
+              setOpen(false);
+              openHelp();
+            }}
+          >
+            {t.help.open} ›
+          </button>
           {canAddToHomeScreen() && (
             <div className="options__row">
               <span className="options__label">{t.install}</span>

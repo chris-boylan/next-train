@@ -2,16 +2,31 @@ import { useEffect, useMemo, useState } from 'react';
 import { findStationByCode, isServiceId, SERVICES, type ServiceId, type Station } from '@dart-times/core';
 import { fetchFavourites, setFavourite } from './lib/api';
 import { getDeviceId } from './lib/deviceId';
+import { HelpContext } from './lib/help';
 import { useI18n } from './lib/i18n';
 import { NetworkMap } from './maps/NetworkMap';
 import type { RoutesView } from './maps/RoutesMap';
+import { HelpPage } from './screens/HelpPage';
 import { ServicePicker } from './screens/ServicePicker';
 import { StationBoard } from './screens/StationBoard';
 import { StationPicker } from './screens/StationPicker';
 import { TrackView } from './screens/TrackView';
 
-/** Service → line map → station. Always opens on the service picker; ?service=&station= links go straight in. */
+/** Service → line map → station. Always opens on the service picker; ?service=&station= links go straight in,
+ * and ?help opens the help page. Help sits on top of whatever screen it was opened from. */
 export function App() {
+  const [showHelp, setShowHelp] = useState(() => new URLSearchParams(location.search).has('help'));
+  return (
+    <HelpContext.Provider value={() => setShowHelp(true)}>
+      {showHelp ? <HelpPage onBack={() => setShowHelp(false)} /> : null}
+      <div hidden={showHelp}>
+        <Screens />
+      </div>
+    </HelpContext.Provider>
+  );
+}
+
+function Screens() {
   const { t, stationName } = useI18n();
   const deviceId = useMemo(getDeviceId, []);
   const params = new URLSearchParams(location.search);

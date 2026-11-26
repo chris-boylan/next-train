@@ -30,6 +30,44 @@ export function setFavourite(deviceId: string, code: string, favourite: boolean)
   });
 }
 
+export interface FeedbackPayload {
+  message: string;
+  email?: string;
+  /** Hidden honeypot field; people leave it empty. */
+  website: string;
+  elapsedMs: number;
+  lang: string;
+  appVersion: string;
+}
+
+export class FeedbackError extends Error {
+  constructor(
+    message: string,
+    readonly tooMany: boolean,
+  ) {
+    super(message);
+  }
+}
+
+/** Sends a help-page message. CloudFront signs requests to the API, which needs the body's SHA-256 for POSTs. */
+export async function sendFeedback(deviceId: string, payload: FeedbackPayload): Promise<void> {
+  const body = JSON.stringify(payload);
+  const res = await fetch('/api/feedback', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-device-id': deviceId, 'x-amz-content-sha256': await sha256Hex(body) },
+    body,
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new FeedbackError(data?.error ?? `Request failed (${res.status})`, res.status === 429);
+  }
+}
+
+async function sha256Hex(text: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
 /** One train's stops from a station to its terminus, and where it is now. */
 export function fetchJourney(trainCode: string, from: string) {
   return request<Journey>(`/trains/${encodeURIComponent(trainCode.trim())}/journey?from=${from}`);

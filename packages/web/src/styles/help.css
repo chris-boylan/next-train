@@ -1,0 +1,164 @@
+/* The help page (opened from the options cog): reading guide, tips, data, privacy, feedback form, about. */
+
+.help {
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+}
+
+.help__section {
+  padding: 20px 0 4px;
+  border-bottom: 2px solid var(--border);
+}
+
+.help__section:last-child {
+  border-bottom: 0;
+}
+
+.help__section h2 {
+  margin-bottom: 10px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.help__section p,
+.help__list,
+.help__tips {
+  margin: 0 0 14px;
+  line-height: 1.45;
+}
+
+.help__legend {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.help__legend li {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  align-items: center;
+  gap: 12px;
+  line-height: 1.35;
+}
+
+.help__sample {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+
+.help__sample.train__due {
+  font-size: 1.6rem;
+}
+
+.help__list {
+  padding-left: 20px;
+}
+
+.help__list li + li {
+  margin-top: 6px;
+}
+
+.help__tips div + div {
+  margin-top: 12px;
+}
+
+.help__tips dt {
+  font-weight: 800;
+}
+
+.help__tips dd {
+  margin: 2px 0 0;
+}
+
+.help__form {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.help__form p {
+  margin: 0;
+}
+
+.help__field {
+  display: grid;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.help__field textarea,
+.help__field input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--rule);
+  border-radius: 0;
+  background: var(--bg);
+  color: var(--text);
+  /* 16px stops iOS zooming in when the field gets focus. */
+  font: 500 16px/1.4 var(--font);
+  resize: vertical;
+}
+
+/* Off-screen rather than display:none, which some bots skip. */
+.help__trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.help__send {
+  justify-self: start;
+  min-height: 44px;
+  padding: 10px 22px;
+  border: 0;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.help__send:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.help__error {
+  color: var(--major-bg);
+  font-weight: 700;
+}
+
+.help__sent {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  margin-bottom: 16px;
+}
+
+.help__version {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* "Help & about" in the options panel. */
+.options__link {
+  justify-self: start;
+  min-height: 36px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
