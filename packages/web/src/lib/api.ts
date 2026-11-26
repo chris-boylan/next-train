@@ -1,4 +1,4 @@
-import type { Departure, Direction, ServiceId, Station } from '@dart-times/core';
+import type { Departure, Direction, Journey, ServiceId, Station } from '@dart-times/core';
 
 export interface DeparturesResponse {
   station: Station;
@@ -28,4 +28,9 @@ export function setFavourite(deviceId: string, code: string, favourite: boolean)
     method: favourite ? 'PUT' : 'DELETE',
     headers: { 'x-device-id': deviceId },
   });
+}
+
+/** One train's stops from a station to its terminus, and where it is now. */
+export function fetchJourney(trainCode: string, from: string) {
+  return request<Journey>(`/trains/${encodeURIComponent(trainCode.trim())}/journey?from=${from}`);
 }

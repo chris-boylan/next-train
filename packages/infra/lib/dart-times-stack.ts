@@ -118,6 +118,14 @@ export class DartTimesStack extends Stack {
           cachePolicy: departuresCache,
           originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
         },
+        // A train's journey (the station page's look-ahead) is the same for everyone too.
+        '/api/trains/*': {
+          origin: apiOrigin,
+          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
+          allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+          cachePolicy: departuresCache,
+          originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+        },
         // Favourites are per device (x-device-id), so never cached.
         '/api/*': {
           origin: apiOrigin,

@@ -119,3 +119,34 @@ describe('API handler: Intercity', () => {
     expect((await request('GET', '/api/stations/HOWTH/departures?service=intercity')).statusCode).toBe(404);
   });
 });
+
+describe('API handler: train journey', () => {
+  const journeyHandler = createHandler({
+    client: fixtureClient('movements-E117.xml'),
+    favourites: new FavouritesService(new InMemoryFavouritesRepository()),
+  });
+  const get = (path: string) => {
+    const url = new URL(path, 'http://x');
+    return journeyHandler({
+      rawPath: url.pathname,
+      queryStringParameters: Object.fromEntries(url.searchParams),
+      headers: {},
+      requestContext: { http: { method: 'GET' } },
+    } as unknown as APIGatewayProxyEventV2);
+  };
+
+  it('returns the stops ahead and where the train is, cacheable briefly', async () => {
+    const res = await get('/api/trains/E117/journey?from=bray');
+    expect(res.statusCode).toBe(200);
+    expect(res.headers?.['cache-control']).toBe('public, max-age=20');
+    const data = body(res);
+    expect(data.destination).toBe('Greystones');
+    expect(data.stops.map((s: { code: string }) => s.code)).toEqual(['BRAY', 'GSTNS']);
+    expect(data.now).toMatchObject({ kind: 'at', code: 'WBROK' });
+  });
+
+  it('rejects a missing station and 404s when the train does not call there', async () => {
+    expect((await get('/api/trains/E117/journey')).statusCode).toBe(400);
+    expect((await get('/api/trains/E117/journey?from=MHIDE')).statusCode).toBe(404);
+  });
+});

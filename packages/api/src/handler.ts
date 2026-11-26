@@ -1,5 +1,6 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import {
+  buildJourney,
   DART_STATIONS,
   FavouriteError,
   type FavouritesService,
@@ -66,6 +67,16 @@ export function createHandler({ client, favourites }: ApiDeps) {
         const limit = Number(event.queryStringParameters?.limit) || undefined;
         const departures = await getDepartures(client, station.code, { direction, limit, service });
         return json(200, { station, direction: direction ?? null, departures, fetchedAt: new Date().toISOString() }, DEPARTURES_CACHE);
+      }
+
+      // One train's journey from a station to its terminus, for the station page's look-ahead view.
+      const journeyMatch = path.match(/^\/api\/trains\/([A-Za-z0-9]{1,8})\/journey$/);
+      if (method === 'GET' && journeyMatch) {
+        const from = event.queryStringParameters?.from?.toUpperCase();
+        if (!from || !/^[A-Z]{2,6}$/.test(from)) return error(400, 'Missing or invalid ?from= station code');
+        const journey = buildJourney(await client.getTrainMovements(journeyMatch[1]!), from, Date.now());
+        if (!journey) return error(404, 'That train does not call at that station today');
+        return json(200, journey, DEPARTURES_CACHE);
       }
 
       const favouriteMatch = path.match(/^\/api\/favourites(?:\/([A-Za-z]+))?$/);

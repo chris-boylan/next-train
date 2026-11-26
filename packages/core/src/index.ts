@@ -8,3 +8,4 @@ export * from './commuter';
 export * from './intercity';
 export * from './describe';
 export * from './favourites';
+export * from './journey';

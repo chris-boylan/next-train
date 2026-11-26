@@ -1,0 +1,202 @@
+/* A train's look-ahead (tap a train on the station page): one track down the middle of the screen, the train at
+   the end it's coming from, and its stops to the terminus along the track. */
+
+/* The station page fades away under the look-ahead (the tapped train and its track glide into place). */
+.tracks > :not(.journey) {
+  transition: opacity 200ms ease;
+}
+
+.tracks--journey > :not(.journey) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Each train row opens its look-ahead. */
+.train__open {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+.journey {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  /* The train comes first in the markup: northbound it sits at the bottom (it travels up the screen)… */
+  flex-direction: column-reverse;
+  --journey-color: var(--north);
+  --lane: 30px;
+}
+
+/* …southbound at the top. */
+.journey--south {
+  flex-direction: column;
+  --journey-color: var(--south);
+}
+
+.journey--closing {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.journey__lane {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - var(--lane) / 2);
+  width: var(--lane);
+  background: var(--journey-color);
+}
+
+/* The stops scroll along the track; the train stays at its end. Northbound lists run upwards. */
+.journey__stops {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 12px 0;
+  list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.journey--south .journey__stops {
+  flex-direction: column;
+}
+
+.journey__stop {
+  display: grid;
+  grid-template-columns: 1fr var(--lane) 1fr;
+  align-items: center;
+  column-gap: 12px;
+  min-height: 52px;
+  flex: none;
+  animation: journey-stop-in 320ms ease both;
+}
+
+@keyframes journey-stop-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.journey__name {
+  justify-self: end;
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.15;
+}
+
+/* A white tick across the track for each stop; a ringed circle for this station and the terminus. */
+.journey__dot {
+  justify-self: center;
+  width: var(--lane);
+  height: 6px;
+  background: var(--bg);
+}
+
+.journey__stop--here .journey__dot,
+.journey__stop--end .journey__dot {
+  width: 22px;
+  height: 22px;
+  border: 4px solid var(--text);
+  border-radius: 50%;
+}
+
+.journey__stop--here .journey__name,
+.journey__stop--end .journey__name {
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.journey__stop--cancelled .journey__name {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.journey__time {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.journey__when {
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.journey__when .train__expected {
+  font-weight: 900;
+}
+
+.journey__in {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.journey__time--cancelled {
+  color: var(--major-bg);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+/* The train at its end of the track, with where it is now beside it. */
+.journey__train {
+  position: relative;
+  flex: none;
+  height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.journey__glyph {
+  position: relative;
+  z-index: 1;
+  width: 46px;
+  padding: 0;
+  border: 0;
+  background: none;
+  --glyph-width: 46px;
+}
+
+.journey__glyph .train__glyph {
+  position: static;
+  display: block;
+  width: 46px;
+  transform: none;
+}
+
+.journey__now {
+  position: absolute;
+  left: calc(50% + var(--lane) / 2 + 22px);
+  right: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.25;
+  animation: journey-stop-in 320ms 260ms ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey__stop,
+  .journey__now {
+    animation: none;
+  }
+
+  .tracks > :not(.journey),
+  .journey--closing {
+    transition: none;
+  }
+}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   adjacentStations,
   type Departure,
@@ -12,6 +12,8 @@ import {
 } from '@dart-times/core';
 import { formatTime, useNow } from '../lib/clock';
 import { DeparturesSheet } from '../components/DeparturesSheet';
+import { type JourneyOrigin, JourneyView } from '../components/JourneyView';
+import { TrainGlyph } from '../components/TrainGlyph';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
 import { getGoingTo, setGoingTo } from '../lib/prefs';
@@ -59,6 +61,26 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
   const goingDirection = goingTo ? directionBetween(station.code, goingTo, line) : undefined;
   // The full departures panel for one direction; it's also where the going-to filter is chosen.
   const [sheetDirection, setSheetDirection] = useState<Direction>();
+  // The look-ahead for one approaching train (tap a train); `closing` while it animates away.
+  const [journey, setJourney] = useState<{ train: Departure; direction: Direction; origin?: JourneyOrigin }>();
+  const [closingJourney, setClosingJourney] = useState(false);
+  const closeJourney = useCallback(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return setJourney(undefined);
+    setClosingJourney(true);
+    setTimeout(() => {
+      setJourney(undefined);
+      setClosingJourney(false);
+    }, 200);
+  }, []);
+  const openJourney = (train: Departure, direction: Direction, glyph: Element | null) => {
+    // Northbound trains come up the green track in the bottom half; southbound down the orange one at the top.
+    const lane = document.querySelector(direction === 'Northbound' ? '.half--bottom .lane--north' : '.half--top .lane--south');
+    setJourney({
+      train,
+      direction,
+      origin: glyph && lane ? { glyph: glyph.getBoundingClientRect(), lane: lane.getBoundingClientRect() } : undefined,
+    });
+  };
 
   // Direction from our own line layout (here → the train's destination), so services whose API directions
   // read "To Cork" rather than Northbound/Southbound still land on the right track. Falls back to the API.
@@ -90,6 +112,7 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
         goingToName={goingDirection === direction ? goingToName : undefined}
         hidden={dimmed(direction)}
         hasData={!!data}
+        onOpen={(train, glyph) => openJourney(train, direction, glyph)}
       />
     );
   };
@@ -101,9 +124,15 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
   return (
     <div className="track-view">
       <header className="track-view__bar">
-        <button className="chip" onClick={onChangeStation}>
-          ‹ {t.stations}
-        </button>
+        {journey ? (
+          <button className="chip" onClick={closeJourney}>
+            ✕ {t.journey.close}
+          </button>
+        ) : (
+          <button className="chip" onClick={onChangeStation}>
+            ‹ {t.stations}
+          </button>
+        )}
         <div className="clock">
           <p className="clock__now">
             <span className="clock__label">{t.now}</span> <time>{formatTime(now)}</time>
@@ -132,7 +161,7 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
         </div>
       </header>
 
-      <div className="tracks">
+      <div className={`tracks${journey && !closingJourney ? ' tracks--journey' : ''}`}>
         {/* Top half: southbound trains on their way in, nearest at the bottom. Green arrow continues up to its termini. */}
         <section className="half half--top" aria-label={t.towards(t.direction.Southbound, list(south.map(nameOf)))}>
           {/* Orange runs edge to edge through its trains; green carries on past the platform to its arrowhead halfway up. */}
@@ -176,6 +205,18 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
             <Termini codes={south} />
           </p>
         </section>
+
+        {journey && (
+          <JourneyView
+            key={journey.train.trainCode}
+            train={journey.train}
+            direction={journey.direction}
+            stationCode={station.code}
+            origin={journey.origin}
+            closing={closingJourney}
+            onClose={closeJourney}
+          />
+        )}
       </div>
 
       {sheetDirection && (
@@ -257,6 +298,7 @@ function Trains({
   goingToName,
   hidden,
   hasData,
+  onOpen,
 }: {
   direction: Direction;
   trains: Departure[];
@@ -269,6 +311,8 @@ function Trains({
   hidden: boolean;
   /** False while loading or after a failed first load; the status bar says which. */
   hasData: boolean;
+  /** Tap a train for its look-ahead; gets the train's drawing so the view can start from it. */
+  onOpen: (train: Departure, glyph: Element | null) => void;
 }) {
   const { t, destinationName, describe } = useI18n();
   const side = direction === 'Northbound' ? 'north' : 'south';
@@ -292,6 +336,12 @@ function Trains({
       <ol className={`trains trains--${side}`}>
         {trains.map((d, i) => (
           <li key={d.trainCode} className={`train train--${side}${i === 0 ? ' train--next' : ''}`} aria-label={describe(d)}>
+            {/* The whole row opens the train's look-ahead. */}
+            <button
+              className="train__open"
+              aria-label={t.journey.open(destinationName(d))}
+              onClick={(e) => onOpen(d, e.currentTarget.parentElement?.querySelector('.train__glyph') ?? null)}
+            />
             <TrainGlyph />
             <div className="train__info">
               <span className={`train__due${d.dueInMins <= 0 ? ' train__due--now' : ''}`}>
@@ -328,14 +378,3 @@ function Trains({
   );
 }
 
-/** A DART seen head-on, drawn flat and square. */
-function TrainGlyph() {
-  return (
-    <svg className="train__glyph" viewBox="0 0 40 52" aria-hidden>
-      <rect x="2" y="2" width="36" height="48" rx="3" className="glyph-body" />
-      <rect x="7" y="9" width="26" height="14" className="glyph-window" />
-      <rect x="8" y="36" width="6" height="5" className="glyph-light" />
-      <rect x="26" y="36" width="6" height="5" className="glyph-light" />
-    </svg>
-  );
-}
