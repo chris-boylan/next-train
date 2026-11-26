@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { type Lang, useI18n } from '../lib/i18n';
+import { type FavouritesPlace, useFavouritesPlace } from '../lib/prefs';
 import { type Theme, useTheme } from '../lib/theme';
 
 /** iPhone/iPad Safari, not already opened from the home screen. iOS has no install prompt, so we explain how. */
@@ -10,10 +11,11 @@ function canAddToHomeScreen(): boolean {
   return ios && !standalone;
 }
 
-/** A cog that slides down a small panel with language and light/dark choices (and, on iOS, how to install). */
+/** A cog that slides down a small panel with language, light/dark and where-favourites-go choices (and, on iOS, how to install). */
 export function OptionsMenu() {
   const { lang, setLang, t } = useI18n();
   const { theme, setTheme } = useTheme();
+  const [favouritesPlace, setFavouritesPlace] = useFavouritesPlace();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -58,6 +60,15 @@ export function OptionsMenu() {
             options={[
               { value: 'light', label: t.light },
               { value: 'dark', label: t.dark },
+            ]}
+          />
+          <Choice<FavouritesPlace>
+            label={t.favouritesPlace}
+            value={favouritesPlace}
+            onChange={setFavouritesPlace}
+            options={[
+              { value: 'service', label: t.favouritesInService },
+              { value: 'home', label: t.favouritesOnHome },
             ]}
           />
           {canAddToHomeScreen() && (

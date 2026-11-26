@@ -11,6 +11,7 @@ import { SchematicMap } from '../maps/SchematicMap';
 import { SCHEMATICS } from '../maps/data/schematics';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
+import { useFavouritesPlace } from '../lib/prefs';
 import { RoutesMap, type RoutesView } from '../maps/RoutesMap';
 import { SimpleLineMap } from '../maps/SimpleLineMap';
 
@@ -39,6 +40,7 @@ export function StationPicker({
 }: Props) {
   const { t, stationName } = useI18n();
   const [query, setQuery] = useState('');
+  const [favouritesPlace] = useFavouritesPlace();
   // Favourites from this service only; Connolly counts for both.
   const favourites = allFavourites.filter((f) => service.stations.some((s) => s.code === f.code));
   const isFavourite = (code: string) => favourites.some((s) => s.code === code);
@@ -63,7 +65,7 @@ export function StationPicker({
           onChange={(e) => setQuery(e.target.value)}
           aria-label={t.findStation}
         />
-        {favourites.length > 0 && !query.trim() && (
+        {favouritesPlace === 'service' && favourites.length > 0 && !query.trim() && (
           <div className="favourites" aria-label={t.favouriteStations}>
             {favourites.map((s) => (
               <button key={s.code} className="chip chip--fav" onClick={() => onSelect(s.code)}>
