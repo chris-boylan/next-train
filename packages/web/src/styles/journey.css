@@ -41,8 +41,14 @@
 /* Closing: the stops and the "now" line fade first, then the track and train glide back (see JourneyView). */
 .journey--closing .journey__stop,
 .journey--closing .journey__now {
-  opacity: 0;
-  transition: opacity 220ms ease-in;
+  animation: journey-out 240ms ease-in forwards;
+  animation-delay: 0ms !important;
+}
+
+@keyframes journey-out {
+  to {
+    opacity: 0;
+  }
 }
 
 /* …while the station page fades back in, starting as the track begins to move. */
