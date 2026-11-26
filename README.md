@@ -5,7 +5,7 @@ Live Irish Rail train times as a **mobile-first web app** and an **Alexa skill**
 - **Web app:** DART, Enterprise (Dublin–Belfast), Cork Commuter, Dublin Commuter and InterCity, each with its own map and live station pages. There's also a departure board for every Irish Rail station, reached from an all-stations map. English and Irish, light and dark. Installable on the phone's home screen (PWA).
 - **Alexa skill:** DART departures and favourites by voice (DART only so far).
 
-It's unofficial and not affiliated with Iarnród Éireann.
+Live at **https://nexttrain.ie**. It's unofficial and not affiliated with Iarnród Éireann.
 
 ```
 packages/
@@ -31,6 +31,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feature/cicd` | GitHub Actions CI/CD with an approval gate and keyless (OIDC) AWS deploys |
 | `chore/daily-api-check` | Daily live check of the Irish Rail API, opening an issue on failure |
 | `fix/small-screens` | Station page fits iPhone SE and 320px-wide phones |
+| `feat/custom-domain` | Site served at https://nexttrain.ie (and www) |
 | `feature/favourites-home` | Options choice to show favourites in each service or together on the home page; favourites for every service's stations |
 
 ## Using the web app
