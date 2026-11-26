@@ -28,6 +28,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feature/intercity` | InterCity service: six routes, live boards grouped by route, map drawn from the all-stations layout |
 | `feature/pwa-deploy` | Installable PWA, optional custom domain, API Gateway replaced by a Lambda Function URL, 20 s edge cache on departures, budget alert |
 | `refactor/web-structure` | Web app organised into `screens/`, `components/`, `maps/`, `lib/` and per-area `styles/` |
+| `feature/cicd` | GitHub Actions CI/CD with an approval gate and keyless (OIDC) AWS deploys |
 
 ## Using the web app
 
@@ -206,6 +207,15 @@ npm run deploy -- -c alexaSkillId=amzn1.ask.skill.xxxx
 ```
 
 Then test with `ask dialog --locale en-IE` from `packages/alexa`.
+
+### CI/CD (GitHub Actions)
+
+`.github/workflows/ci-cd.yml` runs typecheck, tests, the web build and `cdk synth` on every pull request and push. On `main` it then deploys, after an approval in GitHub (the `production` environment: Settings → Environments).
+
+- **No AWS keys in GitHub:** the deploy job swaps a GitHub-signed token for short-lived credentials for the `next-train-github-deploy` role. Only this repo's `production` environment can assume it, and it can only hand off to CDK's bootstrap roles.
+- **That role lives in its own stack,** `NextTrainGitHubDeploy`, deployed by hand once (`npm run deploy:github -w @dart-times/infra -- --profile <profile>`). `npm run deploy` only deploys the `DartTimes*` stacks, so the pipeline can't change its own permissions.
+- **Settings on the `production` environment:** variable `AWS_DEPLOY_ROLE_ARN` (output of that stack), optional variable `DOMAIN_NAME`, and optional secret `BUDGET_EMAIL`.
+- **Domain lookups in CI:** after the first local deploy with `-c domainName=…`, commit `packages/infra/cdk.context.json`, so CI doesn't need Route 53 lookup permissions.
 
 ### Later: an App Store app
 
