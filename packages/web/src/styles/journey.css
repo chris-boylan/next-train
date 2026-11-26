@@ -1,0 +1,234 @@
+/* A train's look-ahead (tap a train on the station page): one track down the middle of the screen, the train at
+   the end it's coming from, and its stops to the terminus along the track. */
+
+/* The station page fades away under the look-ahead (the tapped train and its track glide into place). */
+.tracks > :not(.journey) {
+  transition: opacity 600ms cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+.tracks--journey > :not(.journey) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Each train row opens its look-ahead. */
+.train__open {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+.journey {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  /* The train comes first in the markup: northbound it sits at the bottom (it travels up the screen)… */
+  flex-direction: column-reverse;
+  --journey-color: var(--north);
+  --lane: 30px;
+}
+
+/* …southbound at the top. */
+.journey--south {
+  flex-direction: column;
+  --journey-color: var(--south);
+}
+
+/* Closing, the track slides back under the station sign, as it sits on the station page. */
+.journey--closing {
+  z-index: 1;
+}
+
+/* Closing: the stops and the "now" line fade first, then the track and train glide back (see JourneyView). */
+.journey--closing .journey__stop,
+.journey--closing .journey__now {
+  animation: journey-out 240ms ease-in forwards;
+  animation-delay: 0ms !important;
+}
+
+@keyframes journey-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* …and only once they're back in place does the rest of the station page fade in (timings in JourneyView). */
+.tracks--returning > :not(.journey) {
+  transition-delay: var(--return-fade-delay, 910ms);
+  transition-duration: var(--return-fade-ms, 450ms);
+}
+
+.journey__lane {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - var(--lane) / 2);
+  width: var(--lane);
+  background: var(--journey-color);
+}
+
+/* The stops scroll along the track; the train stays at its end. Northbound lists run upwards. */
+.journey__stops {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 12px 0;
+  list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.journey--south .journey__stops {
+  flex-direction: column;
+}
+
+.journey__stop {
+  display: grid;
+  grid-template-columns: 1fr var(--lane) 1fr;
+  align-items: center;
+  column-gap: 12px;
+  min-height: 52px;
+  flex: none;
+  animation: journey-stop-in 500ms cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+
+/* Northbound stops rise into place (the train is below them); southbound ones drop into place. */
+.journey--south .journey__stop {
+  animation-name: journey-stop-in-down;
+}
+
+@keyframes journey-stop-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes journey-stop-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.journey__name {
+  justify-self: end;
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.15;
+}
+
+/* A small white dot inside the solid track for each stop; a ringed circle for this station and the terminus. */
+.journey__dot {
+  justify-self: center;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+.journey__stop--here .journey__dot,
+.journey__stop--end .journey__dot {
+  width: 22px;
+  height: 22px;
+  border: 4px solid var(--text);
+  border-radius: 50%;
+}
+
+.journey__stop--here .journey__name,
+.journey__stop--end .journey__name {
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.journey__stop--cancelled .journey__name {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.journey__time {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.journey__when {
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.journey__when .train__expected {
+  font-weight: 900;
+}
+
+.journey__in {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.journey__time--cancelled {
+  color: var(--major-bg);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+/* The train at its end of the track, with where it is now beside it. */
+.journey__train {
+  position: relative;
+  flex: none;
+  height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.journey__glyph {
+  position: relative;
+  z-index: 1;
+  width: 46px;
+  padding: 0;
+  border: 0;
+  background: none;
+  --glyph-width: 46px;
+}
+
+.journey__glyph .train__glyph {
+  position: static;
+  display: block;
+  width: 46px;
+  transform: none;
+}
+
+.journey__now {
+  position: absolute;
+  left: calc(50% + var(--lane) / 2 + 22px);
+  right: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.25;
+  animation: journey-stop-in 500ms ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey__stop,
+  .journey__now {
+    animation: none;
+  }
+
+  .tracks > :not(.journey),
+  .journey--closing {
+    transition: none;
+  }
+}

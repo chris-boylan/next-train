@@ -50,8 +50,11 @@ export interface RawTrainMovement {
   LocationType: string;
   TrainOrigin: string;
   TrainDestination: string;
+  ScheduledArrival?: string;
   ScheduledDeparture: string;
+  ExpectedArrival?: string;
   ExpectedDeparture: string;
+  /** Actual times, once the train has arrived at / left this location. */
   Arrival: string;
   Departure: string;
 }

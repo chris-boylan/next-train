@@ -33,6 +33,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `fix/small-screens` | Station page fits iPhone SE and 320px-wide phones |
 | `feat/custom-domain` | Site served at https://nexttrain.ie (and www) |
 | `feat/help-page` | Help & about page with a feedback form (DynamoDB + SNS email) |
+| `feat/train-journey` | Tap a train for its stops to the terminus with expected times |
 | `feature/favourites-home` | Options choice to show favourites in each service or together on the home page; favourites for every service's stations |
 
 ## Using the web app
@@ -46,6 +47,7 @@ The app always opens on the **service picker**: DART, Enterprise, Cork Commuter,
   - **Next stations:** links above and below the station name step to the next station north or south. At a junction, both branches are shown.
   - **Header:** the live clock (Irish time), with the last update time turning red if the data goes stale.
   - **Refresh:** every 30 s while the tab is visible.
+- **Train look-ahead:** tap a train on the station page. The station sign and the other track fade, the train's track glides to the centre and runs the full height, and the train settles at the end it's coming from (bottom for northbound, top for southbound). Its stops to the terminus line the track with expected arrival time, minutes away and any delay, plus where the train is now ("Left Tara Street 1 min ago"). Tap the train or Close to go back. Data: `GET /api/trains/:code/journey?from=STATION` (`buildJourney` in `core/src/journey.ts`, from `getTrainMovementsXML`), cached at the edge for 20 s; refreshed every 30 s while open (`web/src/components/JourneyView.tsx`).
 - **Going-to filter:** each section ends in "+ N more" (or "Filter"), which opens every departure that way for the next 90 minutes with "going to" chips. Choosing a destination hides trains that won't get you there and dims the other track. A chip under the station name clears it. The choice is remembered per station.
 - **Options cog:** language (English | Irish) and appearance (Light | Dark). Light/dark follows the phone unless you choose. On an iPhone or iPad in Safari it also explains how to install the app.
 - **Help & about** (options cog, or `?help`): how to read a station page, tips, where the times come from, privacy, and a **questions & feedback** form. Messages go to `POST /api/feedback`, are stored in the `Feedback` DynamoDB table for a year, and emailed to the owner through an SNS topic (subscribed to `budgetEmail`; AWS sends a one-off "Confirm subscription" email that must be clicked). Spam limits: a hidden honeypot field, at least 3 s on the form, 3 messages per device per hour and 50 a day in total (`FEEDBACK_LIMITS` in `core/src/feedback.ts`). The help page also shows the build date and commit.

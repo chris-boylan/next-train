@@ -9,3 +9,4 @@ export * from './intercity';
 export * from './describe';
 export * from './favourites';
 export * from './feedback';
+export * from './journey';

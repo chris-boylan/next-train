@@ -138,6 +138,17 @@ const en = {
     about: 'Next Train? is unofficial and isn’t affiliated with Iarnród Éireann.',
     version: (version: string) => `Version ${version}`,
   },
+  journey: {
+    open: (destination: string) => `Show the stops to ${destination}`,
+    stops: (destination: string) => `Stops to ${destination}`,
+    close: 'Close',
+    at: (station: string) => `At ${station}`,
+    left: (station: string, mins: number) => (mins <= 0 ? `Just left ${station}` : `Left ${station} ${mins} min ago`),
+    notStarted: (station: string, time: string) => `Leaves ${station} at ${time}`,
+    cancelled: 'Cancelled',
+    loading: 'Loading the stops…',
+    unavailable: 'Couldn’t load this train’s stops.',
+  },
   describe: (destination: string, dueInMins: number, lateMins: number) =>
     `to ${destination} ${dueInMins <= 0 ? 'due now' : `in ${dueInMins} minute${dueInMins === 1 ? '' : 's'}`}` +
     (lateMins > 0 ? `, running ${lateMins} minute${lateMins === 1 ? '' : 's'} late` : ''),
@@ -286,6 +297,17 @@ const ga: Messages = {
     aboutTitle: 'Eolas',
     about: 'Níl Next Train? oifigiúil agus níl baint aige le hIarnród Éireann.',
     version: (version) => `Leagan ${version}`,
+  },
+  journey: {
+    open: (destination) => `Taispeáin na stadanna go ${destination}`,
+    stops: (destination) => `Stadanna go ${destination}`,
+    close: 'Dún',
+    at: (station) => `Ag ${station}`,
+    left: (station, mins) => (mins <= 0 ? `Díreach tar éis ${station} a fhágáil` : `D’fhág sí ${station} ${mins} nóim ó shin`),
+    notStarted: (station, time) => `Fágfaidh sí ${station} ag ${time}`,
+    cancelled: 'Cealaithe',
+    loading: 'Na stadanna á lódáil…',
+    unavailable: 'Níorbh fhéidir stadanna na traenach seo a lódáil.',
   },
   describe: (destination, dueInMins, lateMins) =>
     `go dtí ${destination}, ${dueInMins <= 0 ? 'ag teacht anois' : `i gceann ${dueInMins} nóiméad`}` +

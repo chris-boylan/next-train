@@ -1,4 +1,4 @@
-import type { Departure, Direction, ServiceId, Station } from '@dart-times/core';
+import type { Departure, Direction, Journey, ServiceId, Station } from '@dart-times/core';
 
 export interface DeparturesResponse {
   station: Station;
@@ -66,4 +66,9 @@ export async function sendFeedback(deviceId: string, payload: FeedbackPayload): 
 async function sha256Hex(text: string): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/** One train's stops from a station to its terminus, and where it is now. */
+export function fetchJourney(trainCode: string, from: string) {
+  return request<Journey>(`/trains/${encodeURIComponent(trainCode.trim())}/journey?from=${from}`);
 }
