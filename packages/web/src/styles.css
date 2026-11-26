@@ -1239,6 +1239,12 @@ p {
   --tile-south: #e5636b;
 }
 
+/* InterCity's tile shows its first two route colours (Cork & Kerry red, Galway & Mayo purple). */
+.service-tile--intercity {
+  --tile-north: #c62828;
+  --tile-south: #7b1fa2;
+}
+
 /* Dublin Commuter's tile shows its first two route colours (Northern teal, Western blue). */
 .service-tile--commuter {
   --tile-north: #00897b;

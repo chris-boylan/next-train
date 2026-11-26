@@ -71,15 +71,15 @@ export function App() {
   if (!service) return <ServicePicker onSelect={selectService} onOpenNetwork={() => setShowNetwork(true)} />;
 
   const station = stationCode ? findStationByCode(stationCode, service.stations) : undefined;
-  if (station && service.id === 'commuter') {
-    // Commuter stations can sit on several routes (Connolly is on four), so they get a board grouped by
-    // route and direction rather than the two-track page.
+  if (station && (service.id === 'commuter' || service.id === 'intercity')) {
+    // Commuter and Intercity stations can sit on several routes (Connolly is on four commuter routes), so they
+    // get a board grouped by route and direction rather than the two-track page.
     return (
       <StationBoard
         key={station.code}
         code={station.code}
         name={stationName(station)}
-        mode="commuter"
+        mode={service.id}
         backLabel={t.stations}
         onBack={() => setStationCode(undefined)}
         favourite={{ on: isFavourite(station.code), toggle: () => toggleFavourite(station.code) }}

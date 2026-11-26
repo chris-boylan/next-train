@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { searchStations, type Service, type Station } from '@dart-times/core';
 import { BranchLineMap } from './BranchLineMap';
-import { CommuterMap } from './CommuterMap';
+import { COMMUTER_ROUTE_MAP } from './commuterRoutes';
+import { commuterSchematic } from './commuterSchematic';
+import { INTERCITY_ROUTE_MAP } from './intercityRoutes';
 import { LineMap } from './LineMap';
 import { SchematicMap } from './SchematicMap';
 import { SCHEMATICS } from './schematics';
 import { Caps, useI18n } from './i18n';
 import { OptionsMenu } from './OptionsMenu';
+import { RoutesMap } from './RoutesMap';
 import { SimpleLineMap } from './SimpleLineMap';
 
 interface Props {
@@ -79,7 +82,22 @@ export function StationPicker({ service, onBack, favourites: allFavourites, curr
       ) : service.id === 'dart' ? (
         <LineMap {...mapProps} />
       ) : service.id === 'commuter' ? (
-        <CommuterMap service={service} {...mapProps} />
+        <RoutesMap
+          service={service}
+          routeMap={COMMUTER_ROUTE_MAP}
+          routeName={(id) => t.commuterRoutes[id]}
+          schematic={commuterSchematic}
+          hubs={['CNLLY', 'HSTON']}
+          {...mapProps}
+        />
+      ) : service.id === 'intercity' ? (
+        <RoutesMap
+          service={service}
+          routeMap={INTERCITY_ROUTE_MAP}
+          routeName={(id) => t.intercityRoutes[id]}
+          hubs={['HSTON', 'CNLLY']}
+          {...mapProps}
+        />
       ) : SCHEMATICS[service.id] ? (
         <SchematicMap service={service} schematic={SCHEMATICS[service.id]!} {...mapProps} />
       ) : service.line.paths.length > 1 ? (

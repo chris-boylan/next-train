@@ -1,5 +1,13 @@
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
-import { type Departure, type Direction, findStationByCode, type ServiceId, type Station, type TrainCategory } from '@dart-times/core';
+import {
+  type Departure,
+  type Direction,
+  findStationByCode,
+  type IntercityRouteId,
+  type ServiceId,
+  type Station,
+  type TrainCategory,
+} from '@dart-times/core';
 
 export type Lang = 'en' | 'ga';
 
@@ -10,7 +18,7 @@ const KEY = 'dart-times:lang';
 const en = {
   services: 'Services',
   chooseService: 'Choose a service',
-  serviceNames: { dart: 'DART', enterprise: 'Enterprise', cork: 'Cork Commuter', commuter: 'Dublin Commuter' } as Record<ServiceId, string>,
+  serviceNames: { dart: 'DART', enterprise: 'Enterprise', cork: 'Cork Commuter', commuter: 'Dublin Commuter', intercity: 'InterCity' } as Record<ServiceId, string>,
   dublinBelfast: 'Dublin – Belfast',
   allStations: 'All stations',
   allStationsNote: 'Every Irish Rail station on one map',
@@ -20,6 +28,14 @@ const en = {
   allRoutes: 'All routes',
   byRoute: 'By route',
   commuterRoutes: { northern: 'Northern', western: 'Western', southWestern: 'South Western', southEastern: 'South Eastern' },
+  intercityRoutes: {
+    corkKerry: 'Cork & Kerry',
+    galwayMayo: 'Galway & Mayo',
+    limerick: 'Limerick & Ennis',
+    waterford: 'Waterford',
+    sligo: 'Sligo',
+    rosslare: 'Rosslare',
+  } as Record<IntercityRouteId, string>,
   stationCount: (n: number) => `${n} stations`,
   dublin: 'Dublin',
   towards2: (place: string) => `towards ${place}`,
@@ -76,7 +92,7 @@ const ga: Messages = {
   services: 'Seirbhísí',
   chooseService: 'Roghnaigh seirbhís',
   // Service names stay as Irish Rail's brands. "Cork Commuter" has no confirmed Irish form yet.
-  serviceNames: { dart: 'DART', enterprise: 'Enterprise', cork: 'Cork Commuter', commuter: 'Dublin Commuter' },
+  serviceNames: { dart: 'DART', enterprise: 'Enterprise', cork: 'Cork Commuter', commuter: 'Dublin Commuter', intercity: 'InterCity' },
   // As on Irish Rail's bilingual Dublin–Belfast timetable.
   dublinBelfast: 'Baile Átha Cliath – Béal Feirste',
   allStations: 'Gach stáisiún',
@@ -88,6 +104,15 @@ const ga: Messages = {
   byRoute: 'De réir bealaigh',
   // Route names as Irish Rail brands them; Irish forms not yet confirmed.
   commuterRoutes: { northern: 'Northern', western: 'Western', southWestern: 'South Western', southEastern: 'South Eastern' },
+  // Named after the places they serve, so they take the places' Irish names.
+  intercityRoutes: {
+    corkKerry: 'Corcaigh agus Ciarraí',
+    galwayMayo: 'Gaillimh agus Maigh Eo',
+    limerick: 'Luimneach agus Inis',
+    waterford: 'Port Láirge',
+    sligo: 'Sligeach',
+    rosslare: 'Ros Láir',
+  },
   stationCount: (n) => `${n} stáisiún`,
   dublin: 'Baile Átha Cliath',
   towards2: (place) => `go dtí ${place}`,

@@ -61,8 +61,8 @@ describe('searchStations', () => {
 
 describe('Irish names', () => {
   it('has an official Irish name for every station, on every service', () => {
-    // Curragh has no Irish name on Irish Rail's Irish station page or in any of its timetables.
-    expect(ALL_STATIONS.filter((s) => !s.irishName).map((s) => s.code)).toEqual(['CURAH']);
+    // Curragh and Manulla Junction have no Irish name on Irish Rail's Irish station page or in any of its timetables.
+    expect(ALL_STATIONS.filter((s) => !s.irishName).map((s) => s.code)).toEqual(['CURAH', 'MNLAJ']);
   });
 
   it('uses short forms that mirror the English short name', () => {

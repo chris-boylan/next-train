@@ -95,3 +95,18 @@ describe('API handler: Dublin Commuter', () => {
     expect((await request('GET', '/api/stations/HOWTH/departures?service=commuter')).statusCode).toBe(404);
   });
 });
+
+describe('API handler: Intercity', () => {
+  it('returns only InterCity trains for ?service=intercity', async () => {
+    const res = await request('GET', '/api/stations/CNLLY/departures?service=intercity');
+    expect(res.statusCode).toBe(200);
+    const departures = body(res).departures as { category: string }[];
+    expect(departures.length).toBeGreaterThan(0);
+    expect(departures.every((d) => d.category === 'intercity')).toBe(true);
+  });
+
+  it('accepts Intercity-only stations and rejects ones off the network', async () => {
+    expect((await request('GET', '/api/stations/GALWY/departures?service=intercity')).statusCode).toBe(200);
+    expect((await request('GET', '/api/stations/HOWTH/departures?service=intercity')).statusCode).toBe(404);
+  });
+});

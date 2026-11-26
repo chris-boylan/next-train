@@ -1,6 +1,15 @@
-import { commuterHeading, type Departure, delaySeverity, isCityStation, type TrainCategory } from '@dart-times/core';
+import {
+  commuterHeading,
+  type Departure,
+  delaySeverity,
+  intercityHeading,
+  isCityStation,
+  route as routeBetween,
+  type TrainCategory,
+} from '@dart-times/core';
 import { formatTime, useNow } from './clock';
-import { routeColour } from './commuterRoutes';
+import { COMMUTER_ROUTE_MAP } from './commuterRoutes';
+import { INTERCITY_ROUTE_MAP } from './intercityRoutes';
 import { Caps, useI18n } from './i18n';
 import { OptionsMenu } from './OptionsMenu';
 import { useDepartures } from './useDepartures';
@@ -8,9 +17,9 @@ import { useDepartures } from './useDepartures';
 interface Props {
   code: string;
   name: string;
-  /** "all": every train at the station, grouped by the API's direction. "commuter": Dublin commuter
-   *  trains only, grouped by route and direction (e.g. "Northern · towards Dundalk"). */
-  mode: 'all' | 'commuter';
+  /** "all": every train at the station, grouped by the API's direction. "commuter" and "intercity": that
+   *  service's trains only, grouped by route and direction (e.g. "Northern · towards Dundalk"). */
+  mode: 'all' | 'commuter' | 'intercity';
   backLabel: string;
   onBack: () => void;
   favourite?: { on: boolean; toggle: () => void };
@@ -36,32 +45,50 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite }:
     return direction.replace(/^To\s+/i, `${t.to} `);
   };
 
-  // Commuter groups: route and direction. Outbound reads "towards Maynooth / M3 Parkway"; inbound reads
-  // "towards Dublin", except at a city-centre station, where it names where the trains are going.
+  // Route groups. Commuter outbound reads "towards Maynooth / M3 Parkway" and inbound "towards Dublin",
+  // except at a city-centre station. Intercity routes branch and cross the country, so their groups always
+  // name where the trains are going ("Limerick & Ennis · towards Ennis"), as do city-centre commuter groups.
   const inCity = isCityStation(code);
-  const groupOf = (d: Departure): { key: string; label?: string; colour?: string } => {
+  const groupOf = (d: Departure): { key: string; route?: string; towards?: string; colour?: string } => {
     if (mode === 'commuter') {
       const heading = commuterHeading(code, d);
       if (heading) {
         const towards = heading.outbound ? heading.route.outer.map(nameOf).join(' / ') : inCity ? undefined : t.dublin;
         return {
           key: `${heading.route.id}:${heading.outbound}`,
-          label: towards && `${t.commuterRoutes[heading.route.id]} · ${t.towards2(towards)}`,
-          colour: routeColour(heading.route.id),
+          route: t.commuterRoutes[heading.route.id],
+          towards,
+          colour: COMMUTER_ROUTE_MAP.colour(heading.route.id),
         };
       }
     }
-    return { key: d.direction, label: directionLabel(d.direction) };
+    if (mode === 'intercity') {
+      const heading = intercityHeading(code, d);
+      if (heading) {
+        // Grouped by the next station, so trains leaving in different directions (Mallow to Cork and to
+        // Tralee) get their own groups even when both run away from Dublin.
+        const next = routeBetween(code, d.destinationCode!, heading.route.line)?.[1];
+        return {
+          key: `${heading.route.id}:${next}`,
+          route: t.intercityRoutes[heading.route.id],
+          colour: INTERCITY_ROUTE_MAP.colour(heading.route.id),
+        };
+      }
+    }
+    return { key: d.direction, towards: directionLabel(d.direction) };
   };
 
   const groups = new Map<string, Group>();
   for (const d of data?.departures ?? []) {
-    const { key, label, colour } = groupOf(d);
+    const { key, route, towards, colour } = groupOf(d);
     const departures = [...(groups.get(key)?.departures ?? []), d];
-    // Groups without a fixed label (inbound at a city-centre station) name their destinations.
-    const routeId = key.split(':')[0] as keyof typeof t.commuterRoutes;
-    const named = label ?? `${t.commuterRoutes[routeId]} · ${t.towards2([...new Set(departures.map(destinationName))].join(' / '))}`;
-    groups.set(key, { key, label: named, colour, departures });
+    if (!route) {
+      groups.set(key, { key, label: towards!, colour, departures });
+      continue;
+    }
+    // Groups without a fixed destination name the places their trains are going.
+    const places = towards ?? [...new Set(departures.map(destinationName))].join(' / ');
+    groups.set(key, { key, label: `${route} · ${t.towards2(places)}`, colour, departures });
   }
 
   return (

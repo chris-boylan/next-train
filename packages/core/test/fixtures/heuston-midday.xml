@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfObjStationData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://api.irishrail.ie/realtime/">
+  <objStationData>
+    <Servertime>2026-11-26T10:43:16.337</Servertime>
+    <Traincode>A210 </Traincode>
+    <Stationfullname>Dublin Heuston</Stationfullname>
+    <Stationcode>HSTON</Stationcode>
+    <Querytime>10:43:16</Querytime>
+    <Traindate>26 Nov 2026</Traindate>
+    <Origin>Dublin Heuston</Origin>
+    <Destination>Cork</Destination>
+    <Origintime>11:00</Origintime>
+    <Destinationtime>13:41</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>17</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>11:00</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>11:00</Schdepart>
+    <Direction>To Cork</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-26T10:43:16.337</Servertime>
+    <Traincode>A212 </Traincode>
+    <Stationfullname>Dublin Heuston</Stationfullname>
+    <Stationcode>HSTON</Stationcode>
+    <Querytime>10:43:16</Querytime>
+    <Traindate>26 Nov 2026</Traindate>
+    <Origin>Dublin Heuston</Origin>
+    <Destination>Cork</Destination>
+    <Origintime>12:00</Origintime>
+    <Destinationtime>14:33</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>77</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>12:00</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>12:00</Schdepart>
+    <Direction>To Cork</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-26T10:43:16.337</Servertime>
+    <Traincode>A303 </Traincode>
+    <Stationfullname>Dublin Heuston</Stationfullname>
+    <Stationcode>HSTON</Stationcode>
+    <Querytime>10:43:16</Querytime>
+    <Traindate>26 Nov 2026</Traindate>
+    <Origin>Tralee</Origin>
+    <Destination>Dublin Heuston</Destination>
+    <Origintime>07:05</Origintime>
+    <Destinationtime>10:46</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Park West and Cherry Orchard</Lastlocation>
+    <Duein>1</Duein>
+    <Late>-2</Late>
+    <Exparrival>10:44</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>10:46</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Dublin Heuston</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-26T10:43:16.337</Servertime>
+    <Traincode>A407 </Traincode>
+    <Stationfullname>Dublin Heuston</Stationfullname>
+    <Stationcode>HSTON</Stationcode>
+    <Querytime>10:43:16</Querytime>
+    <Traindate>26 Nov 2026</Traindate>
+    <Origin>Limerick</Origin>
+    <Destination>Dublin Heuston</Destination>
+    <Origintime>08:55</Origintime>
+    <Destinationtime>10:58</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Adamstown</Lastlocation>
+    <Duein>11</Duein>
+    <Late>-4</Late>
+    <Exparrival>10:54</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>10:58</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Dublin Heuston</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-26T10:43:16.337</Servertime>
+    <Traincode>A509 </Traincode>
+    <Stationfullname>Dublin Heuston</Stationfullname>
+    <Stationcode>HSTON</Stationcode>
+    <Querytime>10:43:16</Querytime>
+    <Traindate>26 Nov 2026</Traindate>
+    <Origin>Carlow</Origin>
+    <Destination>Dublin Heuston</Destination>
+    <Origintime>10:10</Origintime>
+    <Destinationtime>11:14</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Kildare</Lastlocation>
+    <Duein>31</Duein>
+    <Late>0</Late>
+    <Exparrival>11:14</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>11:14</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Dublin Heuston</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-26T10:43:16.337</Servertime>
+    <Traincode>P210 </Traincode>
+    <Stationfullname>Dublin Heuston</Stationfullname>
+    <Stationcode>HSTON</Stationcode>
+    <Querytime>10:43:16</Querytime>
+    <Traindate>26 Nov 2026</Traindate>
+    <Origin>Newbridge</Origin>
+    <Destination>Dublin Heuston</Destination>
+    <Origintime>10:27</Origintime>
+    <Destinationtime>11:07</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Sallins</Lastlocation>
+    <Duein>31</Duein>
+    <Late>7</Late>
+    <Exparrival>11:14</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>11:07</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Dublin Heuston</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-26T10:43:16.337</Servertime>
+    <Traincode>A709 </Traincode>
+    <Stationfullname>Dublin Heuston</Stationfullname>
+    <Stationcode>HSTON</Stationcode>
+    <Querytime>10:43:16</Querytime>
+    <Traindate>26 Nov 2026</Traindate>
+    <Origin>Galway</Origin>
+    <Destination>Dublin Heuston</Destination>
+    <Origintime>09:05</Origintime>
+    <Destinationtime>11:29</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Tullamore</Lastlocation>
+    <Duein>47</Duein>
+    <Late>1</Late>
+    <Exparrival>11:30</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>11:29</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Dublin Heuston</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-26T10:43:16.337</Servertime>
+    <Traincode>P211 </Traincode>
+    <Stationfullname>Dublin Heuston</Stationfullname>
+    <Stationcode>HSTON</Stationcode>
+    <Querytime>10:43:16</Querytime>
+    <Traindate>26 Nov 2026</Traindate>
+    <Origin>Portlaoise</Origin>
+    <Destination>Dublin Heuston</Destination>
+    <Origintime>10:25</Origintime>
+    <Destinationtime>11:37</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Arrived Monasterevin</Lastlocation>
+    <Duein>56</Duein>
+    <Late>2</Late>
+    <Exparrival>11:39</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>11:37</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Dublin Heuston</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-26T10:43:16.337</Servertime>
+    <Traincode>A209 </Traincode>
+    <Stationfullname>Dublin Heuston</Stationfullname>
+    <Stationcode>HSTON</Stationcode>
+    <Querytime>10:43:16</Querytime>
+    <Traindate>26 Nov 2026</Traindate>
+    <Origin>Cork</Origin>
+    <Destination>Dublin Heuston</Destination>
+    <Origintime>09:25</Origintime>
+    <Destinationtime>11:57</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed LJ461</Lastlocation>
+    <Duein>80</Duein>
+    <Late>6</Late>
+    <Exparrival>12:03</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>11:57</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Dublin Heuston</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-26T10:43:16.337</Servertime>
+    <Traincode>A710 </Traincode>
+    <Stationfullname>Dublin Heuston</Stationfullname>
+    <Stationcode>HSTON</Stationcode>
+    <Querytime>10:43:16</Querytime>
+    <Traindate>26 Nov 2026</Traindate>
+    <Origin>Dublin Heuston</Origin>
+    <Destination>Galway</Destination>
+    <Origintime>11:30</Origintime>
+    <Destinationtime>13:51</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>47</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>11:30</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>11:30</Schdepart>
+    <Direction>To Galway</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-26T10:43:16.337</Servertime>
+    <Traincode>D209 </Traincode>
+    <Stationfullname>Dublin Heuston</Stationfullname>
+    <Stationcode>HSTON</Stationcode>
+    <Querytime>10:43:16</Querytime>
+    <Traindate>26 Nov 2026</Traindate>
+    <Origin>Dublin Heuston</Origin>
+    <Destination>Newbridge</Destination>
+    <Origintime>11:37</Origintime>
+    <Destinationtime>12:19</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>54</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>11:37</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>11:37</Schdepart>
+    <Direction>To Newbridge</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-26T10:43:16.337</Servertime>
+    <Traincode>D208 </Traincode>
+    <Stationfullname>Dublin Heuston</Stationfullname>
+    <Stationcode>HSTON</Stationcode>
+    <Querytime>10:43:16</Querytime>
+    <Traindate>26 Nov 2026</Traindate>
+    <Origin>Dublin Heuston</Origin>
+    <Destination>Portlaoise</Destination>
+    <Origintime>11:20</Origintime>
+    <Destinationtime>12:32</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>37</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>11:20</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>11:20</Schdepart>
+    <Direction>To Portlaoise</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+</ArrayOfObjStationData>

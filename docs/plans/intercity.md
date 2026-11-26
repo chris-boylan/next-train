@@ -1,6 +1,13 @@
 # Plan: Intercity service
 
-Status: **not started** (planned 2026-11-26). Work on a new branch `feature/intercity` off `main`.
+Status: **built on `feature/intercity`** (2026-11-26): core routes, service, API, Irish names, station boards
+and the `RoutesMap` map are done and tested. Open: the "All routes" overview is an automatic tree drawing for now
+(a geographic map with every name doesn't fit a phone's width; see README "InterCity"), and the Lisburn/Lurgan/Moira
+Enterprise check below.
+
+What changed from the plan: all InterCity trains (Rosslare, Sligo and the cross-country locals too) have "A"
+codes, so matching is simply "A" code and not Enterprise. Boards group by route and next station, and always name
+the destinations. Manulla Junction joins Curragh as a station with no published Irish name.
 
 ## Goal
 
