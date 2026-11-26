@@ -36,7 +36,7 @@ column(
 // The junctions west of Connolly, each with its name on a side clear of the other lines.
 points.DCDRA = { x: 178, y: 668, label: 'left' };
 points.BBRDG = { x: 110, y: 615, label: 'left' };
-points.DCKLS = { x: 166, y: 570, label: 'below' };
+points.DCKLS = { x: 158, y: 570, label: 'below' };
 
 // Western: north-west to Clonsilla, then Maynooth carries straight on while M3 Parkway branches right.
 column(['PELTN', 'ASHTN', 'PHNPK', 'CNOCK', 'CMINE', 'CLSLA'], WEST_X, 540, -1);
@@ -44,9 +44,12 @@ column(['HAFLD', 'DBYNE', 'M3WAY'], 100, 300, -1);
 column(['LXCON', 'LXLSA', 'MYNTH'], WEST_X, 190, -1);
 
 // Heuston, west of Connolly, and South Western to Kildare.
-// Heuston sits south of the Phoenix Park tunnel line (Drumcondra–Park West), not on it.
-points.HSTON = { x: 130, y: 790, label: 'right' };
-column(['CHORC', 'CLDKN', 'KISHO', 'ADAMF', 'HZLCH', 'SALNS', 'NBRGE', 'CURAH', 'KDARE'], WEST_X, 825, 1);
+// Heuston sits east of Park West. As on the real track, its line and the Phoenix Park tunnel line from
+// Drumcondra meet at a junction just above Park West and run into it together, so neither crosses the
+// other or Park West's name.
+const HEUSTON_JUNCTION: [number, number] = [WEST_X, 790];
+points.HSTON = { x: 138, y: 790, label: 'right' };
+column(['CHORC', 'CLDKN', 'KISHO', 'ADAMF', 'HZLCH', 'SALNS', 'NBRGE', 'CURAH', 'KDARE'], WEST_X, 840, 1);
 
 const bends: Record<string, [number, number][]> = {
   // Broombridge to the Western line: up, then across to the north-west column.
@@ -56,6 +59,9 @@ const bends: Record<string, [number, number][]> = {
   ],
   // Docklands leaves the same way, then heads east back towards the city.
   'BBRDG|DCKLS': [[110, 585]],
+  // Heuston's line runs west to the junction; the tunnel line comes down to it from Drumcondra.
+  'HSTON|CHORC': [HEUSTON_JUNCTION],
+  'DCDRA|CHORC': [HEUSTON_JUNCTION],
   // M3 Parkway peels off right just north of Clonsilla.
   'CLSLA|HAFLD': [
     [WEST_X, 340],
