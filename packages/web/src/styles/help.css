@@ -1,6 +1,6 @@
 /* The help page (opened from the options cog): reading guide, tips, data, privacy, feedback form, about. */
 
-.help {
+.help .screen__scroll {
   padding-bottom: calc(40px + env(safe-area-inset-bottom));
 }
 

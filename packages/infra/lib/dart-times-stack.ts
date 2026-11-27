@@ -311,6 +311,18 @@ function handler(event) {
           treatMissingData: TreatMissingData.NOT_BREACHING,
         })
         .addAlarmAction(new SnsAction(alerts));
+      // And if it stops running at all (the schedule disabled or deleted): no errors then, so the alarm above
+      // stays quiet. It runs at least once every day, so a day with no runs is out of date.
+      timetableFn
+        .metricInvocations({ period: Duration.days(1) })
+        .createAlarm(this, 'TimetableJobDidNotRun', {
+          alarmDescription: "The daily timetable job hasn't run for a day, so the app's timetable is out of date. Check the TimetableSchedule rule.",
+          threshold: 1,
+          evaluationPeriods: 1,
+          comparisonOperator: ComparisonOperator.LESS_THAN_THRESHOLD,
+          treatMissingData: TreatMissingData.BREACHING,
+        })
+        .addAlarmAction(new SnsAction(alerts));
     }
 
     new CfnOutput(this, 'SiteUrl', {

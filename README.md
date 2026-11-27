@@ -47,6 +47,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feat/station-lines` | Two-track station pages for Commuter and InterCity, with a chip per route at hubs; station name switches to the list board |
 | `fix/deploy-on-request` | Pipeline deploys only when run by hand, not on every merge |
 | `feat/live-trains` | Live trains on the DART and Enterprise maps behind a "Live trains" toggle, with a tap-for-details train card |
+| `feat/ios-header-and-timetable-alerts` | Every screen pinned so the header never moves on iOS, cog always far right, maps keep their place; alerts when the timetable is out of date |
 
 ## Using the web app
 
@@ -295,7 +296,8 @@ The live API only looks 90 minutes ahead. Beyond that, station boards and the "+
 
 - **Built once a day:** the timetable job (`api/src/timetableJob.ts`, a Lambda run by EventBridge at 03:30 UTC and once after each deploy) downloads the zip, builds yesterday's, today's and tomorrow's departures for every station (`timetableFiles` in `core/src/timetable.ts`) and writes them to the site bucket as `timetable/<date>/<code>.json`, about 440 small files. Yesterday's are for trains still running after midnight. An S3 rule deletes them after 3 days.
 - **Served as static files:** the app fetches `/timetable/<date>/<code>.json` from CloudFront (`web/src/lib/useScheduled.ts`). No API call; a missing file just means no timetable section.
-- **If the job fails:** live times carry on, the timetable goes stale, and a CloudWatch alarm emails the budget address (via an "alerts" SNS topic; confirm its subscription email once).
+- **If the job fails:** live times carry on, the timetable goes stale, and a CloudWatch alarm emails the budget address (via an "alerts" SNS topic; confirm its subscription email once). A second alarm fires if the job hasn't run at all for a day.
+- **If the timetable is out of date:** the download can still succeed with an old feed, so the job also emails the alerts topic when Irish Rail's GTFS has trains for 14 days or fewer, or the NTA hasn't republished it (`feed_start_date` in `feed_info.txt`) for 14 days. It normally covers most of a year and is republished every few days. Like the NIR reminder, it repeats daily until fixed.
 - **Matching:** GTFS has no Irish Rail station codes, so stops are matched to ours by position (within 600 m), else by name within 3 km. Its trips carry the live API's train codes (E200…), so trains already shown live aren't listed twice. The GTFS calendar's exceptions (e.g. Christmas) and trains past midnight are handled.
 - **Locally:** `npm run timetable:local` builds the same files into `packages/web/.timetable/` (git-ignored); the Vite dev server serves them at `/timetable/...`. They're never part of a build.
 - **Next:** GTFS-Realtime (needs a free NTA key) could add cancellations and act as a second live source.
