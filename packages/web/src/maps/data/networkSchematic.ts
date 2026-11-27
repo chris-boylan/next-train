@@ -148,16 +148,17 @@ export function networkSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
   // ---------- Heuston, Park West and the main line to Kildare ----------
   // Heuston's line leaves it at 45° and meets the Phoenix Park line coming down from Drumcondra, just above Park West.
   const heustonY = connollyY + 40;
-  const heustonX = X3 - 48;
+  const heustonX = X3 - 56;
   const junction: Point = [X2, heustonY + (heustonX - X2)];
-  stop('HSTON', [heustonX, heustonY], 'above', { labelDx: 4, labelWidth: 58, labelDy: -8 });
+  stop('HSTON', [heustonX, heustonY], 'above', { labelDx: 0, labelWidth: 58, labelDy: -8 });
   stop('CHORC', [X2, junction[1] + 32], 'right', { labelWidth: 68 });
   column(['CLDKN', 'KISHO', 'ADAMF', 'HZLCH', 'SALNS', 'NBRGE', 'CURAH', 'KDARE'], X2, at('CHORC')[1] + 56, 1);
   bend('HSTON', 'CHORC', junction);
   bend('DCDRA', 'CHORC', [X2, connollyY - 6], junction);
 
   // ---------- Athlone and Galway ----------
-  // Athlone sits west of Dublin: Mayo's line comes in from the north-west, Galway leaves south-west.
+  // Athlone sits west of Dublin: Mayo's line comes in from the north-west, Galway leaves south-west, and the line
+  // from Dublin comes in from the east (see Portarlington, below).
   const athlone: Point = [X1, connollyY + 10];
   stop('ATLNE', athlone, 'left');
   const rscmn = at('RSCMN');
@@ -187,13 +188,16 @@ export function networkSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
   const portarlington: Point = [X1, kildare[1] + (X2 - X1)];
   stop('MONVN', [X2 - 20, kildare[1] + 20], 'left');
   stop('PTRTN', portarlington, 'left');
-  // The Athlone–Portarlington line leaves Athlone east at 45° for a lane of its own (Galway's stem needs the room
-  // west of it), names on the left, then swings west round Monasterevin's name into Portarlington.
+  // Athlone is a sideways Y too: the line from Portarlington comes in from the east as its stem, and splits at
+  // Athlone into Mayo's arm (up and west) and Galway's (down and west). The stem leaves Athlone straight east,
+  // eases down at 45° into a lane of its own (Galway's stem needs the room west of it), names on the left, then
+  // swings west round Monasterevin's name into Portarlington.
   const claraX = 40;
   const claraLaneX = X1 + 37;
+  const stemEase = 14;
   stop('CLARA', [claraLaneX, athlone[1] + 51], 'left');
   stop('TMORE', [claraLaneX, athlone[1] + 81], 'left');
-  bend('ATLNE', 'CLARA', [claraLaneX, athlone[1] + (claraLaneX - X1)]);
+  bend('ATLNE', 'CLARA', [claraLaneX - stemEase, athlone[1]], [claraLaneX, athlone[1] + stemEase]);
   // A V at 45° both ways: down-left past Monasterevin's name, one corner at the west edge of the swing, then into
   // Portarlington.
   const swingFoot: Point = [claraX, portarlington[1] - (X1 - claraX)];
