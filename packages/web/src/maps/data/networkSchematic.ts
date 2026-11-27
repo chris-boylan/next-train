@@ -194,7 +194,10 @@ export function networkSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
   stop('CLARA', [claraLaneX, athlone[1] + 51], 'left');
   stop('TMORE', [claraLaneX, athlone[1] + 81], 'left');
   bend('ATLNE', 'CLARA', [claraLaneX, athlone[1] + (claraLaneX - X1)]);
-  bend('TMORE', 'PTRTN', [claraLaneX, kildare[1] - 36], [claraX, kildare[1] + 4], [claraX, portarlington[1] - (X1 - claraX)]);
+  // A V at 45° both ways: down-left past Monasterevin's name, one corner at the west edge of the swing, then into
+  // Portarlington.
+  const swingFoot: Point = [claraX, portarlington[1] - (X1 - claraX)];
+  bend('TMORE', 'PTRTN', [claraLaneX, swingFoot[1] - (claraLaneX - claraX)], swingFoot);
   // The Waterford line steps a little east of Kildare, giving the main line's names more room.
   const waterfordX = X2 + (lang === 'ga' ? 10 : 14);
   // Waterford is a through station here: the line from Kildare comes down to it, and the line from Limerick

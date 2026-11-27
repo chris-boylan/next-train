@@ -131,6 +131,8 @@ function roundedPath(points: [number, number][], radius = CORNER_RADIUS): string
 function tick(p: SchematicPoint, extra = 0): string {
   const length = 12 + extra;
   if (p.label === 'angled' || p.label === 'above') return `M${p.x},${p.y} v-${length}`;
+  // A name under a station on a level line (Oranmore under Galway's stem): the tick points down to it.
+  if (p.label === 'below') return `M${p.x},${p.y} v${length}`;
   if (p.label === 'left') return `M${p.x},${p.y} h-${length}`;
   return `M${p.x},${p.y} h${length}`;
 }
