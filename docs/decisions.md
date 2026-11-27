@@ -6,6 +6,25 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-27 · Live trains on the line maps, opt-in, placed from one feed call
+
+**Decision:** the DART and Enterprise maps can show every running train, behind a small "Live" switch on the map's top strip that's off
+by default and remembered per device. `/api/trains?service=` makes one Irish Rail call (`getCurrentTrainsXML`,
+DART-only for the DART) and places each train from its public message: "Arrived X" at X, "Departed X" halfway to
+its next stop, a signal location just short of the next stop. Direction comes from the line, not the API. Trains
+are drawn as the station page's train seen from above, pointing straight up or down on north–south maps and
+along the track (to the nearest 45°) on Cork's; lateness is only in the
+train's card. Cached at the edge for 20 s like departures.
+
+**Why:** one feed call covers every train, so a busy map costs one Lambda call per 20 s; timing each train
+between stations would need a movements call per train. Off by default keeps the map calm and costs nothing for
+people who don't want it. Colour-coded direction arrows and a late outline were tried and felt too busy.
+
+**Next:** Cork, once its commuter trains are tracked: on 27 Nov they weren't in the positions feed at all and
+their boards said "No Information", so the map support (trains pointing along the track) is built but switched off.
+Then the Commuter and InterCity maps (`TrainMarkers` only needs a station's position), where trains skip
+stations and a gap can span several dots.
+
 ## 2026-11-27 · NI Railways from Translink's timetable, uploaded by hand
 
 **Decision:** NIR stations show NIR trains at their timetabled times, from Translink's TransXChange file on

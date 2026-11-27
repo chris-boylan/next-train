@@ -1,13 +1,19 @@
-import type { CSSProperties } from 'react';
-import type { Service } from '@dart-times/core';
+import type { CSSProperties, ReactNode } from 'react';
+import type { LiveTrain, Service } from '@dart-times/core';
 import { Caps, useI18n } from '../lib/i18n';
 import { MapHits } from './MapHits';
+import { TrainMarkers } from './TrainMarkers';
 
 interface Props {
   service: Service;
   favouriteCodes: string[];
   currentCode?: string;
   onSelect: (code: string) => void;
+  /** Live trains to draw on the line, when the viewer has turned them on. */
+  trains?: LiveTrain[];
+  onSelectTrain?: (train: LiveTrain) => void;
+  /** Controls for a strip along the map's top edge, with the compass at its right (the live trains switch). */
+  corner?: ReactNode;
 }
 
 // A single straight line, north at the top, in the same Beck style as the DART map.
@@ -17,19 +23,31 @@ const WIDTH = 360;
 const X = 120;
 
 /** Schematic map for a service with one line and no branches (the Enterprise). */
-export function SimpleLineMap({ service, favouriteCodes, currentCode, onSelect }: Props) {
+export function SimpleLineMap({ service, favouriteCodes, currentCode, onSelect, trains, onSelectTrain, corner }: Props) {
   const { t, stationName } = useI18n();
   const stations = service.stations;
   const y = (i: number) => TOP + i * ROW;
   const height = y(stations.length - 1) + TOP;
   const ends = new Set([stations[0]!.code, stations.at(-1)!.code]);
+  const points = stations.map((s, i) => ({ code: s.code, x: X, y: y(i) }));
+  const pointOf = (code: string) => points.find((p) => p.code === code);
 
   return (
-    <nav className="line-map" aria-label={t.mapLabel} style={{ width: WIDTH, height }}>
+    <nav className={`line-map${corner ? ' line-map--with-bar' : ''}`} aria-label={t.mapLabel} style={{ width: WIDTH, height }}>
+      {corner && (
+        <div className="line-map__bar">
+          <div className="line-map__bar-controls">{corner}</div>
+          <span className="line-map__compass line-map__compass--bar" aria-hidden>
+            {t.compassNorth} ↑
+          </span>
+        </div>
+      )}
       <svg className="line-map__svg" width={WIDTH} height={height} aria-hidden>
-        <text x={WIDTH - 14} y={18} textAnchor="end" className="line-map__compass">
-          {t.compassNorth} ↑
-        </text>
+        {!corner && (
+          <text x={WIDTH - 14} y={18} textAnchor="end" className="line-map__compass">
+            {t.compassNorth} ↑
+          </text>
+        )}
         <path d={`M${X},${y(0)} V${y(stations.length - 1)}`} className="line-map__track" />
         {stations.map((s, i) =>
           ends.has(s.code) || s.code === currentCode ? (
@@ -67,9 +85,10 @@ export function SimpleLineMap({ service, favouriteCodes, currentCode, onSelect }
       <MapHits
         width={WIDTH}
         height={height}
-        points={stations.map((s, i) => ({ code: s.code, x: X, y: y(i) }))}
+        points={points}
         onSelect={onSelect}
       />
+      {trains && <TrainMarkers trains={trains} pointOf={pointOf} onSelect={(train) => onSelectTrain?.(train)} />}
     </nav>
   );
 }

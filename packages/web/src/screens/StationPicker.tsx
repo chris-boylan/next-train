@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { searchStations, type Service, type Station } from '@dart-times/core';
+import { isLiveService, type LiveTrain, searchStations, type Service, type Station } from '@dart-times/core';
 import { BranchLineMap } from '../maps/BranchLineMap';
 import { COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
 import { commuterSchematicFor } from '../maps/data/commuterSchematic';
@@ -12,7 +12,10 @@ import { SchematicMap } from '../maps/SchematicMap';
 import { SCHEMATICS } from '../maps/data/schematics';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
-import { useFavouritesPlace } from '../lib/prefs';
+import { useFavouritesPlace, useLiveTrainsPref } from '../lib/prefs';
+import { useLiveTrains } from '../lib/useLiveTrains';
+import { TrainSheet } from '../components/TrainSheet';
+import { LiveTrainsToggle } from '../components/LiveTrainsToggle';
 import { RoutesMap, type RoutesView } from '../maps/RoutesMap';
 import { SimpleLineMap } from '../maps/SimpleLineMap';
 
@@ -42,10 +45,22 @@ export function StationPicker({
   const { t, stationName } = useI18n();
   const [query, setQuery] = useState('');
   const [favouritesPlace] = useFavouritesPlace();
+  // Live trains: DART and Enterprise so far, and off until the viewer turns them on (one setting for both).
+  const hasLiveTrains = isLiveService(service.id);
+  const [liveOn, setLiveOn] = useLiveTrainsPref();
+  const live = useLiveTrains(service.id, hasLiveTrains && liveOn);
+  const [selectedTrain, setSelectedTrain] = useState<LiveTrain>();
   // Favourites from this service only; Connolly counts for both.
   const favourites = allFavourites.filter((f) => service.stations.some((s) => s.code === f.code));
   const isFavourite = (code: string) => favourites.some((s) => s.code === code);
   const results = query.trim() ? searchStations(query, service.stations) : [];
+  const liveProps = {
+    trains: liveOn ? live.trains : undefined,
+    onSelectTrain: setSelectedTrain,
+    corner: hasLiveTrains && (
+      <LiveTrainsToggle on={liveOn} onChange={setLiveOn} loading={live.loading} failed={!!live.error} />
+    ),
+  };
   const mapProps = { favouriteCodes: favourites.map((s) => s.code), currentCode, onSelect };
 
   return (
@@ -97,7 +112,7 @@ export function StationPicker({
           {!results.length && <li className="picker__empty">{t.noMatch(query)}</li>}
         </ul>
       ) : service.id === 'dart' ? (
-        <LineMap {...mapProps} />
+        <LineMap {...mapProps} {...liveProps} />
       ) : service.id === 'commuter' ? (
         <RoutesMap
           view={routesView}
@@ -140,12 +155,13 @@ export function StationPicker({
           {...mapProps}
         />
       ) : SCHEMATICS[service.id] ? (
-        <SchematicMap service={service} schematic={SCHEMATICS[service.id]!} {...mapProps} />
+        <SchematicMap service={service} schematic={SCHEMATICS[service.id]!} {...mapProps} {...liveProps} />
       ) : service.line.paths.length > 1 ? (
         <BranchLineMap service={service} {...mapProps} />
       ) : (
-        <SimpleLineMap service={service} {...mapProps} />
+        <SimpleLineMap service={service} {...mapProps} {...liveProps} />
       )}
+      {selectedTrain && <TrainSheet train={selectedTrain} onClose={() => setSelectedTrain(undefined)} />}
     </div>
   );
 }

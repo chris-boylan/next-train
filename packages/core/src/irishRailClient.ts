@@ -32,7 +32,10 @@ export interface RawStationData {
 }
 
 export interface RawTrainPosition {
+  /** R = running, N = not yet started, T = terminated. */
   TrainStatus: string;
+  TrainLatitude: string;
+  TrainLongitude: string;
   TrainCode: string;
   TrainDate: string;
   /** e.g. `E117\n13:55 - Howth to Greystones (12 mins late)\nArrived Woodbrook next stop Bray` */

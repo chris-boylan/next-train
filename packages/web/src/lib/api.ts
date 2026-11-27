@@ -1,4 +1,4 @@
-import type { Departure, Direction, Journey, ServiceId, Station, StationTimetableFile } from '@dart-times/core';
+import type { Departure, Direction, Journey, LiveTrain, ServiceId, Station, StationTimetableFile } from '@dart-times/core';
 import { timetablePath } from '@dart-times/core';
 
 export interface DeparturesResponse {
@@ -18,6 +18,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 /** All of a service's departures in the next 90 minutes, both directions. */
 export function fetchDepartures(code: string, service: ServiceId | 'all') {
   return request<DeparturesResponse>(`/stations/${code}/departures?service=${service}`);
+}
+
+export interface LiveTrainsResponse {
+  service: ServiceId;
+  trains: LiveTrain[];
+  fetchedAt: string;
+}
+
+/** Where every running train on a service is right now (DART only so far). */
+export function fetchLiveTrains(service: ServiceId) {
+  return request<LiveTrainsResponse>(`/trains?service=${service}`);
 }
 
 export function fetchFavourites(deviceId: string) {
