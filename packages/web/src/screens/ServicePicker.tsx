@@ -28,7 +28,7 @@ export function ServicePicker({ onSelect, onOpenNetwork, favourites, onSelectFav
     cork: `${nameOf('CORK')} – ${nameOf('COBH')} · ${nameOf('MDLTN')} · ${nameOf('MLLOW')}`,
     commuter: `${nameOf('DDALK')} · ${nameOf('MYNTH')} · ${nameOf('PTLSE')} · ${nameOf('GOREY')}`,
     intercity: `${nameOf('CORK')} · ${nameOf('GALWY')} · ${nameOf('LMRCK')} · ${nameOf('SLIGO')} · ${nameOf('WFORD')}`,
-    nir: `${nameOf('NI_BANGR')} · ${nameOf('NI_LARNH')} · ${nameOf('NI_DERRY')} · ${nameOf('NI_PRUSH')} · ${nameOf('NEWRY')}`,
+    nir: `${nameOf('NI_BANGR')} · ${t.nirRoutes.larne} · ${nameOf('NI_DERRY')} · ${nameOf('NI_PRUSH')} · ${nameOf('NEWRY')}`,
   };
 
   return (

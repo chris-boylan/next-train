@@ -32,13 +32,14 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `chore/daily-api-check` | Daily live check of the Irish Rail API, opening an issue on failure |
 | `fix/small-screens` | Station page fits iPhone SE and 320px-wide phones |
 | `feat/custom-domain` | Site served at https://nexttrain.ie (and www) |
+| `feat/translink-nir` | Translink NIR service (no live data); NI layout fixes on the all-stations map |
 | `feat/help-page` | Help & about page with a feedback form (DynamoDB + SNS email) |
 | `feat/train-journey` | Tap a train for its stops to the terminus with expected times |
 | `feature/favourites-home` | Options choice to show favourites in each service or together on the home page; favourites for every service's stations |
 
 ## Using the web app
 
-The app always opens on the **service picker**: DART, Enterprise, Cork Commuter, Dublin Commuter, InterCity, or **All stations**. Choosing a service opens its map, then a station.
+The app always opens on the **service picker**: DART, Dublin Commuter, InterCity, Cork Commuter, Enterprise, Translink NIR, or **All stations**. Choosing a service opens its map, then a station.
 
 - **Line maps:** tap a station to open it. Search finds stations by English or Irish name, fadas optional, and tolerates small typos ("connoly"). Favourites appear as chips: on each service's page, or all together on the home page if the options cog says so (a home-page favourite opens every train at that station).
 - **Station page** (`web/src/screens/TrackView.tsx`):
@@ -76,6 +77,23 @@ The app always opens on the **service picker**: DART, Enterprise, Cork Commuter,
   - **Enterprise:** five trains in both directions; none called at Lisburn or Lurgan.
   - **Cork:** live Midleton and Mallow runs. The Cobh branch so far comes from recorded data only.
 - **Colours:** set with `data-service` on `<html>`, and contrast-checked in light and dark mode. Irish Rail has no Cork-specific branding, so Rebel red is the app's own.
+
+## Translink NIR
+
+Northern Ireland Railways, as its own service (Translink's teal and lime on the tile). **There's no live data**: Irish Rail's feed has no NI Railways trains, so station pages say so. Belfast Grand Central, Portadown and Newry also show their live Enterprise (and Irish Rail) trains.
+
+| Route | Runs |
+|---|---|
+| **Bangor** | Grand Central – City Hospital – Botanic – Lanyon Place – Titanic Quarter – Holywood – Bangor |
+| **Larne** | Grand Central … Lanyon Place – York Street – Whiteabbey – Carrickfergus – Whitehead – Larne Harbour |
+| **Derry** | Grand Central … York Street – Mossley West – Antrim – Ballymena – Coleraine – Castlerock – Derry |
+| **Portrush** | Coleraine – University – Dhu Varren – Portrush |
+| **Portadown & Newry** | Grand Central – Adelaide – Lisburn – Lurgan – Portadown – Scarva – Poyntzpass – Newry |
+
+- **Where they're defined:** routes in `core/src/nir.ts`, stations (our own `NI_` codes; coordinates from OpenStreetMap) in `core/src/stations.nir.data.ts`, line colours in `web/src/maps/data/nirRoutes.ts` (as on NIR's own maps).
+- **Map:** drawn from the all-stations map's Northern Ireland (`nirSchematic` in `web/src/maps/data/intercitySchematic.ts`), like InterCity's.
+- Since Grand Central opened (2025), every line but Portadown/Newry leaves Belfast through City Hospital, Botanic and Lanyon Place; York Street replaced Yorkgate (the code `NI_YORKG` is unchanged); Derry trains branch north after York Street and don't call at Whiteabbey. Always "Derry".
+- Stations named after buildings or developments (City Hospital, Lanyon Place, Titanic Quarter…) have no Irish name.
 
 ## All stations and station boards
 
