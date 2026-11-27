@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfObjTrainPositions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://api.irishrail.ie/realtime/">
+  <objTrainPositions>
+    <TrainStatus>N</TrainStatus>
+    <TrainLatitude>53.1442</TrainLatitude>
+    <TrainLongitude>-6.06085</TrainLongitude>
+    <TrainCode>E833</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E833\nGreystones to Malahide\nExpected Departure 16:31</PublicMessage>
+    <Direction>Northbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>N</TrainStatus>
+    <TrainLatitude>53.2043</TrainLatitude>
+    <TrainLongitude>-6.10046</TrainLongitude>
+    <TrainCode>E832</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E832\nBray to Malahide\nExpected Departure 16:25</PublicMessage>
+    <Direction>Northbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>N</TrainStatus>
+    <TrainLatitude>53.2043</TrainLatitude>
+    <TrainLongitude>-6.10046</TrainLongitude>
+    <TrainCode>E935</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E935\nBray to Howth\nExpected Departure 16:32</PublicMessage>
+    <Direction>Northbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>N</TrainStatus>
+    <TrainLatitude>53.3891</TrainLatitude>
+    <TrainLongitude>-6.07401</TrainLongitude>
+    <TrainCode>E244</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E244\nHowth to Bray\nExpected Departure 16:35</PublicMessage>
+    <Direction>Southbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>N</TrainStatus>
+    <TrainLatitude>53.4509</TrainLatitude>
+    <TrainLongitude>-6.15649</TrainLongitude>
+    <TrainCode>E122</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E122\nMalahide to Greystones\nExpected Departure 16:24</PublicMessage>
+    <Direction>Southbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.22</TrainLatitude>
+    <TrainLongitude>-6.1101</TrainLongitude>
+    <TrainCode>E239</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E239\n15:15 - Howth to Bray (0 mins late)\nDeparted Woodbrook next stop Bray</PublicMessage>
+    <Direction>Southbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.2557</TrainLatitude>
+    <TrainLongitude>-6.11317</TrainLongitude>
+    <TrainCode>E934</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E934\n16:01 - Greystones to Howth (1 mins late)\nDeparted Killiney next stop Dalkey</PublicMessage>
+    <Direction>Northbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.2812</TrainLatitude>
+    <TrainLongitude>-6.12289</TrainLongitude>
+    <TrainCode>E120</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E120\n15:24 - Malahide to Greystones (2 mins late)\nArrived Glenageary next stop Dalkey</PublicMessage>
+    <Direction>Southbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.2951</TrainLatitude>
+    <TrainLongitude>-6.13498</TrainLongitude>
+    <TrainCode>E831</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E831\n16:02 - Bray to Malahide (0 mins late)\nArrived Dun Laoghaire next stop Salthill and Monkstown</PublicMessage>
+    <Direction>Northbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.3027</TrainLatitude>
+    <TrainLongitude>-6.17833</TrainLongitude>
+    <TrainCode>E240</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E240\n15:35 - Howth to Bray (3 mins late)\nArrived Blackrock next stop Seapoint</PublicMessage>
+    <Direction>Southbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.3027</TrainLatitude>
+    <TrainLongitude>-6.17833</TrainLongitude>
+    <TrainCode>E933</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E933\n15:55 - Bray to Howth (2 mins late)\nDeparted Blackrock next stop Booterstown</PublicMessage>
+    <Direction>Northbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.3281</TrainLatitude>
+    <TrainLongitude>-6.22116</TrainLongitude>
+    <TrainCode>E241</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E241\n15:44 - Malahide to Bray (0 mins late)\nDeparted Sandymount next stop Sydney Parade</PublicMessage>
+    <Direction>Southbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.3347</TrainLatitude>
+    <TrainLongitude>-6.22979</TrainLongitude>
+    <TrainCode>E830</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E830\n15:31 - Greystones to Malahide (2 mins late)\nDeparted Lansdowne Road next stop Grand Canal Dock</PublicMessage>
+    <Direction>Northbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.3433</TrainLatitude>
+    <TrainLongitude>-6.24829</TrainLongitude>
+    <TrainCode>E932</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E932\n15:32 - Bray to Howth (7 mins late)\nDeparted Dublin Pearse next stop Tara Street</PublicMessage>
+    <Direction>Northbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.3629</TrainLatitude>
+    <TrainLongitude>-6.22753</TrainLongitude>
+    <TrainCode>E121</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E121\n15:56 - Howth to Greystones (1 mins late)\nDeparted Clontarf Road next stop Dublin Connolly</PublicMessage>
+    <Direction>Southbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.3629</TrainLatitude>
+    <TrainLongitude>-6.22753</TrainLongitude>
+    <TrainCode>E242</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E242\n16:04 - Malahide to Bray (0 mins late)\nArrived Clontarf Road next stop Dublin Connolly</PublicMessage>
+    <Direction>Southbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.3629</TrainLatitude>
+    <TrainLongitude>-6.22753</TrainLongitude>
+    <TrainCode>E829</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E829\n15:25 - Bray to Malahide (8 mins late)\nArrived Clontarf Road next stop Killester</PublicMessage>
+    <Direction>Northbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.3909</TrainLatitude>
+    <TrainLongitude>-6.15672</TrainLongitude>
+    <TrainCode>E243</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E243\n16:15 - Howth to Bray (0 mins late)\nDeparted Howth Junction next stop Kilbarrack</PublicMessage>
+    <Direction>Southbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>R</TrainStatus>
+    <TrainLatitude>53.3909</TrainLatitude>
+    <TrainLongitude>-6.15672</TrainLongitude>
+    <TrainCode>E931</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E931\n15:03 - Greystones to Howth (5 mins late)\nDeparted Howth Junction next stop Bayside</PublicMessage>
+    <Direction>Northbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>T</TrainStatus>
+    <TrainLatitude>53.1442</TrainLatitude>
+    <TrainLongitude>-6.06085</TrainLongitude>
+    <TrainCode>E119</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E119\n14:55 - Howth to Greystones(-2 mins late)\nTERMINATED Greystones at 16:21</PublicMessage>
+    <Direction>Southbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>T</TrainStatus>
+    <TrainLatitude>53.2043</TrainLatitude>
+    <TrainLongitude>-6.10046</TrainLongitude>
+    <TrainCode>E238</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E238\n15:04 - Malahide to Bray(2 mins late)\nTERMINATED Bray at 16:22</PublicMessage>
+    <Direction>Southbound</Direction>
+  </objTrainPositions>
+  <objTrainPositions>
+    <TrainStatus>T</TrainStatus>
+    <TrainLatitude>53.4509</TrainLatitude>
+    <TrainLongitude>-6.15649</TrainLongitude>
+    <TrainCode>E828</TrainCode>
+    <TrainDate>27 Nov 2026</TrainDate>
+    <PublicMessage>E828\n15:02 - Bray to Malahide(0 mins late)\nTERMINATED Malahide at 16:20</PublicMessage>
+    <Direction>Northbound</Direction>
+  </objTrainPositions>
+</ArrayOfObjTrainPositions>

@@ -1,4 +1,5 @@
-import type { Service } from '@dart-times/core';
+import type { ReactNode } from 'react';
+import type { LiveTrain, Service } from '@dart-times/core';
 import { useI18n } from '../lib/i18n';
 import { PositionedMap } from './PositionedMap';
 import type { Schematic } from './data/schematics';
@@ -9,10 +10,13 @@ interface Props {
   favouriteCodes: string[];
   currentCode?: string;
   onSelect: (code: string) => void;
+  trains?: LiveTrain[];
+  onSelectTrain?: (train: LiveTrain) => void;
+  corner?: ReactNode;
 }
 
 /** A service's map drawn from hand-placed positions (see schematics.ts). */
-export function SchematicMap({ service, schematic, favouriteCodes, currentCode, onSelect }: Props) {
+export function SchematicMap({ service, schematic, favouriteCodes, currentCode, onSelect, trains, onSelectTrain, corner }: Props) {
   const { t, stationName } = useI18n();
   const { paths, termini } = service.line;
 
@@ -38,6 +42,9 @@ export function SchematicMap({ service, schematic, favouriteCodes, currentCode, 
       currentCode={currentCode}
       onSelect={onSelect}
       label={t.mapLabel}
+      trains={trains}
+      onSelectTrain={onSelectTrain}
+      corner={corner}
     />
   );
 }

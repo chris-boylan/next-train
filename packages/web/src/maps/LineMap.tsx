@@ -1,13 +1,19 @@
-import type { CSSProperties } from 'react';
-import { BRANCHES, findStationByCode, JUNCTION, TRUNK } from '@dart-times/core';
+import type { CSSProperties, ReactNode } from 'react';
+import { BRANCHES, findStationByCode, JUNCTION, type LiveTrain, TRUNK } from '@dart-times/core';
 import { Caps, useI18n } from '../lib/i18n';
 import { MapHits } from './MapHits';
 import { INTERCHANGES } from './PositionedMap';
+import { TrainMarkers } from './TrainMarkers';
 
 interface Props {
   favouriteCodes: string[];
   currentCode?: string;
   onSelect: (code: string) => void;
+  /** Live trains to draw on the line, when the viewer has turned them on. */
+  trains?: LiveTrain[];
+  onSelectTrain?: (train: LiveTrain) => void;
+  /** Controls for a strip along the map's top edge, with the compass at its right (the live trains switch). */
+  corner?: ReactNode;
 }
 
 // Schematic geometry (px). North is up; the Malahide branch is drawn west (left) of the Howth branch.
@@ -35,6 +41,9 @@ const POINTS: Point[] = [
   ...[...TRUNK].reverse().map((code, i) => ({ code, x: X.trunk, y: rowY(branchRows + i), side: 'trunk' as const })),
 ];
 
+const POINT_BY_CODE = new Map(POINTS.map((p) => [p.code, p]));
+const pointOf = (code: string) => POINT_BY_CODE.get(code);
+
 const HEIGHT = Math.max(...POINTS.map((p) => p.y)) + TOP;
 const junctionY = rowY(branchRows);
 const lastBranchY = rowY(branchRows - 1);
@@ -52,14 +61,24 @@ const cityTop = Math.min(...POINTS.filter((p) => CITY_CENTRE.includes(p.code)).m
 const cityBottom = Math.max(...POINTS.filter((p) => CITY_CENTRE.includes(p.code)).map((p) => p.y));
 
 /** The DART network as a tappable schematic map. */
-export function LineMap({ favouriteCodes, currentCode, onSelect }: Props) {
+export function LineMap({ favouriteCodes, currentCode, onSelect, trains, onSelectTrain, corner }: Props) {
   const { t, stationName } = useI18n();
   return (
-    <nav className="line-map" aria-label={t.mapLabel} style={{ width: WIDTH, height: HEIGHT }}>
+    <nav className={`line-map${corner ? ' line-map--with-bar' : ''}`} aria-label={t.mapLabel} style={{ width: WIDTH, height: HEIGHT }}>
+      {corner && (
+        <div className="line-map__bar">
+          <div className="line-map__bar-controls">{corner}</div>
+          <span className="line-map__compass line-map__compass--bar" aria-hidden>
+            {t.compassNorth} ↑
+          </span>
+        </div>
+      )}
       <svg className="line-map__svg" width={WIDTH} height={HEIGHT} aria-hidden>
-        <text x={WIDTH - 14} y={18} textAnchor="end" className="line-map__compass">
-          {t.compassNorth} ↑
-        </text>
+        {!corner && (
+          <text x={WIDTH - 14} y={18} textAnchor="end" className="line-map__compass">
+            {t.compassNorth} ↑
+          </text>
+        )}
         <path d={branchPath(X.malahide)} className="line-map__track" />
         <path d={branchPath(X.howth)} className="line-map__track" />
         <path d={`M${X.trunk},${junctionY} V${HEIGHT - TOP}`} className="line-map__track" />
@@ -111,6 +130,7 @@ export function LineMap({ favouriteCodes, currentCode, onSelect }: Props) {
         );
       })}
       <MapHits width={WIDTH} height={HEIGHT} points={POINTS} onSelect={onSelect} />
+      {trains && <TrainMarkers trains={trains} pointOf={pointOf} onSelect={(train) => onSelectTrain?.(train)} />}
     </nav>
   );
 }

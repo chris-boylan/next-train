@@ -185,6 +185,20 @@ const en = {
     loading: 'Loading the stops…',
     unavailable: 'Couldn’t load this train’s stops.',
   },
+  liveTrains: 'Live trains',
+  live: 'Live',
+  liveTrainsUnavailable: 'Live trains unavailable',
+  trainTo: (destination: string) => `Train to ${destination}`,
+  nextStop: 'Next stop',
+  standingAt: 'At',
+  trainCode: 'Train',
+  trainStatus: 'Running',
+  onTime: 'On time',
+  minsLate: (n: number) => `${n} min late`,
+  minsEarly: (n: number) => `${n} min early`,
+  describeTrain: (destination: string, next: string, lateMins: number) =>
+    `Train to ${destination}, next stop ${next}` +
+    (lateMins > 0 ? `, ${lateMins} minute${lateMins === 1 ? '' : 's'} late` : ''),
   describeScheduled: (destination: string, time: string) => `to ${destination} at ${time}, timetabled, no live information yet`,
   describe: (destination: string, dueInMins: number, lateMins: number, style: CountdownStyle) =>
     `to ${destination} ${dueInMins <= 0 ? 'due now' : `in ${spokenDue(dueInMins, style)}`}` +
@@ -387,6 +401,19 @@ const ga: Messages = {
     loading: 'Na stadanna á lódáil…',
     unavailable: 'Níorbh fhéidir stadanna na traenach seo a lódáil.',
   },
+  liveTrains: 'Traenacha beo',
+  live: 'Beo',
+  liveTrainsUnavailable: 'Níl traenacha beo ar fáil',
+  trainTo: (destination) => `Traein go dtí ${destination}`,
+  nextStop: 'An chéad stad eile',
+  standingAt: 'Ag',
+  trainCode: 'Traein',
+  trainStatus: 'Stádas',
+  onTime: 'In am',
+  minsLate: (n) => `${n} nóim. déanach`,
+  minsEarly: (n) => `${n} nóim. luath`,
+  describeTrain: (destination, next, lateMins) =>
+    `Traein go dtí ${destination}, an chéad stad eile ${next}` + (lateMins > 0 ? `, ${lateMins} nóiméad déanach` : ''),
   describeScheduled: (destination, time) => `go dtí ${destination} ag ${time}, de réir an chláir ama`,
   // Spoken in minutes whatever the countdown style: hours need Irish number mutations (uair, huaire, n-uaire).
   describe: (destination, dueInMins, lateMins) =>

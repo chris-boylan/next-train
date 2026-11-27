@@ -173,6 +173,15 @@ function handler(event) {
           cachePolicy: departuresCache,
           originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
         },
+        // Live train positions for the map (`/api/trains?service=`): shared by everyone, cached like departures.
+        // `/api/trains/*` below doesn't match the bare path, so it needs its own behaviour.
+        '/api/trains': {
+          origin: apiOrigin,
+          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
+          allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+          cachePolicy: departuresCache,
+          originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+        },
         // A train's journey (the station page's look-ahead) is the same for everyone too.
         '/api/trains/*': {
           origin: apiOrigin,
