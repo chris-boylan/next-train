@@ -749,3 +749,14 @@
   position: absolute;
   inset: 0;
 }
+
+/* The note in the sheet opened by tapping a timetabled train. */
+.timetable-info {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.timetable-info .train__timetable {
+  margin-right: 8px;
+  vertical-align: 2px;
+}

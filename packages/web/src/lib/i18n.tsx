@@ -42,6 +42,10 @@ const en = {
   // A train Irish Rail should be tracking by now but isn't: its time is only the timetable's.
   notTracked: 'Not tracked',
   laterNote: (mins: number) => `Timetabled times. Live times and delays appear about ${mins} minutes before.`,
+  // Tapping a timetabled train on the station page.
+  timetableWindow: (mins: number) =>
+    `Irish Rail’s live tracking covers the next ${mins} minutes. This train is further away, so it shows its timetabled time. Its live time and any delay appear once it’s within ${mins} minutes.`,
+  whyTimetabled: (destination: string) => `Why the train to ${destination} shows its timetabled time`,
   map: 'Map',
   allRoutes: 'All routes',
   byRoute: 'By route',
@@ -261,6 +265,9 @@ const ga: Messages = {
   timetabled: 'Clár ama',
   notTracked: 'Gan rianú',
   laterNote: (mins) => `Amanna an chláir ama. Feictear amanna beo agus moilleanna thart ar ${mins} nóiméad roimh ré.`,
+  timetableWindow: (mins) =>
+    `Clúdaíonn rianú beo Iarnród Éireann an ${mins} nóiméad atá romhainn. Tá an traein seo níos faide uainn, mar sin taispeántar am an chláir ama. Feicfear a ham beo agus aon mhoill nuair a bheidh sí laistigh de ${mins} nóiméad.`,
+  whyTimetabled: (destination) => `Cén fáth a dtaispeántar am an chláir ama don traein go dtí ${destination}`,
   map: 'Léarscáil',
   allRoutes: 'Gach bealach',
   byRoute: 'De réir bealaigh',

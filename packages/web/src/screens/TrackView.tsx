@@ -19,9 +19,11 @@ import {
   stationLines,
   type Station,
   terminiFrom,
+  LIVE_WINDOW_MINS,
 } from '@dart-times/core';
 import { formatTime, useNow } from '../lib/clock';
 import { DeparturesSheet } from '../components/DeparturesSheet';
+import { Sheet } from '../components/Sheet';
 import { JOURNEY_CLOSE_MS, type JourneyOrigin, JourneyView, RETURN_FADE_DELAY_MS, RETURN_FADE_MS } from '../components/JourneyView';
 import { TrainGlyph } from '../components/TrainGlyph';
 import { DueIn } from '../components/DueIn';
@@ -74,7 +76,7 @@ export function TrackView({
   enterFromBoard = false,
   onEntered,
 }: Props) {
-  const { t, stationName, nameOf, list } = useI18n();
+  const { t, stationName, nameOf, list, scheduledDestination } = useI18n();
   // NI Railways has no live data: its trains come from the timetable, and only stations where the Enterprise
   // calls (Grand Central, Portadown, Newry) have live trains, which come from every Irish Rail train there.
   const nir = service.id === 'nir';
@@ -106,6 +108,8 @@ export function TrackView({
   const goingDirection = goingTo ? directionBetween(station.code, goingTo, line) : undefined;
   // The full departures panel for one direction; it's also where the going-to filter is chosen.
   const [sheetDirection, setSheetDirection] = useState<Direction>();
+  // A tapped timetabled train: a short note on why it shows its timetabled time.
+  const [timetableInfo, setTimetableInfo] = useState<TimetabledDeparture>();
   // The look-ahead for one approaching train (tap a train); `closing` while it animates away.
   const [journey, setJourney] = useState<{ train: Departure; direction: Direction; origin?: JourneyOrigin }>();
   const [closingJourney, setClosingJourney] = useState(false);
@@ -210,6 +214,7 @@ export function TrackView({
         hidden={hidden}
         hasData={liveStation ? !!data : !!timetable}
         onOpen={(train, glyph) => openJourney(train, direction, glyph)}
+        onTimetabled={setTimetableInfo}
       />
     );
   };
@@ -370,6 +375,15 @@ export function TrackView({
           onClose={() => setSheetDirection(undefined)}
         />
       )}
+
+      {timetableInfo && (
+        <Sheet title={`${timetableInfo.time} · ${scheduledDestination(timetableInfo)}`} onClose={() => setTimetableInfo(undefined)}>
+          <p className="timetable-info">
+            <span className="train__timetable">{timetableInfo.tomorrow ? t.tomorrow : t.timetabled}</span>
+            {timetableInfo.category === 'nir' ? t.nirTimetableNote : t.timetableWindow(LIVE_WINDOW_MINS)}
+          </p>
+        </Sheet>
+      )}
     </div>
   );
 }
@@ -455,6 +469,7 @@ function Trains({
   hidden,
   hasData,
   onOpen,
+  onTimetabled,
 }: {
   direction: Direction;
   /** Live and timetabled trains, in time order, as many as fit. */
@@ -476,6 +491,8 @@ function Trains({
   hasData: boolean;
   /** Tap a train for its look-ahead; gets the train's drawing so the view can start from it. */
   onOpen: (train: Departure, glyph: Element | null) => void;
+  /** Tap a timetabled train for a note on why it isn't live yet. */
+  onTimetabled: (train: TimetabledDeparture) => void;
 }) {
   const { t, destinationName, describe, nameOf, list } = useI18n();
   const side = direction === 'Northbound' ? 'north' : 'south';
@@ -558,7 +575,14 @@ function Trains({
               </div>
             </li>
           ) : (
-            <TimetabledTrain key={`${s!.trainCode}-${s!.minutes}`} d={s!} side={side} next={i === 0 && !liveStation} hollow={liveStation} />
+            <TimetabledTrain
+              key={`${s!.trainCode}-${s!.minutes}`}
+              d={s!}
+              side={side}
+              next={i === 0 && !liveStation}
+              hollow={liveStation}
+              onOpen={() => onTimetabled(s!)}
+            />
           ),
         )}
       </ol>
@@ -569,11 +593,23 @@ function Trains({
 }
 
 /**
- * A timetabled train: no live position or journey, so it can't be opened. NI Railways trains (never live) show
- * their clock time, since a countdown would look live; Irish Rail's, beyond the live window, a countdown. Hollow
- * among live trains, solid at stations with none.
+ * A timetabled train: no live position or journey yet, so tapping it explains why (the live window, or no live
+ * NI Railways times). NI Railways trains (never live) show their clock time, since a countdown would look live;
+ * Irish Rail's, beyond the live window, a countdown. Hollow among live trains, solid at stations with none.
  */
-function TimetabledTrain({ d, side, next, hollow }: { d: TimetabledDeparture; side: 'north' | 'south'; next: boolean; hollow: boolean }) {
+function TimetabledTrain({
+  d,
+  side,
+  next,
+  hollow,
+  onOpen,
+}: {
+  d: TimetabledDeparture;
+  side: 'north' | 'south';
+  next: boolean;
+  hollow: boolean;
+  onOpen: () => void;
+}) {
   const { t, scheduledDestination } = useI18n();
   const now = useNow();
   const clock = d.category === 'nir';
@@ -583,6 +619,7 @@ function TimetabledTrain({ d, side, next, hollow }: { d: TimetabledDeparture; si
       className={`train train--${side}${next ? ' train--next' : ''}${hollow ? ' train--scheduled' : ''}`}
       aria-label={`${t.describeScheduled(destination, d.time)}${d.tomorrow ? `, ${t.tomorrow}` : ''}`}
     >
+      <button className="train__open" aria-label={t.whyTimetabled(destination)} onClick={onOpen} />
       <TrainGlyph />
       <div className="train__info">
         <span className={`train__due${clock ? ' train__due--clock' : ''}`}>
