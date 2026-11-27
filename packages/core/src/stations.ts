@@ -197,10 +197,27 @@ function scoreKey(query: string, key: string): number {
   return distance <= allowed ? 50 - distance : 0;
 }
 
+/** Below this many letters a search only matches the start of a name; typo matching starts at this length. */
+const FUZZY_FROM = 3;
+
+/**
+ * One or two letters: results straight away, narrowing as you type. Names starting with the letters come first
+ * ("b" → Bray, Bayside…), then names with a later word starting with them ("m" → Salthill and Monkstown), then
+ * Irish names. Nicknames and Irish Rail aliases wait for a third letter, so they don't crowd a short list.
+ */
+function scoreShort(q: string, station: Station): number {
+  const name = normaliseStationName(station.name);
+  if (name.startsWith(q)) return 90;
+  if (name.split(' ').some((word) => word.startsWith(q))) return 70;
+  const irish = [station.irishName, station.irishShortName].filter((k): k is string => !!k).map(normaliseStationName);
+  return irish.some((k) => k.startsWith(q)) ? 40 : 0;
+}
+
 function scoreStation(query: string, station: Station): number {
   if (station.code === query.trim().toUpperCase()) return 100;
   const q = normaliseStationName(query);
   if (!q) return 0;
+  if (q.length < FUZZY_FROM) return scoreShort(q, station);
   // Irish names are searchable too (fadas optional), but kept out of `aliases` so they don't become Alexa synonyms.
   const keys = [station.name, ...station.aliases, station.irishName, station.irishShortName].filter((k): k is string => !!k);
   return Math.max(...keys.map((k) => scoreKey(q, normaliseStationName(k))));
