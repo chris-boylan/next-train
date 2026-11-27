@@ -117,6 +117,9 @@ const en = {
   countdownStyle: 'Times over an hour',
   countdownMinutes: 'Minutes',
   countdownHours: 'Hours & mins',
+  timetabledTrains: 'Timetabled trains',
+  on: 'On',
+  off: 'Off',
   install: 'Install',
   // iOS isn't available in Irish, so its button names are quoted in English in both languages.
   installTip: 'Tap Share, then “Add to Home Screen”, to open Next Train? like an app.',
@@ -316,6 +319,9 @@ const ga: Messages = {
   countdownStyle: 'Amanna thar uair an chloig',
   countdownMinutes: 'Nóiméid',
   countdownHours: 'Uaireanta & nóim',
+  timetabledTrains: 'Traenacha an chláir ama',
+  on: 'Ar siúl',
+  off: 'Múchta',
   install: 'Suiteáil',
   installTip: 'Brúigh “Share”, ansin “Add to Home Screen”, chun Next Train? a oscailt mar aip.',
   help: {
