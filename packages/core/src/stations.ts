@@ -5,6 +5,7 @@ import { COMMUTER_STATION_DATA } from './stations.commuter.data';
 import { CORK_STATION_DATA } from './stations.cork.data';
 import { ENTERPRISE_STATION_DATA } from './stations.enterprise.data';
 import { INTERCITY_STATION_DATA } from './stations.intercity.data';
+import { NIR_STATION_DATA } from './stations.nir.data';
 import { IRISH_NAMES } from './stations.ga';
 
 export interface StationRecord {
@@ -21,6 +22,31 @@ export interface StationRecord {
 const DISPLAY_NAMES: Record<string, string> = {
   BFSTC: 'Belfast Grand Central',
 };
+
+// Stations' official commemorative names (most from the 1966 renaming after the 1916 leaders): "Cork" is Kent
+// Station, "Galway" is Ceannt Station. Irish Rail's live data and boards use the place name, so the app does too,
+// shows the official name as a subtitle, and finds the station by it. Dublin's Heuston, Connolly and Pearse aren't
+// listed: their official name is already the one shown.
+const OFFICIAL_NAMES: Record<string, string> = {
+  DLERY: 'Mallin',
+  BRAY: 'Daly',
+  DGHDA: 'MacBride',
+  DDALK: 'Clarke',
+  CORK: 'Kent',
+  LMRCK: 'Colbert',
+  GALWY: 'Ceannt',
+  SLIGO: 'Mac Diarmada',
+  WFORD: 'Plunkett',
+  KKNNY: 'MacDonagh',
+  WXFRD: "O'Hanrahan",
+  TRLEE: 'Casement',
+};
+
+/** Search terms for an official name: "Kent", "Kent Station", "Cork Kent". */
+function officialAliases(code: string, place: string): string[] {
+  const official = OFFICIAL_NAMES[code];
+  return official ? [official, `${official} Station`, `${place} ${official}`] : [];
+}
 
 // Names people (and Alexa's speech recognition) use that the API doesn't know about.
 const EXTRA_ALIASES: Record<string, string[]> = {
@@ -47,13 +73,19 @@ function splitAlias(alias: string): string[] {
 function toStation(record: StationRecord): Station {
   const name = DISPLAY_NAMES[record.code] ?? record.name;
   const shortName = name.replace(/^Dublin\s+/i, '');
-  const aliases = [shortName, ...splitAlias(record.apiAlias), ...(EXTRA_ALIASES[record.code] ?? [])];
+  const aliases = [
+    shortName,
+    ...splitAlias(record.apiAlias),
+    ...officialAliases(record.code, shortName),
+    ...(EXTRA_ALIASES[record.code] ?? []),
+  ];
   const seen = new Set([name.toLowerCase()]);
   return {
     code: record.code,
     name,
     ...(name !== record.name && { apiName: record.name }),
     shortName,
+    ...(OFFICIAL_NAMES[record.code] && { officialName: `${OFFICIAL_NAMES[record.code]} Station` }),
     branch: branchOf(record.code) ?? 'trunk',
     irishName: IRISH_NAMES[record.code]?.name,
     irishShortName: IRISH_NAMES[record.code]?.short ?? IRISH_NAMES[record.code]?.name,
@@ -100,6 +132,9 @@ export const COMMUTER_ONLY_STATIONS: Station[] = COMMUTER_STATION_DATA.map(toSta
 /** Intercity stations not on any other service. `INTERCITY_STATIONS` (services.ts) adds the shared ones. */
 export const INTERCITY_ONLY_STATIONS: Station[] = INTERCITY_STATION_DATA.map(toStation);
 
+/** Northern Ireland Railways stations not already above (Belfast, Portadown and Newry are Enterprise stations). */
+export const NIR_ONLY_STATIONS: Station[] = NIR_STATION_DATA.map(toStation);
+
 /** Every station the apps know about, across all services. Lookups by code or name use this. */
 export const ALL_STATIONS: Station[] = [
   ...DART_STATIONS,
@@ -107,6 +142,7 @@ export const ALL_STATIONS: Station[] = [
   ...CORK_STATIONS,
   ...COMMUTER_ONLY_STATIONS,
   ...INTERCITY_ONLY_STATIONS,
+  ...NIR_ONLY_STATIONS,
 ];
 
 /** The official Irish name for any station code, including stations only on the all-stations map. */

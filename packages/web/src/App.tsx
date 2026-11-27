@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { findStationByCode, isServiceId, SERVICES, type ServiceId, type Station } from '@dart-times/core';
+import { findStationByCode, hasLiveData, isServiceId, SERVICES, type ServiceId, type Station } from '@dart-times/core';
 import { fetchFavourites, setFavourite } from './lib/api';
 import { getDeviceId } from './lib/deviceId';
 import { HelpContext } from './lib/help';
@@ -74,10 +74,14 @@ function Screens() {
     setFavourite(deviceId, code, !isFavourite(code)).then(setFavourites, (err: Error) => console.error(err));
 
   if (boardStation) {
+    // NI Railways stations have no live data, except where the Enterprise calls (Belfast, Portadown, Newry).
+    const live = hasLiveData(boardStation.code);
     return (
       <StationBoard
         code={boardStation.code}
         name={boardStation.name}
+        live={live}
+        note={live ? undefined : t.nirNoLiveData}
         mode="all"
         backLabel={boardStation.from === 'home' ? t.services : t.map}
         onBack={() => setBoardStation(undefined)}
@@ -107,6 +111,24 @@ function Screens() {
 
   const station = stationCode ? findStationByCode(stationCode, service.stations) : undefined;
   const routesView = routesViews[service.id] ?? { mode: 'all' };
+  if (station && service.id === 'nir') {
+    // No NI Railways live data: most stations just say so; where the Enterprise calls, its trains are shown.
+    const routeId = routesView.mode === 'byRoute' ? routesView.routeId : undefined;
+    const live = hasLiveData(station.code);
+    return (
+      <StationBoard
+        key={station.code}
+        code={station.code}
+        name={stationName(station)}
+        mode="all"
+        live={live}
+        note={live ? t.nirEnterpriseOnly : t.nirNoLiveData}
+        backLabel={(routeId && t.nirRoutes[routeId as keyof typeof t.nirRoutes]) || t.stations}
+        onBack={() => setStationCode(undefined)}
+        favourite={{ on: isFavourite(station.code), toggle: () => toggleFavourite(station.code) }}
+      />
+    );
+  }
   if (station && (service.id === 'commuter' || service.id === 'intercity')) {
     // Back goes to the route the station was picked from, when there is one.
     const routeId = routesView.mode === 'byRoute' ? routesView.routeId : undefined;

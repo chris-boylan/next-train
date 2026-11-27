@@ -20,7 +20,7 @@ npm run build:web                          # typecheck + vite build
 
 Live-API scripts (hit the real Irish Rail API): `npm run api-check -w @dart-times/core` (the daily health check), `npm run smoke -- connolly south`, `npm run verify-line`, `npm run build-network -w @dart-times/core`, `npm run update-stations -w @dart-times/core`. After `update-stations`, regenerate the Alexa model with `npm run alexa:model`.
 
-Deploy: normally via GitHub Actions on `main`. By hand: `npm run deploy -- --profile next-train` (builds web, then CDK deploy to eu-west-1). Needs AWS credentials — don't run without being asked.
+Deploy: normally via GitHub Actions — Run workflow on `main` (merges don't deploy). By hand: `npm run deploy -- --profile next-train` (builds web, then CDK deploy to eu-west-1). Needs AWS credentials — don't run without being asked.
 
 ## Architecture
 
@@ -34,9 +34,14 @@ Deploy: normally via GitHub Actions on `main`. By hand: `npm run deploy -- --pro
 - **i18n:** UI strings in `web/src/lib/i18n.tsx` (English + Irish). Irish prefixes stay lowercase in capitalised text via the `Caps` component.
 - **PWA:** `vite-plugin-pwa` in `web/vite.config.ts` generates the manifest and a service worker that precaches the app shell; `/api/*` is network-only. Icons in `web/public/` come from `icon.svg` via `npx pwa-assets-generator` (config `web/pwa-assets.config.ts`).
 - **Hosting:** CloudFront → S3 for the site; `/api/stations/*` (cached 20 s, the handler sends `max-age=20`) and `/api/*` (uncached) → the API Lambda's Function URL with origin access control. No API Gateway. Optional `-c domainName=` adds a us-east-1 `CertStack`; `-c budgetEmail=` adds a budget alert. Pass CDK flags as `npm run deploy -- -c key=value`.
-- **CI/CD:** `.github/workflows/ci.yml` checks every PR and push (check job name is a required status check, keep it); on `main` it then deploys automatically if the checks pass (no approval), also via Run workflow, using the OIDC role in `infra/lib/github-deploy-stack.ts` (stack `NextTrainGitHubDeploy`, deployed by hand; `npm run deploy` only targets `DartTimes*`).
+- **CI/CD:** `.github/workflows/ci.yml` checks every PR and push (check job name is a required status check, keep it); it deploys only when run by hand (Run workflow on `main`) and the checks pass, using the OIDC role in `infra/lib/github-deploy-stack.ts` (stack `NextTrainGitHubDeploy`, deployed by hand; `npm run deploy` only targets `DartTimes*`).
 - **Help & feedback:** `web/src/screens/HelpPage.tsx`, opened via `HelpContext` (`lib/help.ts`) from the options cog or `?help`. The form posts to `/api/feedback` (`FeedbackService` in `core/src/feedback.ts`, Dynamo storage in `core/src/dynamo.ts`, SNS email in `api/src/index.ts`). POSTs through CloudFront's OAC need an `x-amz-content-sha256` header, which `sendFeedback` in `lib/api.ts` adds.
+- **Timetable (GTFS):** built once a day, not on request: `api/src/timetableJob.ts` (EventBridge 03:30 UTC + after each deploy) writes `timetable/<date>/<code>.json` to the site bucket (`timetableFiles` in `core/src/timetable.ts`); the app reads them from CloudFront (`web/src/lib/useScheduled.ts`) and shows "Later · timetable" (`web/src/components/LaterDepartures.tsx`). Locally: `npm run timetable:local` → `packages/web/.timetable/`, served by the Vite dev server only.
 - **Favourites:** one DynamoDB table keyed `web:<device id>` / `alexa:<user id>`; web sends `x-device-id`.
+
+## Decisions
+
+Significant decisions and why are recorded in `docs/decisions.md` (newest first). Add an entry when a choice changes hosting, deployment, structure or presentation; supersede rather than rewrite.
 
 ## Tests
 

@@ -64,22 +64,30 @@ export function networkSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
     });
 
   // ---------- Northern Ireland ----------
-  // Belfast and Lanyon Place on the east lane, with Bangor straight on up it. Yorkgate leads north-west
-  // to Whiteabbey, where Larne heads up X2 (names on the left, clear of the Bangor line) and the Derry
-  // line branches west just above Whiteabbey, then climbs X0 to Coleraine.
+  // Belfast Grand Central, City Hospital, Botanic and Lanyon Place up the east lane (every line but
+  // Portadown's leaves Belfast this way), with Bangor straight on up it. York Street leads north-west to
+  // Whiteabbey, where Larne heads up X2 (names on the left, clear of the Bangor line); the Derry line
+  // branches west at York Street (its trains don't call at Whiteabbey), then climbs X0 to Coleraine.
   const lanyonY = 640;
   stop('NI_LANYN', [X3, lanyonY]);
-  stop('BFSTC', [X3, lanyonY + ROW]);
+  stop('NI_BOTAN', [X3, lanyonY + ROW]);
+  stop('NI_CITYH', [X3, lanyonY + 2 * ROW]);
+  stop('BFSTC', [X3, lanyonY + 3 * ROW]);
   column(['NI_TITQ', 'NI_SYDEN', 'NI_HWOOD', 'NI_MARIN', 'NI_CULTR', 'NI_SEAHL', 'NI_HELEN', 'NI_CARNL', 'NI_BANGW', 'NI_BANGR'], X3, lanyonY - ROW, -1);
   const whiteabbey: Point = [X2, lanyonY - (X3 - X2)];
   stop('NI_WABBY', whiteabbey, 'left');
   between(['NI_YORKG'], at('NI_LANYN'), whiteabbey, 'left');
   column(['NI_JORDN', 'NI_GRNIS', 'NI_TROOP', 'NI_CLIPP', 'NI_CFERG', 'NI_DOWNS', 'NI_WHEAD', 'NI_BCARY', 'NI_MAGHM', 'NI_GLYNN', 'NI_LARNT', 'NI_LARNH'], X2, whiteabbey[1] - ROW, -1, 'left');
   const coleraineY = 150;
-  const derryJunctionY = whiteabbey[1] - ROW / 2;
+  // The Derry line leaves York Street heading west, then climbs X0.
+  const derryJunctionY = at('NI_YORKG')[1];
   column(['NI_MOSSW', 'NI_ANTRM', 'NI_BMENA', 'NI_CULLY', 'NI_BMONY'], X0, derryJunctionY - 40, -1, 'right', (derryJunctionY - 40 - coleraineY) / 5);
-  // The Derry line leaves Whiteabbey itself at 45° (so the dot sits on the split), then runs west.
-  bend('NI_WABBY', 'NI_MOSSW', [X2 - (whiteabbey[1] - derryJunctionY), derryJunctionY], [X0, derryJunctionY]);
+  bend('NI_YORKG', 'NI_MOSSW', [X0, derryJunctionY]);
+  // York Street's name sits under the Derry line leaving it; Ballymena and Carrickfergus share a row, so their
+  // names step apart.
+  points['NI_YORKG'] = { ...points['NI_YORKG']!, label: 'below', labelDx: -20 };
+  points['NI_BMENA'] = { ...points['NI_BMENA']!, labelDy: -10 };
+  points['NI_CFERG'] = { ...points['NI_CFERG']!, labelDy: 8 };
   stop('NI_COLER', [X0, coleraineY], 'below', { labelDx: 32, labelDy: -12 });
   column(['NI_CROCK', 'NI_BELLA', 'NI_DERRY'], X0, coleraineY - ROW, -1);
   // Portrush: east along the coast from Coleraine, then north.
@@ -87,7 +95,7 @@ export function networkSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
   bend('NI_COLER', 'NI_UNIV', [X1, coleraineY]);
 
   // ---------- Enterprise and Northern line, down the east lane ----------
-  column(['NI_CITYH', 'NI_BOTAN', 'NI_ADELA', 'NI_BALMO', 'NI_FINAG', 'NI_DUNMU', 'NI_DERRI', 'NI_LAMBE', 'NI_HILDE', 'LBURN', 'MOIRA', 'LURGN', 'PDOWN', 'NI_SCARV', 'NI_POYNT', 'NEWRY', 'DDALK', 'DGHDA', 'LTOWN', 'GSTON', 'BBRGN', 'SKRES', 'RLUSK', 'DBATE', 'MHIDE', 'PMNCK', 'GRGRD'], X3, at('BFSTC')[1] + ROW, 1);
+  column(['NI_ADELA', 'NI_BALMO', 'NI_FINAG', 'NI_DUNMU', 'NI_DERRI', 'NI_LAMBE', 'NI_HILDE', 'LBURN', 'MOIRA', 'LURGN', 'PDOWN', 'NI_SCARV', 'NI_POYNT', 'NEWRY', 'DDALK', 'DGHDA', 'LTOWN', 'GSTON', 'BBRGN', 'SKRES', 'RLUSK', 'DBATE', 'MHIDE', 'PMNCK', 'GRGRD'], X3, at('BFSTC')[1] + ROW, 1);
   // The Howth branch leaves Howth Junction itself at 45° (the dot sits on the split), then runs north beside
   // the main line with its names on the right, like M3 Parkway from Clonsilla. Room above Howth Junction for it.
   const howthJn: Point = [X3, at('GRGRD')[1] + 5 * ROW];

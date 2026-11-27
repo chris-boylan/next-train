@@ -1,4 +1,5 @@
-import type { Departure, Direction, Journey, ServiceId, Station } from '@dart-times/core';
+import type { Departure, Direction, Journey, ServiceId, Station, StationTimetableFile } from '@dart-times/core';
+import { timetablePath } from '@dart-times/core';
 
 export interface DeparturesResponse {
   station: Station;
@@ -71,4 +72,14 @@ async function sha256Hex(text: string): Promise<string> {
 /** One train's stops from a station to its terminus, and where it is now. */
 export function fetchJourney(trainCode: string, from: string) {
   return request<Journey>(`/trains/${encodeURIComponent(trainCode.trim())}/journey?from=${from}`);
+}
+
+/**
+ * A station's timetable for one service day: a static file the daily timetable job writes and CloudFront serves
+ * (`/timetable/<date>/<code>.json`), not an API call. Undefined when there's no file (no trains, or not built).
+ */
+export async function fetchTimetable(date: string, code: string): Promise<StationTimetableFile | undefined> {
+  const res = await fetch(`/${timetablePath(date, code)}`);
+  if (!res.ok) return undefined;
+  return (await res.json().catch(() => undefined)) as StationTimetableFile | undefined;
 }

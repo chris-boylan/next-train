@@ -32,13 +32,16 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `chore/daily-api-check` | Daily live check of the Irish Rail API, opening an issue on failure |
 | `fix/small-screens` | Station page fits iPhone SE and 320px-wide phones |
 | `feat/custom-domain` | Site served at https://nexttrain.ie (and www) |
+| `feat/gtfs-timetable` | Timetabled trains beyond the live 90 minutes, from Irish Rail's GTFS (built daily into static files) |
+| `feat/translink-nir` | Translink NIR service (no live data); NI layout fixes on the all-stations map |
 | `feat/help-page` | Help & about page with a feedback form (DynamoDB + SNS email) |
 | `feat/train-journey` | Tap a train for its stops to the terminus with expected times |
 | `feature/favourites-home` | Options choice to show favourites in each service or together on the home page; favourites for every service's stations |
+| `fix/deploy-on-request` | Pipeline deploys only when run by hand, not on every merge |
 
 ## Using the web app
 
-The app always opens on the **service picker**: DART, Enterprise, Cork Commuter, Dublin Commuter, InterCity, or **All stations**. Choosing a service opens its map, then a station.
+The app always opens on the **service picker**: DART, Dublin Commuter, InterCity, Cork Commuter, Enterprise, Translink NIR, or **All stations**. Choosing a service opens its map, then a station.
 
 - **Line maps:** tap a station to open it. Search finds stations by English or Irish name, fadas optional, and tolerates small typos ("connoly"). Favourites appear as chips: on each service's page, or all together on the home page if the options cog says so (a home-page favourite opens every train at that station).
 - **Station page** (`web/src/screens/TrackView.tsx`):
@@ -76,6 +79,23 @@ The app always opens on the **service picker**: DART, Enterprise, Cork Commuter,
   - **Enterprise:** five trains in both directions; none called at Lisburn or Lurgan.
   - **Cork:** live Midleton and Mallow runs. The Cobh branch so far comes from recorded data only.
 - **Colours:** set with `data-service` on `<html>`, and contrast-checked in light and dark mode. Irish Rail has no Cork-specific branding, so Rebel red is the app's own.
+
+## Translink NIR
+
+Northern Ireland Railways, as its own service (Translink's teal and lime on the tile). **There's no live data**: Irish Rail's feed has no NI Railways trains, so station pages say so. Belfast Grand Central, Portadown and Newry also show their live Enterprise (and Irish Rail) trains.
+
+| Route | Runs |
+|---|---|
+| **Bangor** | Grand Central – City Hospital – Botanic – Lanyon Place – Titanic Quarter – Holywood – Bangor |
+| **Larne** | Grand Central … Lanyon Place – York Street – Whiteabbey – Carrickfergus – Whitehead – Larne Harbour |
+| **Derry** | Grand Central … York Street – Mossley West – Antrim – Ballymena – Coleraine – Castlerock – Derry |
+| **Portrush** | Coleraine – University – Dhu Varren – Portrush |
+| **Portadown & Newry** | Grand Central – Adelaide – Lisburn – Lurgan – Portadown – Scarva – Poyntzpass – Newry |
+
+- **Where they're defined:** routes in `core/src/nir.ts`, stations (our own `NI_` codes; coordinates from OpenStreetMap) in `core/src/stations.nir.data.ts`, line colours in `web/src/maps/data/nirRoutes.ts` (as on NIR's own maps).
+- **Map:** drawn from the all-stations map's Northern Ireland (`nirSchematic` in `web/src/maps/data/intercitySchematic.ts`), like InterCity's.
+- Since Grand Central opened (2025), every line but Portadown/Newry leaves Belfast through City Hospital, Botanic and Lanyon Place; York Street replaced Yorkgate (the code `NI_YORKG` is unchanged); Derry trains branch north after York Street and don't call at Whiteabbey. Always "Derry".
+- Stations named after buildings or developments (City Hospital, Lanyon Place, Titanic Quarter…) have no Irish name.
 
 ## All stations and station boards
 
@@ -218,7 +238,7 @@ Then test with `ask dialog --locale en-IE` from `packages/alexa`.
 
 ### CI/CD (GitHub Actions)
 
-`.github/workflows/ci.yml` runs typecheck, tests, the web build and `cdk synth` on every pull request. On `main` (each merge, or Actions → CI/CD → **Run workflow** to redeploy) it then deploys to AWS straight away if the checks pass; there's no approval step. Deploys go one at a time; a newer one waits for a running one rather than interrupting it.
+`.github/workflows/ci.yml` runs typecheck, tests, the web build and `cdk synth` on every pull request and every merge to `main`. It deploys to AWS only on request: Actions → CI/CD → **Run workflow** on `main` runs the checks and, if they pass, deploys. Merging doesn't deploy. Deploys go one at a time; a newer one waits for a running one rather than interrupting it.
 
 - **No AWS keys in GitHub:** the deploy job swaps a GitHub-signed token for short-lived credentials for the `next-train-github-deploy` role. Only this repo's `production` environment can assume it, and it can only hand off to CDK's bootstrap roles.
 - **That role lives in its own stack,** `NextTrainGitHubDeploy`, deployed by hand once (`npm run deploy:github -w @dart-times/infra -- --profile <profile>`). `npm run deploy` only deploys the `DartTimes*` stacks, so the pipeline can't change its own permissions.
@@ -237,6 +257,17 @@ The plan is to wrap this same web build in a native iOS app with [Capacitor](htt
 - CORS headers for `capacitor://localhost` on `/api/*`, from the handler or a CloudFront response headers policy.
 - App icons, reusing `web/public/icon.svg`.
 - At least one genuinely native feature (a home-screen widget, haptics), because Apple rejects apps that are only a website in a wrapper.
+
+## Timetable (GTFS)
+
+The live API only looks 90 minutes ahead. Beyond that, station boards and the "+ N more" sheet list **Later · timetable** trains from Irish Rail's GTFS timetable, published free by the National Transport Authority (`https://www.transportforireland.ie/transitData/Data/GTFS_Irish_Rail.zip`, rebuilt nightly, about 10 MB; no key needed). Why it's built this way: [docs/decisions.md](docs/decisions.md).
+
+- **Built once a day:** the timetable job (`api/src/timetableJob.ts`, a Lambda run by EventBridge at 03:30 UTC and once after each deploy) downloads the zip, builds yesterday's, today's and tomorrow's departures for every station (`timetableFiles` in `core/src/timetable.ts`) and writes them to the site bucket as `timetable/<date>/<code>.json`, about 440 small files. Yesterday's are for trains still running after midnight. An S3 rule deletes them after 3 days.
+- **Served as static files:** the app fetches `/timetable/<date>/<code>.json` from CloudFront (`web/src/lib/useScheduled.ts`). No API call; a missing file just means no timetable section.
+- **If the job fails:** live times carry on, the timetable goes stale, and a CloudWatch alarm emails the budget address (via an "alerts" SNS topic; confirm its subscription email once).
+- **Matching:** GTFS has no Irish Rail station codes, so stops are matched to ours by position (within 600 m), else by name within 3 km. Its trips carry the live API's train codes (E200…), so trains already shown live aren't listed twice. The GTFS calendar's exceptions (e.g. Christmas) and trains past midnight are handled.
+- **Locally:** `npm run timetable:local` builds the same files into `packages/web/.timetable/` (git-ignored); the Vite dev server serves them at `/timetable/...`. They're never part of a build.
+- **Next:** GTFS-Realtime (needs a free NTA key) could add cancellations and act as a second live source.
 
 ## API quirks handled
 
