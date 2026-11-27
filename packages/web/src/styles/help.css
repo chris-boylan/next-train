@@ -162,3 +162,26 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* "235 / 1,000" under the message box; red once it's full. */
+.help__count {
+  justify-self: end;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.help__count--full {
+  color: var(--major-bg);
+}
+
+.help__field-error {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--major-bg);
+}
+
+.help__field input[aria-invalid='true'] {
+  border-color: var(--major-bg);
+}

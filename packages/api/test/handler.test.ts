@@ -138,16 +138,17 @@ describe('API handler: feedback', () => {
   });
 
   it('rejects bad requests', async () => {
-    expect((await send({ message: 'hi', elapsedMs: 9000 })).statusCode).toBe(400);
+    expect((await send({ message: 'hi', email: 'me@example.ie', elapsedMs: 9000 })).statusCode).toBe(400);
+    expect((await send({ message: 'No email given', elapsedMs: 9000 })).statusCode).toBe(400);
     expect((await send('not json')).statusCode).toBe(400);
-    expect((await send({ message: 'Hello there', elapsedMs: 9000 }, {})).statusCode).toBe(400);
+    expect((await send({ message: 'Hello there', email: 'me@example.ie', elapsedMs: 9000 }, {})).statusCode).toBe(400);
     expect((await request('GET', '/api/feedback', device)).statusCode).toBe(405);
   });
 
   it('answers 429 once a device has sent too many', async () => {
     const headers = { 'x-device-id': 'feedback-device-busy' };
-    for (let i = 0; i < 3; i++) expect((await send({ message: `Message ${i}`, elapsedMs: 9000 }, headers)).statusCode).toBe(200);
-    expect((await send({ message: 'One more', elapsedMs: 9000 }, headers)).statusCode).toBe(429);
+    for (let i = 0; i < 3; i++) expect((await send({ message: `Message ${i}`, email: 'me@example.ie', elapsedMs: 9000 }, headers)).statusCode).toBe(200);
+    expect((await send({ message: 'One more', email: 'me@example.ie', elapsedMs: 9000 }, headers)).statusCode).toBe(429);
   });
 });
 
