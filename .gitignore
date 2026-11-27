@@ -5,3 +5,7 @@ cdk.out/
 *.log
 .DS_Store
 .idea/
+
+# Local secrets (API keys); never commit
+.env
+.env.*
