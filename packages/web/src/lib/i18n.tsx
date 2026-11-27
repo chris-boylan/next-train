@@ -72,6 +72,10 @@ const en = {
   showOnTracks: 'Show on the tracks',
   lines: 'Lines',
   noTrainsTowards: (places: string) => `No trains towards ${places} in the next 90 minutes`,
+  // When this service has none but another's trains run that way (Commuter at Kilbarrack, DARTs running).
+  noServiceTrains: (service: string) => `No ${service} trains in the next 90 minutes.`,
+  otherServicesRun: (services: string, places: string, mins: number) =>
+    `${services} trains to ${places} do${mins <= 0 ? ', one due now' : `, the next in ${mins} min`}.`,
   tomorrow: 'Tomorrow',
   noMoreToday: 'No more trains today',
   noTimetabledTrains: 'No timetabled trains',
@@ -301,6 +305,9 @@ const ga: Messages = {
   showOnTracks: 'Taispeáin ar na rianta',
   lines: 'Línte',
   noTrainsTowards: (places) => `Níl aon traein i dtreo ${places} sna 90 nóiméad atá romhainn`,
+  noServiceTrains: (service) => `Níl aon traein ${service} sna 90 nóiméad atá romhainn.`,
+  otherServicesRun: (services, places, mins) =>
+    `Ach ritheann traenacha ${services} go dtí ${places}${mins <= 0 ? ', ceann ag teacht anois' : `, an chéad cheann i gceann ${mins} nóim`}.`,
   tomorrow: 'Amárach',
   noMoreToday: 'Níl a thuilleadh traenacha inniu',
   noTimetabledTrains: 'Níl aon traein sa chlár ama',
