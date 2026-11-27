@@ -1,7 +1,8 @@
 // The transition between a station's two tracks and its list board (the button by the station name).
 //
 // Tracks → board: the trains and times fade out, the tracks slide away backwards (green down, orange up: against
-// their direction of travel), then the station sign moves up under the header and narrows to the board's sign.
+// their direction of travel), then the station sign moves up under the header, narrowing to the board's sign as
+// it goes.
 // Only then does the app swap in the board, whose sign is where the moved sign ended, and its list fades in.
 // Board → tracks: the list fades out, then the station page plays the same steps in reverse.
 //
@@ -104,20 +105,19 @@ export async function leaveTracks(root: HTMLElement): Promise<void> {
     play([joined.north], [{ transform: 'none' }, { transform: `translateY(${height}px)` }], { duration: 420, easing: EASE_IN }),
     play([joined.south], [{ transform: 'none' }, { transform: `translateY(${-height}px)` }], { duration: 420, easing: EASE_IN }),
   ]);
-  // 3. The sign moves up under the header…
+  // 3. The sign moves up under the header, narrowing as it goes (the next stations fade early on). It sits
+  // between two equal halves, so shrinking it moves its top down by half the shrink: the transform takes that
+  // back, so it ends exactly under the header.
   const { sign, rise, shrink } = signGeometry(root);
-  await play([sign], [{ transform: 'none' }, { transform: `translateY(${rise}px)` }], { duration: 360, easing: EASE_OUT });
-  // 4. …and narrows. It sits between two equal halves, so shrinking it moves its top down by half the shrink:
-  // the transform takes that back, so it narrows in place.
   await Promise.all([
-    play(all(sign, '.neighbours'), [{ opacity: 1 }, { opacity: 0 }], { duration: 120 }),
+    play(all(sign, '.neighbours'), [{ opacity: 1 }, { opacity: 0, offset: 0.4 }, { opacity: 0 }], { duration: 400 }),
     play(
       [sign],
       [
-        { ...SIGN_OPEN, transform: `translateY(${rise}px)` },
+        { ...SIGN_OPEN, transform: 'none' },
         { ...SIGN_NARROW, transform: `translateY(${rise - shrink / 2}px)` },
       ],
-      { duration: 300, easing: EASE_OUT },
+      { duration: 400, easing: EASE_OUT },
     ),
   ]);
 }
@@ -135,19 +135,18 @@ export async function enterTracks(root: HTMLElement, reveal: () => void): Promis
   const joined = joinedTracks(root);
   joined.north.style.transform = `translateY(${height}px)`;
   joined.south.style.transform = `translateY(${-height}px)`;
-  // 1. The sign widens in place, then moves down to the platform.
+  // 1. The sign moves down to the platform, widening as it goes (the next stations fade in at the end).
   await Promise.all([
     play(
       [sign],
       [
         { ...SIGN_NARROW, transform: `translateY(${rise - shrink / 2}px)` },
-        { ...SIGN_OPEN, transform: `translateY(${rise}px)` },
+        { ...SIGN_OPEN, transform: 'none' },
       ],
-      { duration: 300, easing: EASE_OUT },
+      { duration: 400, easing: EASE_OUT },
     ),
-    play(all(sign, '.neighbours'), [{ opacity: 0 }, { opacity: 0, offset: 0.6 }, { opacity: 1 }], { duration: 300 }),
+    play(all(sign, '.neighbours'), [{ opacity: 0 }, { opacity: 0, offset: 0.6 }, { opacity: 1 }], { duration: 400 }),
   ]);
-  await play([sign], [{ transform: `translateY(${rise}px)` }, { transform: 'none' }], { duration: 360, easing: EASE_OUT });
   // 2. The two tracks slide back in, then the real pieces take over.
   await Promise.all([
     play([joined.north], [{ transform: `translateY(${height}px)` }, { transform: 'none' }], { duration: 420, easing: EASE_OUT }),
