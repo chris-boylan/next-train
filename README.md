@@ -43,6 +43,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feat/nir-timetable` | NI Railways timetabled trains, from Translink's TransXChange timetable |
 | `feat/nir-track-view` | NI Railways stations on the two-track station page, from the timetable |
 | `feat/timetable-toggle` | Options choice to hide Irish Rail's timetabled trains (NI Railways keeps its timetable) |
+| `feat/view-switch-transition` | Animated switch between a station's tracks and its list board |
 | `feat/station-lines` | Two-track station pages for Commuter and InterCity, with a chip per route at hubs; station name switches to the list board |
 | `fix/deploy-on-request` | Pipeline deploys only when run by hand, not on every merge |
 
@@ -52,7 +53,7 @@ The app always opens on the **service picker**: DART, Dublin Commuter, InterCity
 
 - **Line maps:** tap a station to open it. Search finds stations by English or Irish name, fadas optional, and tolerates small typos ("connoly"). Favourites appear as chips: on each service's page, or all together on the home page if the options cog says so (a home-page favourite opens every train at that station).
 - **Station page** (`web/src/screens/TrackView.tsx`):
-- **List or tracks:** tap the station name (☰) for a list board of the same station; on the board, tap the name (⇅) for the tracks again. The choice is remembered on the device (`useStationView`).
+- **List or tracks:** tap the station name (☰) for a list board of the same station; on the board, tap the name (⇅) for the tracks again. The choice is remembered on the device (`useStationView`). The switch animates (`web/src/lib/viewSwitch.ts`): to the board, the trains and times fade, the tracks slide off backwards (green down, orange up), then the sign moves up, narrowing into the board's sign as it goes; back to the tracks, the same in reverse. Instant with reduced motion.
   - **Tracks:** a fixed-size station sign sits between two tracks. The darker northbound track runs up the left, the lighter southbound track runs down the right, and each arrowhead names where trains in that direction end up.
   - **Trains:** the next 3 trains each way approach the platform. Late trains show ~~scheduled~~ `+delay` expected.
   - **Next stations:** links above and below the station name step to the next station north or south. At a junction, both branches are shown.

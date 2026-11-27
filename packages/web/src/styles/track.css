@@ -653,3 +653,40 @@
   stroke-linejoin: round;
   opacity: 0.7;
 }
+
+/* The switch to and from the list board (lib/viewSwitch.ts): arriving from the board, the trains and times stay
+   hidden until the tracks are back; arriving on the board, its list fades in. */
+.track-view--entering :is(.trains, .more, .trains-empty, .terminus, .line-chips, .going-to) {
+  opacity: 0;
+}
+
+.board--entering .board__body {
+  animation: board-in 260ms ease-out both;
+}
+
+@keyframes board-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board--entering .board__body {
+    animation: none;
+  }
+}
+
+/* During the switch to and from the board, each colour's track as one line (lib/viewSwitch.ts), in a layer
+   over the halves and under the sign, clipped to the tracks: a line leaving goes out under the header. */
+.joined-tracks {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.joined-track {
+  position: absolute;
+  inset: 0;
+}
