@@ -203,6 +203,9 @@ const en = {
   onTime: 'On time',
   minsLate: (n: number) => `${n} min late`,
   minsEarly: (n: number) => `${n} min early`,
+  // A live-map train Irish Rail isn't tracking (the Enterprise in Northern Ireland), placed from the timetable.
+  estimatedNote: 'Irish Rail isn’t tracking this train, so its place on the map is estimated from the timetable.',
+  describeEstimated: (destination: string, next: string) => `Train to ${destination}, next stop ${next}, not tracked, position estimated`,
   describeTrain: (destination: string, next: string, lateMins: number) =>
     `Train to ${destination}, next stop ${next}` +
     (lateMins > 0 ? `, ${lateMins} minute${lateMins === 1 ? '' : 's'} late` : ''),
@@ -423,6 +426,8 @@ const ga: Messages = {
   onTime: 'In am',
   minsLate: (n) => `${n} nóim. déanach`,
   minsEarly: (n) => `${n} nóim. luath`,
+  estimatedNote: 'Níl Iarnród Éireann ag rianú na traenach seo, mar sin is meastachán ón gclár ama a háit ar an léarscáil.',
+  describeEstimated: (destination, next) => `Traein go dtí ${destination}, an chéad stad eile ${next}, gan rianú, áit mheasta`,
   describeTrain: (destination, next, lateMins) =>
     `Traein go dtí ${destination}, an chéad stad eile ${next}` + (lateMins > 0 ? `, ${lateMins} nóiméad déanach` : ''),
   describeScheduled: (destination, time) => `go dtí ${destination} ag ${time}, de réir an chláir ama`,

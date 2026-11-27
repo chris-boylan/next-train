@@ -6,6 +6,19 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-27 · Enterprise live map: estimate untracked trains from the boards
+
+**Decision:** the Enterprise map's `/api/trains` also reads its six stations' boards. A train in the positions
+feed whose next stop doesn't list it is dropped; a train running but untracked ("No Information" past its start)
+is drawn hollow at a place estimated from its minutes to its next stop. Its card says it isn't tracked.
+
+**Why:** Irish Rail doesn't track the Enterprise in Northern Ireland. On 27 Nov, A120 sat at "Departed Dundalk
+next stop Newry" two hours after it should have reached Belfast, and Dublin-bound A123 and A125 were missing from
+the map while the boards had them due. The station page already marks such trains "Not tracked" at their timetable
+times; drawing them hollow on the map keeps the two in step. Dropping them was the other option, but a timetable
+estimate, clearly marked, is more useful than a gap. Six cached calls a refresh; not done for the DART (31
+stations, tracked throughout). Cork could use the same, once the sampling shows how often it's untracked.
+
 ## 2026-11-27 · Station pages: up means north, not "away from Dublin"
 
 **Decision:** on Commuter and InterCity station pages, each route is turned so the up track heads north

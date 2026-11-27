@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfObjStationData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://api.irishrail.ie/realtime/">
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.003</Servertime>
+    <Traincode>D826 </Traincode>
+    <Stationfullname>Drogheda</Stationfullname>
+    <Stationcode>DGHDA</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Bray</Origin>
+    <Destination>Drogheda</Destination>
+    <Origintime>16:40</Origintime>
+    <Destinationtime>18:24</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Arrived Balbriggan</Lastlocation>
+    <Duein>17</Duein>
+    <Late>6</Late>
+    <Exparrival>18:30</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>18:24</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.003</Servertime>
+    <Traincode>A124 </Traincode>
+    <Stationfullname>Drogheda</Stationfullname>
+    <Stationcode>DGHDA</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Belfast</Destination>
+    <Origintime>17:50</Origintime>
+    <Destinationtime>19:58</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Portmarnock</Lastlocation>
+    <Duein>23</Duein>
+    <Late>7</Late>
+    <Exparrival>18:34</Exparrival>
+    <Expdepart>18:36</Expdepart>
+    <Scharrival>18:27</Scharrival>
+    <Schdepart>18:29</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.003</Servertime>
+    <Traincode>D827 </Traincode>
+    <Stationfullname>Drogheda</Stationfullname>
+    <Stationcode>DGHDA</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Drogheda</Destination>
+    <Origintime>17:53</Origintime>
+    <Destinationtime>18:59</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Howth Junction</Lastlocation>
+    <Duein>53</Duein>
+    <Late>7</Late>
+    <Exparrival>19:06</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>18:59</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.003</Servertime>
+    <Traincode>A126 </Traincode>
+    <Stationfullname>Drogheda</Stationfullname>
+    <Stationcode>DGHDA</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Belfast</Destination>
+    <Origintime>18:50</Origintime>
+    <Destinationtime>20:58</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>76</Duein>
+    <Late>0</Late>
+    <Exparrival>19:27</Exparrival>
+    <Expdepart>19:29</Expdepart>
+    <Scharrival>19:27</Scharrival>
+    <Schdepart>19:29</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.003</Servertime>
+    <Traincode>A123 </Traincode>
+    <Stationfullname>Drogheda</Stationfullname>
+    <Stationcode>DGHDA</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Belfast</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>17:00</Origintime>
+    <Destinationtime>19:13</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Arrived Dundalk</Lastlocation>
+    <Duein>23</Duein>
+    <Late>-3</Late>
+    <Exparrival>18:33</Exparrival>
+    <Expdepart>18:36</Expdepart>
+    <Scharrival>18:36</Scharrival>
+    <Schdepart>18:39</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.003</Servertime>
+    <Traincode>A125 </Traincode>
+    <Stationfullname>Drogheda</Stationfullname>
+    <Stationcode>DGHDA</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Belfast</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>18:00</Origintime>
+    <Destinationtime>20:13</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>86</Duein>
+    <Late>0</Late>
+    <Exparrival>19:36</Exparrival>
+    <Expdepart>19:39</Expdepart>
+    <Scharrival>19:36</Scharrival>
+    <Schdepart>19:39</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.003</Servertime>
+    <Traincode>D829 </Traincode>
+    <Stationfullname>Drogheda</Stationfullname>
+    <Stationcode>DGHDA</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Grand Canal Dock</Origin>
+    <Destination>Drogheda</Destination>
+    <Origintime>18:19</Origintime>
+    <Destinationtime>19:24</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>71</Duein>
+    <Late>0</Late>
+    <Exparrival>19:24</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>19:24</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Drogheda</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.003</Servertime>
+    <Traincode>D825 </Traincode>
+    <Stationfullname>Drogheda</Stationfullname>
+    <Stationcode>DGHDA</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dun Laoghaire</Origin>
+    <Destination>Dundalk</Destination>
+    <Origintime>16:40</Origintime>
+    <Destinationtime>18:35</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Laytown</Lastlocation>
+    <Duein>8</Duein>
+    <Late>10</Late>
+    <Exparrival>18:19</Exparrival>
+    <Expdepart>18:21</Expdepart>
+    <Scharrival>18:09</Scharrival>
+    <Schdepart>18:11</Schdepart>
+    <Direction>To Dundalk</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.003</Servertime>
+    <Traincode>D828 </Traincode>
+    <Stationfullname>Drogheda</Stationfullname>
+    <Stationcode>DGHDA</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Grand Canal Dock</Origin>
+    <Destination>Dundalk</Destination>
+    <Origintime>17:59</Origintime>
+    <Destinationtime>19:37</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation />
+    <Duein>64</Duein>
+    <Late>4</Late>
+    <Exparrival>19:15</Exparrival>
+    <Expdepart>19:17</Expdepart>
+    <Scharrival>19:11</Scharrival>
+    <Schdepart>19:13</Schdepart>
+    <Direction>To Dundalk</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.003</Servertime>
+    <Traincode>P621 </Traincode>
+    <Stationfullname>Drogheda</Stationfullname>
+    <Stationcode>DGHDA</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Drogheda</Origin>
+    <Destination>Grand Canal Dock</Destination>
+    <Origintime>18:49</Origintime>
+    <Destinationtime>20:02</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>36</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>18:49</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>18:49</Schdepart>
+    <Direction>To Grand Canal Dock</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+</ArrayOfObjStationData>

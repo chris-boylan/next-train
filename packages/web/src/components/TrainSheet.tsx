@@ -33,12 +33,19 @@ export function TrainSheet({ train, onClose }: Props) {
           <Caps text={nameOf(train.to, train.to)} />
         </dd>
         <dt>{t.trainStatus}</dt>
-        <dd className={train.lateMins >= 5 ? 'train-card__late' : undefined}>{lateness}</dd>
+        {train.estimated ? (
+          <dd>
+            <span className="train__timetable">{t.notTracked}</span>
+          </dd>
+        ) : (
+          <dd className={train.lateMins >= 5 ? 'train-card__late' : undefined}>{lateness}</dd>
+        )}
         <dt>{t.trainCode}</dt>
         <dd>
           {train.code} · {t.direction[train.direction]}
         </dd>
       </dl>
+      {train.estimated && <p className="train-card__note">{t.estimatedNote}</p>}
     </Sheet>
   );
 }

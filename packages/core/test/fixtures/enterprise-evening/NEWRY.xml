@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfObjStationData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://api.irishrail.ie/realtime/">
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.33</Servertime>
+    <Traincode>A122 </Traincode>
+    <Stationfullname>Newry</Stationfullname>
+    <Stationcode>NEWRY</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Belfast</Destination>
+    <Origintime>16:50</Origintime>
+    <Destinationtime>19:00</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Dundalk</Lastlocation>
+    <Duein>5</Duein>
+    <Late>9</Late>
+    <Exparrival>18:16</Exparrival>
+    <Expdepart>18:18</Expdepart>
+    <Scharrival>18:07</Scharrival>
+    <Schdepart>18:09</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.33</Servertime>
+    <Traincode>A124 </Traincode>
+    <Stationfullname>Newry</Stationfullname>
+    <Stationcode>NEWRY</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Belfast</Destination>
+    <Origintime>17:50</Origintime>
+    <Destinationtime>19:58</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Portmarnock</Lastlocation>
+    <Duein>63</Duein>
+    <Late>7</Late>
+    <Exparrival>19:14</Exparrival>
+    <Expdepart>19:16</Expdepart>
+    <Scharrival>19:07</Scharrival>
+    <Schdepart>19:09</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.33</Servertime>
+    <Traincode>A125 </Traincode>
+    <Stationfullname>Newry</Stationfullname>
+    <Stationcode>NEWRY</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Belfast</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>18:00</Origintime>
+    <Destinationtime>20:13</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>43</Duein>
+    <Late>0</Late>
+    <Exparrival>18:52</Exparrival>
+    <Expdepart>18:56</Expdepart>
+    <Scharrival>18:52</Scharrival>
+    <Schdepart>18:56</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+</ArrayOfObjStationData>

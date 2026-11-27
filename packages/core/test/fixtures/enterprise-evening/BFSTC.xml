@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfObjStationData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://api.irishrail.ie/realtime/">
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.63</Servertime>
+    <Traincode>A122 </Traincode>
+    <Stationfullname>Belfast</Stationfullname>
+    <Stationcode>BFSTC</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Belfast</Destination>
+    <Origintime>16:50</Origintime>
+    <Destinationtime>19:00</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Dundalk</Lastlocation>
+    <Duein>56</Duein>
+    <Late>9</Late>
+    <Exparrival>19:09</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>19:00</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.63</Servertime>
+    <Traincode>A127 </Traincode>
+    <Stationfullname>Belfast</Stationfullname>
+    <Stationcode>BFSTC</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Belfast</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>19:00</Origintime>
+    <Destinationtime>21:13</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>47</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>19:00</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>19:00</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+</ArrayOfObjStationData>

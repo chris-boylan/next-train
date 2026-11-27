@@ -1,7 +1,25 @@
 import { describe, expect, it } from 'vitest';
 import { DEPARTED_PROGRESS, getLiveTrains, parsePublicMessage, placeTrain, SIGNAL_PROGRESS } from '../src/livetrains';
-import type { RawTrainPosition } from '../src/irishRailClient';
-import { fixtureClient } from './fixtures';
+import { IrishRailClient, type RawTrainPosition } from '../src/irishRailClient';
+import { fixture, fixtureClient } from './fixtures';
+
+/** A client answering the positions feed from one fixture and each station's board from `boards` (missing ones fail). */
+function routedClient(feed: string, boards: Record<string, string> = {}, edit: (xml: string) => string = (x) => x) {
+  return new IrishRailClient({
+    fetch: async (url) => {
+      const u = new URL(String(url));
+      if (u.pathname.endsWith('getStationDataByCodeXML_WithNumMins')) {
+        const file = boards[u.searchParams.get('StationCode') ?? ''];
+        return file ? new Response(fixture(file)) : new Response('', { status: 500 });
+      }
+      return new Response(edit(fixture(feed)));
+    },
+  });
+}
+
+const ENTERPRISE_BOARDS = Object.fromEntries(
+  ['CNLLY', 'DGHDA', 'DDALK', 'NEWRY', 'PDOWN', 'BFSTC'].map((c) => [c, `enterprise-evening/${c}.xml`]),
+);
 
 const raw = (message: string, overrides: Partial<RawTrainPosition> = {}): RawTrainPosition => ({
   TrainStatus: 'R',
@@ -98,7 +116,8 @@ describe('getLiveTrains', () => {
 
 describe('getLiveTrains: Enterprise', () => {
   it('places only Belfast trains from the all-trains feed', async () => {
-    const trains = await getLiveTrains(fixtureClient('current-trains.xml'), 'enterprise');
+    // No boards (they fail to load), so nothing is dropped or estimated: just the positions feed.
+    const trains = await getLiveTrains(routedClient('current-trains.xml'), 'enterprise');
     expect(trains.map((t) => t.code).sort()).toEqual(['A118', 'A119', 'A120']);
     expect(trains.find((t) => t.code === 'A119')).toMatchObject({ from: 'DGHDA', to: 'CNLLY', direction: 'Southbound' });
     expect(trains.find((t) => t.code === 'A120')).toMatchObject({ from: 'DGHDA', to: 'DDALK', direction: 'Northbound' });
@@ -146,5 +165,30 @@ describe('placeTrain: stations passed without stopping', () => {
   it('still draws a train at a signal just short of its next stop', () => {
     const train = placeTrain(raw('A124\\n17:50 - Dublin Connolly to Belfast (0 mins late)\\nDeparted North Strand Junction next stop Drogheda'), 'enterprise');
     expect(train?.progress).toBe(SIGNAL_PROGRESS);
+  });
+});
+
+describe('getLiveTrains: Enterprise, checked against the station boards', () => {
+  it('adds a train running untracked in Northern Ireland, estimated from its times', async () => {
+    // 18:13: A125 left Belfast at 18:00 and is due at Portadown in 20 minutes, but isn't in the positions feed.
+    const trains = await getLiveTrains(routedClient('enterprise-evening/current-trains.xml', ENTERPRISE_BOARDS), 'enterprise');
+    const a125 = trains.find((t) => t.code === 'A125');
+    expect(a125).toMatchObject({ from: 'BFSTC', to: 'PDOWN', direction: 'Southbound', estimated: true, lateMins: 0 });
+    expect(a125!.progress).toBeGreaterThan(0.05);
+    expect(a125!.progress).toBeLessThan(0.95);
+    // Tracked trains stay as they are, and trains not yet started (A126, A127) aren't drawn.
+    expect(trains.find((t) => t.code === 'A122')).toMatchObject({ from: 'DDALK', to: 'NEWRY' });
+    expect(trains.find((t) => t.code === 'A122')!.estimated).toBeUndefined();
+    expect(trains.map((t) => t.code)).not.toContain('A126');
+    expect(trains.map((t) => t.code)).not.toContain('A127');
+  });
+
+  it('drops a position frozen at the border: a train its next stop no longer expects', async () => {
+    // As A120 was at 18:09, two hours after it should have reached Belfast.
+    const phantom = `<objTrainPositions><TrainStatus>R</TrainStatus><TrainLatitude>0</TrainLatitude><TrainLongitude>0</TrainLongitude><TrainCode>A120</TrainCode><TrainDate>27 Nov 2026</TrainDate><PublicMessage>A120\\n15:50 - Dublin Connolly to Belfast (1 mins late)\\nDeparted Dundalk next stop Newry</PublicMessage><Direction>Northbound</Direction></objTrainPositions>`;
+    const client = routedClient('enterprise-evening/current-trains.xml', ENTERPRISE_BOARDS, (xml) => xml.replace('</ArrayOfObjTrainPositions>', `${phantom}</ArrayOfObjTrainPositions>`));
+    const codes = (await getLiveTrains(client, 'enterprise')).map((t) => t.code);
+    expect(codes).not.toContain('A120');
+    expect(codes).toContain('A122');
   });
 });

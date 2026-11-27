@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfObjStationData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://api.irishrail.ie/realtime/">
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.473</Servertime>
+    <Traincode>A122 </Traincode>
+    <Stationfullname>Portadown</Stationfullname>
+    <Stationcode>PDOWN</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Belfast</Destination>
+    <Origintime>16:50</Origintime>
+    <Destinationtime>19:00</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Dundalk</Lastlocation>
+    <Duein>28</Duein>
+    <Late>9</Late>
+    <Exparrival>18:37</Exparrival>
+    <Expdepart>18:41</Expdepart>
+    <Scharrival>18:28</Scharrival>
+    <Schdepart>18:32</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.473</Servertime>
+    <Traincode>A124 </Traincode>
+    <Stationfullname>Portadown</Stationfullname>
+    <Stationcode>PDOWN</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Belfast</Destination>
+    <Origintime>17:50</Origintime>
+    <Destinationtime>19:58</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Portmarnock</Lastlocation>
+    <Duein>84</Duein>
+    <Late>7</Late>
+    <Exparrival>19:35</Exparrival>
+    <Expdepart>19:37</Expdepart>
+    <Scharrival>19:28</Scharrival>
+    <Schdepart>19:30</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.473</Servertime>
+    <Traincode>A125 </Traincode>
+    <Stationfullname>Portadown</Stationfullname>
+    <Stationcode>PDOWN</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Belfast</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>18:00</Origintime>
+    <Destinationtime>20:13</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>20</Duein>
+    <Late>0</Late>
+    <Exparrival>18:29</Exparrival>
+    <Expdepart>18:33</Expdepart>
+    <Scharrival>18:29</Scharrival>
+    <Schdepart>18:33</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.473</Servertime>
+    <Traincode>A127 </Traincode>
+    <Stationfullname>Portadown</Stationfullname>
+    <Stationcode>PDOWN</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Belfast</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>19:00</Origintime>
+    <Destinationtime>21:13</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>80</Duein>
+    <Late>0</Late>
+    <Exparrival>19:29</Exparrival>
+    <Expdepart>19:33</Expdepart>
+    <Scharrival>19:29</Scharrival>
+    <Schdepart>19:33</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+</ArrayOfObjStationData>
