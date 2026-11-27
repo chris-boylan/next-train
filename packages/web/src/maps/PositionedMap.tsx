@@ -205,7 +205,7 @@ export function PositionedMap({
             className={className}
             style={labelStyle(p, major(code) || code === currentCode, labelMaxWidth)}
             onClick={() => onSelect(code)}
-            aria-label={`${name(code)}${noData(code) ? `, ${t.noLiveData}` : ''}${favourite ? `, ${t.favourite}` : ''}`}
+            aria-label={`${name(code)}${noData(code) ? `, ${t.timetableOnly}` : ''}${favourite ? `, ${t.favourite}` : ''}`}
           >
             {content}
           </button>

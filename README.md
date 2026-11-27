@@ -113,8 +113,8 @@ Northern Ireland Railways, as its own service (Translink's teal and lime on the 
 
 ## All stations and station boards
 
-- **All stations** shows every Irish Rail station on one vertical schematic that fits a phone's width (`web/src/maps/NetworkMap.tsx`), with search.
-- **Station boards:** tap a station for its board (`web/src/screens/StationBoard.tsx`). It shows every train in the next 90 minutes, grouped by the direction the API gives, each labelled **DART**, **Enterprise**, **InterCity** or **Commuter** (`trainCategory` in `core/src/departures.ts`).
+- **All stations** shows every station in Ireland on one vertical schematic that fits a phone's width (`web/src/maps/NetworkMap.tsx`), with search. Northern Ireland stations without live times are in italics ("timetable only"); tapping one opens its board with NI Railways' timetabled trains, as from the Translink NIR service.
+- **Station boards:** tap a station for its board (`web/src/screens/StationBoard.tsx`). It shows every train in the next 90 minutes, grouped by the direction the API gives, each labelled **DART**, **Enterprise**, **InterCity**, **Commuter** or (timetabled only) **NIR** (`trainCategory` in `core/src/departures.ts`).
 - **InterCity vs Commuter:** InterCity is identified by train codes starting with "A". That's an observed pattern, not documented by Irish Rail.
 - **Where the network data comes from:** the API lists station locations but not how they connect. `npm run build-network -w @dart-times/core` samples every running train's stop list, which includes stations passed without stopping, and writes the connections to `web/src/maps/data/network.data.ts`. Each run adds to earlier ones, so run it at different times to fill gaps. It also merges duplicate station codes, drops links that skip a station, and estimates missing positions. About 16 stations on lightly used lines (Nenagh, Clonmel, Gort…) aren't connected yet.
 

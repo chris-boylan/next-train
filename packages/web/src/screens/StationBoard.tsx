@@ -122,7 +122,7 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
                 {error && ` · ${t.retrying}`}
               </>
             ) : (
-              (error ?? (live ? t.loading : t.noLiveData))
+              (error ?? (live ? t.loading : t.timetableOnly))
             )}
           </p>
         </div>
