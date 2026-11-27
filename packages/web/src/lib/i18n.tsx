@@ -25,7 +25,8 @@ const en = {
   serviceNames: { dart: 'DART', enterprise: 'Enterprise', cork: 'Cork Commuter', commuter: 'Dublin Commuter', intercity: 'InterCity', nir: 'Translink NIR' } as Record<ServiceId, string>,
   dublinBelfast: 'Dublin – Belfast',
   allStations: 'All stations',
-  allStationsNote: 'Every Irish Rail station on one map',
+  // Not just Irish Rail's: the map has NI Railways' stations too.
+  allStationsNote: 'Every rail station in Ireland on one map',
   notYetMapped: 'Not yet mapped (no train seen on these lines yet)',
   italicStations: 'Stations in italics',
   timetableOnlyNote: 'have timetabled times only: there are no live NI Railways times.',
@@ -240,7 +241,7 @@ const ga: Messages = {
   // As on Irish Rail's bilingual Dublin–Belfast timetable.
   dublinBelfast: 'Baile Átha Cliath – Béal Feirste',
   allStations: 'Gach stáisiún',
-  allStationsNote: 'Gach stáisiún de chuid Iarnród Éireann ar léarscáil amháin',
+  allStationsNote: 'Gach stáisiún iarnróid in Éirinn ar léarscáil amháin',
   notYetMapped: 'Gan mapáil fós (níor feiceadh traein ar na línte seo fós)',
   italicStations: 'Stáisiúin i gcló iodálach:',
   timetableOnlyNote: 'níl acu ach amanna an chláir ama: níl amanna beo ar fáil d’Iarnród Thuaisceart Éireann.',
