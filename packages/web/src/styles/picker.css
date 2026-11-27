@@ -144,6 +144,20 @@
   letter-spacing: 0.02em;
 }
 
+/* Interchanges (Connolly): a size up, and clear of the bigger ring. */
+.line-map__stop--hub {
+  font-size: 1.1rem;
+}
+
+.line-map__stop--hub.line-map__stop--trunk,
+.line-map__stop--hub.line-map__stop--howth {
+  padding-left: 35px;
+}
+
+.line-map__stop--hub.line-map__stop--malahide {
+  padding-right: 35px;
+}
+
 .line-map__stop--current {
   font-weight: 900;
   color: var(--south-text);
