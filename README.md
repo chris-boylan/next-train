@@ -47,6 +47,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feat/station-lines` | Two-track station pages for Commuter and InterCity, with a chip per route at hubs; station name switches to the list board |
 | `fix/deploy-on-request` | Pipeline deploys only when run by hand, not on every merge |
 | `feat/live-trains` | Live trains on the DART and Enterprise maps behind a "Live trains" toggle, with a tap-for-details train card |
+| `feat/ios-header-and-timetable-alerts` | Every screen pinned so the header never moves on iOS, cog always far right, maps keep their place; alerts when the timetable is out of date |
 
 ## Using the web app
 
