@@ -1,7 +1,8 @@
 import {
   commuterHeading,
-  type Departure,
   delaySeverity,
+  type Departure,
+  findStationByCode,
   intercityHeading,
   isCityStation,
   route as routeBetween,
@@ -12,6 +13,7 @@ import { COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
 import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
+import { OfficialName } from './TrackView';
 import { useDepartures } from '../lib/useDepartures';
 
 interface Props {
@@ -131,6 +133,7 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite }:
         <h1 className="platform__name">
           <Caps text={name} />
         </h1>
+        <OfficialName station={findStationByCode(code)} />
       </div>
 
       <div className="board__body">
