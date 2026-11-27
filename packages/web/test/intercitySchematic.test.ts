@@ -16,8 +16,14 @@ describe('InterCity map', () => {
     expect(INTERCITY_STATION_CODES.filter((c) => !map.points[c])).toEqual([]);
   });
 
-  it('runs Heuston–Kildare along the all-stations track, through the commuter stations it skips', () => {
-    // Heuston to Kildare passes nine commuter stations, each a corner of the InterCity line.
-    expect((map.bends?.['HSTON|KDARE'] ?? []).length).toBeGreaterThanOrEqual(9);
+  it('runs Heuston–Kildare along the all-stations track, not straight across', () => {
+    // It turns down the Kildare line's lane (the commuter stations it skips on that straight run aren't corners).
+    const corners = map.bends?.['HSTON|KDARE'] ?? [];
+    expect(corners.length).toBeGreaterThanOrEqual(1);
+    expect(corners.some(([x]) => x === map.points.KDARE!.x)).toBe(true);
+  });
+
+  it('shortens long empty runs, such as Drumcondra to Maynooth, where Sligo trains skip the Western line', () => {
+    expect(map.points.DCDRA!.y - map.points.MYNTH!.y).toBeLessThan(200);
   });
 });
