@@ -658,20 +658,22 @@ function Trains({
                 {/* Late: scheduled time struck through, the delay, then the expected time (delay already included). */}
                 <span className="train__meta">
                   {d.trainCode === lastTodayCode && <span className="train__last">{t.lastToday}</span>}
-                  {d.untracked ? (
-                    <>
-                      <span className="train__timetable">{t.notTracked}</span>
-                      <span className="train__planned">{d.scheduledDepart}</span>
-                    </>
-                  ) : d.lateMins > 0 ? (
-                    <>
-                      <s className="train__scheduled">{d.scheduledDepart}</s>
-                      <span className={`late late--${delaySeverity(d.lateMins)}`}>+{d.lateMins}</span>
-                      <span className="train__expected">{d.expectedDepart}</span>
-                    </>
-                  ) : (
-                    d.expectedDepart
-                  )}
+                  <span className="train__times">
+                    {d.untracked ? (
+                      <>
+                        <span className="train__timetable">{t.notTracked}</span>
+                        <span className="train__planned">{d.scheduledDepart}</span>
+                      </>
+                    ) : d.lateMins > 0 ? (
+                      <>
+                        <s className="train__scheduled">{d.scheduledDepart}</s>
+                        <span className={`late late--${delaySeverity(d.lateMins)}`}>+{d.lateMins}</span>
+                        <span className="train__expected">{d.expectedDepart}</span>
+                      </>
+                    ) : (
+                      d.expectedDepart
+                    )}
+                  </span>
                 </span>
               </div>
             </li>
