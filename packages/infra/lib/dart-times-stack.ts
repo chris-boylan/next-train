@@ -69,6 +69,8 @@ export class DartTimesStack extends Stack {
       entry: repoPath('packages/api/src/index.ts'),
       logGroup: new LogGroup(this, 'ApiLogs', { retention: RetentionDays.ONE_MONTH }),
       timeout: Duration.seconds(10),
+      // Room to read Irish Rail's GTFS timetable (a 10 MB zip) into memory; Lambda's CPU scales with memory too.
+      memorySize: 512,
       environment: {
         ...lambdaDefaults.environment,
         FEEDBACK_TABLE: feedback.tableName,

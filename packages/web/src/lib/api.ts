@@ -1,4 +1,4 @@
-import type { Departure, Direction, Journey, ServiceId, Station } from '@dart-times/core';
+import type { Departure, Direction, Journey, ScheduledDeparture, ServiceId, Station } from '@dart-times/core';
 
 export interface DeparturesResponse {
   station: Station;
@@ -71,4 +71,9 @@ async function sha256Hex(text: string): Promise<string> {
 /** One train's stops from a station to its terminus, and where it is now. */
 export function fetchJourney(trainCode: string, from: string) {
   return request<Journey>(`/trains/${encodeURIComponent(trainCode.trim())}/journey?from=${from}`);
+}
+
+/** Timetabled departures (Irish Rail's GTFS) at a station for the next few hours. */
+export function fetchScheduled(code: string, hours = 6) {
+  return request<{ code: string; departures: ScheduledDeparture[]; generatedAt: string }>(`/stations/${code}/scheduled?hours=${hours}`);
 }

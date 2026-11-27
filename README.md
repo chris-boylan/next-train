@@ -32,6 +32,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `chore/daily-api-check` | Daily live check of the Irish Rail API, opening an issue on failure |
 | `fix/small-screens` | Station page fits iPhone SE and 320px-wide phones |
 | `feat/custom-domain` | Site served at https://nexttrain.ie (and www) |
+| `feat/gtfs-timetable` | Timetabled trains beyond the live 90 minutes, from Irish Rail's GTFS |
 | `feat/help-page` | Help & about page with a feedback form (DynamoDB + SNS email) |
 | `feat/train-journey` | Tap a train for its stops to the terminus with expected times |
 | `feature/favourites-home` | Options choice to show favourites in each service or together on the home page; favourites for every service's stations |
@@ -237,6 +238,15 @@ The plan is to wrap this same web build in a native iOS app with [Capacitor](htt
 - CORS headers for `capacitor://localhost` on `/api/*`, from the handler or a CloudFront response headers policy.
 - App icons, reusing `web/public/icon.svg`.
 - At least one genuinely native feature (a home-screen widget, haptics), because Apple rejects apps that are only a website in a wrapper.
+
+## Timetable (GTFS)
+
+The live API only looks 90 minutes ahead. Beyond that, station boards and the "+ N more" sheet list **Later · timetable** trains from Irish Rail's GTFS timetable, published free by the National Transport Authority (`https://www.transportforireland.ie/transitData/Data/GTFS_Irish_Rail.zip`, rebuilt nightly, about 10 MB; no key needed).
+
+- **How:** the API Lambda downloads the zip on first use, keeps it in memory (refreshed every 6 hours) and builds each service day on demand (`buildTimetable` in `core/src/timetable.ts`, about 0.1 s). No storage or scheduled job. The first timetable request in a new Lambda takes about a second longer; the API Lambda has 512 MB for it.
+- **Matching:** GTFS has no Irish Rail station codes, so stops are matched to ours by position (within 600 m), else by name within 3 km. Its trips carry the live API's train codes (E200…), so trains already shown live aren't listed twice.
+- **Endpoint:** `GET /api/stations/:code/scheduled?hours=6` (up to 12), cached 5 minutes. Handles the GTFS calendar (and its exceptions, e.g. Christmas) and trains running past midnight.
+- **Next:** GTFS-Realtime (needs a free NTA key) could add cancellations and act as a second live source.
 
 ## API quirks handled
 

@@ -12,12 +12,14 @@ import {
   IrishRailClient,
 } from '@dart-times/core';
 import { createHandler } from './handler';
+import { GtfsTimetable } from './timetable';
 
 const port = Number(process.env.PORT ?? 3001);
 const handler = createHandler({
   client: new IrishRailClient(),
   favourites: new FavouritesService(new InMemoryFavouritesRepository(), ALL_STATIONS),
   feedback: new FeedbackService(new InMemoryFeedbackRepository(), new ConsoleFeedbackNotifier()),
+  scheduled: new GtfsTimetable(),
 });
 
 createServer(async (req, res) => {

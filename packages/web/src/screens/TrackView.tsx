@@ -234,6 +234,7 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
         <DeparturesSheet
           station={station}
           line={line}
+          serviceId={service.id}
           direction={sheetDirection}
           departures={allIn(sheetDirection)}
           goingTo={goingDirection === sheetDirection ? goingTo : undefined}

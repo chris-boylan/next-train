@@ -1,4 +1,5 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
+import type { ScheduledSource } from './timetable';
 import {
   buildJourney,
   DART_STATIONS,
@@ -16,6 +17,8 @@ import {
 export interface ApiDeps {
   client: IrishRailClient;
   favourites: FavouritesService;
+  /** Irish Rail's timetable (GTFS), for trains beyond the live API's 90 minutes. */
+  scheduled: ScheduledSource;
   feedback: FeedbackService;
 }
 
@@ -53,7 +56,7 @@ function webUserId(event: APIGatewayProxyEventV2): string | undefined {
   return id && DEVICE_ID.test(id) ? `web:${id}` : undefined;
 }
 
-export function createHandler({ client, favourites, feedback }: ApiDeps) {
+export function createHandler({ client, favourites, feedback, scheduled }: ApiDeps) {
   return async (event: APIGatewayProxyEventV2): Promise<Result> => {
     const method = event.requestContext.http.method;
     const path = event.rawPath.replace(/\/+$/, '');
@@ -101,6 +104,16 @@ export function createHandler({ client, favourites, feedback }: ApiDeps) {
         const journey = buildJourney(await client.getTrainMovements(journeyMatch[1]!), from, Date.now());
         if (!journey) return error(404, 'That train does not call at that station today');
         return json(200, journey, DEPARTURES_CACHE);
+      }
+
+      // Timetabled departures (GTFS) for the next few hours, for trains beyond the live window.
+      const scheduledMatch = path.match(/^\/api\/stations\/([A-Za-z]+)\/scheduled$/);
+      if (method === 'GET' && scheduledMatch) {
+        const code = scheduledMatch[1]!.toUpperCase();
+        if (!findStationByCode(code)) return error(404, 'Unknown station');
+        const hours = Math.min(12, Math.max(1, Number(event.queryStringParameters?.hours) || 6));
+        const departures = await scheduled.scheduled(code, Date.now(), hours);
+        return json(200, { code, departures, generatedAt: new Date().toISOString() }, 'public, max-age=300');
       }
 
       const favouriteMatch = path.match(/^\/api\/favourites(?:\/([A-Za-z]+))?$/);

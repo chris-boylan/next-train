@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-sns": "^3.1178.0",
-    "@dart-times/core": "0.1.0"
+    "@dart-times/core": "0.1.0",
+    "fflate": "0.8.2"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.145"

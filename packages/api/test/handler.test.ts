@@ -10,6 +10,7 @@ const handler = createHandler({
   client: fixtureClient('connolly-midday.xml'),
   favourites: new FavouritesService(new InMemoryFavouritesRepository()),
   feedback: new FeedbackService(feedbackRepo, { notify: async (e) => void emailed.push(e) }),
+  scheduled: { scheduled: async () => [] },
 });
 
 function request(method: string, path: string, headers: Record<string, string> = {}, body?: string) {
@@ -156,6 +157,7 @@ describe('API handler: train journey', () => {
     client: fixtureClient('movements-E117.xml'),
     favourites: new FavouritesService(new InMemoryFavouritesRepository()),
     feedback: new FeedbackService(new InMemoryFeedbackRepository(), { notify: async () => {} }),
+    scheduled: { scheduled: async () => [] },
   });
   const get = (path: string) => {
     const url = new URL(path, 'http://x');
@@ -180,5 +182,43 @@ describe('API handler: train journey', () => {
   it('rejects a missing station and 404s when the train does not call there', async () => {
     expect((await get('/api/trains/E117/journey')).statusCode).toBe(400);
     expect((await get('/api/trains/E117/journey?from=MHIDE')).statusCode).toBe(404);
+  });
+});
+
+describe('API handler: scheduled departures', () => {
+  const calls: [string, number][] = [];
+  const scheduledHandler = createHandler({
+    client: fixtureClient('connolly-midday.xml'),
+    favourites: new FavouritesService(new InMemoryFavouritesRepository()),
+    feedback: new FeedbackService(new InMemoryFeedbackRepository(), { notify: async () => {} }),
+    scheduled: {
+      scheduled: async (code, _now, hours) => {
+        calls.push([code, hours]);
+        return [{ time: '15:06', minutes: 906, trainCode: 'E236', destinationCode: 'BRAY', destination: 'Bray (Daly)', category: 'dart' }];
+      },
+    },
+  });
+  const get = (path: string) => {
+    const url = new URL(path, 'http://x');
+    return scheduledHandler({
+      rawPath: url.pathname,
+      queryStringParameters: Object.fromEntries(url.searchParams),
+      headers: {},
+      requestContext: { http: { method: 'GET' } },
+    } as unknown as APIGatewayProxyEventV2);
+  };
+
+  it('returns timetabled departures for a station, cacheable for a few minutes', async () => {
+    const res = await get('/api/stations/perse/scheduled?hours=3');
+    expect(res.statusCode).toBe(200);
+    expect(res.headers?.['cache-control']).toBe('public, max-age=300');
+    expect(body(res).departures[0]).toMatchObject({ trainCode: 'E236', destinationCode: 'BRAY' });
+    expect(calls.at(-1)).toEqual(['PERSE', 3]);
+  });
+
+  it('caps the window and 404s on unknown stations', async () => {
+    await get('/api/stations/PERSE/scheduled?hours=99');
+    expect(calls.at(-1)).toEqual(['PERSE', 12]);
+    expect((await get('/api/stations/NOPE/scheduled')).statusCode).toBe(404);
   });
 });

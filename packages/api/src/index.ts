@@ -3,6 +3,7 @@ import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
 import { ALL_STATIONS, describeFeedback, FavouritesService, type FeedbackNotifier, FeedbackService, IrishRailClient } from '@dart-times/core';
 import { DynamoFavouritesRepository, DynamoFeedbackRepository } from '@dart-times/core/dynamo';
 import { createHandler } from './handler';
+import { GtfsTimetable } from './timetable';
 
 const env = (name: string) => {
   const value = process.env[name];
@@ -30,4 +31,5 @@ export const handler = createHandler({
   client: new IrishRailClient(),
   favourites: new FavouritesService(new DynamoFavouritesRepository(env('FAVOURITES_TABLE')), ALL_STATIONS),
   feedback: new FeedbackService(new DynamoFeedbackRepository(env('FEEDBACK_TABLE')), emailOwner),
+  scheduled: new GtfsTimetable(),
 });
