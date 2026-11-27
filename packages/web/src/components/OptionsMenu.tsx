@@ -93,7 +93,6 @@ export function OptionsMenu() {
               { value: 'on', label: t.on },
               { value: 'off', label: t.off },
             ]}
-            note={t.timetabledTrainsNote}
           />
           <button
             className="options__link"
@@ -121,14 +120,11 @@ function Choice<T extends string>({
   value,
   onChange,
   options,
-  note,
 }: {
   label: string;
   value: T;
   onChange: (value: T) => void;
   options: { value: T; label: string }[];
-  /** A line under the choice, explaining it. */
-  note?: string;
 }) {
   return (
     <div className="options__row">
@@ -146,7 +142,6 @@ function Choice<T extends string>({
           </button>
         ))}
       </div>
-      {note && <p className="options__note">{note}</p>}
     </div>
   );
 }
