@@ -131,7 +131,7 @@ export function RoutesMap<Id extends string>({
               />
               {unplaced.length > 0 && (
                 <p className="network__unmapped">
-                  {t.notYetMapped}: {unplaced.map((s) => stationName(s)).join(', ')}
+                  {t.notDrawnYet}: {unplaced.map((s) => stationName(s)).join(', ')}
                 </p>
               )}
             </>

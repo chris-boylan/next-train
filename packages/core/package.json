@@ -20,5 +20,8 @@
     "@aws-sdk/client-dynamodb": "^3.700.0",
     "@aws-sdk/lib-dynamodb": "^3.700.0",
     "fast-xml-parser": "^4.5.0"
+  },
+  "devDependencies": {
+    "fflate": "0.8.2"
   }
 }
