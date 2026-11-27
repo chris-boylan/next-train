@@ -1,7 +1,11 @@
 // Scheduled departures from Irish Rail's GTFS timetable (published by the National Transport Authority), for
 // trains beyond the live API's 90-minute window. GTFS has no Irish Rail station codes, so its stops are matched
 // to ours by position; its trips carry the same train codes as the live API (E200…), so the two can be joined.
-import type { Station, TrainCategory } from './types';
+import { callsAt, directionBetween, type Line } from './line';
+import type { Direction, Station, TrainCategory } from './types';
+
+/** How far ahead the live API looks. Timetabled trains are shown only beyond it: live data wins inside it. */
+export const LIVE_WINDOW_MINS = 90;
 
 /** The GTFS files this needs, as text. */
 export interface GtfsFiles {
@@ -233,6 +237,51 @@ export function scheduledMatches(service: 'dart' | 'enterprise' | 'cork' | 'comm
     default:
       return false;
   }
+}
+
+/**
+ * Timetabled trains to show alongside live ones: after the live window (inside it, live data is the truth, and
+ * a timetabled train missing from it may well be cancelled), not already shown live, and passing `include`.
+ * In time order, at most `limit`.
+ */
+export function scheduledBeyondLive(
+  departures: ScheduledDeparture[],
+  { nowMinutes, liveCodes, include = () => true, limit = Infinity }: {
+    /** Minutes after today's midnight, Irish time. */
+    nowMinutes: number;
+    /** Train codes already shown live. */
+    liveCodes: ReadonlySet<string>;
+    include?: (d: ScheduledDeparture) => boolean;
+    limit?: number;
+  },
+): ScheduledDeparture[] {
+  if (limit <= 0) return [];
+  return departures
+    .filter((d) => d.minutes > nowMinutes + LIVE_WINDOW_MINS && !liveCodes.has(d.trainCode) && include(d))
+    .slice(0, limit);
+}
+
+/**
+ * Whether a timetabled train from `station` belongs on one of its tracks: the service's train, heading in
+ * `direction` along `line`, and (when set) calling at `goingTo`. Trains to stations we don't know are left out,
+ * since their direction can't be told.
+ */
+export function scheduledHeading(
+  d: ScheduledDeparture,
+  { service, station, direction, line, goingTo }: {
+    service: Parameters<typeof scheduledMatches>[0];
+    station: string;
+    direction: Direction;
+    line: Line;
+    goingTo?: string;
+  },
+): boolean {
+  return (
+    scheduledMatches(service, d) &&
+    !!d.destinationCode &&
+    directionBetween(station, d.destinationCode, line) === direction &&
+    (!goingTo || d.destinationCode === goingTo || callsAt(station, d.destinationCode, goingTo, line))
+  );
 }
 
 /** `YYYYMMDD` in Irish time, `offsetDays` days from `nowMs` (negative for earlier). */

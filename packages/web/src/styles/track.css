@@ -354,6 +354,32 @@
   color: var(--text);
 }
 
+/* Timetabled trains beyond the live window: a hollow, dashed train and muted text, so they never pass for live. */
+.train--scheduled .glyph-body {
+  fill: var(--bg);
+  stroke-dasharray: 6 4;
+}
+
+.train--scheduled .glyph-window,
+.train--scheduled .glyph-light {
+  opacity: 0.3;
+}
+
+.train--scheduled .train__due,
+.train--scheduled .train__dest {
+  color: var(--muted);
+}
+
+.train__timetable {
+  padding: 0 4px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .late {
   padding: 0 4px;
   font-weight: 800;
@@ -410,7 +436,8 @@
 
 /* Narrow phones (320px): the delay and expected time say it all, so the struck-out scheduled time goes. */
 @media (max-width: 359px) {
-  .train__scheduled {
+  .train__scheduled,
+  .train__planned {
     display: none;
   }
 

@@ -4,6 +4,7 @@ import {
   type Direction,
   findStationByCode,
   type IntercityRouteId,
+  type ScheduledDeparture,
   type NirRouteId,
   type ServiceId,
   type Station,
@@ -34,6 +35,7 @@ const en = {
   noLiveDataExplained: 'There are no live times for this station yet. In Northern Ireland, Irish Rail only has live data for the Enterprise.',
   noTrainsAnyDirection: 'No trains in the next 90 minutes.',
   later: 'Later · timetable',
+  timetabled: 'Timetable',
   laterNote: (mins: number) => `Timetabled times. Live times and delays appear about ${mins} minutes before.`,
   map: 'Map',
   allRoutes: 'All routes',
@@ -106,6 +108,8 @@ const en = {
   favouritesInService: 'In each service',
   favouritesOnHome: 'On home page',
   countdownStyle: 'Times over an hour',
+  countdownMinutes: 'Minutes',
+  countdownHours: 'Hours & mins',
   install: 'Install',
   // iOS isn't available in Irish, so its button names are quoted in English in both languages.
   installTip: 'Tap Share, then “Add to Home Screen”, to open Next Train? like an app.',
@@ -170,6 +174,7 @@ const en = {
     loading: 'Loading the stops…',
     unavailable: 'Couldn’t load this train’s stops.',
   },
+  describeScheduled: (destination: string, time: string) => `to ${destination} at ${time}, timetabled, no live information yet`,
   describe: (destination: string, dueInMins: number, lateMins: number, style: CountdownStyle) =>
     `to ${destination} ${dueInMins <= 0 ? 'due now' : `in ${spokenDue(dueInMins, style)}`}` +
     (lateMins > 0 ? `, running ${lateMins} minute${lateMins === 1 ? '' : 's'} late` : ''),
@@ -214,6 +219,7 @@ const ga: Messages = {
   noLiveDataExplained: 'Níl amanna beo againn don stáisiún seo fós. I dTuaisceart Éireann, níl sonraí ag Iarnród Éireann ach don Enterprise.',
   noTrainsAnyDirection: 'Níl aon traein sna 90 nóiméad atá romhainn.',
   later: 'Níos déanaí · clár ama',
+  timetabled: 'Clár ama',
   laterNote: (mins) => `Amanna an chláir ama. Feictear amanna beo agus moilleanna thart ar ${mins} nóiméad roimh ré.`,
   map: 'Léarscáil',
   allRoutes: 'Gach bealach',
@@ -294,6 +300,8 @@ const ga: Messages = {
   favouritesInService: 'I ngach seirbhís',
   favouritesOnHome: 'Ar an leathanach baile',
   countdownStyle: 'Amanna thar uair an chloig',
+  countdownMinutes: 'Nóiméid',
+  countdownHours: 'Uaireanta & nóim',
   install: 'Suiteáil',
   installTip: 'Brúigh “Share”, ansin “Add to Home Screen”, chun Next Train? a oscailt mar aip.',
   help: {
@@ -357,6 +365,7 @@ const ga: Messages = {
     loading: 'Na stadanna á lódáil…',
     unavailable: 'Níorbh fhéidir stadanna na traenach seo a lódáil.',
   },
+  describeScheduled: (destination, time) => `go dtí ${destination} ag ${time}, de réir an chláir ama`,
   // Spoken in minutes whatever the countdown style: hours need Irish number mutations (uair, huaire, n-uaire).
   describe: (destination, dueInMins, lateMins) =>
     `go dtí ${destination}, ${dueInMins <= 0 ? 'ag teacht anois' : `i gceann ${dueInMins} nóiméad`}` +
@@ -412,11 +421,14 @@ export function useI18n() {
     return station ? stationName(station) : code;
   };
   const destinationName = (d: Departure) => (d.destinationCode ? nameOf(d.destinationCode) : d.destination);
+  // A timetabled train's destination: our name when we know the station, else the timetable's minus its bracketed part.
+  const scheduledDestination = (d: ScheduledDeparture) =>
+    d.destinationCode ? nameOf(d.destinationCode) : d.destination.replace(/\s*\(.*?\)/g, '');
   const list = (items: string[]) =>
     items.length <= 1 ? items.join('') : `${items.slice(0, -1).join(', ')} ${t.and} ${items.at(-1)}`;
   const describe = (d: Departure) => t.describe(destinationName(d), d.dueInMins, d.lateMins, countdownStyle);
 
-  return { lang, setLang, t, stationName, nameOf, destinationName, list, describe };
+  return { lang, setLang, t, stationName, nameOf, destinationName, scheduledDestination, list, describe };
 }
 
 /**

@@ -6,6 +6,10 @@ import {
   departuresGoingTo,
   type Direction,
   directionBetween,
+  irishSecondsOfDay,
+  type ScheduledDeparture,
+  scheduledBeyondLive,
+  scheduledHeading,
   type Service,
   type Station,
   terminiFrom,
@@ -19,6 +23,7 @@ import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
 import { getGoingTo, setGoingTo } from '../lib/prefs';
 import { useDepartures } from '../lib/useDepartures';
+import { useScheduled } from '../lib/useScheduled';
 import { useMediaQuery } from '../lib/useMediaQuery';
 
 /** Trains shown on each track; very short screens (e.g. 320×568 phones) only fit two above the "more" link. */
@@ -44,6 +49,7 @@ interface Props {
 export function TrackView({ service, station, isFavourite, onToggleFavourite, onChangeStation, onSelectStation }: Props) {
   const { t, stationName, nameOf, list } = useI18n();
   const { data, error } = useDepartures(station.code, service.id);
+  const timetable = useScheduled(station.code);
   const { line } = service;
   const now = useNow();
   const fetchedAt = data && new Date(data.fetchedAt);
@@ -108,12 +114,34 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
   }, []);
 
   const perDirection = useMediaQuery(SHORT_SCREEN) ? TRAINS_PER_DIRECTION_SHORT : TRAINS_PER_DIRECTION;
+  const nowMinutes = Math.floor(irishSecondsOfDay(now.getTime()) / 60);
+  const liveCodes = new Set(data?.departures.map((d) => d.trainCode));
   const trainsFor = (direction: Direction, ends: string[]) => {
     const shown = shownIn(direction);
+    const live = dimmed(direction) ? [] : shown.slice(0, perDirection);
+    // Live trains first; any places left on the track go to timetabled trains beyond the live window.
+    const scheduled =
+      timetable && !dimmed(direction)
+        ? scheduledBeyondLive(timetable, {
+            nowMinutes,
+            liveCodes,
+            include: (d) =>
+              scheduledHeading(d, {
+                service: service.id,
+                station: station.code,
+                direction,
+                line,
+                goingTo: goingDirection === direction ? goingTo : undefined,
+              }),
+            limit: perDirection - live.length,
+          })
+        : [];
     return (
       <Trains
         direction={direction}
-        trains={dimmed(direction) ? [] : shown.slice(0, perDirection)}
+        trains={live}
+        scheduled={scheduled}
+        nowMinutes={nowMinutes}
         moreCount={dimmed(direction) ? 0 : Math.max(0, shown.length - perDirection)}
         onMore={() => setSheetDirection(direction)}
         ends={ends}
@@ -317,6 +345,8 @@ function Lane({ direction, withHead = false, dimmed }: { direction: Direction; w
 function Trains({
   direction,
   trains,
+  scheduled,
+  nowMinutes,
   moreCount,
   onMore,
   ends,
@@ -327,6 +357,10 @@ function Trains({
 }: {
   direction: Direction;
   trains: Departure[];
+  /** Timetabled trains beyond the live window, filling the places live trains don't. */
+  scheduled: ScheduledDeparture[];
+  /** Minutes after today's midnight, Irish time, for the timetabled trains' countdowns. */
+  nowMinutes: number;
   /** Departures beyond the ones shown. The link to the full list (and its filters) shows either way. */
   moreCount: number;
   onMore: () => void;
@@ -339,16 +373,16 @@ function Trains({
   /** Tap a train for its look-ahead; gets the train's drawing so the view can start from it. */
   onOpen: (train: Departure, glyph: Element | null) => void;
 }) {
-  const { t, destinationName, describe } = useI18n();
+  const { t, destinationName, scheduledDestination, describe } = useI18n();
   const side = direction === 'Northbound' ? 'north' : 'south';
   if (!hasData || hidden) return null;
-  if (!trains.length) {
-    return (
-      <p className={`trains-empty trains-empty--${side}`}>
-        {!ends.length ? t.terminateHere : goingToName ? t.noTrainsTo(goingToName) : t.noTrains(t.direction[direction])}
-      </p>
-    );
-  }
+  // Nothing live in this direction: say so (by the platform), then show what the timetable has, if anything.
+  const empty = !trains.length && (
+    <p className={`trains-empty trains-empty--${side}`}>
+      {!ends.length ? t.terminateHere : goingToName ? t.noTrainsTo(goingToName) : t.noTrains(t.direction[direction])}
+    </p>
+  );
+  if (!trains.length && !scheduled.length) return empty;
   const more = (
     <button className={`more more--${side}`} onClick={onMore}>
       {moreCount > 0 ? t.more(moreCount) : t.filter}
@@ -358,6 +392,7 @@ function Trains({
   return (
     <>
       {side === 'south' && more}
+      {side === 'north' && empty}
       <ol className={`trains trains--${side}`}>
         {trains.map((d, i) => (
           <li key={d.trainCode} data-train={d.trainCode} className={`train train--${side}${i === 0 ? ' train--next' : ''}`} aria-label={describe(d)}>
@@ -390,7 +425,30 @@ function Trains({
             </div>
           </li>
         ))}
+        {scheduled.map((d) => (
+          // Timetabled: no live position or journey yet, so it can't be opened, and it's drawn hollow.
+          <li
+            key={`${d.trainCode}-${d.minutes}`}
+            className={`train train--${side} train--scheduled`}
+            aria-label={t.describeScheduled(scheduledDestination(d), d.time)}
+          >
+            <TrainGlyph />
+            <div className="train__info">
+              <span className="train__due">
+                <DueIn mins={d.minutes - nowMinutes} />
+              </span>
+              <span className={`train__dest${scheduledDestination(d).length > 12 ? ' train__dest--long' : ''}`}>
+                <Caps text={scheduledDestination(d)} />
+              </span>
+              <span className="train__meta">
+                <span className="train__timetable">{t.timetabled}</span>
+                <span className="train__planned">{d.time}</span>
+              </span>
+            </div>
+          </li>
+        ))}
       </ol>
+      {side === 'south' && empty}
       {side === 'north' && more}
     </>
   );
