@@ -236,6 +236,9 @@ export function PositionedMap({
       if (other === lane || (other.start !== node && other.end !== node)) continue;
       const j = other.colours.indexOf(colour);
       if (j < 0 || (lane.colours.length === 1 && other.colours.length === 1)) continue;
+      // A band no wider than one track (two routes) already lines up with a lone route's edges: the lone route
+      // stays centred and the band's stripes split off at the station (the Enterprise at Newry and Dundalk).
+      if (lane.colours.length === 1 && halfWidth(other.colours.length) * 2 <= TRACK_WIDTH) return own;
       // Travelling on through the station keeps "left" the same side; two connections both leaving (or both
       // arriving at) the station flip it.
       const through = (lane.start === node) !== (other.start === node);
@@ -313,20 +316,20 @@ export function PositionedMap({
                 }}
               />
             ) : null;
-          return [underlay, ...lane.colours.map((colour, i) => (
-            <path
-              key={`${a}|${b}|${i}`}
-              d={roundedPath(
-                easedStripe(lane.ordered, meeting(lane, i, lane.start), lane.offsets[i]!, meeting(lane, i, lane.end)),
-                curveOf(a, b),
-              )}
-              className="line-map__track"
-              style={{
-                ...(lane.colours.length > 1 && { strokeWidth: lane.stripe + 0.5, strokeLinejoin: 'round' as const }),
-                ...(colour ? { stroke: colour } : {}),
-              }}
-            />
-          ))];
+          return [underlay, ...lane.colours.map((colour, i) => {
+            const [from, to] = [meeting(lane, i, lane.start), meeting(lane, i, lane.end)];
+            return (
+              <path
+                key={`${a}|${b}|${i}`}
+                d={roundedPath(easedStripe(lane.ordered, from, lane.offsets[i]!, to), curveOf(a, b))}
+                className="line-map__track"
+                style={{
+                  ...(lane.colours.length > 1 && { strokeWidth: lane.stripe + 0.5, strokeLinejoin: 'round' as const }),
+                  ...(colour ? { stroke: colour } : {}),
+                }}
+              />
+            );
+          })];
         })}
         {codes.map((code) => {
           const p = points[code]!;
