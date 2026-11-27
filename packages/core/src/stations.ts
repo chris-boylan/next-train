@@ -5,6 +5,7 @@ import { COMMUTER_STATION_DATA } from './stations.commuter.data';
 import { CORK_STATION_DATA } from './stations.cork.data';
 import { ENTERPRISE_STATION_DATA } from './stations.enterprise.data';
 import { INTERCITY_STATION_DATA } from './stations.intercity.data';
+import { NIR_STATION_DATA } from './stations.nir.data';
 import { IRISH_NAMES } from './stations.ga';
 
 export interface StationRecord {
@@ -131,6 +132,9 @@ export const COMMUTER_ONLY_STATIONS: Station[] = COMMUTER_STATION_DATA.map(toSta
 /** Intercity stations not on any other service. `INTERCITY_STATIONS` (services.ts) adds the shared ones. */
 export const INTERCITY_ONLY_STATIONS: Station[] = INTERCITY_STATION_DATA.map(toStation);
 
+/** Northern Ireland Railways stations not already above (Belfast, Portadown and Newry are Enterprise stations). */
+export const NIR_ONLY_STATIONS: Station[] = NIR_STATION_DATA.map(toStation);
+
 /** Every station the apps know about, across all services. Lookups by code or name use this. */
 export const ALL_STATIONS: Station[] = [
   ...DART_STATIONS,
@@ -138,6 +142,7 @@ export const ALL_STATIONS: Station[] = [
   ...CORK_STATIONS,
   ...COMMUTER_ONLY_STATIONS,
   ...INTERCITY_ONLY_STATIONS,
+  ...NIR_ONLY_STATIONS,
 ];
 
 /** The official Irish name for any station code, including stations only on the all-stations map. */

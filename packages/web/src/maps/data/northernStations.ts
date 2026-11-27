@@ -13,8 +13,6 @@ import type { NetworkStation } from './network.data';
  */
 const NEW_STATIONS: [code: string, name: string][] = [
   // Belfast–Portadown–Newry (Belfast here is BFSTC, Irish Rail's Enterprise terminus)
-  ['NI_CITYH', 'City Hospital'],
-  ['NI_BOTAN', 'Botanic'],
   ['NI_ADELA', 'Adelaide'],
   ['NI_BALMO', 'Balmoral'],
   ['NI_FINAG', 'Finaghy'],
@@ -24,9 +22,11 @@ const NEW_STATIONS: [code: string, name: string][] = [
   ['NI_HILDE', 'Hilden'],
   ['NI_SCARV', 'Scarva'],
   ['NI_POYNT', 'Poyntzpass'],
-  // Through Belfast
+  // Through Belfast (York Street replaced Yorkgate in 2025; the code is unchanged)
+  ['NI_CITYH', 'City Hospital'],
+  ['NI_BOTAN', 'Botanic'],
   ['NI_LANYN', 'Lanyon Place'],
-  ['NI_YORKG', 'Yorkgate'],
+  ['NI_YORKG', 'York Street'],
   ['NI_WABBY', 'Whiteabbey'],
   // Bangor line
   ['NI_TITQ', 'Titanic Quarter'],
@@ -70,11 +70,11 @@ const NEW_STATIONS: [code: string, name: string][] = [
 
 /** Each line as a run of neighbouring stations. */
 const LINES: string[][] = [
-  ['NEWRY', 'NI_POYNT', 'NI_SCARV', 'PDOWN', 'LURGN', 'MOIRA', 'LBURN', 'NI_HILDE', 'NI_LAMBE', 'NI_DERRI', 'NI_DUNMU', 'NI_FINAG', 'NI_BALMO', 'NI_ADELA', 'NI_BOTAN', 'NI_CITYH', 'BFSTC'],
-  ['BFSTC', 'NI_LANYN', 'NI_YORKG', 'NI_WABBY'],
+  ['NEWRY', 'NI_POYNT', 'NI_SCARV', 'PDOWN', 'LURGN', 'MOIRA', 'LBURN', 'NI_HILDE', 'NI_LAMBE', 'NI_DERRI', 'NI_DUNMU', 'NI_FINAG', 'NI_BALMO', 'NI_ADELA', 'BFSTC'],
+  ['BFSTC', 'NI_CITYH', 'NI_BOTAN', 'NI_LANYN', 'NI_YORKG', 'NI_WABBY'],
   ['NI_LANYN', 'NI_TITQ', 'NI_SYDEN', 'NI_HWOOD', 'NI_MARIN', 'NI_CULTR', 'NI_SEAHL', 'NI_HELEN', 'NI_CARNL', 'NI_BANGW', 'NI_BANGR'],
   ['NI_WABBY', 'NI_JORDN', 'NI_GRNIS', 'NI_TROOP', 'NI_CLIPP', 'NI_CFERG', 'NI_DOWNS', 'NI_WHEAD', 'NI_BCARY', 'NI_MAGHM', 'NI_GLYNN', 'NI_LARNT', 'NI_LARNH'],
-  ['NI_WABBY', 'NI_MOSSW', 'NI_ANTRM', 'NI_BMENA', 'NI_CULLY', 'NI_BMONY', 'NI_COLER', 'NI_CROCK', 'NI_BELLA', 'NI_DERRY'],
+  ['NI_YORKG', 'NI_MOSSW', 'NI_ANTRM', 'NI_BMENA', 'NI_CULLY', 'NI_BMONY', 'NI_COLER', 'NI_CROCK', 'NI_BELLA', 'NI_DERRY'],
   ['NI_COLER', 'NI_UNIV', 'NI_DHUVR', 'NI_PRUSH'],
 ];
 
