@@ -78,6 +78,8 @@ const en = {
   tomorrow: 'Tomorrow',
   // Today's last train on a track, when tomorrow's first follows it.
   lastToday: 'Last today',
+  // The list board's section for tomorrow's first train to each destination.
+  tomorrowFirst: 'Tomorrow · first trains',
   lastTrainToday: 'last train today',
   noMoreToday: 'No more trains today',
   noTimetabledTrains: 'No timetabled trains',
@@ -312,6 +314,7 @@ const ga: Messages = {
     `Ach ritheann traenacha ${services} go dtí ${places}${mins <= 0 ? ', ceann ag teacht anois' : `, an chéad cheann i gceann ${mins} nóim`}.`,
   tomorrow: 'Amárach',
   lastToday: 'Deireanach inniu',
+  tomorrowFirst: 'Amárach · na chéad traenacha',
   lastTrainToday: 'an traein dheireanach inniu',
   noMoreToday: 'Níl a thuilleadh traenacha inniu',
   noTimetabledTrains: 'Níl aon traein sa chlár ama',

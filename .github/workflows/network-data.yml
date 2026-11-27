@@ -1,0 +1,112 @@
+# Monthly refresh of the all-stations map's track (which stations connect), from live trains and Irish Rail's
+# published timetable (`npm run build-network`). The track rarely changes, and the map is laid out by hand, so
+# this never commits to main: when the stations or links differ it opens a pull request listing them, with the
+# test results. The map tests fail on a newly connected station that has no place on the map yet, so a PR with
+# failing tests means a new line needs placing in networkSchematic.ts before it can be merged.
+#
+# Needs Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests" turned on.
+name: Network map data
+
+on:
+  schedule:
+    - cron: '0 10 1 * *' # 10:00 UTC on the 1st of each month, when plenty of trains are running
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the update branch
+      pull-requests: write # open the pull request
+      actions: write # start CI on that branch (see below)
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Rebuild the network data (one retry after 5 minutes, in case of a blip)
+        run: |
+          npm run build-network -w @dart-times/core 2>&1 | tee "$RUNNER_TEMP/build.log" && exit 0
+          echo "First attempt failed; retrying in 5 minutes."
+          sleep 300
+          npm run build-network -w @dart-times/core 2>&1 | tee "$RUNNER_TEMP/build.log"
+
+      # The file's first line records when and from how many trains it was built, so it changes every run; only
+      # the stations and links matter.
+      - name: Compare stations and links with main
+        id: diff
+        run: |
+          node --input-type=module - <<'EOF' > "$RUNNER_TEMP/changes.md"
+          import { readFileSync } from 'node:fs';
+          import { execSync } from 'node:child_process';
+          const file = 'packages/web/src/maps/data/network.data.ts';
+          const read = (text) => ({
+            stations: JSON.parse(text.match(/NETWORK_STATIONS: NetworkStation\[\] = (\[.*?\]);/)[1]),
+            edges: JSON.parse(text.match(/NETWORK_EDGES: \[string, string\]\[\] = (\[.*\]);/)[1]).map((e) => e.join('–')),
+          });
+          const before = read(execSync(`git show HEAD:${file}`).toString());
+          const after = read(readFileSync(file, 'utf8'));
+          const codes = (list) => list.map((s) => `${s.name} (${s.code})`);
+          const minus = (a, b) => a.filter((x) => !b.includes(x));
+          const sections = [
+            ['Stations added', minus(codes(after.stations), codes(before.stations))],
+            ['Stations removed', minus(codes(before.stations), codes(after.stations))],
+            ['Links added', minus(after.edges, before.edges)],
+            ['Links removed', minus(before.edges, after.edges)],
+          ].filter(([, items]) => items.length);
+          for (const [title, items] of sections) console.log(`**${title}:** ${items.join(', ')}\n`);
+          if (!sections.length) console.log('NONE');
+          EOF
+          if grep -qx NONE "$RUNNER_TEMP/changes.md"; then
+            echo "No change in stations or links."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            cat "$RUNNER_TEMP/changes.md"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run the tests on the new data
+        if: steps.diff.outputs.changed == 'true'
+        id: tests
+        continue-on-error: true
+        run: npm test 2>&1 | tee "$RUNNER_TEMP/tests.log"
+
+      - name: Open a pull request
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TESTS: ${{ steps.tests.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          branch="chore/network-data-$(date -u +%Y-%m)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add packages/web/src/maps/data/network.data.ts
+          git commit -m "Network map data: monthly refresh ($(date -u +%Y-%m))"
+          git push --force origin "$branch"
+          if [ "$TESTS" = success ]; then
+            verdict="Tests pass on the new data."
+          else
+            verdict="**Tests fail on the new data.** Most likely a newly connected station has no place on the all-stations map yet: place it in \`packages/web/src/maps/data/networkSchematic.ts\` on this branch. Last lines of the test run:
+
+          \`\`\`
+          $(tail -n 25 "$RUNNER_TEMP/tests.log")
+          \`\`\`"
+          fi
+          body="$(printf 'Monthly rebuild of the all-stations map track (`npm run build-network`), from live trains and the published timetable.\n\n%s\n\n%s\n\nRun: %s' "$(cat "$RUNNER_TEMP/changes.md")" "$verdict" "$RUN_URL")"
+          existing="$(gh pr list --head "$branch" --state open --json number --jq '.[0].number')"
+          if [ -n "$existing" ]; then
+            gh pr edit "$existing" --body "$body"
+          else
+            gh pr create --base main --head "$branch" --title "Network map data: monthly refresh ($(date -u +%Y-%m))" --body "$body"
+          fi
+          # A pull request opened with the workflow's own token doesn't start CI, so start the checks on the branch
+          # by hand: they report the required status on its commit (and CI only deploys from main, when asked).
+          gh workflow run ci.yml --ref "$branch"

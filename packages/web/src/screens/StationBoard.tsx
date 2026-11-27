@@ -61,9 +61,10 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
     onShowTracks();
   };
   const { t, nameOf, destinationName, describe } = useI18n();
-  const scheduled = useScheduled(code);
+  // With tomorrow's, so after the last train the board still says when the first one goes.
+  const scheduled = useScheduled(code, true, true);
   // NI Railways trains are timetable-only, from now: the section is "Timetable", not "Later".
-  const hasNir = !!scheduled?.some((d) => d.category === 'nir');
+  const hasNir = !!scheduled?.some((d) => d.category === 'nir' && !d.tomorrow);
   const { data, error } = useDepartures(code, mode, live);
   const now = useNow();
   const fetchedAt = data && new Date(data.fetchedAt);
