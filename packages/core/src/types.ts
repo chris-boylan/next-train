@@ -9,6 +9,8 @@ export interface Station {
   name: string;
   /** Name without the `Dublin ` prefix, used for speech and compact UI. */
   shortName: string;
+  /** The station's official commemorative name when it differs from the one shown, e.g. `Kent Station` (Cork). */
+  officialName?: string;
   /** Official Irish name, when known; apps fall back to the English name without one. */
   irishName?: string;
   /** Shorter Irish form for compact display, like `shortName`. */
