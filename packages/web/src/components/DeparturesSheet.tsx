@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import {
-  callsAt,
   delaySeverity,
   type Departure,
   departuresGoingTo,
   type Direction,
-  directionBetween,
   irishSecondsOfDay,
   type Line,
-  scheduledMatches,
+  scheduledHeading,
   type ServiceId,
   type Station,
   terminiFrom,
@@ -115,12 +113,7 @@ export function DeparturesSheet({ station, line, serviceId, direction, departure
               departures={scheduled}
               nowMinutes={Math.floor(irishSecondsOfDay(now.getTime()) / 60)}
               liveCodes={new Set(departures.map((d) => d.trainCode))}
-              include={(d) =>
-                scheduledMatches(serviceId, d) &&
-                !!d.destinationCode &&
-                directionBetween(station.code, d.destinationCode, line) === direction &&
-                (!goingTo || d.destinationCode === goingTo || callsAt(station.code, d.destinationCode, goingTo, line))
-              }
+              include={(d) => scheduledHeading(d, { service: serviceId, station: station.code, direction, line, goingTo })}
             />
           )}
         </>

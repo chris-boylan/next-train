@@ -38,6 +38,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feat/train-journey` | Tap a train for its stops to the terminus with expected times |
 | `feature/favourites-home` | Options choice to show favourites in each service or together on the home page; favourites for every service's stations |
 | `feat/hours-countdown` | Options choice to show times over an hour as hours and minutes (`1h 26 min`) |
+| `feat/timetable-on-track` | Timetabled trains on the station page's tracks where there are no live ones |
 | `fix/deploy-on-request` | Pipeline deploys only when run by hand, not on every merge |
 
 ## Using the web app
@@ -263,7 +264,7 @@ The plan is to wrap this same web build in a native iOS app with [Capacitor](htt
 
 ## Timetable (GTFS)
 
-The live API only looks 90 minutes ahead. Beyond that, station boards and the "+ N more" sheet list **Later · timetable** trains from Irish Rail's GTFS timetable, published free by the National Transport Authority (`https://www.transportforireland.ie/transitData/Data/GTFS_Irish_Rail.zip`, rebuilt nightly, about 10 MB; no key needed). Why it's built this way: [docs/decisions.md](docs/decisions.md).
+The live API only looks 90 minutes ahead. Beyond that, station boards and the "+ N more" sheet list **Later · timetable** trains, and on the station page any of a track's three places that no live train fills go to the next timetabled trains (drawn hollow and dashed, tagged **Timetable**, and not tappable; with nothing live that way, "No … trains in the next 90 minutes" stays by the platform). Live always wins: timetabled trains are only shown beyond the live window, and never one already shown live (`scheduledBeyondLive` / `scheduledHeading` in `core/src/timetable.ts`). They come from Irish Rail's GTFS timetable, published free by the National Transport Authority (`https://www.transportforireland.ie/transitData/Data/GTFS_Irish_Rail.zip`, rebuilt nightly, about 10 MB; no key needed). Why it's built this way: [docs/decisions.md](docs/decisions.md).
 
 - **Built once a day:** the timetable job (`api/src/timetableJob.ts`, a Lambda run by EventBridge at 03:30 UTC and once after each deploy) downloads the zip, builds yesterday's, today's and tomorrow's departures for every station (`timetableFiles` in `core/src/timetable.ts`) and writes them to the site bucket as `timetable/<date>/<code>.json`, about 440 small files. Yesterday's are for trains still running after midnight. An S3 rule deletes them after 3 days.
 - **Served as static files:** the app fetches `/timetable/<date>/<code>.json` from CloudFront (`web/src/lib/useScheduled.ts`). No API call; a missing file just means no timetable section.
