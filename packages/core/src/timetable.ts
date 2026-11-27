@@ -21,6 +21,8 @@ export interface GtfsFiles {
   stopTimes: string;
   calendar: string;
   calendarDates: string;
+  /** feed_info.txt, when the zip has one: its feed_start_date moves forward each time the NTA republishes. */
+  feedInfo?: string;
 }
 
 export interface ScheduledDeparture {
@@ -105,6 +107,18 @@ export function servicesOn(calendar: Record<string, string>[], calendarDates: Re
   }
   return active;
 }
+
+/** The last date (`YYYYMMDD`) any service runs: the latest weekly calendar end, or a later added date. */
+export function lastServiceDate(calendar: Record<string, string>[], calendarDates: Record<string, string>[]): string | undefined {
+  let last: string | undefined;
+  for (const c of calendar) if (WEEKDAYS.some((w) => c[w] === '1') && c.end_date && (!last || c.end_date > last)) last = c.end_date;
+  for (const d of calendarDates) if (d.exception_type === '1' && d.date && (!last || d.date > last)) last = d.date;
+  return last;
+}
+
+/** Whole days from `from` to `to` (both `YYYYMMDD`); negative when `to` is earlier. */
+export const daysBetween = (from: string, to: string) =>
+  Math.round((Date.UTC(+to.slice(0, 4), +to.slice(4, 6) - 1, +to.slice(6, 8)) - Date.UTC(+from.slice(0, 4), +from.slice(4, 6) - 1, +from.slice(6, 8))) / 86_400_000);
 
 /** Distance in metres between two points (equirectangular: plenty for a few hundred metres). */
 function metres(lat1: number, lon1: number, lat2: number, lon2: number): number {

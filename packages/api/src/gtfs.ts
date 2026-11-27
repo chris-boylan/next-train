@@ -4,7 +4,7 @@ import type { GtfsFiles } from '@dart-times/core';
 
 export const GTFS_URL = 'https://www.transportforireland.ie/transitData/Data/GTFS_Irish_Rail.zip';
 
-const NEEDED: Record<keyof GtfsFiles, string> = {
+const NEEDED: Record<Exclude<keyof GtfsFiles, 'feedInfo'>, string> = {
   stops: 'stops.txt',
   routes: 'routes.txt',
   trips: 'trips.txt',
@@ -21,12 +21,14 @@ export async function downloadGtfs(url = GTFS_URL, fetchImpl: typeof fetch = fet
 
 /** The files we use from the zip (shapes.txt alone is ~28 MB, so only these are unpacked). */
 export function readGtfsZip(zip: Uint8Array): GtfsFiles {
-  const wanted = new Set(Object.values(NEEDED));
+  const wanted = new Set([...Object.values(NEEDED), 'feed_info.txt']);
   const unzipped = unzipSync(zip, { filter: (f) => wanted.has(f.name) });
   const text = (name: string) => {
     const file = unzipped[name];
     if (!file) throw new Error(`GTFS zip has no ${name}`);
     return strFromU8(file);
   };
-  return Object.fromEntries(Object.entries(NEEDED).map(([key, name]) => [key, text(name)])) as unknown as GtfsFiles;
+  const files = Object.fromEntries(Object.entries(NEEDED).map(([key, name]) => [key, text(name)])) as unknown as GtfsFiles;
+  const feedInfo = unzipped['feed_info.txt']; // optional in GTFS
+  return feedInfo ? { ...files, feedInfo: strFromU8(feedInfo) } : files;
 }

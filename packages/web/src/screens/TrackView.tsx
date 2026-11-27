@@ -147,12 +147,6 @@ export function TrackView({
   const goingToName = goingTo && nameOf(goingTo);
   const name = stationName(station);
 
-  // This page is laid out to fit one screen, so the page itself never scrolls (the "more" sheet scrolls inside).
-  useEffect(() => {
-    document.documentElement.classList.add('scroll-locked');
-    return () => document.documentElement.classList.remove('scroll-locked');
-  }, []);
-
   // The switch to and from the board (see lib/viewSwitch.ts). Entering, the trains stay hidden until the tracks
   // are back; leaving, the board only takes over once the sign is in its place.
   const rootRef = useRef<HTMLDivElement>(null);
@@ -261,7 +255,6 @@ export function TrackView({
           </p>
         </div>
         <div className="track-view__actions">
-          <OptionsMenu />
           <button
             className={`star${isFavourite ? ' star--on' : ''}`}
             onClick={onToggleFavourite}
@@ -270,6 +263,7 @@ export function TrackView({
           >
             {isFavourite ? '★' : '☆'}
           </button>
+          <OptionsMenu />
         </div>
       </header>
 

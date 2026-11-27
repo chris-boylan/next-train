@@ -7,6 +7,7 @@ import { NETWORK_TERMINI, networkSchematic, withBreaks } from './data/networkSch
 import { servicesByTrack, SERVICE_LINE_COLOURS, trackColours, type MapService } from './data/networkColours';
 import { hasNoData, isNorthern, NI_STATIONS, withNorthernTrack } from './data/northernStations';
 import { OptionsMenu } from '../components/OptionsMenu';
+import { useScrollMemory } from '../lib/scrollMemory';
 import { PositionedMap } from './PositionedMap';
 
 interface Props {
@@ -50,6 +51,7 @@ const SEARCHABLE: Station[] = [...NETWORK_STATIONS, ...NI_STATIONS.map((s) => ({
 export function NetworkMap({ onBack, onSelectStation }: Props) {
   const { t, lang } = useI18n();
   const name = useNetworkName();
+  const scrollRef = useScrollMemory<HTMLDivElement>('map:network');
   // Irish names are longer and wrap onto more lines, so the Irish map is taller.
   const schematic = useMemo(() => networkSchematic(lang), [lang]);
   const [query, setQuery] = useState('');
@@ -59,7 +61,7 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
   const open = (code: string) => onSelectStation(code, name(code));
 
   return (
-    <div className="network">
+    <div className="screen network">
       <header className="picker__header">
         <div className="picker__title">
           <button className="chip" onClick={onBack}>
@@ -78,56 +80,58 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
         />
       </header>
 
-      {query.trim() ? (
-        <ul className="station-list">
-          {results.map((s) => (
-            <li key={s.code} className="station-row">
-              {hasNoData(s.code) ? (
-                <button className="station-row__name station-row__name--no-data" onClick={() => open(s.code)}>
-                  {name(s.code)} <span className="network__no-data-note">· {t.timetableOnly}</span>
-                </button>
-              ) : (
-                <button className="station-row__name" onClick={() => open(s.code)}>
-                  {name(s.code)}
-                </button>
-              )}
-            </li>
-          ))}
-          {!results.length && <li className="picker__empty">{t.noMatch(query)}</li>}
-        </ul>
-      ) : (
-        <>
-          <ul className="commuter__legend">
-            {LEGEND.map((s) => (
-              <li key={s}>
-                <span className="commuter__swatch" style={{ background: SERVICE_LINE_COLOURS[s] }} />
-                {s === 'ni' ? `${t.niRailways} (${t.timetableOnly})` : t.serviceNames[s]}
+      <div className="screen__scroll" ref={scrollRef}>
+        {query.trim() ? (
+          <ul className="station-list">
+            {results.map((s) => (
+              <li key={s.code} className="station-row">
+                {hasNoData(s.code) ? (
+                  <button className="station-row__name station-row__name--no-data" onClick={() => open(s.code)}>
+                    {name(s.code)} <span className="network__no-data-note">· {t.timetableOnly}</span>
+                  </button>
+                ) : (
+                  <button className="station-row__name" onClick={() => open(s.code)}>
+                    {name(s.code)}
+                  </button>
+                )}
               </li>
             ))}
+            {!results.length && <li className="picker__empty">{t.noMatch(query)}</li>}
           </ul>
-          <PositionedMap
-            schematic={schematic}
-            edges={MAP_EDGES}
-            codes={MAP_CODES}
-            name={(code) => withBreaks(name(code))}
-            major={major}
-            colourOf={(a, b) => trackColours(SERVICES_BY_TRACK, a, b)}
-            onSelect={open}
-            noData={hasNoData}
-            className="schematic--compact schematic--network"
-            label={t.allStations}
-          />
-          <p className="network__unmapped">
-            <em>{t.italicStations}</em> {t.timetableOnlyNote}
-          </p>
-          {unmapped.length > 0 && (
+        ) : (
+          <>
+            <ul className="commuter__legend">
+              {LEGEND.map((s) => (
+                <li key={s}>
+                  <span className="commuter__swatch" style={{ background: SERVICE_LINE_COLOURS[s] }} />
+                  {s === 'ni' ? `${t.niRailways} (${t.timetableOnly})` : t.serviceNames[s]}
+                </li>
+              ))}
+            </ul>
+            <PositionedMap
+              schematic={schematic}
+              edges={MAP_EDGES}
+              codes={MAP_CODES}
+              name={(code) => withBreaks(name(code))}
+              major={major}
+              colourOf={(a, b) => trackColours(SERVICES_BY_TRACK, a, b)}
+              onSelect={open}
+              noData={hasNoData}
+              className="schematic--compact schematic--network"
+              label={t.allStations}
+            />
             <p className="network__unmapped">
-              {t.notYetMapped}: {unmapped.map((s) => name(s.code)).join(', ')}
+              <em>{t.italicStations}</em> {t.timetableOnlyNote}
             </p>
-          )}
-        </>
-      )}
+            {unmapped.length > 0 && (
+              <p className="network__unmapped">
+                {t.notYetMapped}: {unmapped.map((s) => name(s.code)).join(', ')}
+              </p>
+            )}
+          </>
+        )}
 
+      </div>
     </div>
   );
 }

@@ -32,56 +32,59 @@ export function ServicePicker({ onSelect, onOpenNetwork, favourites, onSelectFav
   };
 
   return (
-    <div className="picker">
+    <div className="screen picker">
       <header className="picker__header">
         <div className="picker__title">
           <h1>Next Train?</h1>
           <OptionsMenu />
         </div>
       </header>
-      {favouritesPlace === 'home' && favourites.length > 0 && (
-        <>
-          <h2 className="services__heading">{t.favouriteStations}</h2>
-          <div className="favourites favourites--home" aria-label={t.favouriteStations}>
-            {favourites.map((s) => (
-              <button key={s.code} className="chip chip--fav" onClick={() => onSelectFavourite(s)}>
-                ★ <Caps text={stationName(s)} />
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-      <h2 className="services__heading">{t.chooseService}</h2>
-      <ul className="services">
-        {SERVICE_ORDER.map((id) => (
-          <li key={id}>
-            <button className={`service-tile service-tile--${id}`} onClick={() => onSelect(id)}>
-              <span className="service-tile__stripes" aria-hidden>
-                <span className="service-tile__north" />
-                <span className="service-tile__south" />
-              </span>
-              <span className="service-tile__text">
-                <span className="service-tile__name">{t.serviceNames[id]}</span>
-                <span className="service-tile__route">
-                  <Caps text={routes[id]} />
+
+      <div className="screen__scroll">
+        {favouritesPlace === 'home' && favourites.length > 0 && (
+          <>
+            <h2 className="services__heading">{t.favouriteStations}</h2>
+            <div className="favourites favourites--home" aria-label={t.favouriteStations}>
+              {favourites.map((s) => (
+                <button key={s.code} className="chip chip--fav" onClick={() => onSelectFavourite(s)}>
+                  ★ <Caps text={stationName(s)} />
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+        <h2 className="services__heading">{t.chooseService}</h2>
+        <ul className="services">
+          {SERVICE_ORDER.map((id) => (
+            <li key={id}>
+              <button className={`service-tile service-tile--${id}`} onClick={() => onSelect(id)}>
+                <span className="service-tile__stripes" aria-hidden>
+                  <span className="service-tile__north" />
+                  <span className="service-tile__south" />
                 </span>
-              </span>
-              <span className="service-tile__go" aria-hidden>
-                ›
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
-      <button className="network-link" onClick={onOpenNetwork}>
-        <span className="network-link__text">
-          <span className="network-link__name">{t.allStations}</span>
-          <span className="service-tile__route">{t.allStationsNote}</span>
-        </span>
-        <span className="service-tile__go" aria-hidden>
-          ›
-        </span>
-      </button>
+                <span className="service-tile__text">
+                  <span className="service-tile__name">{t.serviceNames[id]}</span>
+                  <span className="service-tile__route">
+                    <Caps text={routes[id]} />
+                  </span>
+                </span>
+                <span className="service-tile__go" aria-hidden>
+                  ›
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+        <button className="network-link" onClick={onOpenNetwork}>
+          <span className="network-link__text">
+            <span className="network-link__name">{t.allStations}</span>
+            <span className="service-tile__route">{t.allStationsNote}</span>
+          </span>
+          <span className="service-tile__go" aria-hidden>
+            ›
+          </span>
+        </button>
+      </div>
     </div>
   );
 }

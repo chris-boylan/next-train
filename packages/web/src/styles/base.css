@@ -13,11 +13,38 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Screens designed to fit exactly (the station page) lock the page, so it never scrolls or bounces. */
-html.scroll-locked,
-html.scroll-locked body {
+/* The page itself never scrolls or bounces: on iOS a scrolling page slides the header up under the status bar,
+   which blurs it. Each screen is pinned to the screen instead (.screen), with its header fixed at the top and
+   only the content below it scrolling (.screen__scroll). The station page fits one screen and scrolls nowhere. */
+html,
+body {
+  height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
+}
+
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  max-width: 560px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.screen > header {
+  flex: none;
+}
+
+.screen__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  /* Bounces stay inside the list; the header never moves. */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(32px + env(safe-area-inset-bottom));
 }
 
 button {

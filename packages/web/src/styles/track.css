@@ -22,7 +22,8 @@
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   height: 64px;
-  padding: 0 8px 0 12px;
+  /* 16px each side, like the map screens' headers, so the back chip and the cog stay put between screens. */
+  padding: 0 16px;
   flex: none;
   border-bottom: 2px solid var(--rule);
 }

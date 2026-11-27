@@ -8,6 +8,7 @@ import { intercitySchematic, nirSchematic } from '../maps/data/intercitySchemati
 import { NIR_ROUTE_MAP } from '../maps/data/nirRoutes';
 import { NETWORK_TERMINI, withBreaks } from '../maps/data/networkSchematic';
 import { LineMap } from '../maps/LineMap';
+import { useScrollMemory } from '../lib/scrollMemory';
 import { SchematicMap } from '../maps/SchematicMap';
 import { SCHEMATICS } from '../maps/data/schematics';
 import { Caps, useI18n } from '../lib/i18n';
@@ -44,6 +45,8 @@ export function StationPicker({
 }: Props) {
   const { t, stationName } = useI18n();
   const [query, setQuery] = useState('');
+  // Back from a station, the map is where you left it; opened from the service list, it starts at the top.
+  const scrollRef = useScrollMemory<HTMLDivElement>(`map:${service.id}`);
   const [favouritesPlace] = useFavouritesPlace();
   // Live trains: DART and Enterprise so far, and off until the viewer turns them on (one setting for both).
   const hasLiveTrains = isLiveService(service.id);
@@ -64,7 +67,7 @@ export function StationPicker({
   const mapProps = { favouriteCodes: favourites.map((s) => s.code), currentCode, onSelect };
 
   return (
-    <div className="picker">
+    <div className="screen picker">
       <header className="picker__header">
         <div className="picker__title">
           <button className="chip" onClick={onBack}>
@@ -92,76 +95,78 @@ export function StationPicker({
         )}
       </header>
 
-      {query.trim() ? (
-        <ul className="station-list">
-          {results.map((s) => (
-            <li key={s.code} className="station-row">
-              <button className="station-row__name" onClick={() => onSelect(s.code)}>
-                {stationName(s, true)}
-              </button>
-              <button
-                className={`star${isFavourite(s.code) ? ' star--on' : ''}`}
-                onClick={() => onToggleFavourite(s.code)}
-                aria-pressed={isFavourite(s.code)}
-                aria-label={isFavourite(s.code) ? t.removeFavourite(stationName(s)) : t.addFavourite(stationName(s))}
-              >
-                {isFavourite(s.code) ? '★' : '☆'}
-              </button>
-            </li>
-          ))}
-          {!results.length && <li className="picker__empty">{t.noMatch(query)}</li>}
-        </ul>
-      ) : service.id === 'dart' ? (
-        <LineMap {...mapProps} {...liveProps} />
-      ) : service.id === 'commuter' ? (
-        <RoutesMap
-          view={routesView}
-          onViewChange={onRoutesViewChange}
-          service={service}
-          routeMap={COMMUTER_ROUTE_MAP}
-          routeName={(id) => t.commuterRoutes[id]}
-          schematic={commuterSchematicFor}
-          hubs={['CNLLY', 'HSTON']}
-          {...mapProps}
-        />
-      ) : service.id === 'intercity' ? (
-        <RoutesMap
-          view={routesView}
-          onViewChange={onRoutesViewChange}
-          service={service}
-          routeMap={INTERCITY_ROUTE_MAP}
-          routeName={(id) => t.intercityRoutes[id]}
-          // Drawn from the all-stations map, in its compact type, so the two look alike.
-          schematic={intercitySchematic}
-          mapClassName="schematic--compact"
-          mapName={withBreaks}
-          mapTermini={NETWORK_TERMINI}
-          hubs={['HSTON', 'CNLLY']}
-          {...mapProps}
-        />
-      ) : service.id === 'nir' ? (
-        <RoutesMap
-          view={routesView}
-          onViewChange={onRoutesViewChange}
-          service={service}
-          routeMap={NIR_ROUTE_MAP}
-          routeName={(id) => t.nirRoutes[id]}
-          // Drawn from the all-stations map's Northern Ireland, like InterCity's map.
-          schematic={nirSchematic}
-          mapClassName="schematic--compact"
-          mapName={withBreaks}
-          mapTermini={NETWORK_TERMINI}
-          hubs={['BFSTC']}
-          {...mapProps}
-        />
-      ) : SCHEMATICS[service.id] ? (
-        <SchematicMap service={service} schematic={SCHEMATICS[service.id]!} {...mapProps} {...liveProps} />
-      ) : service.line.paths.length > 1 ? (
-        <BranchLineMap service={service} {...mapProps} />
-      ) : (
-        <SimpleLineMap service={service} {...mapProps} {...liveProps} />
-      )}
-      {selectedTrain && <TrainSheet train={selectedTrain} onClose={() => setSelectedTrain(undefined)} />}
+      <div className="screen__scroll" ref={scrollRef}>
+        {query.trim() ? (
+          <ul className="station-list">
+            {results.map((s) => (
+              <li key={s.code} className="station-row">
+                <button className="station-row__name" onClick={() => onSelect(s.code)}>
+                  {stationName(s, true)}
+                </button>
+                <button
+                  className={`star${isFavourite(s.code) ? ' star--on' : ''}`}
+                  onClick={() => onToggleFavourite(s.code)}
+                  aria-pressed={isFavourite(s.code)}
+                  aria-label={isFavourite(s.code) ? t.removeFavourite(stationName(s)) : t.addFavourite(stationName(s))}
+                >
+                  {isFavourite(s.code) ? '★' : '☆'}
+                </button>
+              </li>
+            ))}
+            {!results.length && <li className="picker__empty">{t.noMatch(query)}</li>}
+          </ul>
+        ) : service.id === 'dart' ? (
+          <LineMap {...mapProps} {...liveProps} />
+        ) : service.id === 'commuter' ? (
+          <RoutesMap
+            view={routesView}
+            onViewChange={onRoutesViewChange}
+            service={service}
+            routeMap={COMMUTER_ROUTE_MAP}
+            routeName={(id) => t.commuterRoutes[id]}
+            schematic={commuterSchematicFor}
+            hubs={['CNLLY', 'HSTON']}
+            {...mapProps}
+          />
+        ) : service.id === 'intercity' ? (
+          <RoutesMap
+            view={routesView}
+            onViewChange={onRoutesViewChange}
+            service={service}
+            routeMap={INTERCITY_ROUTE_MAP}
+            routeName={(id) => t.intercityRoutes[id]}
+            // Drawn from the all-stations map, in its compact type, so the two look alike.
+            schematic={intercitySchematic}
+            mapClassName="schematic--compact"
+            mapName={withBreaks}
+            mapTermini={NETWORK_TERMINI}
+            hubs={['HSTON', 'CNLLY']}
+            {...mapProps}
+          />
+        ) : service.id === 'nir' ? (
+          <RoutesMap
+            view={routesView}
+            onViewChange={onRoutesViewChange}
+            service={service}
+            routeMap={NIR_ROUTE_MAP}
+            routeName={(id) => t.nirRoutes[id]}
+            // Drawn from the all-stations map's Northern Ireland, like InterCity's map.
+            schematic={nirSchematic}
+            mapClassName="schematic--compact"
+            mapName={withBreaks}
+            mapTermini={NETWORK_TERMINI}
+            hubs={['BFSTC']}
+            {...mapProps}
+          />
+        ) : SCHEMATICS[service.id] ? (
+          <SchematicMap service={service} schematic={SCHEMATICS[service.id]!} {...mapProps} {...liveProps} />
+        ) : service.line.paths.length > 1 ? (
+          <BranchLineMap service={service} {...mapProps} />
+        ) : (
+          <SimpleLineMap service={service} {...mapProps} {...liveProps} />
+        )}
+        {selectedTrain && <TrainSheet train={selectedTrain} onClose={() => setSelectedTrain(undefined)} />}
+      </div>
     </div>
   );
 }

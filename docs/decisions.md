@@ -29,6 +29,19 @@ time; the boards and sheets show the same tag, and screen readers say "not being
 every board. Some trains (on 27 Nov, most Cork commuter trains) are never picked up: they keep "No Information",
 with `Late=0` and expected = scheduled, so they looked tracked and on time when nobody knew. The start time and the
 answer's query time come in the same row, so the check doesn't depend on the device clock.
+## 2026-11-27 · The page never scrolls: every screen is pinned, with its own scroll area
+
+**Decision:** `html` and `body` never scroll. Every screen is a `.screen` pinned to the screen (`position: fixed`),
+with its header fixed at the top and only the content under it scrolling (`.screen__scroll`, which keeps its
+bounce to itself). This was already true of the station page; the board, pickers, maps and help page now work
+the same way. The header's cog is always the rightmost control, 16 px from the edge and level on every screen,
+with the favourite star to its left. Each map remembers its scroll position for going back from a station, and
+starts at the top when opened from the service list.
+
+**Why:** on iOS, a scrolling page slides the header up under the status bar, and iOS blurs it. Pinning only the
+station page fixed that page but not the board. A sticky header inside a scrolling page still gets dragged down
+by iOS's bounce at the top, so the header sits outside the scroll area. Putting the cog after the star means
+screens without a star don't move it.
 
 ## 2026-11-27 · Live trains on the line maps, opt-in, placed from one feed call
 

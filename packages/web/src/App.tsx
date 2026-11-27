@@ -10,6 +10,7 @@ import { NetworkMap } from './maps/NetworkMap';
 import type { RoutesView } from './maps/RoutesMap';
 import { HelpPage } from './screens/HelpPage';
 import { ServicePicker } from './screens/ServicePicker';
+import { forgetScroll } from './lib/scrollMemory';
 import { StationBoard } from './screens/StationBoard';
 import { StationPicker } from './screens/StationPicker';
 import { TrackView } from './screens/TrackView';
@@ -70,6 +71,7 @@ function Screens() {
   }, [serviceId]);
 
   const selectService = (id: ServiceId) => {
+    forgetScroll(`map:${id}`); // a map opened from the service list starts at the top
     setServiceId(id);
     setStationCode(undefined);
     setPreviousCode(undefined);
@@ -113,7 +115,10 @@ function Screens() {
     return (
       <ServicePicker
         onSelect={selectService}
-        onOpenNetwork={() => setShowNetwork(true)}
+        onOpenNetwork={() => {
+          forgetScroll('map:network');
+          setShowNetwork(true);
+        }}
         favourites={favourites}
         onSelectFavourite={(s) => setBoardStation({ code: s.code, name: stationName(s), from: 'home' })}
       />
