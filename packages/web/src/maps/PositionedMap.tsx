@@ -261,7 +261,7 @@ export function PositionedMap({
     const swap = standIns.find((x) => [...x.link].sort().join('|') === [from, to].sort().join('|'));
     const a = swap && from === swap.for ? swap.code : from;
     const b = swap && to === swap.for ? swap.code : to;
-    if (!points[a] || !points[b]) return undefined;
+    if (!points[a] || !points[b] || a === b) return undefined;
     const previous = new Map<string, string>([[a, a]]);
     const queue = [a];
     while (queue.length && !previous.has(b)) {

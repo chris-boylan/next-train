@@ -1,3 +1,4 @@
+import { Component, type ReactNode } from 'react';
 import { findStationByCode, type LiveTrain } from '@dart-times/core';
 import { useI18n } from '../lib/i18n';
 
@@ -52,7 +53,7 @@ export function alongPath(path: Path, fraction: number): { x: number; y: number;
     }
     left -= l;
   }
-  const [x, y] = path[0]!;
+  const [x, y] = path[0] ?? [0, 0];
   return { x, y, dx: 0, dy: 0 };
 }
 
@@ -70,7 +71,9 @@ export function placeTrains(
     const to = pointOf(train.to);
     const start = pointOf(fromCode);
     if (!to || !start) continue;
-    const path: Path = pathOf(fromCode, train.to) ?? [[start.x, start.y], [to.x, to.y]];
+    // A train standing at a station has no way to go along: an empty or one-point path falls back to the straight line.
+    const drawn = pathOf(fromCode, train.to);
+    const path: Path = drawn && drawn.length >= 2 ? drawn : [[start.x, start.y], [to.x, to.y]];
     const here = alongPath(path, train.at ? 0 : train.progress);
 
     // Which way it's pointing: north/south on a north–south map, else along the track, to the nearest 45°.
@@ -100,8 +103,37 @@ export function placeTrains(
   return placed;
 }
 
+/**
+ * Live trains are an extra layer over the map, placed from data that can surprise us: if placing them ever fails,
+ * the map stays and only the trains go (and come back with the next refresh's trains), rather than a blank page.
+ */
+class TrainsBoundary extends Component<{ trains: LiveTrain[]; children: ReactNode }, { failed: boolean; trains: LiveTrain[] }> {
+  state = { failed: false, trains: this.props.trains };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  // Each refresh brings new trains: try again with them.
+  static getDerivedStateFromProps(props: { trains: LiveTrain[] }, state: { trains: LiveTrain[] }) {
+    return props.trains !== state.trains ? { failed: false, trains: props.trains } : null;
+  }
+  componentDidCatch(error: unknown) {
+    console.error('Live trains could not be drawn', error);
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
 /** Live trains drawn over a map as small tappable arrows that glide to their new place on each refresh. */
-export function TrainMarkers({ trains, pointOf, pathOf, orientation, onSelect }: Props) {
+export function TrainMarkers(props: Props) {
+  return (
+    <TrainsBoundary trains={props.trains}>
+      <TrainMarkersLayer {...props} />
+    </TrainsBoundary>
+  );
+}
+
+function TrainMarkersLayer({ trains, pointOf, pathOf, orientation, onSelect }: Props) {
   const { t, stationName } = useI18n();
   const nameOf = (code: string | undefined, fallback: string) => {
     const station = code ? findStationByCode(code) : undefined;
