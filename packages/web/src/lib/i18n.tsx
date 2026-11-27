@@ -171,6 +171,7 @@ const en = {
     tooMany: 'You’ve sent a few messages already. Please try again later.',
     aboutTitle: 'About',
     about: 'Next Train? is unofficial and isn’t affiliated with Iarnród Éireann.',
+    design: 'Design inspired by the Swiss (International Typographic) Style, with wayfinding-style arrows, and Harry Beck’s London Underground map. Typeface: Inter Tight (SIL Open Font License).',
     version: (version: string) => `Version ${version}`,
   },
   journey: {
@@ -372,6 +373,7 @@ const ga: Messages = {
     tooMany: 'Tá cúpla teachtaireacht seolta agat cheana. Bain triail eile as ar ball.',
     aboutTitle: 'Eolas',
     about: 'Níl Next Train? oifigiúil agus níl baint aige le hIarnród Éireann.',
+    design: 'Dearadh spreagtha ag an Stíl Eilvéiseach (an Stíl Chlóghrafaíochta Idirnáisiúnta), le saigheada ar nós comharthaí treo, agus ag léarscáil Faoi Thalamh Londan le Harry Beck. Cló: Inter Tight (SIL Open Font License).',
     version: (version) => `Leagan ${version}`,
   },
   journey: {
