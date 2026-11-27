@@ -47,17 +47,28 @@ const TRAINS_PER_DIRECTION = 3;
 
 /**
  * How many trains fit in a half of the screen this tall, above (or below) its "more" link. The first train is
- * the bigger "next" one. Measured rather than guessed from the screen's height, because route chips, a name
- * on two lines or the going-to filter take room too. Sizes match track.css and sheets.css.
+ * the bigger "next" one; `extras` is any extra height each of the first few needs (a "Last today" tag, the break
+ * before tomorrow's first train). Measured rather than guessed from the screen's height, because route chips, a
+ * name on two lines or the going-to filter take room too. Sizes match track.css and sheets.css.
  */
-export function trainsThatFit(halfHeight: number): number {
+export function trainsThatFit(halfHeight: number, extras: number[] = []): number {
   const PADDING = 8; // .half's, on the platform side (the far side's may hold the "more" link's edge)
   const MORE_LINK = 36; // .more's min-height
   const NEXT_ROW = 80; // .train--next
   const ROW = 64 + 4; // .train, and the gap between trains
-  const room = halfHeight - PADDING - MORE_LINK;
-  return Math.max(1, Math.min(TRAINS_PER_DIRECTION, 1 + Math.floor((room - NEXT_ROW) / ROW)));
+  let room = halfHeight - PADDING - MORE_LINK;
+  let count = 0;
+  while (count < TRAINS_PER_DIRECTION) {
+    room -= (count === 0 ? NEXT_ROW : ROW) + (extras[count] ?? 0);
+    if (room < 0) break;
+    count++;
+  }
+  return Math.max(1, count);
 }
+
+/** Extra height (track.css) for "Last today" on a train, and for the break in the track before tomorrow's first. */
+const LAST_TODAY_EXTRA = 16;
+const TOMORROW_BREAK_EXTRA = 22 + 4;
 /** Data refreshes every 30s; older than this and something's wrong (e.g. no signal). */
 const STALE_AFTER_MS = 90_000;
 
@@ -234,7 +245,6 @@ export function TrackView({
     observer.observe(half);
     return () => observer.disconnect();
   }, []);
-  const perDirection = halfHeight ? trainsThatFit(halfHeight) : TRAINS_PER_DIRECTION;
   const nowMinutes = Math.floor(irishSecondsOfDay(now.getTime()) / 60);
   const liveCodes = new Set(data?.departures.map((d) => d.trainCode));
   const trainsFor = (direction: Direction, ends: string[]) => {
@@ -259,13 +269,18 @@ export function TrackView({
       ...live.map((d): TrackTrain => ({ live: d, at: nowMinutes + d.dueInMins })),
       ...timetabled.map((d): TrackTrain => ({ timetabled: d, at: d.minutes })),
     ].sort((a, b) => a.at - b.at);
-    const items = all.slice(0, perDirection);
     const isToday = (x: TrackTrain) => !x.timetabled?.tomorrow;
     // The last train today on this track, when tomorrow's first follows it: the timetable is loaded and has
     // nothing more today (with timetabled trains off, or no file, nothing is called the last).
     const firstTomorrow = all.findIndex((x) => !isToday(x));
     const lastToday = firstTomorrow > 0 ? all[firstTomorrow - 1] : undefined;
     const lastTodayCode = lastToday && (lastToday.live?.trainCode ?? lastToday.timetabled?.trainCode);
+    // As many as fit, counting the taller "Last today" row and the break before tomorrow's train.
+    const extras = all
+      .slice(0, TRAINS_PER_DIRECTION)
+      .map((x, i) => (x === lastToday ? LAST_TODAY_EXTRA : 0) + (i > 0 && i === firstTomorrow ? TOMORROW_BREAK_EXTRA : 0));
+    const perDirection = halfHeight ? trainsThatFit(halfHeight, extras) : TRAINS_PER_DIRECTION;
+    const items = all.slice(0, perDirection);
     // "+ N more": live trains beyond those shown; on an NIR page, the rest of today's trains.
     const moreCount = hidden ? 0 : nir ? all.filter(isToday).length - items.filter(isToday).length : Math.max(0, live.length - perDirection);
     return (
