@@ -81,6 +81,7 @@ export function HelpPage({ onBack }: { onBack: () => void }) {
           </li>
         </ul>
         <p>{h.stale}</p>
+        <p>{h.boards}</p>
       </section>
 
       <section className="help__section" aria-labelledby="help-tips">
@@ -158,7 +159,7 @@ function FeedbackForm({ lang }: { lang: string }) {
     try {
       await sendFeedback(getDeviceId(), {
         message,
-        email: email.trim() || undefined,
+        email: email.trim(),
         website,
         elapsedMs: Date.now() - openedAt.current,
         lang,
@@ -171,6 +172,8 @@ function FeedbackForm({ lang }: { lang: string }) {
   };
 
   const tooShort = message.trim().length < FEEDBACK_LIMITS.minMessage;
+  // The browser's own email check (type="email"), plus a dot in the domain, as the server requires.
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   return (
     <form className="help__form" onSubmit={submit}>
       <p>{h.feedbackIntro}</p>
@@ -182,11 +185,25 @@ function FeedbackForm({ lang }: { lang: string }) {
           rows={5}
           maxLength={FEEDBACK_LIMITS.maxMessage}
           required
+          aria-describedby="feedback-count"
         />
+        <span id="feedback-count" className={`help__count${message.length >= FEEDBACK_LIMITS.maxMessage ? ' help__count--full' : ''}`}>
+          {h.characters(message.length, FEEDBACK_LIMITS.maxMessage)}
+        </span>
       </label>
       <label className="help__field">
         <span>{h.email}</span>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" maxLength={FEEDBACK_LIMITS.maxEmail} />
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          autoComplete="email"
+          inputMode="email"
+          maxLength={FEEDBACK_LIMITS.maxEmail}
+          required
+          aria-invalid={email.trim() !== '' && !emailOk}
+        />
+        {email.trim() !== '' && !emailOk && <span className="help__field-error">{h.emailInvalid}</span>}
       </label>
       {/* Honeypot: hidden from people and screen readers; bots tend to fill every field. */}
       <input
@@ -201,7 +218,7 @@ function FeedbackForm({ lang }: { lang: string }) {
       />
       {status === 'failed' && <p className="help__error" role="alert">{h.failed}</p>}
       {status === 'tooMany' && <p className="help__error" role="alert">{h.tooMany}</p>}
-      <button className="help__send" type="submit" disabled={status === 'sending' || tooShort}>
+      <button className="help__send" type="submit" disabled={status === 'sending' || tooShort || !emailOk}>
         {status === 'sending' ? h.sending : h.send}
       </button>
     </form>

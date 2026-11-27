@@ -3,7 +3,7 @@
 
 export const FEEDBACK_LIMITS = {
   minMessage: 3,
-  maxMessage: 2000,
+  maxMessage: 1000,
   maxEmail: 254,
   /** Messages one device can send per hour. */
   perDeviceHour: 3,
@@ -29,7 +29,7 @@ export interface FeedbackEntry {
   id: string;
   deviceId: string;
   message: string;
-  email?: string;
+  email: string;
   lang?: 'en' | 'ga';
   appVersion?: string;
   userAgent?: string;
@@ -82,8 +82,10 @@ export class FeedbackService {
     if (message.length < FEEDBACK_LIMITS.minMessage || message.length > FEEDBACK_LIMITS.maxMessage) {
       return invalid(`Message must be ${FEEDBACK_LIMITS.minMessage}–${FEEDBACK_LIMITS.maxMessage} characters`);
     }
+    // An email is required, so every message can be answered.
     const email = typeof input.email === 'string' ? input.email.trim() : '';
-    if (email && (email.length > FEEDBACK_LIMITS.maxEmail || !EMAIL.test(email))) return invalid('That email address looks wrong');
+    if (!email) return invalid('An email address is required');
+    if (email.length > FEEDBACK_LIMITS.maxEmail || !EMAIL.test(email)) return invalid('That email address looks wrong');
 
     const now = this.now();
     const hourAgo = new Date(now - 60 * 60_000).toISOString();
@@ -98,7 +100,7 @@ export class FeedbackService {
       id: this.newId(),
       deviceId,
       message,
-      ...(email && { email }),
+      email,
       ...((input.lang === 'en' || input.lang === 'ga') && { lang: input.lang }),
       ...(typeof input.appVersion === 'string' && { appVersion: input.appVersion.slice(0, 40) }),
       ...(meta.userAgent && { userAgent: meta.userAgent.slice(0, 300) }),
@@ -119,7 +121,7 @@ export function describeFeedback(entry: FeedbackEntry): string {
     entry.message,
     '',
     '---',
-    `Reply to: ${entry.email ?? '(no email given)'}`,
+    `Reply to: ${entry.email}`,
     `Language: ${entry.lang ?? '?'}  ·  App version: ${entry.appVersion ?? '?'}`,
     `Sent: ${entry.createdAt}  ·  Device: ${entry.deviceId}`,
     `Browser: ${entry.userAgent ?? '?'}`,
