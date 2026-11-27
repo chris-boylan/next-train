@@ -120,6 +120,7 @@ export function HelpPage({ onBack }: { onBack: () => void }) {
       <section className="help__section" aria-labelledby="help-about">
         <h2 id="help-about">{h.aboutTitle}</h2>
         <p>{h.about}</p>
+        <p>{h.design}</p>
         <p className="help__version">{h.version(__APP_VERSION__)}</p>
       </section>
     </div>
