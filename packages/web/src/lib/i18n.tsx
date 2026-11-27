@@ -186,6 +186,10 @@ const en = {
     cancelled: 'Cancelled',
     loading: 'Loading the stops…',
     unavailable: 'Couldn’t load this train’s stops.',
+    // Shown instead of where the train is, for a train Irish Rail should be tracking by now but isn't.
+    untrackedTitle: 'Not tracked',
+    // Kept to about three lines: it sits beside the train, in a 92px band.
+    untracked: 'Irish Rail isn’t tracking this train, so these are timetable times.',
   },
   liveTrains: 'Live trains',
   live: 'Live',
@@ -404,6 +408,8 @@ const ga: Messages = {
     cancelled: 'Cealaithe',
     loading: 'Na stadanna á lódáil…',
     unavailable: 'Níorbh fhéidir stadanna na traenach seo a lódáil.',
+    untrackedTitle: 'Gan rianú',
+    untracked: 'Níl Iarnród Éireann ag rianú na traenach seo, mar sin is amanna an chláir ama iad seo.',
   },
   liveTrains: 'Traenacha beo',
   live: 'Beo',

@@ -118,7 +118,10 @@ export function JourneyView({ train, direction, stationCode, origin, returnTo, c
   const firstDelay = stopsDelay.current ?? 0;
 
   return (
-    <section className={`journey journey--${side}${closing ? ' journey--closing' : ''}`} aria-label={t.journey.stops(destination)}>
+    <section
+      className={`journey journey--${side}${train.untracked ? ' journey--untracked' : ''}${closing ? ' journey--closing' : ''}`}
+      aria-label={t.journey.stops(destination)}
+    >
       <div className="journey__lane" ref={laneRef} aria-hidden />
 
       <div className="journey__train">
@@ -126,7 +129,19 @@ export function JourneyView({ train, direction, stationCode, origin, returnTo, c
           <TrainGlyph />
         </button>
         <p className="journey__now" role="status" style={closing ? undefined : { animationDelay: `${STOPS_FROM_MS + 150}ms` }}>
-          {journey ? <NowLine now={journey.now} name={(code, fallback) => (nameOf(code) !== code ? nameOf(code) : fallback)} /> : error ? t.journey.unavailable : t.journey.loading}
+          {train.untracked ? (
+            // No live position to give (where it "is" would only be guessed from the timetable), so say why.
+            <>
+              <span className="journey__untracked">{t.journey.untrackedTitle}</span>
+              <span className="journey__untracked-note">{t.journey.untracked}</span>
+            </>
+          ) : journey ? (
+            <NowLine now={journey.now} name={(code, fallback) => (nameOf(code) !== code ? nameOf(code) : fallback)} />
+          ) : error ? (
+            t.journey.unavailable
+          ) : (
+            t.journey.loading
+          )}
         </p>
       </div>
 

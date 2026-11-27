@@ -235,3 +235,33 @@
     transition: none;
   }
 }
+
+/* A train Irish Rail isn't tracking: drawn hollow, as on the station page, and the line by the train explains
+   why there's no position and the times are the timetable's. */
+.journey--untracked .glyph-body {
+  fill: var(--bg);
+  stroke-dasharray: 6 4;
+}
+
+.journey--untracked .glyph-window,
+.journey--untracked .glyph-light {
+  opacity: 0.3;
+}
+
+.journey__untracked {
+  display: inline-block;
+  margin-bottom: 4px;
+  padding: 0 4px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.journey__untracked-note {
+  display: block;
+  color: var(--muted);
+  font-weight: 600;
+}
