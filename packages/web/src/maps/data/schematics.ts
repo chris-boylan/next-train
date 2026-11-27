@@ -42,26 +42,26 @@ export const SCHEMATICS: Partial<Record<ServiceId, Schematic>> = {
   // the Midleton line carries on east and the Cobh line drops south past Fota.
   cork: {
     width: 340,
-    height: 520,
+    height: 475,
     points: {
       // Spaced so the longest angled name (Irish "Mainistir na Corann") still fits a phone's width.
       MLLOW: { x: 34, y: 50, label: 'right' },
-      CORK: { x: 76, y: 260, label: 'below' },
-      LSLND: { x: 118, y: 260, label: 'angled' },
-      GHANE: { x: 160, y: 260, label: 'angled' },
-      CGTWL: { x: 204, y: 260, label: 'angled' },
-      MDLTN: { x: 248, y: 260, label: 'angled' },
-      FOTA: { x: 196, y: 340, label: 'right' },
-      CGLOE: { x: 196, y: 395, label: 'right' },
-      RBROK: { x: 196, y: 450, label: 'right' },
-      COBH: { x: 196, y: 500, label: 'right' },
+      CORK: { x: 76, y: 215, label: 'below' },
+      LSLND: { x: 118, y: 215, label: 'angled' },
+      GHANE: { x: 160, y: 215, label: 'angled' },
+      CGTWL: { x: 204, y: 215, label: 'angled' },
+      MDLTN: { x: 248, y: 215, label: 'angled' },
+      FOTA: { x: 196, y: 295, label: 'right' },
+      CGLOE: { x: 196, y: 345, label: 'right' },
+      RBROK: { x: 196, y: 395, label: 'right' },
+      COBH: { x: 196, y: 445, label: 'right' },
     },
     bends: {
       // The Mallow line comes south and sweeps east into Cork.
-      'MLLOW|CORK': [[34, 260]],
-      // The Cobh line leaves Glounthaune heading east, then curves south past Fota.
-      // Leaves Glounthaune itself at 45°, so the dot sits on the split.
-      'GHANE|FOTA': [[196, 296]],
+      'MLLOW|CORK': [[34, 215]],
+      // Tube-map style: the Cobh line leaves Glounthaune on a straight 45° diagonal (the dot sits on the split),
+      // then turns south in one compact corner, the same size as the map's other corners.
+      'GHANE|FOTA': [[196, 251]],
     },
   },
 };
