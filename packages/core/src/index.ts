@@ -11,3 +11,4 @@ export * from './favourites';
 export * from './feedback';
 export * from './journey';
 export * from './timetable';
+export * from './nir';

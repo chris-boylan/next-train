@@ -9,8 +9,10 @@
  * Waterford had no train seen on them when it was built) are left out here too; the map lists them, and
  * they're on the route maps. They appear here as soon as the all-stations map places them.
  */
-import { INTERCITY_STATION_CODES } from '@dart-times/core';
+import { INTERCITY_STATION_CODES, NIR_STATION_CODES } from '@dart-times/core';
 import { INTERCITY_ROUTE_MAP } from './intercityRoutes';
+import { NIR_ROUTE_MAP } from './nirRoutes';
+import type { RouteMap } from './routeMaps';
 import { MAP_EDGES } from '../NetworkMap';
 import { networkSchematic } from './networkSchematic';
 import type { Schematic, SchematicPoint } from './schematics';
@@ -37,13 +39,23 @@ function networkPath(adjacent: Map<string, string[]>, a: string, b: string): str
 }
 
 export function intercitySchematic(lang: 'en' | 'ga' = 'en'): Schematic {
+  return schematicFromNetwork(INTERCITY_STATION_CODES, INTERCITY_ROUTE_MAP, lang);
+}
+
+/** The Translink NIR map, drawn from the all-stations map's Northern Ireland the same way. */
+export function nirSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
+  return schematicFromNetwork(NIR_STATION_CODES, NIR_ROUTE_MAP, lang);
+}
+
+/** A service's map from the all-stations map: its stations where they sit there, its connections along its track. */
+function schematicFromNetwork(codes: string[], routeMap: Pick<RouteMap, 'allEdges'>, lang: 'en' | 'ga'): Schematic {
   const network = networkSchematic(lang);
   const networkBends = network.bends ?? {};
   const bendsBetween = (a: string, b: string): Point[] =>
     networkBends[`${a}|${b}`] ?? [...(networkBends[`${b}|${a}`] ?? [])].reverse();
 
   const points: Record<string, SchematicPoint> = {};
-  for (const code of INTERCITY_STATION_CODES) {
+  for (const code of codes) {
     const p = network.points[code];
     if (p) points[code] = { ...p };
   }
@@ -55,7 +67,7 @@ export function intercitySchematic(lang: 'en' | 'ga' = 'en'): Schematic {
     adjacent.set(b, [...(adjacent.get(b) ?? []), a]);
   }
   const bends: Record<string, Point[]> = {};
-  for (const [a, b] of INTERCITY_ROUTE_MAP.allEdges) {
+  for (const [a, b] of routeMap.allEdges) {
     const path = points[a] && points[b] ? networkPath(adjacent, a, b) : undefined;
     if (!path) continue;
     const corners: Point[] = [];
@@ -67,7 +79,7 @@ export function intercitySchematic(lang: 'en' | 'ga' = 'en'): Schematic {
     if (corners.length) bends[`${a}|${b}`] = corners;
   }
 
-  // The all-stations map starts with Northern Ireland at the top; lift everything to the InterCity network.
+  // Lift everything to the top of this service's network (the all-stations map starts with NI at the top).
   const ys = [...Object.values(points).map((p) => p.y), ...Object.values(bends).flat().map(([, y]) => y)];
   const lift = Math.min(...ys) - 40;
   return {

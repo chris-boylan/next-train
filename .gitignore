@@ -6,3 +6,7 @@ cdk.out/
 .DS_Store
 .idea/
 packages/web/.timetable/
+
+# Local secrets (API keys); never commit
+.env
+.env.*
