@@ -59,11 +59,9 @@ export const SCHEMATICS: Partial<Record<ServiceId, Schematic>> = {
     bends: {
       // The Mallow line comes south and sweeps east into Cork.
       'MLLOW|CORK': [[34, 260]],
-      // The Cobh line leaves Glounthaune at 45° (so the dot sits on the split), then turns south gradually:
-      // several small changes of direction (about 45° → 60° → 80° → straight down) read as one long sweep.
-      // It can't simply move further right for a wider curve: the Irish names on this line would overflow.
-      'GHANE|FOTA': [
-        [178, 279],
+      // Tube-map style: the Cobh line leaves Glounthaune on a straight 45° diagonal (the dot sits on the split),
+      // then turns south in one compact corner, the same size as the map's other corners.
+      'GHANE|FOTA': [[196, 296]],
         [189, 300],
         [196, 326],
       ],
