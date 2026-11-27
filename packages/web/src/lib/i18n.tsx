@@ -74,7 +74,7 @@ const en = {
   // When this service has none but another's trains run that way (Commuter at Kilbarrack, DARTs running).
   noServiceTrains: (service: string) => `No ${service} trains in the next 90 minutes.`,
   otherServicesRun: (services: string, places: string, mins: number) =>
-    `${services} trains to ${places} do, next departing ${mins <= 0 ? 'now' : `in ${mins} min`}.`,
+    `${services} trains to ${places} departing ${mins <= 0 ? 'now' : `in the next ${mins} min`}.`,
   tomorrow: 'Tomorrow',
   // Today's last train on a track, when tomorrow's first follows it.
   lastToday: 'Last today',
@@ -311,7 +311,7 @@ const ga: Messages = {
   noTrainsTowards: (places) => `Níl aon traein i dtreo ${places} sna 90 nóiméad atá romhainn`,
   noServiceTrains: (service) => `Níl aon traein ${service} sna 90 nóiméad atá romhainn.`,
   otherServicesRun: (services, places, mins) =>
-    `Ach ritheann traenacha ${services} go dtí ${places}, an chéad cheann ag imeacht ${mins <= 0 ? 'anois' : `i gceann ${mins} nóim`}.`,
+    `Traenacha ${services} go dtí ${places} ag imeacht ${mins <= 0 ? 'anois' : `sna ${mins} nóim atá romhainn`}.`,
   tomorrow: 'Amárach',
   lastToday: 'Deireanach inniu',
   tomorrowFirst: 'Amárach · na chéad traenacha',
