@@ -1,4 +1,5 @@
 import { type CSSProperties, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { ScrollingName } from '../components/ScrollingName';
 import {
   adjacentStations,
   callsAt,
@@ -18,9 +19,14 @@ import {
   stationLines,
   type Station,
   terminiFrom,
+  LIVE_WINDOW_MINS,
+  SERVICES,
+  type ServiceId,
+  type TrainCategory,
 } from '@dart-times/core';
 import { formatTime, useNow } from '../lib/clock';
 import { DeparturesSheet } from '../components/DeparturesSheet';
+import { Sheet } from '../components/Sheet';
 import { JOURNEY_CLOSE_MS, type JourneyOrigin, JourneyView, RETURN_FADE_DELAY_MS, RETURN_FADE_MS } from '../components/JourneyView';
 import { TrainGlyph } from '../components/TrainGlyph';
 import { DueIn } from '../components/DueIn';
@@ -73,7 +79,7 @@ export function TrackView({
   enterFromBoard = false,
   onEntered,
 }: Props) {
-  const { t, stationName, nameOf, list } = useI18n();
+  const { t, stationName, nameOf, list, scheduledDestination } = useI18n();
   // NI Railways has no live data: its trains come from the timetable, and only stations where the Enterprise
   // calls (Grand Central, Portadown, Newry) have live trains, which come from every Irish Rail train there.
   const nir = service.id === 'nir';
@@ -105,6 +111,8 @@ export function TrackView({
   const goingDirection = goingTo ? directionBetween(station.code, goingTo, line) : undefined;
   // The full departures panel for one direction; it's also where the going-to filter is chosen.
   const [sheetDirection, setSheetDirection] = useState<Direction>();
+  // A tapped timetabled train: a short note on why it shows its timetabled time.
+  const [timetableInfo, setTimetableInfo] = useState<TimetabledDeparture>();
   // The look-ahead for one approaching train (tap a train); `closing` while it animates away.
   const [journey, setJourney] = useState<{ train: Departure; direction: Direction; origin?: JourneyOrigin }>();
   const [closingJourney, setClosingJourney] = useState(false);
@@ -139,6 +147,32 @@ export function TrackView({
     !!p && p.lineId === current.id && p.direction === direction;
   const allIn = (direction: Direction) => data?.departures.filter((d) => onTrack(direction)(placeDeparture(service, station.code, lines, d))) ?? [];
   const timetabledOn = (direction: Direction) => (d: ScheduledDeparture) => onTrack(direction)(placeTimetabled(service, station.code, lines, d));
+
+  // Other services at this station (DART and Commuter share the coast, Commuter and InterCity Kildare...). When a
+  // track has nothing of ours in the live window, every train here is loaded too, so the note can say which
+  // service does run that way ("No Commuter trains towards Connolly... DART trains run this way").
+  const sharedWith = useMemo(
+    () => (Object.keys(SERVICES) as ServiceId[]).filter((id) => id !== service.id && id !== 'nir' && SERVICES[id].stations.some((s) => s.code === station.code)),
+    [service.id, station.code],
+  );
+  const emptyTrack = !!data && (['Northbound', 'Southbound'] as const).some((d) => !allIn(d).length);
+  const { data: everyTrain } = useDepartures(station.code, 'all', liveStation && !nir && sharedWith.length > 0 && emptyTrack);
+  const othersIn = (direction: Direction): OtherServices | undefined => {
+    if (!everyTrain) return undefined;
+    const next = new Map<ServiceId, number>();
+    const destinations: string[] = [];
+    for (const d of everyTrain.departures) {
+      const id = sharedWith.find((other) => SERVICE_CATEGORY[other] === d.category);
+      if (!id) continue;
+      const other = SERVICES[id];
+      // Placed as that service's own page would: every page draws up as north, so the tracks line up.
+      if (placeDeparture(other, station.code, stationLines(other, station.code), d)?.direction !== direction) continue;
+      next.set(id, Math.min(next.get(id) ?? Infinity, d.dueInMins));
+      const to = d.destinationCode ?? d.destination;
+      if (!destinations.includes(to)) destinations.push(to);
+    }
+    return next.size ? { services: [...next.keys()], destinations, nextInMins: Math.min(...next.values()) } : undefined;
+  };
   const directionName = (direction: Direction) =>
     compass ? t.direction[direction] : t.towards2(list(terminiFrom(station.code, direction, line).map(nameOf)));
   const shownIn = (direction: Direction) =>
@@ -209,6 +243,9 @@ export function TrackView({
         hidden={hidden}
         hasData={liveStation ? !!data : !!timetable}
         onOpen={(train, glyph) => openJourney(train, direction, glyph)}
+        onTimetabled={setTimetableInfo}
+        serviceId={service.id}
+        others={hidden ? undefined : othersIn(direction)}
       />
     );
   };
@@ -306,11 +343,11 @@ export function TrackView({
               {onShowBoard ? (
                 // The name switches the station to its list board (and the board's name switches back).
                 <button className="platform__switch" onClick={showBoard} aria-label={`${name}: ${t.showAsList}`} title={t.showAsList}>
-                  <Caps text={name} />
+                  <ScrollingName text={name} />
                   <ListIcon />
                 </button>
               ) : (
-                <Caps text={name} />
+                <ScrollingName text={name} />
               )}
             </h1>
             <OfficialName station={station} />
@@ -368,6 +405,15 @@ export function TrackView({
           onGoingTo={chooseGoingTo}
           onClose={() => setSheetDirection(undefined)}
         />
+      )}
+
+      {timetableInfo && (
+        <Sheet title={`${timetableInfo.time} · ${scheduledDestination(timetableInfo)}`} onClose={() => setTimetableInfo(undefined)}>
+          <p className="timetable-info">
+            <span className="train__timetable">{timetableInfo.tomorrow ? t.tomorrow : t.timetabled}</span>
+            {timetableInfo.category === 'nir' ? t.nirTimetableNote : t.timetableWindow(LIVE_WINDOW_MINS)}
+          </p>
+        </Sheet>
       )}
     </div>
   );
@@ -439,6 +485,24 @@ function Lane({ direction, withHead = false, dimmed }: { direction: Direction; w
 }
 
 /** One place on a track: a live train, or a timetabled one, with when it leaves (minutes after today's midnight). */
+/** Other services with trains on a track that has none of ours, and how soon the first one is due. */
+interface OtherServices {
+  services: ServiceId[];
+  /** Where they go, soonest first: DARTs run north from Kilbarrack, but only to Howth and Malahide. */
+  destinations: string[];
+  nextInMins: number;
+}
+
+/** Which live train category each service's trains are (Cork's are commuter trains too, but share no station). */
+const SERVICE_CATEGORY: Record<ServiceId, TrainCategory | undefined> = {
+  dart: 'dart',
+  enterprise: 'enterprise',
+  commuter: 'commuter',
+  intercity: 'intercity',
+  cork: 'commuter',
+  nir: undefined,
+};
+
 type TrackTrain = { live: Departure; timetabled?: undefined; at: number } | { live?: undefined; timetabled: TimetabledDeparture; at: number };
 
 function Trains({
@@ -454,6 +518,9 @@ function Trains({
   hidden,
   hasData,
   onOpen,
+  onTimetabled,
+  serviceId,
+  others,
 }: {
   direction: Direction;
   /** Live and timetabled trains, in time order, as many as fit. */
@@ -475,6 +542,11 @@ function Trains({
   hasData: boolean;
   /** Tap a train for its look-ahead; gets the train's drawing so the view can start from it. */
   onOpen: (train: Departure, glyph: Element | null) => void;
+  /** Tap a timetabled train for a note on why it isn't live yet. */
+  onTimetabled: (train: TimetabledDeparture) => void;
+  serviceId: ServiceId;
+  /** Other services' trains this way, when this track has none of ours. */
+  others?: OtherServices;
 }) {
   const { t, destinationName, describe, nameOf, list } = useI18n();
   const side = direction === 'Northbound' ? 'north' : 'south';
@@ -491,13 +563,18 @@ function Trains({
     // Named by where this track's trains go: its ends, or (past the end of our line, e.g. Maynooth to Longford)
     // the timetabled trains' destinations.
     const places = ends.length ? ends : [...new Set(items.flatMap((x) => (x.timetabled?.destinationCode ? [x.timetabled.destinationCode] : [])))];
+    const service = t.serviceNames[serviceId];
     message = goingToName
       ? t.noTrainsTo(goingToName)
-      : compass
-        ? t.noTrains(t.direction[direction])
-        : places.length
-          ? t.noTrainsTowards(list(places.map(nameOf)))
-          : t.noTrainsAnyDirection;
+      : others
+        ? // Not "no trains" when another service's trains run this way: name ours, and say which do.
+          // The track's own label already says where it goes, so the note just names the services.
+          `${t.noServiceTrains(service)} ${t.otherServicesRun(list(others.services.map((id) => t.serviceNames[id])), list(others.destinations.slice(0, 3).map(nameOf)), others.nextInMins)}`
+        : compass
+          ? t.noTrains(t.direction[direction])
+          : places.length
+            ? t.noTrainsTowards(list(places.map(nameOf)))
+            : t.noTrainsAnyDirection;
   }
   const note = message && <p className={`trains-empty trains-empty--${side}`}>{message}</p>;
   if (!items.length) return note || null;
@@ -557,7 +634,14 @@ function Trains({
               </div>
             </li>
           ) : (
-            <TimetabledTrain key={`${s!.trainCode}-${s!.minutes}`} d={s!} side={side} next={i === 0 && !liveStation} hollow={liveStation} />
+            <TimetabledTrain
+              key={`${s!.trainCode}-${s!.minutes}`}
+              d={s!}
+              side={side}
+              next={i === 0 && !liveStation}
+              hollow={liveStation}
+              onOpen={() => onTimetabled(s!)}
+            />
           ),
         )}
       </ol>
@@ -568,11 +652,23 @@ function Trains({
 }
 
 /**
- * A timetabled train: no live position or journey, so it can't be opened. NI Railways trains (never live) show
- * their clock time, since a countdown would look live; Irish Rail's, beyond the live window, a countdown. Hollow
- * among live trains, solid at stations with none.
+ * A timetabled train: no live position or journey yet, so tapping it explains why (the live window, or no live
+ * NI Railways times). NI Railways trains (never live) show their clock time, since a countdown would look live;
+ * Irish Rail's, beyond the live window, a countdown. Hollow among live trains, solid at stations with none.
  */
-function TimetabledTrain({ d, side, next, hollow }: { d: TimetabledDeparture; side: 'north' | 'south'; next: boolean; hollow: boolean }) {
+function TimetabledTrain({
+  d,
+  side,
+  next,
+  hollow,
+  onOpen,
+}: {
+  d: TimetabledDeparture;
+  side: 'north' | 'south';
+  next: boolean;
+  hollow: boolean;
+  onOpen: () => void;
+}) {
   const { t, scheduledDestination } = useI18n();
   const now = useNow();
   const clock = d.category === 'nir';
@@ -582,6 +678,7 @@ function TimetabledTrain({ d, side, next, hollow }: { d: TimetabledDeparture; si
       className={`train train--${side}${next ? ' train--next' : ''}${hollow ? ' train--scheduled' : ''}`}
       aria-label={`${t.describeScheduled(destination, d.time)}${d.tomorrow ? `, ${t.tomorrow}` : ''}`}
     >
+      <button className="train__open" aria-label={t.whyTimetabled(destination)} onClick={onOpen} />
       <TrainGlyph />
       <div className="train__info">
         <span className={`train__due${clock ? ' train__due--clock' : ''}`}>

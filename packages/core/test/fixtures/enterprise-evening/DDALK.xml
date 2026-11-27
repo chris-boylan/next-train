@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfObjStationData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://api.irishrail.ie/realtime/">
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.177</Servertime>
+    <Traincode>A124 </Traincode>
+    <Stationfullname>Dundalk</Stationfullname>
+    <Stationcode>DDALK</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Belfast</Destination>
+    <Origintime>17:50</Origintime>
+    <Destinationtime>19:58</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Portmarnock</Lastlocation>
+    <Duein>45</Duein>
+    <Late>7</Late>
+    <Exparrival>18:56</Exparrival>
+    <Expdepart>18:58</Expdepart>
+    <Scharrival>18:49</Scharrival>
+    <Schdepart>18:51</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.177</Servertime>
+    <Traincode>A123 </Traincode>
+    <Stationfullname>Dundalk</Stationfullname>
+    <Stationcode>DDALK</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Belfast</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>17:00</Origintime>
+    <Destinationtime>19:13</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Arrived Dundalk</Lastlocation>
+    <Duein>0</Duein>
+    <Late>-3</Late>
+    <Exparrival>18:12</Exparrival>
+    <Expdepart>18:13</Expdepart>
+    <Scharrival>18:12</Scharrival>
+    <Schdepart>18:16</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.177</Servertime>
+    <Traincode>A125 </Traincode>
+    <Stationfullname>Dundalk</Stationfullname>
+    <Stationcode>DDALK</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Belfast</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>18:00</Origintime>
+    <Destinationtime>20:13</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>63</Duein>
+    <Late>0</Late>
+    <Exparrival>19:12</Exparrival>
+    <Expdepart>19:16</Expdepart>
+    <Scharrival>19:12</Scharrival>
+    <Schdepart>19:16</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.177</Servertime>
+    <Traincode>D825 </Traincode>
+    <Stationfullname>Dundalk</Stationfullname>
+    <Stationcode>DDALK</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dun Laoghaire</Origin>
+    <Destination>Dundalk</Destination>
+    <Origintime>16:40</Origintime>
+    <Destinationtime>18:35</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Laytown</Lastlocation>
+    <Duein>31</Duein>
+    <Late>9</Late>
+    <Exparrival>18:44</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>18:35</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Dundalk</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:14.177</Servertime>
+    <Traincode>D828 </Traincode>
+    <Stationfullname>Dundalk</Stationfullname>
+    <Stationcode>DDALK</Stationcode>
+    <Querytime>18:13:14</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Grand Canal Dock</Origin>
+    <Destination>Dundalk</Destination>
+    <Origintime>17:59</Origintime>
+    <Destinationtime>19:37</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation />
+    <Duein>88</Duein>
+    <Late>4</Late>
+    <Exparrival>19:41</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>19:37</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Dundalk</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+</ArrayOfObjStationData>

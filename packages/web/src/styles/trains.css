@@ -140,3 +140,20 @@
 .train-card__late {
   color: var(--major-bg);
 }
+
+/* Not tracked (the Enterprise in Northern Ireland), placed from the timetable: hollow, dashed, faded windows. */
+.train-marker--estimated .glyph-body {
+  fill: var(--bg);
+  stroke-dasharray: 3 2;
+}
+
+.train-marker--estimated .glyph-window,
+.train-marker--estimated .glyph-light {
+  opacity: 0.3;
+}
+
+.train-card__note {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}

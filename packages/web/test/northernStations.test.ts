@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { NETWORK_EDGES } from '../src/maps/data/network.data';
+import { MAP_EDGES, NOT_DRAWN } from '../src/maps/NetworkMap';
 import { NETWORK_SCHEMATIC } from '../src/maps/data/networkSchematic';
 import { hasNoData, NI_STATIONS, withNorthernTrack } from '../src/maps/data/northernStations';
 
@@ -27,12 +28,17 @@ describe('all-stations map layout', () => {
   const { points, width } = NETWORK_SCHEMATIC;
 
   it('places every connected station, inside the map', () => {
-    for (const code of new Set(withNorthernTrack(NETWORK_EDGES).flat())) {
+    for (const code of new Set(MAP_EDGES.flat())) {
       const p = points[code];
       expect(p, code).toBeDefined();
       expect(p!.x, code).toBeGreaterThanOrEqual(0);
       expect(p!.x, code).toBeLessThanOrEqual(width);
     }
+  });
+
+  it('draws every line with trains, including Ennis–Athenry, Nenagh and Limerick Junction–Waterford', () => {
+    expect(NOT_DRAWN).toEqual([]);
+    for (const code of ['CRGHW', 'ARHAN', 'GORT', 'RCREA', 'NNAGH', 'CCONL', 'TIPRY', 'CLMEL', 'CKOSR']) expect(points[code], code).toBeDefined();
   });
 
   it('gives no two stations the same spot', () => {

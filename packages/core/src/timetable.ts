@@ -164,6 +164,30 @@ export function matchStops(stops: Record<string, string>[], stations: Station[],
   return matches;
 }
 
+/**
+ * Every train's stations, in order, from the GTFS timetable: each trip in the feed (any day), as station codes.
+ * For the all-stations map's connections (`build-network`), where lines with a few trains a day are easily
+ * missed by sampling live trains. Only stops are listed, so an express skips stations; the map's builder drops
+ * links that skip a station lying between two others.
+ */
+export function timetablePaths(files: Pick<GtfsFiles, 'stops' | 'stopTimes'>, stations: Station[]): string[][] {
+  const stopToStation = matchStops(parseCsv(files.stops), stations);
+  const byTrip = new Map<string, { seq: number; code: string }[]>();
+  for (const st of csvRows(files.stopTimes)) {
+    const code = stopToStation.get(st.stop_id!);
+    if (!code) continue;
+    const list = byTrip.get(st.trip_id!) ?? [];
+    list.push({ seq: Number(st.stop_sequence), code });
+    byTrip.set(st.trip_id!, list);
+  }
+  return [...byTrip.values()].map((stops) =>
+    stops
+      .sort((a, b) => a.seq - b.seq)
+      .map((s) => s.code)
+      .filter((code, i, all) => code !== all[i - 1]),
+  );
+}
+
 /** DART, InterCity, Enterprise or Commuter, from the train code (as the live API's categories). */
 export function scheduledCategory(trainCode: string, routeId: string): TrainCategory {
   if (routeId.startsWith('DUB-BFT')) return 'enterprise';

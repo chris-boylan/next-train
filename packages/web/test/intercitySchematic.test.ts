@@ -1,21 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { INTERCITY_STATION_CODES } from '@dart-times/core';
 import { intercitySchematic } from '../src/maps/data/intercitySchematic';
-import { NETWORK_SCHEMATIC } from '../src/maps/data/networkSchematic';
+import { NENAGH_END, NETWORK_SCHEMATIC } from '../src/maps/data/networkSchematic';
 
 describe('InterCity map', () => {
   const map = intercitySchematic();
 
-  it('places every InterCity station the all-stations map places', () => {
+  it('places every InterCity station the all-stations map places, plus its Nenagh line Ballybrophy stop', () => {
     const placedThere = INTERCITY_STATION_CODES.filter((c) => NETWORK_SCHEMATIC.points[c]);
-    expect(Object.keys(map.points).sort()).toEqual(placedThere.sort());
+    expect(Object.keys(map.points).sort()).toEqual([...placedThere, NENAGH_END].sort());
+    expect(map.standIns?.map((s) => s.for)).toEqual(['BBRHY']);
   });
 
-  it('leaves out only stations on lines the all-stations map has no track for yet', () => {
-    const unplaced = INTERCITY_STATION_CODES.filter((c) => !map.points[c]);
-    // The Nenagh line, Gort–Craughwell and Limerick Junction–Waterford, when this was written.
-    const knownGaps = ['RCREA', 'CJRDN', 'NNAGH', 'BHILL', 'CCONL', 'GORT', 'ARHAN', 'CRGHW', 'TIPRY', 'CAHIR', 'CLMEL', 'CKOSR'];
-    for (const code of unplaced) expect(knownGaps).toContain(code);
+  it('places every InterCity station, the Nenagh, Ennis–Athenry and Limerick Junction–Waterford lines included', () => {
+    expect(INTERCITY_STATION_CODES.filter((c) => !map.points[c])).toEqual([]);
   });
 
   it('runs Heuston–Kildare along the all-stations track, through the commuter stations it skips', () => {

@@ -25,8 +25,13 @@ const en = {
   serviceNames: { dart: 'DART', enterprise: 'Enterprise', cork: 'Cork Commuter', commuter: 'Dublin Commuter', intercity: 'InterCity', nir: 'Translink NIR' } as Record<ServiceId, string>,
   dublinBelfast: 'Dublin – Belfast',
   allStations: 'All stations',
-  allStationsNote: 'Every Irish Rail station on one map',
-  notYetMapped: 'Not yet mapped (no train seen on these lines yet)',
+  // Not just Irish Rail's: the map has NI Railways' stations too.
+  allStationsNote: 'Every rail station in Ireland on one map',
+  // All-stations map: stations Irish Rail lists that no train in its published timetable calls at (the closed
+  // Waterford–Rosslare line). Lines with even a few trains a day are drawn, from the timetable.
+  noPassengerTrains: 'No passenger trains in Irish Rail’s timetable',
+  // Stations on lines with trains that the all-stations (and InterCity) map can't draw yet; their boards work from search.
+  notDrawnYet: 'Trains run here, but this map doesn’t draw their line yet (search to see their times)',
   italicStations: 'Stations in italics',
   timetableOnlyNote: 'have timetabled times only: there are no live NI Railways times.',
   timetableOnly: 'timetable only',
@@ -37,6 +42,10 @@ const en = {
   // A train Irish Rail should be tracking by now but isn't: its time is only the timetable's.
   notTracked: 'Not tracked',
   laterNote: (mins: number) => `Timetabled times. Live times and delays appear about ${mins} minutes before.`,
+  // Tapping a timetabled train on the station page.
+  timetableWindow: (mins: number) =>
+    `Irish Rail’s live tracking covers the next ${mins} minutes. This train is further away, so it shows its timetabled time. Its live time and any delay appear once it’s within ${mins} minutes.`,
+  whyTimetabled: (destination: string) => `Why the train to ${destination} shows its timetabled time`,
   map: 'Map',
   allRoutes: 'All routes',
   byRoute: 'By route',
@@ -63,6 +72,10 @@ const en = {
   showOnTracks: 'Show on the tracks',
   lines: 'Lines',
   noTrainsTowards: (places: string) => `No trains towards ${places} in the next 90 minutes`,
+  // When this service has none but another's trains run that way (Commuter at Kilbarrack, DARTs running).
+  noServiceTrains: (service: string) => `No ${service} trains in the next 90 minutes.`,
+  otherServicesRun: (services: string, places: string, mins: number) =>
+    `${services} trains to ${places} do${mins <= 0 ? ', one due now' : `, the next in ${mins} min`}.`,
   tomorrow: 'Tomorrow',
   noMoreToday: 'No more trains today',
   noTimetabledTrains: 'No timetabled trains',
@@ -186,6 +199,10 @@ const en = {
     cancelled: 'Cancelled',
     loading: 'Loading the stops…',
     unavailable: 'Couldn’t load this train’s stops.',
+    // Shown instead of where the train is, for a train Irish Rail should be tracking by now but isn't.
+    untrackedTitle: 'Not tracked',
+    // Kept to about three lines: it sits beside the train, in a 92px band.
+    untracked: 'Irish Rail isn’t tracking this train, so these are timetable times.',
   },
   liveTrains: 'Live trains',
   live: 'Live',
@@ -198,6 +215,9 @@ const en = {
   onTime: 'On time',
   minsLate: (n: number) => `${n} min late`,
   minsEarly: (n: number) => `${n} min early`,
+  // A live-map train Irish Rail isn't tracking (the Enterprise in Northern Ireland), placed from the timetable.
+  estimatedNote: 'Irish Rail isn’t tracking this train, so its place on the map is estimated from the timetable.',
+  describeEstimated: (destination: string, next: string) => `Train to ${destination}, next stop ${next}, not tracked, position estimated`,
   describeTrain: (destination: string, next: string, lateMins: number) =>
     `Train to ${destination}, next stop ${next}` +
     (lateMins > 0 ? `, ${lateMins} minute${lateMins === 1 ? '' : 's'} late` : ''),
@@ -236,8 +256,9 @@ const ga: Messages = {
   // As on Irish Rail's bilingual Dublin–Belfast timetable.
   dublinBelfast: 'Baile Átha Cliath – Béal Feirste',
   allStations: 'Gach stáisiún',
-  allStationsNote: 'Gach stáisiún de chuid Iarnród Éireann ar léarscáil amháin',
-  notYetMapped: 'Gan mapáil fós (níor feiceadh traein ar na línte seo fós)',
+  allStationsNote: 'Gach stáisiún iarnróid in Éirinn ar léarscáil amháin',
+  noPassengerTrains: 'Gan traenacha paisinéirí i gclár ama Iarnród Éireann',
+  notDrawnYet: 'Ritheann traenacha anseo, ach níl a líne ar an léarscáil seo fós (cuardaigh chun a n-amanna a fheiceáil)',
   italicStations: 'Stáisiúin i gcló iodálach:',
   timetableOnlyNote: 'níl acu ach amanna an chláir ama: níl amanna beo ar fáil d’Iarnród Thuaisceart Éireann.',
   timetableOnly: 'clár ama amháin',
@@ -248,6 +269,9 @@ const ga: Messages = {
   timetabled: 'Clár ama',
   notTracked: 'Gan rianú',
   laterNote: (mins) => `Amanna an chláir ama. Feictear amanna beo agus moilleanna thart ar ${mins} nóiméad roimh ré.`,
+  timetableWindow: (mins) =>
+    `Clúdaíonn rianú beo Iarnród Éireann an ${mins} nóiméad atá romhainn. Tá an traein seo níos faide uainn, mar sin taispeántar am an chláir ama. Feicfear a ham beo agus aon mhoill nuair a bheidh sí laistigh de ${mins} nóiméad.`,
+  whyTimetabled: (destination) => `Cén fáth a dtaispeántar am an chláir ama don traein go dtí ${destination}`,
   map: 'Léarscáil',
   allRoutes: 'Gach bealach',
   byRoute: 'De réir bealaigh',
@@ -281,6 +305,9 @@ const ga: Messages = {
   showOnTracks: 'Taispeáin ar na rianta',
   lines: 'Línte',
   noTrainsTowards: (places) => `Níl aon traein i dtreo ${places} sna 90 nóiméad atá romhainn`,
+  noServiceTrains: (service) => `Níl aon traein ${service} sna 90 nóiméad atá romhainn.`,
+  otherServicesRun: (services, places, mins) =>
+    `Ach ritheann traenacha ${services} go dtí ${places}${mins <= 0 ? ', ceann ag teacht anois' : `, an chéad cheann i gceann ${mins} nóim`}.`,
   tomorrow: 'Amárach',
   noMoreToday: 'Níl a thuilleadh traenacha inniu',
   noTimetabledTrains: 'Níl aon traein sa chlár ama',
@@ -404,6 +431,8 @@ const ga: Messages = {
     cancelled: 'Cealaithe',
     loading: 'Na stadanna á lódáil…',
     unavailable: 'Níorbh fhéidir stadanna na traenach seo a lódáil.',
+    untrackedTitle: 'Gan rianú',
+    untracked: 'Níl Iarnród Éireann ag rianú na traenach seo, mar sin is amanna an chláir ama iad seo.',
   },
   liveTrains: 'Traenacha beo',
   live: 'Beo',
@@ -416,6 +445,8 @@ const ga: Messages = {
   onTime: 'In am',
   minsLate: (n) => `${n} nóim. déanach`,
   minsEarly: (n) => `${n} nóim. luath`,
+  estimatedNote: 'Níl Iarnród Éireann ag rianú na traenach seo, mar sin is meastachán ón gclár ama a háit ar an léarscáil.',
+  describeEstimated: (destination, next) => `Traein go dtí ${destination}, an chéad stad eile ${next}, gan rianú, áit mheasta`,
   describeTrain: (destination, next, lateMins) =>
     `Traein go dtí ${destination}, an chéad stad eile ${next}` + (lateMins > 0 ? `, ${lateMins} nóiméad déanach` : ''),
   describeScheduled: (destination, time) => `go dtí ${destination} ag ${time}, de réir an chláir ama`,

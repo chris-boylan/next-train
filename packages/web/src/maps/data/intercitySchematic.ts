@@ -15,7 +15,7 @@ import { NIR_ROUTE_MAP } from './nirRoutes';
 import type { RouteMap } from './routeMaps';
 import { MAP_EDGES } from '../NetworkMap';
 import { networkSchematic } from './networkSchematic';
-import type { Schematic, SchematicPoint } from './schematics';
+import { type Schematic, type SchematicPoint, withStandIns } from './schematics';
 
 type Point = [number, number];
 
@@ -59,6 +59,10 @@ function schematicFromNetwork(codes: string[], routeMap: Pick<RouteMap, 'allEdge
     const p = network.points[code];
     if (p) points[code] = { ...p };
   }
+  // The all-stations map's stand-in stops (the Nenagh line's Ballybrophy), where this service uses their link.
+  const linkKeys = new Set(routeMap.allEdges.map(([a, b]) => [a, b].sort().join('|')));
+  const standIns = (network.standIns ?? []).filter((s) => linkKeys.has([...s.link].sort().join('|')) && network.points[s.code]);
+  for (const s of standIns) points[s.code] = { ...network.points[s.code]! };
 
   // Each InterCity connection follows the all-stations map's track, through any stations it skips.
   const adjacent = new Map<string, string[]>();
@@ -67,7 +71,7 @@ function schematicFromNetwork(codes: string[], routeMap: Pick<RouteMap, 'allEdge
     adjacent.set(b, [...(adjacent.get(b) ?? []), a]);
   }
   const bends: Record<string, Point[]> = {};
-  for (const [a, b] of routeMap.allEdges) {
+  for (const [a, b] of withStandIns(routeMap.allEdges, standIns)) {
     const path = points[a] && points[b] ? networkPath(adjacent, a, b) : undefined;
     if (!path) continue;
     const corners: Point[] = [];
@@ -88,5 +92,6 @@ function schematicFromNetwork(codes: string[], routeMap: Pick<RouteMap, 'allEdge
     points: Object.fromEntries(Object.entries(points).map(([code, p]) => [code, { ...p, y: p.y - lift }])),
     bends: Object.fromEntries(Object.entries(bends).map(([key, cs]) => [key, cs.map(([x, y]): Point => [x, y - lift])])),
     labelMaxWidth: network.labelMaxWidth,
+    standIns,
   };
 }

@@ -1,0 +1,1015 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfObjStationData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://api.irishrail.ie/realtime/">
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E835 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Bray</Origin>
+    <Destination>Malahide</Destination>
+    <Origintime>17:25</Origintime>
+    <Destinationtime>18:40</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Tara Street</Lastlocation>
+    <Duein>2</Duein>
+    <Late>2</Late>
+    <Exparrival>18:14</Exparrival>
+    <Expdepart>18:15</Expdepart>
+    <Scharrival>18:12</Scharrival>
+    <Schdepart>18:13</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>D930 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Longford</Destination>
+    <Origintime>18:16</Origintime>
+    <Destinationtime>20:02</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>3</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>18:16</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>18:16</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>D929 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Bray</Origin>
+    <Destination>Maynooth</Destination>
+    <Origintime>17:29</Origintime>
+    <Destinationtime>19:07</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Arrived Dublin Pearse</Lastlocation>
+    <Duein>6</Duein>
+    <Late>0</Late>
+    <Exparrival>18:17</Exparrival>
+    <Expdepart>18:19</Expdepart>
+    <Scharrival>18:18</Scharrival>
+    <Schdepart>18:19</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E938 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Bray</Origin>
+    <Destination>Howth</Destination>
+    <Origintime>17:34</Origintime>
+    <Destinationtime>18:49</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Sandymount</Lastlocation>
+    <Duein>13</Duein>
+    <Late>3</Late>
+    <Exparrival>18:25</Exparrival>
+    <Expdepart>18:26</Expdepart>
+    <Scharrival>18:22</Scharrival>
+    <Schdepart>18:23</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>P417 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Hazelhatch</Origin>
+    <Destination>Grand Canal Dock</Destination>
+    <Origintime>17:53</Origintime>
+    <Destinationtime>18:33</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Park West and Cherry Orchard</Lastlocation>
+    <Duein>21</Duein>
+    <Late>10</Late>
+    <Exparrival>18:33</Exparrival>
+    <Expdepart>18:34</Expdepart>
+    <Scharrival>18:23</Scharrival>
+    <Schdepart>18:24</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E836 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Greystones</Origin>
+    <Destination>Malahide</Destination>
+    <Origintime>17:31</Origintime>
+    <Destinationtime>18:59</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Seapoint</Lastlocation>
+    <Duein>24</Duein>
+    <Late>4</Late>
+    <Exparrival>18:36</Exparrival>
+    <Expdepart>18:37</Expdepart>
+    <Scharrival>18:32</Scharrival>
+    <Schdepart>18:33</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>D931 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Maynooth</Destination>
+    <Origintime>18:45</Origintime>
+    <Destinationtime>19:32</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>32</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>18:45</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>18:45</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E939 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Bray</Origin>
+    <Destination>Howth</Destination>
+    <Origintime>17:55</Origintime>
+    <Destinationtime>19:10</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Arrived Sandycove</Lastlocation>
+    <Duein>32</Duein>
+    <Late>2</Late>
+    <Exparrival>18:44</Exparrival>
+    <Expdepart>18:45</Expdepart>
+    <Scharrival>18:42</Scharrival>
+    <Schdepart>18:43</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>A126 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Belfast</Destination>
+    <Origintime>18:50</Origintime>
+    <Destinationtime>20:58</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>37</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>18:50</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>18:50</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E837 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Bray</Origin>
+    <Destination>Malahide</Destination>
+    <Origintime>18:02</Origintime>
+    <Destinationtime>19:20</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Killiney</Lastlocation>
+    <Duein>42</Duein>
+    <Late>2</Late>
+    <Exparrival>18:54</Exparrival>
+    <Expdepart>18:55</Expdepart>
+    <Scharrival>18:52</Scharrival>
+    <Schdepart>18:53</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>P418 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Newbridge</Origin>
+    <Destination>Grand Canal Dock</Destination>
+    <Origintime>18:11</Origintime>
+    <Destinationtime>19:04</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Newbridge</Lastlocation>
+    <Duein>45</Duein>
+    <Late>1</Late>
+    <Exparrival>18:57</Exparrival>
+    <Expdepart>18:58</Expdepart>
+    <Scharrival>18:56</Scharrival>
+    <Schdepart>18:57</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E940 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Greystones</Origin>
+    <Destination>Howth</Destination>
+    <Origintime>18:01</Origintime>
+    <Destinationtime>19:29</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Arrived Bray</Lastlocation>
+    <Duein>48</Duein>
+    <Late>-2</Late>
+    <Exparrival>19:00</Exparrival>
+    <Expdepart>19:01</Expdepart>
+    <Scharrival>19:02</Scharrival>
+    <Schdepart>19:03</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E838 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Bray</Origin>
+    <Destination>Malahide</Destination>
+    <Origintime>18:25</Origintime>
+    <Destinationtime>19:40</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>60</Duein>
+    <Late>0</Late>
+    <Exparrival>19:12</Exparrival>
+    <Expdepart>19:13</Expdepart>
+    <Scharrival>19:12</Scharrival>
+    <Schdepart>19:13</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>D932 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Maynooth</Destination>
+    <Origintime>19:17</Origintime>
+    <Destinationtime>20:02</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>64</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>19:17</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>19:17</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E941 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Bray</Origin>
+    <Destination>Howth</Destination>
+    <Origintime>18:32</Origintime>
+    <Destinationtime>19:49</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>70</Duein>
+    <Late>0</Late>
+    <Exparrival>19:22</Exparrival>
+    <Expdepart>19:23</Expdepart>
+    <Scharrival>19:22</Scharrival>
+    <Schdepart>19:23</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>P419 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Hazelhatch</Origin>
+    <Destination>Grand Canal Dock</Destination>
+    <Origintime>18:52</Origintime>
+    <Destinationtime>19:35</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>74</Duein>
+    <Late>0</Late>
+    <Exparrival>19:26</Exparrival>
+    <Expdepart>19:27</Expdepart>
+    <Scharrival>19:26</Scharrival>
+    <Schdepart>19:27</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>A914 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Sligo</Destination>
+    <Origintime>19:32</Origintime>
+    <Destinationtime>22:35</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>79</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>19:32</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>19:32</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E839 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Greystones</Origin>
+    <Destination>Malahide</Destination>
+    <Origintime>18:31</Origintime>
+    <Destinationtime>19:59</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>79</Duein>
+    <Late>0</Late>
+    <Exparrival>19:31</Exparrival>
+    <Expdepart>19:32</Expdepart>
+    <Scharrival>19:31</Scharrival>
+    <Schdepart>19:32</Schdepart>
+    <Direction>Northbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>P761 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Maynooth</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>17:12</Origintime>
+    <Destinationtime>17:56</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed North Strand Junction</Lastlocation>
+    <Duein>3</Duein>
+    <Late>20</Late>
+    <Exparrival>18:16</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>17:56</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>A121 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Belfast</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>16:00</Origintime>
+    <Destinationtime>18:13</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Harmonstown</Lastlocation>
+    <Duein>8</Duein>
+    <Late>8</Late>
+    <Exparrival>18:21</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>18:13</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>A911 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Sligo</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>15:05</Origintime>
+    <Destinationtime>18:18</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Navan Road Parkway</Lastlocation>
+    <Duein>14</Duein>
+    <Late>9</Late>
+    <Exparrival>18:27</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>18:18</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>A614 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Wexford</Destination>
+    <Origintime>18:28</Origintime>
+    <Destinationtime>21:13</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>15</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>18:28</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>18:28</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E125 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Howth</Origin>
+    <Destination>Greystones</Destination>
+    <Origintime>17:55</Origintime>
+    <Destinationtime>19:24</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Arrived Kilbarrack</Lastlocation>
+    <Duein>15</Duein>
+    <Late>7</Late>
+    <Exparrival>18:27</Exparrival>
+    <Expdepart>18:28</Expdepart>
+    <Scharrival>18:20</Scharrival>
+    <Schdepart>18:21</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E250 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Malahide</Origin>
+    <Destination>Bray</Destination>
+    <Origintime>18:04</Origintime>
+    <Destinationtime>19:22</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Arrived Portmarnock</Lastlocation>
+    <Duein>22</Duein>
+    <Late>4</Late>
+    <Exparrival>18:34</Exparrival>
+    <Expdepart>18:35</Expdepart>
+    <Scharrival>18:30</Scharrival>
+    <Schdepart>18:31</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E251 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Howth</Origin>
+    <Destination>Bray</Destination>
+    <Origintime>18:15</Origintime>
+    <Destinationtime>19:32</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>28</Duein>
+    <Late>0</Late>
+    <Exparrival>18:40</Exparrival>
+    <Expdepart>18:41</Expdepart>
+    <Scharrival>18:40</Scharrival>
+    <Schdepart>18:41</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>P762 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Maynooth</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>17:51</Origintime>
+    <Destinationtime>18:35</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Leixlip (Confey)</Lastlocation>
+    <Duein>31</Duein>
+    <Late>9</Late>
+    <Exparrival>18:44</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>18:35</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>D420 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Grand Canal Dock</Origin>
+    <Destination>Hazelhatch</Destination>
+    <Origintime>18:40</Origintime>
+    <Destinationtime>19:29</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>36</Duein>
+    <Late>0</Late>
+    <Exparrival>18:48</Exparrival>
+    <Expdepart>18:49</Expdepart>
+    <Scharrival>18:48</Scharrival>
+    <Schdepart>18:49</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E126 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Malahide</Origin>
+    <Destination>Greystones</Destination>
+    <Origintime>18:25</Origintime>
+    <Destinationtime>19:54</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>39</Duein>
+    <Late>0</Late>
+    <Exparrival>18:51</Exparrival>
+    <Expdepart>18:52</Expdepart>
+    <Scharrival>18:51</Scharrival>
+    <Schdepart>18:52</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>P712 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Drogheda</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>17:57</Origintime>
+    <Destinationtime>18:54</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Arrived Balbriggan</Lastlocation>
+    <Duein>43</Duein>
+    <Late>2</Late>
+    <Exparrival>18:56</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>18:54</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E252 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Howth</Origin>
+    <Destination>Bray</Destination>
+    <Origintime>18:35</Origintime>
+    <Destinationtime>19:50</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>48</Duein>
+    <Late>0</Late>
+    <Exparrival>19:00</Exparrival>
+    <Expdepart>19:01</Expdepart>
+    <Scharrival>19:00</Scharrival>
+    <Schdepart>19:01</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>P763 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Maynooth</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>18:22</Origintime>
+    <Destinationtime>19:06</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>53</Duein>
+    <Late>0</Late>
+    <Exparrival>19:06</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>19:06</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E253 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Malahide</Origin>
+    <Destination>Bray</Destination>
+    <Origintime>18:44</Origintime>
+    <Destinationtime>20:03</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>58</Duein>
+    <Late>0</Late>
+    <Exparrival>19:10</Exparrival>
+    <Expdepart>19:11</Expdepart>
+    <Scharrival>19:10</Scharrival>
+    <Schdepart>19:11</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>A123 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Belfast</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>17:00</Origintime>
+    <Destinationtime>19:13</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Arrived Dundalk</Lastlocation>
+    <Duein>60</Duein>
+    <Late>0</Late>
+    <Exparrival>19:13</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>19:13</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>D421 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Grand Canal Dock</Origin>
+    <Destination>Hazelhatch</Destination>
+    <Origintime>19:10</Origintime>
+    <Destinationtime>20:03</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>67</Duein>
+    <Late>0</Late>
+    <Exparrival>19:19</Exparrival>
+    <Expdepart>19:20</Expdepart>
+    <Scharrival>19:19</Scharrival>
+    <Schdepart>19:20</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E127 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Howth</Origin>
+    <Destination>Greystones</Destination>
+    <Origintime>18:55</Origintime>
+    <Destinationtime>20:27</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>68</Duein>
+    <Late>0</Late>
+    <Exparrival>19:20</Exparrival>
+    <Expdepart>19:21</Expdepart>
+    <Scharrival>19:20</Scharrival>
+    <Schdepart>19:21</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>P764 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Maynooth</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>18:41</Origintime>
+    <Destinationtime>19:24</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>71</Duein>
+    <Late>0</Late>
+    <Exparrival>19:24</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>19:24</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>E254 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Malahide</Origin>
+    <Destination>Bray</Destination>
+    <Origintime>19:03</Origintime>
+    <Destinationtime>20:21</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>78</Duein>
+    <Late>0</Late>
+    <Exparrival>19:30</Exparrival>
+    <Expdepart>19:31</Expdepart>
+    <Scharrival>19:30</Scharrival>
+    <Schdepart>19:31</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>DART</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>P765 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Maynooth</Origin>
+    <Destination>Dublin Connolly</Destination>
+    <Origintime>18:55</Origintime>
+    <Destinationtime>19:43</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>90</Duein>
+    <Late>0</Late>
+    <Exparrival>19:43</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>19:43</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>Southbound</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>D829 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Grand Canal Dock</Origin>
+    <Destination>Drogheda</Destination>
+    <Origintime>18:19</Origintime>
+    <Destinationtime>19:24</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>14</Duein>
+    <Late>0</Late>
+    <Exparrival>18:26</Exparrival>
+    <Expdepart>18:27</Expdepart>
+    <Scharrival>18:26</Scharrival>
+    <Schdepart>18:27</Schdepart>
+    <Direction>To Drogheda</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>D830 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Grand Canal Dock</Origin>
+    <Destination>Drogheda</Destination>
+    <Origintime>18:59</Origintime>
+    <Destinationtime>20:07</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>54</Duein>
+    <Late>0</Late>
+    <Exparrival>19:06</Exparrival>
+    <Expdepart>19:07</Expdepart>
+    <Scharrival>19:06</Scharrival>
+    <Schdepart>19:07</Schdepart>
+    <Direction>To Drogheda</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>D831 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Grand Canal Dock</Origin>
+    <Destination>Drogheda</Destination>
+    <Origintime>19:19</Origintime>
+    <Destinationtime>20:31</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>74</Duein>
+    <Late>0</Late>
+    <Exparrival>19:26</Exparrival>
+    <Expdepart>19:27</Expdepart>
+    <Scharrival>19:26</Scharrival>
+    <Schdepart>19:27</Schdepart>
+    <Direction>To Drogheda</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>P619 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Drogheda</Origin>
+    <Destination>Grand Canal Dock</Destination>
+    <Origintime>17:43</Origintime>
+    <Destinationtime>18:54</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Arrived Skerries</Lastlocation>
+    <Duein>38</Duein>
+    <Late>7</Late>
+    <Exparrival>18:50</Exparrival>
+    <Expdepart>18:51</Expdepart>
+    <Scharrival>18:43</Scharrival>
+    <Schdepart>18:44</Schdepart>
+    <Direction>To Grand Canal Dock</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>P620 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Drogheda</Origin>
+    <Destination>Grand Canal Dock</Destination>
+    <Origintime>18:03</Origintime>
+    <Destinationtime>19:14</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Mosney</Lastlocation>
+    <Duein>50</Duein>
+    <Late>-1</Late>
+    <Exparrival>19:02</Exparrival>
+    <Expdepart>19:03</Expdepart>
+    <Scharrival>19:03</Scharrival>
+    <Schdepart>19:04</Schdepart>
+    <Direction>To Grand Canal Dock</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T18:13:13.737</Servertime>
+    <Traincode>D419 </Traincode>
+    <Stationfullname>Dublin Connolly</Stationfullname>
+    <Stationcode>CNLLY</Stationcode>
+    <Querytime>18:13:13</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Connolly</Origin>
+    <Destination>Newbridge</Destination>
+    <Origintime>18:32</Origintime>
+    <Destinationtime>19:35</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>19</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>18:32</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>18:32</Schdepart>
+    <Direction>To Newbridge</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+</ArrayOfObjStationData>

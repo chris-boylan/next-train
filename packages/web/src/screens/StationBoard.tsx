@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { ScrollingName } from '../components/ScrollingName';
 import {
   commuterHeading,
   delaySeverity,
@@ -160,11 +161,11 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
           <h1 className={`platform__name${name.length > 20 ? ' platform__name--longer' : name.length > 13 ? ' platform__name--long' : ''}`}>
             {onShowTracks ? (
               <button className="platform__switch" onClick={showTracks} aria-label={`${name}: ${t.showOnTracks}`} title={t.showOnTracks}>
-                <Caps text={name} />
+                <ScrollingName text={name} />
                 <TracksIcon />
               </button>
             ) : (
-              <Caps text={name} />
+              <ScrollingName text={name} />
             )}
           </h1>
           <OfficialName station={findStationByCode(code)} />

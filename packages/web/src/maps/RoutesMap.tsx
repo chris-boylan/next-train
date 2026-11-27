@@ -3,7 +3,7 @@ import type { Service } from '@dart-times/core';
 import { type Lang, useI18n } from '../lib/i18n';
 import { PositionedMap } from './PositionedMap';
 import type { RouteMap } from './data/routeMaps';
-import type { Schematic } from './data/schematics';
+import { realCode, type Schematic, withStandIns } from './data/schematics';
 import { TreeMap } from './TreeMap';
 
 /** Which view the map is showing: every route, the list of routes, or one route. Kept by the app, so coming
@@ -76,14 +76,19 @@ export function RoutesMap<Id extends string>({
   const setRouteId = (id: Id | undefined) => onViewChange({ ...view, routeId: id });
   const route = mode === 'byRoute' ? routeMap.routes.find((r) => r.id === view.routeId) : undefined;
   const byCode = new Map(service.stations.map((s) => [s.code, s]));
+  // Stand-in stops (the Nenagh line's Ballybrophy on the InterCity map) are named, coloured and opened as the
+  // station they stand for.
+  const standIns = schematic?.standIns ?? [];
+  const real = (code: string) => realCode(code, standIns);
   const name = (code: string) => {
-    const station = byCode.get(code);
+    const station = byCode.get(real(code));
     return station ? stationName(station) : code;
   };
-  const { allEdges, coloursOf } = routeMap;
+  const { coloursOf } = routeMap;
+  const allEdges = withStandIns(routeMap.allEdges, standIns);
   // A hand-placed map may not place every station yet (InterCity's comes from the all-stations map): draw
   // what it places and list the rest, which are still on the route maps.
-  const placed = schematic && service.stations.filter((s) => schematic.points[s.code]).map((s) => s.code);
+  const placed = schematic && [...service.stations.filter((s) => schematic.points[s.code]).map((s) => s.code), ...standIns.map((s) => s.code)];
   const unplaced = schematic ? service.stations.filter((s) => !schematic.points[s.code]) : [];
   const drawnEdges = schematic ? allEdges.filter(([a, b]) => schematic.points[a] && schematic.points[b]) : allEdges;
   const degree = (code: string) => drawnEdges.filter((e) => e.includes(code)).length;
@@ -122,16 +127,16 @@ export function RoutesMap<Id extends string>({
                 codes={placed!}
                 name={(code) => mapName(name(code))}
                 major={(code) => degree(code) !== 2 || !!mapTermini?.has(code)}
-                colourOf={coloursOf}
+                colourOf={(a, b) => coloursOf(real(a), real(b))}
                 favouriteCodes={favouriteCodes}
                 currentCode={currentCode}
-                onSelect={onSelect}
+                onSelect={(code) => onSelect(real(code))}
                 className={mapClassName}
                 label={t.allRoutes}
               />
               {unplaced.length > 0 && (
                 <p className="network__unmapped">
-                  {t.notYetMapped}: {unplaced.map((s) => stationName(s)).join(', ')}
+                  {t.notDrawnYet}: {unplaced.map((s) => stationName(s)).join(', ')}
                 </p>
               )}
             </>

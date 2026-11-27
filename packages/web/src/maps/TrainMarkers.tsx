@@ -113,10 +113,15 @@ export function TrainMarkers({ trains, pointOf, pathOf, orientation, onSelect }:
       {placeTrains(trains, pointOf, pathOf, orientation).map(({ train, x, y, angle }) => (
         <button
           key={train.code}
-          className={`train-marker train-marker--${train.direction === 'Northbound' ? 'north' : 'south'}`}
+          // Not tracked, placed from the timetable: hollow, like the station page's timetabled trains.
+          className={`train-marker train-marker--${train.direction === 'Northbound' ? 'north' : 'south'}${train.estimated ? ' train-marker--estimated' : ''}`}
           style={{ transform: `translate(${x}px, ${y}px)` }}
           onClick={() => onSelect(train)}
-          aria-label={t.describeTrain(nameOf(train.destinationCode, train.destination), nameOf(train.to, train.to), train.lateMins)}
+          aria-label={
+            train.estimated
+              ? t.describeEstimated(nameOf(train.destinationCode, train.destination), nameOf(train.to, train.to))
+              : t.describeTrain(nameOf(train.destinationCode, train.destination), nameOf(train.to, train.to), train.lateMins)
+          }
         >
           <TrainTopGlyph angle={angle} />
         </button>

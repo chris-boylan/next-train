@@ -8,7 +8,8 @@
 import type { IrishRailClient, RawStationData, RawTrainPosition } from './irishRailClient';
 import { adjacentStations, directionBetween, type Line, route } from './line';
 import { SERVICES, type ServiceId } from './services';
-import { findStationByName } from './stations';
+import { isTracked } from './departures';
+import { findStationByCode, findStationByName } from './stations';
 import type { Direction } from './types';
 
 export type TrainState = 'arrived' | 'departed' | 'not-started' | 'terminated' | 'unknown';
@@ -44,6 +45,11 @@ export interface LiveTrain {
   progress: number;
   /** Minutes late; negative when early. */
   lateMins: number;
+  /**
+   * Irish Rail isn't tracking it (the Enterprise in Northern Ireland): placed from its timetable times on the
+   * station boards, so its position is an estimate and its lateness unknown.
+   */
+  estimated?: true;
 }
 
 /** How far along the gap a departed train is drawn. Without timings, halfway reads best. */
@@ -106,6 +112,9 @@ export function placeTrain(raw: RawTrainPosition, serviceId: ServiceId = 'dart')
   const direction =
     (last && last !== next ? directionBetween(last, next, line) : undefined) ??
     (destinationCode && destinationCode !== next ? directionBetween(next, destinationCode, line) : undefined) ??
+    // Next stop is the last one and the last location is off the line (Belfast–Connolly "Departed Portmarnock"):
+    // the way from where it started. The API's own direction reads "To Dublin Connolly" off the DART.
+    (originCode && originCode !== next ? directionBetween(originCode, next, line) : undefined) ??
     (raw.Direction === 'Northbound' || raw.Direction === 'Southbound' ? raw.Direction : undefined);
   if (!direction) return undefined;
 
@@ -125,9 +134,32 @@ export function placeTrain(raw: RawTrainPosition, serviceId: ServiceId = 'dart')
       : { ...base, from: last, progress: DEPARTED_PROGRESS };
   }
 
-  // Last seen at a signal: approach the next stop from the station before it, on the way the train is going.
+  // Last seen somewhere not on this line: between the station before the next stop and the next stop.
   const before = previousStation(next, direction, originCode, line);
-  return before ? { ...base, from: before, progress: SIGNAL_PROGRESS } : { ...base, at: next, progress: 0 };
+  if (!before) return { ...base, at: next, progress: 0 };
+  // A station the train passes without stopping (an Enterprise "Departed Raheny"): as far along as it really is.
+  // Otherwise a signal or junction, drawn just short of the next stop.
+  const passed = msg.last ? findStationByName(msg.last) : undefined;
+  const progress = passed ? progressPast(before, passed.code, next) : undefined;
+  return { ...base, from: before, progress: progress ?? SIGNAL_PROGRESS };
+}
+
+/** Straight-line distance between two stations, in km; undefined if either has no position. */
+function distanceKm(a: string, b: string): number | undefined {
+  const p = findStationByCode(a);
+  const q = findStationByCode(b);
+  if (!p || !q || (!p.lat && !p.lon) || (!q.lat && !q.lon)) return undefined;
+  const n = (q.lat - p.lat) * 111;
+  const e = (q.lon - p.lon) * 111 * Math.cos((p.lat * Math.PI) / 180);
+  return Math.hypot(n, e);
+}
+
+/** How far from `from` to `to` a train at `passed` is (0–1), by real distances; kept off the two dots themselves. */
+export function progressPast(from: string, passed: string, to: string): number | undefined {
+  const done = distanceKm(from, passed);
+  const left = distanceKm(passed, to);
+  if (done === undefined || left === undefined || done + left === 0) return undefined;
+  return Math.min(0.9, Math.max(0.1, done / (done + left)));
 }
 
 /**
@@ -141,10 +173,95 @@ export function isLiveService(value: unknown): value is LiveServiceId {
   return (LIVE_SERVICES as readonly unknown[]).includes(value);
 }
 
+/**
+ * Services whose maps also read every station's board, to catch what the positions feed gets wrong. Irish Rail
+ * doesn't track the Enterprise in Northern Ireland: Belfast-bound trains freeze at "Departed Dundalk next stop
+ * Newry" for hours after arriving, and Dublin-bound ones are missing until they reach Dundalk. Six stations, so
+ * six cached calls a refresh; not the DART (31 stations, and tracked throughout).
+ */
+const CHECK_BOARDS: ReadonlySet<ServiceId> = new Set(['enterprise']);
+
 /** Every running train on a service's line, placed for the map. */
 export async function getLiveTrains(client: IrishRailClient, serviceId: ServiceId = 'dart'): Promise<LiveTrain[]> {
   const raw = serviceId === 'dart' ? await client.getCurrentDarts() : await client.getCurrentTrains();
-  return raw.map((r) => placeTrain(r, serviceId)).filter((t): t is LiveTrain => !!t);
+  const tracked = raw.map((r) => placeTrain(r, serviceId)).filter((t): t is LiveTrain => !!t);
+  if (!CHECK_BOARDS.has(serviceId)) return tracked;
+
+  const service = SERVICES[serviceId];
+  const codes = [...new Set(service.line.paths.flat())];
+  // A board that fails to load is left out: nothing is dropped or estimated on its say-so.
+  const boards = new Map<string, RawStationData[]>();
+  await Promise.all(
+    codes.map(async (code) => {
+      const rows = await client.getStationData(code).catch(() => undefined);
+      if (rows) boards.set(code, rows.filter((r) => service.matches(r)));
+    }),
+  );
+  return withBoards(tracked, boards, serviceId);
+}
+
+/**
+ * Checks placed trains against the stations' boards: drops a "tracked" train its next stop doesn't expect (a
+ * position frozen at the border), and adds trains running untracked, estimated from their times on the boards.
+ */
+export function withBoards(tracked: LiveTrain[], boards: Map<string, RawStationData[]>, serviceId: ServiceId): LiveTrain[] {
+  const line = SERVICES[serviceId].line;
+  const code = (r: RawStationData) => r.Traincode.trim();
+  const listed = (station: string, train: string) => boards.get(station)?.some((r) => code(r) === train);
+  const real = tracked.filter((t) => !boards.has(t.to) || listed(t.to, t.code));
+
+  // Untracked trains, by train: every station still ahead of them, with how many minutes away each is.
+  const ahead = new Map<string, { station: string; due: number; row: RawStationData }[]>();
+  for (const [station, rows] of boards) {
+    for (const row of rows) {
+      if (isTracked(row) || real.some((t) => t.code === code(row))) continue;
+      const due = Number.parseInt(row.Duein, 10);
+      if (!Number.isFinite(due)) continue;
+      ahead.set(code(row), [...(ahead.get(code(row)) ?? []), { station, due, row }]);
+    }
+  }
+  const estimated = [...ahead.entries()].flatMap(([train, stops]): LiveTrain[] => {
+    stops.sort((a, b) => a.due - b.due);
+    const next = stops[0]!;
+    const row = next.row;
+    const originCode = findStationByName(row.Origin, SERVICES[serviceId].stations)?.code;
+    const destinationCode = findStationByName(row.Destination, SERVICES[serviceId].stations)?.code;
+    const direction =
+      (destinationCode && destinationCode !== next.station ? directionBetween(next.station, destinationCode, line) : undefined) ??
+      (originCode && originCode !== next.station ? directionBetween(originCode, next.station, line) : undefined);
+    if (!direction) return [];
+    const base = {
+      code: train,
+      origin: row.Origin,
+      destination: row.Destination,
+      ...(destinationCode && { destinationCode }),
+      direction,
+      to: next.station,
+      lateMins: 0,
+      estimated: true as const,
+    };
+    if (next.due <= 0) return [{ ...base, at: next.station, progress: 0 }];
+    const from = previousStation(next.station, direction, originCode, line);
+    if (!from) return [];
+    return [{ ...base, from, progress: estimateProgress(from, next.station, next.due, stops[1]) }];
+  });
+  return [...real, ...estimated];
+}
+
+/** An InterCity-ish speed, for a gap whose timing we can't read off the boards (km a minute: 90 km/h). */
+const TYPICAL_KM_PER_MIN = 1.5;
+
+/**
+ * How far from `from` to `to` a train due at `to` in `due` minutes is. The boards only list stations still ahead,
+ * so the gap's length in minutes is estimated from its distance, at the train's own speed between the next two
+ * stops where the boards give both, else a typical one.
+ */
+function estimateProgress(from: string, to: string, due: number, after?: { station: string; due: number }): number {
+  const gap = distanceKm(from, to);
+  if (gap === undefined) return SIGNAL_PROGRESS;
+  const later = after && after.due > due ? distanceKm(to, after.station) : undefined;
+  const speed = later !== undefined && after ? Math.min(2.5, Math.max(0.8, later / (after.due - due))) : TYPICAL_KM_PER_MIN;
+  return Math.min(0.95, Math.max(0.05, 1 - (due * speed) / gap));
 }
 
 /** The station a train heading `direction` passes just before `code`. At a fork, the one on its path from its origin. */
