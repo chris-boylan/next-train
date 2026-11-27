@@ -1,17 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useOpenHelp } from '../lib/help';
+import { canAddToHomeScreen } from '../lib/install';
 import { type Lang, useI18n } from '../lib/i18n';
 import { type CountdownStyle } from '../lib/due';
 import { type FavouritesPlace, useCountdownStyle, useFavouritesPlace, type TimetabledTrains, useTimetabledTrains } from '../lib/prefs';
 import { type Theme, useTheme } from '../lib/theme';
-
-/** iPhone/iPad Safari, not already opened from the home screen. iOS has no install prompt, so we explain how. */
-function canAddToHomeScreen(): boolean {
-  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const standalone =
-    (navigator as Navigator & { standalone?: boolean }).standalone === true || window.matchMedia('(display-mode: standalone)').matches;
-  return ios && !standalone;
-}
 
 /** A cog that slides down a small panel with language, light/dark, where-favourites-go and countdown-style choices (and, on iOS, how to install). */
 export function OptionsMenu() {

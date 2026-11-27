@@ -141,7 +141,13 @@ const en = {
   off: 'Off',
   install: 'Install',
   // iOS isn't available in Irish, so its button names are quoted in English in both languages.
-  installTip: 'Tap Share, then “Add to Home Screen”, to open Next Train? like an app.',
+  installTip: 'Tap Share, then “Add to Home Screen”, to open Next\u00a0Train? like an app.',
+  welcome: {
+    lead: 'Live Irish Rail times: when the next train is coming, at a glance.',
+    invite: 'Add it to your home screen to open it like an app.',
+    addToHomeScreen: 'Add to home screen',
+    start: 'Find a train',
+  },
   help: {
     open: 'Help & about',
     title: 'Help',
@@ -376,7 +382,13 @@ const ga: Messages = {
   on: 'Ar siúl',
   off: 'Múchta',
   install: 'Suiteáil',
-  installTip: 'Brúigh “Share”, ansin “Add to Home Screen”, chun Next Train? a oscailt mar aip.',
+  installTip: 'Brúigh “Share”, ansin “Add to Home Screen”, chun Next\u00a0Train? a oscailt mar aip.',
+  welcome: {
+    lead: 'Amanna beo Iarnród Éireann: cathain a bheidh an chéad traein eile ag teacht, d’aon sracfhéachaint.',
+    invite: 'Cuir ar do scáileán baile é chun é a oscailt mar aip.',
+    addToHomeScreen: 'Cuir ar an scáileán baile',
+    start: 'Aimsigh traein',
+  },
   help: {
     open: 'Cabhair & eolas',
     title: 'Cabhair',

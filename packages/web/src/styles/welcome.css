@@ -1,0 +1,121 @@
+/* First-visit welcome (components/Welcome.tsx): the page's own colours, the name large, everything else quiet. */
+.welcome {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
+  background: var(--bg);
+  color: var(--text);
+  text-align: center;
+  animation: welcome-in 500ms ease-out both;
+  transition: opacity 300ms ease-in;
+}
+
+.welcome:focus {
+  outline: none;
+}
+
+.welcome--leaving {
+  opacity: 0;
+}
+
+.welcome__lang {
+  align-self: flex-end;
+  min-height: 40px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.welcome__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin: auto 0;
+  animation: welcome-rise 700ms cubic-bezier(0.2, 0.8, 0.2, 1) 120ms both;
+}
+
+.welcome__icon {
+  border-radius: 16px;
+}
+
+.welcome__title {
+  margin: 0;
+  font-size: 2.75rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.welcome__lead {
+  max-width: 18rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.welcome__foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: welcome-in 500ms ease-out 400ms both;
+}
+
+.welcome__invite {
+  max-width: 20rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.welcome__install {
+  color: var(--text);
+}
+
+.welcome__start {
+  width: 100%;
+  max-width: 20rem;
+  min-height: 48px;
+  border: 0;
+  background: var(--band-bg);
+  color: var(--band-text);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@keyframes welcome-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes welcome-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome,
+  .welcome__body,
+  .welcome__foot {
+    animation: none;
+    transition: none;
+  }
+}

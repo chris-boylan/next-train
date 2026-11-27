@@ -9,18 +9,25 @@ import { useStationView } from './lib/prefs';
 import { NetworkMap } from './maps/NetworkMap';
 import type { RoutesView } from './maps/RoutesMap';
 import { HelpPage } from './screens/HelpPage';
+import { shouldWelcome, Welcome } from './components/Welcome';
 import { ServicePicker } from './screens/ServicePicker';
 import { forgetScroll } from './lib/scrollMemory';
 import { StationBoard } from './screens/StationBoard';
 import { StationPicker } from './screens/StationPicker';
 import { TrackView } from './screens/TrackView';
 
+/** A first ever visit is greeted once, over the service picker (which loads underneath). Decided once per page
+ *  load, as deciding also marks it seen (and React may run a state initialiser twice). */
+const WELCOME_ON_LOAD = shouldWelcome();
+
 /** Service → line map → station. Always opens on the service picker; ?service=&station= links go straight in,
  * and ?help opens the help page. Help sits on top of whatever screen it was opened from. */
 export function App() {
   const [showHelp, setShowHelp] = useState(() => new URLSearchParams(location.search).has('help'));
+  const [welcome, setWelcome] = useState(WELCOME_ON_LOAD);
   return (
     <HelpContext.Provider value={() => setShowHelp(true)}>
+      {welcome && <Welcome onClose={() => setWelcome(false)} />}
       {showHelp ? <HelpPage onBack={() => setShowHelp(false)} /> : null}
       <div hidden={showHelp}>
         <Screens />
