@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useOpenHelp } from '../lib/help';
 import { type Lang, useI18n } from '../lib/i18n';
-import { type FavouritesPlace, useFavouritesPlace } from '../lib/prefs';
+import { type CountdownStyle } from '../lib/due';
+import { type FavouritesPlace, useCountdownStyle, useFavouritesPlace } from '../lib/prefs';
 import { type Theme, useTheme } from '../lib/theme';
 
 /** iPhone/iPad Safari, not already opened from the home screen. iOS has no install prompt, so we explain how. */
@@ -12,12 +13,13 @@ function canAddToHomeScreen(): boolean {
   return ios && !standalone;
 }
 
-/** A cog that slides down a small panel with language, light/dark and where-favourites-go choices (and, on iOS, how to install). */
+/** A cog that slides down a small panel with language, light/dark, where-favourites-go and countdown-style choices (and, on iOS, how to install). */
 export function OptionsMenu() {
   const { lang, setLang, t } = useI18n();
   const { theme, setTheme } = useTheme();
   const openHelp = useOpenHelp();
   const [favouritesPlace, setFavouritesPlace] = useFavouritesPlace();
+  const [countdownStyle, setCountdownStyle] = useCountdownStyle();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -71,6 +73,16 @@ export function OptionsMenu() {
             options={[
               { value: 'service', label: t.favouritesInService },
               { value: 'home', label: t.favouritesOnHome },
+            ]}
+          />
+          {/* Examples rather than names, so it's clear at a glance what each one looks like. */}
+          <Choice<CountdownStyle>
+            label={t.countdownStyle}
+            value={countdownStyle}
+            onChange={setCountdownStyle}
+            options={[
+              { value: 'minutes', label: `86 ${t.min}` },
+              { value: 'hours', label: `1${t.hour} 26 ${t.min}` },
             ]}
           />
           <button

@@ -19,6 +19,7 @@ import { useScheduled } from '../lib/useScheduled';
 import { useNow } from '../lib/clock';
 import { HiddenNote } from './HiddenNote';
 import { Caps, useI18n } from '../lib/i18n';
+import { DueIn } from './DueIn';
 import { Sheet } from './Sheet';
 
 interface Props {
@@ -90,8 +91,7 @@ export function DeparturesSheet({ station, line, serviceId, direction, departure
             {shown.map((d) => (
               <li key={d.trainCode} className="departure-row" aria-label={describe(d)}>
                 <span className={`departure-row__due${d.dueInMins <= 0 ? ' departure-row__due--now' : ''}`}>
-                  {d.dueInMins <= 0 ? t.due : d.dueInMins}
-                  {d.dueInMins > 0 && <span className="train__unit">{t.min}</span>}
+                  {d.dueInMins <= 0 ? t.due : <DueIn mins={d.dueInMins} />}
                 </span>
                 <span className="departure-row__dest">
                   <Caps text={destinationName(d)} />

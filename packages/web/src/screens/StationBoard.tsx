@@ -13,6 +13,7 @@ import {
 import { formatTime, useNow } from '../lib/clock';
 import { COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
 import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
+import { DueIn } from '../components/DueIn';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
 import { OfficialName } from './TrackView';
@@ -158,8 +159,7 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
               {group.departures.map((d) => (
                 <li key={d.trainCode} className="departure-row board__row" aria-label={describe(d)}>
                   <span className={`departure-row__due${d.dueInMins <= 0 ? ' departure-row__due--now' : ''}`}>
-                    {d.dueInMins <= 0 ? t.due : d.dueInMins}
-                    {d.dueInMins > 0 && <span className="train__unit">{t.min}</span>}
+                    {d.dueInMins <= 0 ? t.due : <DueIn mins={d.dueInMins} />}
                   </span>
                   <span className="board__what">
                     <span className="departure-row__dest">

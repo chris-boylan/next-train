@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { type Departure, type Direction, delaySeverity, type JourneyStop, type TrainNow } from '@dart-times/core';
 import { Caps, useI18n } from '../lib/i18n';
+import { useDueText } from './DueIn';
 import { useJourney } from '../lib/useJourney';
 import { TrainGlyph } from './TrainGlyph';
 
@@ -164,12 +165,13 @@ function NowLine({ now, name }: { now: TrainNow; name: (code: string, fallback: 
 /** "18:42 · 12 min", with the timetabled time struck out and the delay when it's late, as on the station page. */
 function StopTime({ stop }: { stop: JourneyStop }) {
   const { t } = useI18n();
+  const dueText = useDueText();
   if (stop.cancelled) return <span className="journey__time journey__time--cancelled">{t.journey.cancelled}</span>;
   return (
     <span className="journey__time">
       <span className="journey__when">
         <span className="train__expected">{stop.expected}</span>
-        <span className="journey__in"> · {stop.inMins <= 0 ? t.due : `${stop.inMins} ${t.min}`}</span>
+        <span className="journey__in"> · {stop.inMins <= 0 ? t.due : dueText(stop.inMins)}</span>
       </span>
       {stop.lateMins > 0 && (
         <span className="train__meta">

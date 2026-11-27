@@ -14,6 +14,7 @@ import { formatTime, useNow } from '../lib/clock';
 import { DeparturesSheet } from '../components/DeparturesSheet';
 import { JOURNEY_CLOSE_MS, type JourneyOrigin, JourneyView, RETURN_FADE_DELAY_MS, RETURN_FADE_MS } from '../components/JourneyView';
 import { TrainGlyph } from '../components/TrainGlyph';
+import { DueIn } from '../components/DueIn';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
 import { getGoingTo, setGoingTo } from '../lib/prefs';
@@ -368,14 +369,7 @@ function Trains({
             <TrainGlyph />
             <div className="train__info">
               <span className={`train__due${d.dueInMins <= 0 ? ' train__due--now' : ''}`}>
-                {d.dueInMins <= 0 ? (
-                  t.due
-                ) : (
-                  <>
-                    {d.dueInMins}
-                    <span className="train__unit">{t.min}</span>
-                  </>
-                )}
+                {d.dueInMins <= 0 ? t.due : <DueIn mins={d.dueInMins} />}
               </span>
               <span className={`train__dest${destinationName(d).length > 12 ? ' train__dest--long' : ''}`}>
                 <Caps text={destinationName(d)} />

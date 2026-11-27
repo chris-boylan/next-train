@@ -193,6 +193,16 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Hours and minutes step down to fit the countdown column. */
+.departure-row__due:has(.train__unit--hours) {
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
+
+.departure-row__due .train__unit--hours {
+  margin-right: 3px;
+}
+
 .departure-row__dest {
   font-size: 0.85rem;
   font-weight: 800;
