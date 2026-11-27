@@ -42,6 +42,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feat/verify-deploy` | Live-site check after every deploy (version, API, timetable, www redirect) |
 | `feat/nir-timetable` | NI Railways timetabled trains, from Translink's TransXChange timetable |
 | `feat/nir-track-view` | NI Railways stations on the two-track station page, from the timetable |
+| `feat/station-lines` | Two-track station pages for Commuter and InterCity, with a chip per route at hubs; station name switches to the list board |
 | `fix/deploy-on-request` | Pipeline deploys only when run by hand, not on every merge |
 
 ## Using the web app
@@ -50,6 +51,7 @@ The app always opens on the **service picker**: DART, Dublin Commuter, InterCity
 
 - **Line maps:** tap a station to open it. Search finds stations by English or Irish name, fadas optional, and tolerates small typos ("connoly"). Favourites appear as chips: on each service's page, or all together on the home page if the options cog says so (a home-page favourite opens every train at that station).
 - **Station page** (`web/src/screens/TrackView.tsx`):
+- **List or tracks:** tap the station name (☰) for a list board of the same station; on the board, tap the name (⇅) for the tracks again. The choice is remembered on the device (`useStationView`).
   - **Tracks:** a fixed-size station sign sits between two tracks. The darker northbound track runs up the left, the lighter southbound track runs down the right, and each arrowhead names where trains in that direction end up.
   - **Trains:** the next 3 trains each way approach the platform. Late trains show ~~scheduled~~ `+delay` expected.
   - **Next stations:** links above and below the station name step to the next station north or south. At a junction, both branches are shown.
@@ -134,7 +136,8 @@ Four routes, defined in `core/src/commuter.ts` with each route's paths running c
 | **South Eastern** | Connolly – down the DART line – Greystones – Wicklow – Arklow – Gorey |
 
 - **Map** (`web/src/maps/RoutesMap.tsx`, shared with InterCity): a toggle switches between **All routes**, one geography-inspired map with Connolly and Heuston as hubs (`web/src/maps/data/commuterSchematic.ts`), and **By route**, which shows one route at a time.
-- **Station boards:** commuter stations can be on several routes (Connolly is on four), so tapping one opens a board grouped by route and direction, e.g. "Northern · towards Drogheda / Dundalk", rather than the two-track page.
+- **Station page:** the same two-track page as the DART. A station on several routes (Connolly is on four) gets a chip per route (Northern · Western · South Western · South Eastern) above the tracks, opening on the route picked on the map; each route's tracks are outbound and inbound, named by where trains go ("towards Maynooth"). Each train goes on its route (`commuterHeading`); one whose route can't be told still lands on a track (`placeDeparture` in `core/src/stationLines.ts`), so none can drop off the page. Tap the station name for the board instead.
+- **Station boards:** grouped by route and direction, e.g. "Northern · towards Drogheda / Dundalk".
   - **How trains are placed** (`commuterHeading`): on a route serving both this station and the destination if there is one. Otherwise, a train heading into the city centre goes under this station's route, and a train running through the city goes under its destination's route.
   - **Inbound groups** read "towards Dublin", except at city-centre stations, where they name the destination.
   - **Unplaced trains:** those to places off the network (e.g. Longford) are grouped by the API's own direction.
@@ -153,6 +156,7 @@ Six routes, defined in `core/src/intercity.ts`. Each route's paths run from its 
 | **Sligo** | Connolly – Drumcondra – Maynooth – Mullingar – Longford – Sligo |
 | **Rosslare** | Connolly – Dún Laoghaire – Bray – Wicklow – Arklow – Gorey – Wexford – Rosslare Europort |
 
+- **Station page:** two tracks per route, with a chip per route where several meet (Kildare, Thurles, Limerick Junction, Athenry, Heuston…), as on the Commuter. Tap the station name for the board.
 - **Station boards** are grouped by route and by the next station each train runs to, so trains leaving in different directions get their own groups even on one route (at Mallow: towards Cork, towards Tralee, towards Heuston). Each group names where its trains are going.
   - **How trains are placed** (`intercityHeading`): on a route serving both this station and the destination. Routes share track (Heuston to Limerick Junction carries Cork, Kerry and Limerick trains), so the route that also serves the train's origin wins.
 - **Map:** **All routes** is drawn from the all-stations map (`web/src/maps/data/intercitySchematic.ts`), in its compact type: each station keeps its place there, and each connection follows the same track, through the commuter stations InterCity trains skip. Shared track shows each route's colour side by side. Stations the all-stations map doesn't place yet (the Nenagh line, Gort–Craughwell, Limerick Junction–Waterford) are listed under the map and appear once it places them. **By route** shows one route at a time, with every station.

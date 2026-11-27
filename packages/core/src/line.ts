@@ -131,7 +131,8 @@ export function servedStops(movements: RawTrainMovement[]): string[] {
 
 /** Where trains in a direction can end up, e.g. Connolly northbound → Howth and Malahide. Empty at a terminus. */
 export function terminiFrom(code: string, direction: Direction, line: Line = DART_LINE): string[] {
-  return line.termini[direction].filter((end) => end !== code && directionBetween(code, end, line) === direction);
+  // Each once: a route's branches can end at the same place (every InterCity route's paths start at Heuston).
+  return [...new Set(line.termini[direction])].filter((end) => end !== code && directionBetween(code, end, line) === direction);
 }
 
 /** Every station you can reach from `code` travelling in `direction`, in line order (nearest first on the trunk). */

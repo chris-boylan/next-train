@@ -65,3 +65,8 @@ export const useFavouritesPlace = storedChoice<FavouritesPlace>('dart-times:favo
 
 /** Countdowns of an hour or more: "86 min" (the default) or "1h 26min". */
 export const useCountdownStyle = storedChoice<CountdownStyle>('dart-times:countdown-style', ['minutes', 'hours'], 'minutes');
+
+/** A station shown on its two tracks (the default) or as a list board; switched by the button by its name. */
+export type StationView = 'tracks' | 'board';
+
+export const useStationView = storedChoice<StationView>('dart-times:station-view', ['tracks', 'board'], 'tracks');
