@@ -349,7 +349,7 @@ export function PositionedMap({
       {codes.map((code) => {
         const p = points[code]!;
         const favourite = favouriteCodes.includes(code);
-        const className = `schematic__stop schematic__stop--${p.label}${labelMaxWidth ? ' schematic__stop--wrap' : ''}${major(code) || INTERCHANGES.has(code) ? ' line-map__stop--major' : ''}${INTERCHANGES.has(code) ? ` schematic__stop--hub${p.smallHubLabel ? ' schematic__stop--hub-small' : ''}` : ''}${code === currentCode ? ' line-map__stop--current' : ''}${noData(code) ? ' schematic__stop--no-data' : ''}`;
+        const className = `schematic__stop schematic__stop--${p.label}${labelMaxWidth ? ' schematic__stop--wrap' : ''}${major(code) || INTERCHANGES.has(code) ? ' line-map__stop--major' : ''}${INTERCHANGES.has(code) ? ` schematic__stop--hub${p.smallHubLabel ? ' schematic__stop--hub-small' : ''}` : ''}${p.boldLabel ? ' schematic__stop--bold' : ''}${code === currentCode ? ' line-map__stop--current' : ''}${noData(code) ? ' schematic__stop--no-data' : ''}`;
         const content = (
           <>
             {/* One span for the whole name: Caps puts Irish prefixes in their own spans, which the flex

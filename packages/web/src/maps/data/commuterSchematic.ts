@@ -44,9 +44,9 @@ export function commuterSchematic(row: number): Schematic {
     COAST_LABEL,
   );
 
-  // Grand Canal Dock is a terminus (a circle, its name in capitals, three lines at this width): its name lifts a
+  // Grand Canal Dock is a terminus (a circle, its name in heavy capitals, three lines at this width): its name lifts a
   // little and Lansdowne Road's drops a little, to keep a gap between them.
-  points.GCDK = { ...points.GCDK!, labelDy: -3 };
+  points.GCDK = { ...points.GCDK!, labelDy: -3, boldLabel: true };
   points.LDWNE = { ...points.LDWNE!, labelDy: 4 };
 
   // Connolly, Drumcondra and Broombridge sit on one straight 45° line heading north-west, which carries on

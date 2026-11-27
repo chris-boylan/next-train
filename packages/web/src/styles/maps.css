@@ -309,6 +309,11 @@
   letter-spacing: 0;
 }
 
+/* A terminus that isn't an interchange (see SchematicPoint.boldLabel): as heavy as one, at the usual size. */
+.schematic__stop--bold {
+  font-weight: 900;
+}
+
 .schematic--compact .schematic__stop--hub-small {
   font-size: 0.7rem;
 }
