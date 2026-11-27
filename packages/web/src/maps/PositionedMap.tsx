@@ -1,7 +1,9 @@
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
+import type { LiveTrain } from '@dart-times/core';
 import { Caps, useI18n } from '../lib/i18n';
 import type { Schematic, SchematicPoint } from './data/schematics';
 import { MapHits } from './MapHits';
+import { TrainMarkers } from './TrainMarkers';
 
 interface Props {
   schematic: Schematic;
@@ -23,6 +25,11 @@ interface Props {
   /** Extra class for the map, e.g. for a smaller type size. */
   className?: string;
   label: string;
+  /** Live trains to draw on the lines, when the viewer has turned them on. */
+  trains?: LiveTrain[];
+  onSelectTrain?: (train: LiveTrain) => void;
+  /** Controls for a strip along the map's top edge, with the compass at its right (the live trains switch). */
+  corner?: ReactNode;
 }
 
 const CORNER_RADIUS = 28;
@@ -114,6 +121,9 @@ export function PositionedMap({
   noData = () => false,
   className = '',
   label,
+  trains,
+  onSelectTrain,
+  corner,
 }: Props) {
   const { t } = useI18n();
   const { points, width, height, bends = {}, curves = {}, labelMaxWidth } = schematic;
@@ -134,11 +144,21 @@ export function PositionedMap({
   };
 
   return (
-    <nav className={`line-map schematic ${className}`} aria-label={label} style={{ width, height }}>
+    <nav className={`line-map schematic ${className}${corner ? ' line-map--with-bar' : ''}`} aria-label={label} style={{ width, height }}>
+      {corner && (
+        <div className="line-map__bar">
+          <div className="line-map__bar-controls">{corner}</div>
+          <span className="line-map__compass line-map__compass--bar" aria-hidden>
+            {t.compassNorth} ↑
+          </span>
+        </div>
+      )}
       <svg className="line-map__svg" width={width} height={height} aria-hidden>
-        <text x={width - 14} y={18} textAnchor="end" className="line-map__compass">
-          {t.compassNorth} ↑
-        </text>
+        {!corner && (
+          <text x={width - 14} y={18} textAnchor="end" className="line-map__compass">
+            {t.compassNorth} ↑
+          </text>
+        )}
         {edges.flatMap(([a, b]) => {
           const colours = coloursOf(a, b);
           const line = routeOf(a, b);
@@ -221,6 +241,16 @@ export function PositionedMap({
           height={height}
           points={codes.map((code) => ({ code, ...points[code]! }))}
           onSelect={onSelect}
+        />
+      )}
+      {trains && (
+        <TrainMarkers
+          trains={trains}
+          pointOf={(code) => points[code]}
+          // Along the drawn line, corners included, where the two stations are neighbours on the map.
+          pathOf={(a, b) => (edges.some(([x, y]) => (x === a && y === b) || (x === b && y === a)) ? routeOf(a, b) : undefined)}
+          orientation="track"
+          onSelect={(train) => onSelectTrain?.(train)}
         />
       )}
     </nav>

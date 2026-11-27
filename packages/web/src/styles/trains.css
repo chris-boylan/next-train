@@ -1,0 +1,142 @@
+/* Live trains on the line map: the on/off switch, the moving markers and the train card. */
+
+/* A strip along the map's top edge: the Live switch on the left, the compass on the right, so both read as the
+   map's own legend. The map's first row moves down to make room. */
+.line-map--with-bar {
+  margin-top: 54px;
+}
+
+.line-map__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.line-map__bar-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* The SVG compass's look, as HTML text. */
+.line-map__compass--bar {
+  color: var(--text);
+  padding-right: 14px;
+}
+
+/* Square, like the chips: a box that fills when on. */
+.live-toggle__switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 4px 9px;
+  border: 2px solid var(--rule);
+  border-radius: 0;
+  background: none;
+  color: var(--text);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.live-toggle__knob {
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--rule);
+  background: none;
+}
+
+.live-toggle__switch--on .live-toggle__knob {
+  background: var(--north);
+  border-color: var(--north);
+}
+
+/* First load: the box pulses until the trains arrive. */
+.live-toggle__switch--loading .live-toggle__knob {
+  animation: live-pulse 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes live-pulse {
+  from { opacity: 1; }
+  to { opacity: 0.25; }
+}
+
+.live-toggle__note {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* Markers sit above the station tap targets, positioned by transform so they glide between refreshes. */
+.train-markers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.train-marker {
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  pointer-events: auto;
+  transition: transform 1.5s ease-in-out;
+}
+
+.train-marker svg {
+  overflow: visible;
+}
+
+/* The body takes the station page's train colours (.glyph-body); thinner outline at this size. */
+.train-marker__body {
+  stroke-width: 2;
+}
+
+.train-marker:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .train-marker { transition: none; }
+  .live-toggle__switch--loading .live-toggle__knob { animation: none; }
+}
+
+.train-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  margin: 0;
+}
+
+.train-card dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  align-self: center;
+}
+
+.train-card dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.train-card__late {
+  color: var(--major-bg);
+}

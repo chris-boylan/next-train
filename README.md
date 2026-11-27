@@ -46,6 +46,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feat/view-switch-transition` | Animated switch between a station's tracks and its list board |
 | `feat/station-lines` | Two-track station pages for Commuter and InterCity, with a chip per route at hubs; station name switches to the list board |
 | `fix/deploy-on-request` | Pipeline deploys only when run by hand, not on every merge |
+| `feat/live-trains` | Live trains on the DART and Enterprise maps behind a "Live trains" toggle, with a tap-for-details train card |
 
 ## Using the web app
 
@@ -176,6 +177,8 @@ Six routes, defined in `core/src/intercity.ts`. Each route's paths run from its 
 
 All maps share the flat "Bold Swiss" style: circles for ends of lines, junctions and turn-backs, ticks for other stations, and curved corners.
 
+**Live trains (DART and Enterprise maps):** a small "Live" switch on a strip along the map's top edge (compass on the right), off by default and remembered per device (one setting for both). While it's on, the map polls `/api/trains` every 30 s (nothing is fetched while it's off) and draws each running train as a small train seen from above (the station page's train), its windscreen and headlights at the front showing which way it's going. Lateness is in the train's card, not on the map. Positions come from one call: `getCurrentTrainsXML_WithTrainType` (DARTs only) for the DART, and `getCurrentTrainsXML` for the others, keeping only the service's trains with the departure boards' `matches` rule (so commuter trains on the Enterprise's Connolly–Drogheda track, and InterCity trains between Cork and Mallow, stay off). Then "Arrived X" stands the train at X, "Departed X" puts it halfway to its next stop, and a last location that's a signal rather than a station (`North Strand Junction`, `PL101`) puts it three-quarters of the way from the station before. Trains sit just left of the track's centre in their direction of travel, so passing trains don't overlap, and glide to their new spot on each refresh. On the north–south DART and Enterprise maps trains point straight up or down. `PositionedMap` can show them too, pointing along the track to the nearest 45° and following its drawn corners, for maps whose lines also run east–west. Cork is the first candidate, but its commuter trains aren't in the positions feed (their boards say "No Information", with expected = scheduled), so it has no Live switch yet. Tapping one opens a card with its destination, next stop, lateness and train code. The marker layer (`maps/TrainMarkers.tsx`) only needs a `pointOf(code)`, so other maps can adopt it; the parsing and placement are in `core/src/livetrains.ts`.
+
 ## What's shared (core)
 
 | Concern | Where |
@@ -187,6 +190,7 @@ All maps share the flat "Bold Swiss" style: circles for ends of lines, junctions
 | Official Irish station names | `core/src/stations.ga.ts` |
 | Departures: filtering, train categories, going-to filter | `core/src/departures.ts` |
 | Wording ("in 5 minutes", "32 minutes late") | `core/src/describe.ts` |
+| Live train positions for the map | `core/src/livetrains.ts` |
 | Favourites rules + DynamoDB adapter | `core/src/favourites.ts`, `core/src/dynamo.ts` |
 | Alexa `STATION` slot values and synonyms | Generated from the DART stations |
 
@@ -197,6 +201,7 @@ Both apps store favourites in one table, keyed `web:<device id>` or `alexa:<user
 - **`GET /api/stations`:** DART stations.
 - **`GET /api/stations/:code/departures?service=dart|enterprise|cork|commuter&direction=&limit=`:** a service's trains at one of its stations.
 - **`GET /api/stations/:code/departures?service=all`:** every train at any Irish Rail station, with categories.
+- **`GET /api/trains?service=dart|enterprise`:** every running train on the service, placed on the line (`at` a station, or `from` → `to` with `progress`). Cached at the edge for 20 s.
 - **`GET | PUT | DELETE /api/favourites[/:code]`:** needs an `x-device-id` header.
 
 ## English and Irish

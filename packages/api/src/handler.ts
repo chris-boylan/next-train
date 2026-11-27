@@ -7,6 +7,9 @@ import {
   type FeedbackService,
   findStationByCode,
   getDepartures,
+  getLiveTrains,
+  isLiveService,
+  LIVE_SERVICES,
   type IrishRailClient,
   isServiceId,
   parseDirection,
@@ -101,6 +104,14 @@ export function createHandler({ client, favourites, feedback }: ApiDeps) {
         const journey = buildJourney(await client.getTrainMovements(journeyMatch[1]!), from, Date.now());
         if (!journey) return error(404, 'That train does not call at that station today');
         return json(200, journey, DEPARTURES_CACHE);
+      }
+
+      // Where every train on a service is right now, for the live map (DART and Enterprise so far).
+      if (method === 'GET' && path === '/api/trains') {
+        const service = event.queryStringParameters?.service ?? 'dart';
+        if (!isLiveService(service)) return error(400, `Live trains are only available for: ${LIVE_SERVICES.join(', ')}`);
+        const trains = await getLiveTrains(client, service);
+        return json(200, { service, trains, fetchedAt: new Date().toISOString() }, DEPARTURES_CACHE);
       }
 
       const favouriteMatch = path.match(/^\/api\/favourites(?:\/([A-Za-z]+))?$/);

@@ -78,3 +78,11 @@ export const useStationView = storedChoice<StationView>('dart-times:station-view
 export type TimetabledTrains = 'on' | 'off';
 
 export const useTimetabledTrains = storedChoice<TimetabledTrains>('dart-times:timetabled-trains', ['on', 'off'], 'on');
+
+/** Whether the line maps show live trains: off until the viewer turns them on, then remembered per device. */
+const useLiveTrainsChoice = storedChoice<'on' | 'off'>('dart-times:live-trains', ['on', 'off'], 'off');
+
+export function useLiveTrainsPref(): [boolean, (on: boolean) => void] {
+  const [choice, setChoice] = useLiveTrainsChoice();
+  return [choice === 'on', (on) => setChoice(on ? 'on' : 'off')];
+}

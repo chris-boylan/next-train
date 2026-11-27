@@ -14,3 +14,4 @@ export * from './timetable';
 export * from './transxchange';
 export * from './nir';
 export * from './stationLines';
+export * from './livetrains';
