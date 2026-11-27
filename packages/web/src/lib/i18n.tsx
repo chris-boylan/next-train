@@ -110,6 +110,8 @@ const en = {
   favouritesInService: 'In each service',
   favouritesOnHome: 'On home page',
   countdownStyle: 'Times over an hour',
+  countdownMinutes: 'Minutes',
+  countdownHours: 'Hours & mins',
   install: 'Install',
   // iOS isn't available in Irish, so its button names are quoted in English in both languages.
   installTip: 'Tap Share, then “Add to Home Screen”, to open Next Train? like an app.',
@@ -302,6 +304,8 @@ const ga: Messages = {
   favouritesInService: 'I ngach seirbhís',
   favouritesOnHome: 'Ar an leathanach baile',
   countdownStyle: 'Amanna thar uair an chloig',
+  countdownMinutes: 'Nóiméid',
+  countdownHours: 'Uaireanta & nóim',
   install: 'Suiteáil',
   installTip: 'Brúigh “Share”, ansin “Add to Home Screen”, chun Next Train? a oscailt mar aip.',
   help: {

@@ -21,6 +21,7 @@
     "synth": "npm run build:web && npm run synth -w @dart-times/infra --",
     "deploy": "npm run build:web && npm run deploy -w @dart-times/infra --",
     "nir:upload": "packages/infra/scripts/upload-nir-timetable.sh",
+    "verify-deploy": "packages/infra/scripts/verify-deploy.sh",
     "timetable:local": "npm run timetable:local -w @dart-times/api"
   },
   "devDependencies": {
