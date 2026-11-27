@@ -62,9 +62,6 @@ export const SCHEMATICS: Partial<Record<ServiceId, Schematic>> = {
       // Tube-map style: the Cobh line leaves Glounthaune on a straight 45° diagonal (the dot sits on the split),
       // then turns south in one compact corner, the same size as the map's other corners.
       'GHANE|FOTA': [[196, 296]],
-        [189, 300],
-        [196, 326],
-      ],
     },
   },
 };
