@@ -48,8 +48,9 @@ describe('placeDeparture', () => {
 
   it('names each end of a line once', () => {
     const corkKerry = stationLines(SERVICES.intercity, 'KDARE')[0]!.line;
-    expect(terminiFrom('KDARE', 'Southbound', corkKerry)).toEqual(['HSTON']);
-    expect(terminiFrom('KDARE', 'Northbound', corkKerry)).toEqual(['CORK', 'TRLEE']);
+    // Cork and Tralee are south of Kildare, so they're down the page (Southbound) and Heuston up.
+    expect(terminiFrom('KDARE', 'Northbound', corkKerry)).toEqual(['HSTON']);
+    expect(terminiFrom('KDARE', 'Southbound', corkKerry)).toEqual(['CORK', 'TRLEE']);
   });
 
   it('gives InterCity stations one line per route', () => {
@@ -58,13 +59,13 @@ describe('placeDeparture', () => {
     expect(stationLines(SERVICES.intercity, 'WPORT').map((l) => l.id)).toEqual(['galwayMayo']);
   });
 
-  it('places Commuter trains on their route, outbound as Northbound', () => {
+  it('places Commuter trains on their route: up heads north, so the South Eastern line runs down', () => {
     const lines = stationLines(commuter, 'CNLLY');
     const dep = (originCode: string, destinationCode: string) =>
       ({ trainCode: 'P1', originCode, destinationCode, direction: 'Northbound' }) as Parameters<typeof placeDeparture>[3];
     expect(placeDeparture(commuter, 'CNLLY', lines, dep('CNLLY', 'MYNTH'))).toEqual({ lineId: 'western', direction: 'Northbound' });
     expect(placeDeparture(commuter, 'CNLLY', lines, dep('DDALK', 'GCDK'))).toEqual({ lineId: 'northern', direction: 'Southbound' });
-    expect(placeDeparture(commuter, 'CNLLY', lines, dep('CNLLY', 'GOREY'))).toEqual({ lineId: 'southEastern', direction: 'Northbound' });
+    expect(placeDeparture(commuter, 'CNLLY', lines, dep('CNLLY', 'GOREY'))).toEqual({ lineId: 'southEastern', direction: 'Southbound' });
   });
 
   it('puts a train through the city to another route on the inbound track (Maynooth to Dun Laoghaire)', () => {
@@ -96,5 +97,44 @@ describe('placeTimetabled', () => {
     const lines = stationLines(nir, 'PDOWN');
     expect(placeTimetabled(nir, 'PDOWN', lines, sched('BFSTC', 'enterprise'))).toEqual({ lineId: 'main', direction: 'Northbound' });
     expect(placeTimetabled(nir, 'PDOWN', lines, sched('NEWRY', 'nir'))).toEqual({ lineId: 'main', direction: 'Southbound' });
+  });
+});
+
+describe('station pages point up towards the north', () => {
+  const intercity = SERVICES.intercity;
+  const lineOf = (code: string, id: string) => stationLines(intercity, code).find((l) => l.id === id)!.line;
+  const ends = (code: string, id: string, direction: 'Northbound' | 'Southbound') => terminiFrom(code, direction, lineOf(code, id));
+
+  it('draws lines running south from Dublin downwards (Carlow: Heuston up, Waterford down)', () => {
+    expect(ends('CRLOW', 'waterford', 'Northbound')).toEqual(['HSTON']);
+    expect(ends('CRLOW', 'waterford', 'Southbound')).toEqual(['WFORD']);
+    expect(ends('ECRTY', 'rosslare', 'Southbound')).toEqual(['RLEPT']);
+    expect(stationLines(SERVICES.commuter, 'BRAY').find((l) => l.id === 'southEastern')!.outboundDown).toBe(true);
+  });
+
+  it('keeps lines heading north or west the way they were', () => {
+    expect(ends('ATLNE', 'galwayMayo', 'Northbound')).toEqual(expect.arrayContaining(['GALWY', 'WPORT']));
+    expect(stationLines(SERVICES.commuter, 'MHIDE').find((l) => l.id === 'northern')!.outboundDown).toBeUndefined();
+  });
+
+  it('at Mallow, Dublin is up and Cork and Tralee are both down', () => {
+    const mallow = lineOf('MLLOW', 'corkKerry');
+    expect(terminiFrom('MLLOW', 'Northbound', mallow)).toEqual(['HSTON']);
+    expect(terminiFrom('MLLOW', 'Southbound', mallow).sort()).toEqual(['CORK', 'TRLEE']);
+    const dep = (originCode: string, destinationCode: string) =>
+      ({ trainCode: 'A1', originCode, destinationCode, direction: '' }) as Parameters<typeof placeDeparture>[3];
+    const lines = stationLines(intercity, 'MLLOW');
+    // Cork–Tralee trains reverse at Mallow: both ways they leave on the down side.
+    expect(placeDeparture(intercity, 'MLLOW', lines, dep('CORK', 'TRLEE'))?.direction).toBe('Southbound');
+    expect(placeDeparture(intercity, 'MLLOW', lines, dep('TRLEE', 'CORK'))?.direction).toBe('Southbound');
+    expect(placeDeparture(intercity, 'MLLOW', lines, dep('CORK', 'HSTON'))?.direction).toBe('Northbound');
+  });
+
+  it('at Cork, Dublin and Tralee trains leave on the same track, north to Mallow', () => {
+    const lines = stationLines(intercity, 'CORK');
+    const dep = (destinationCode: string) =>
+      ({ trainCode: 'A1', originCode: 'CORK', destinationCode, direction: '' }) as Parameters<typeof placeDeparture>[3];
+    expect(placeDeparture(intercity, 'CORK', lines, dep('HSTON'))?.direction).toBe('Northbound');
+    expect(placeDeparture(intercity, 'CORK', lines, dep('TRLEE'))?.direction).toBe('Northbound');
   });
 });

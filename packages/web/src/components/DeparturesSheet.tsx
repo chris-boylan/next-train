@@ -95,7 +95,7 @@ export function DeparturesSheet({ station, line, serviceId, live = true, directi
         <>
           <ol className="departure-list">
             {shown.map((d) => (
-              <li key={d.trainCode} className="departure-row" aria-label={describe(d)}>
+              <li key={d.trainCode} className={`departure-row${d.untracked ? ' departure-row--untracked' : ''}`} aria-label={describe(d)}>
                 <span className={`departure-row__due${d.dueInMins <= 0 ? ' departure-row__due--now' : ''}`}>
                   {d.dueInMins <= 0 ? t.due : <DueIn mins={d.dueInMins} />}
                 </span>
@@ -103,13 +103,22 @@ export function DeparturesSheet({ station, line, serviceId, live = true, directi
                   <Caps text={destinationName(d)} />
                 </span>
                 <span className="departure-row__time">
-                  {d.lateMins > 0 && (
+                  {d.untracked ? (
                     <>
-                      <s className="train__scheduled">{d.scheduledDepart}</s>
-                      <span className={`late late--${delaySeverity(d.lateMins)}`}>+{d.lateMins}</span>
+                      <span className="train__timetable">{t.notTracked}</span>
+                      <span className="train__expected">{d.scheduledDepart}</span>
+                    </>
+                  ) : (
+                    <>
+                      {d.lateMins > 0 && (
+                        <>
+                          <s className="train__scheduled">{d.scheduledDepart}</s>
+                          <span className={`late late--${delaySeverity(d.lateMins)}`}>+{d.lateMins}</span>
+                        </>
+                      )}
+                      <span className="train__expected">{d.expectedDepart}</span>
                     </>
                   )}
-                  <span className="train__expected">{d.expectedDepart}</span>
                 </span>
               </li>
             ))}

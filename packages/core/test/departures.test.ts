@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { departuresGoingTo, getDepartures, parseDirection, parseStationData, toDepartures } from '../src';
+import { departuresGoingTo, getDepartures, isTracked, parseDirection, parseStationData, toDepartures } from '../src';
 import { fixture, fixtureClient } from './fixtures';
 
 describe('toDepartures', () => {
@@ -99,5 +99,32 @@ describe('trainCategory', () => {
     expect(byCategory('enterprise').every((d) => d.destination === 'Belfast')).toBe(true);
     expect(byCategory('intercity').every((d) => d.trainCode.startsWith('A') && d.destination !== 'Belfast')).toBe(true);
     expect(byCategory('commuter').length).toBeGreaterThan(0);
+  });
+});
+
+describe('untracked trains', () => {
+  it('flags trains with no information well after their start time, and only those', async () => {
+    const departures = await getDepartures(fixtureClient('cork-evening.xml'), 'CORK', { includeTrains: true });
+    const untracked = departures.filter((d) => d.untracked).map((d) => d.trainCode.trim()).sort();
+    // P572 and A313 are untracked too, but they finish at Cork, so they aren't departures there.
+    expect(untracked).toEqual(['P529']);
+    // A tracked train keeps its live lateness.
+    expect(departures.find((d) => d.trainCode.trim() === 'A218')?.untracked).toBeUndefined();
+  });
+
+  it("doesn't flag trains that just haven't started yet", async () => {
+    const departures = await getDepartures(fixtureClient('tara-evening.xml'), 'TARA');
+    expect(departures.length).toBeGreaterThan(10);
+    expect(departures.some((d) => d.untracked)).toBe(false);
+  });
+
+  it('allows a couple of minutes, and works across midnight', () => {
+    const row = (Querytime: string, Origintime: string, Status = 'No Information') => ({ Status, Querytime, Origintime });
+    expect(isTracked(row('17:02:00', '17:00'))).toBe(true);
+    expect(isTracked(row('17:03:00', '17:00'))).toBe(false);
+    expect(isTracked(row('16:30:00', '17:00'))).toBe(true);
+    expect(isTracked(row('00:05:00', '23:55'))).toBe(false);
+    expect(isTracked(row('23:55:00', '00:05'))).toBe(true);
+    expect(isTracked(row('17:30:00', '17:00', 'En Route'))).toBe(true);
   });
 });

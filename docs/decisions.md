@@ -6,6 +6,29 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-27 · Station pages: up means north, not "away from Dublin"
+
+**Decision:** on Commuter and InterCity station pages, each route is turned so the up track heads north
+(`orientAt` in `core/src/stationLines.ts`): by the next stations either side where they're clearly north and
+south of each other, else by where the whole path runs; only paths running almost due east–west (Dublin–Galway)
+keep "outbound is up". Termini and neighbours move with their paths.
+
+**Why:** route paths run from the hub outwards, and the page drew outbound as up, so every line south of Dublin
+was upside down (Carlow: Waterford up, Heuston down; Bray under the Commuter: Gorey up, though the DART page and
+the Commuter map both have it down). An audit of all 234 station-and-line pairs found 65 reversed; none are now.
+At Mallow, Cork and Tralee are both down (the Tralee line leaves south of the station, at Killarney Junction, so
+Cork–Tralee trains reverse there), and Cork shows one track, north to Mallow, for both Dublin and Tralee trains.
+
+## 2026-11-27 · Untracked trains shown as "Not tracked", not as on time
+
+**Decision:** a departure whose status is "No Information" more than 2 minutes after its start time is marked
+`untracked`. The station page draws it hollow, like a timetabled train, with a "Not tracked" tag and its timetable
+time; the boards and sheets show the same tag, and screen readers say "not being tracked". No lateness is shown.
+
+**Why:** Irish Rail lists every train as "No Information" until it leaves, so the status alone would flag half of
+every board. Some trains (on 27 Nov, most Cork commuter trains) are never picked up: they keep "No Information",
+with `Late=0` and expected = scheduled, so they looked tracked and on time when nobody knew. The start time and the
+answer's query time come in the same row, so the check doesn't depend on the device clock.
 ## 2026-11-27 · The page never scrolls: every screen is pinned, with its own scroll area
 
 **Decision:** `html` and `body` never scroll. Every screen is a `.screen` pinned to the screen (`position: fixed`),

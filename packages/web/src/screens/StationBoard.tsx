@@ -181,7 +181,7 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
               </h2>
               <ol className="departure-list">
                 {group.departures.map((d) => (
-                  <li key={d.trainCode} className="departure-row board__row" aria-label={describe(d)}>
+                  <li key={d.trainCode} className={`departure-row board__row${d.untracked ? ' departure-row--untracked' : ''}`} aria-label={describe(d)}>
                     <span className={`departure-row__due${d.dueInMins <= 0 ? ' departure-row__due--now' : ''}`}>
                       {d.dueInMins <= 0 ? t.due : <DueIn mins={d.dueInMins} />}
                     </span>
@@ -192,13 +192,22 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
                       {mode === 'all' && <CategoryBadge category={d.category} />}
                     </span>
                     <span className="departure-row__time">
-                      {d.lateMins > 0 && (
+                      {d.untracked ? (
                         <>
-                          <s className="train__scheduled">{d.scheduledDepart}</s>
-                          <span className={`late late--${delaySeverity(d.lateMins)}`}>+{d.lateMins}</span>
+                          <span className="train__timetable">{t.notTracked}</span>
+                          <span className="train__expected">{d.scheduledDepart}</span>
+                        </>
+                      ) : (
+                        <>
+                        {d.lateMins > 0 && (
+                          <>
+                            <s className="train__scheduled">{d.scheduledDepart}</s>
+                            <span className={`late late--${delaySeverity(d.lateMins)}`}>+{d.lateMins}</span>
+                          </>
+                        )}
+                        <span className="train__expected">{d.expectedDepart}</span>
                         </>
                       )}
-                      <span className="train__expected">{d.expectedDepart}</span>
                     </span>
                   </li>
                 ))}

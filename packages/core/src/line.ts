@@ -114,8 +114,12 @@ export function adjacentStations(code: string, line: Line = DART_LINE): { north:
   for (const path of line.paths) {
     const i = path.indexOf(code);
     if (i < 0) continue;
-    if (i < path.length - 1) north.add(path[i + 1]!);
-    if (i > 0) south.add(path[i - 1]!);
+    // A neighbour already on the other side stays there: where a route reverses at a station (Cork–Tralee
+    // trains at Mallow), the first path's side wins, as it does for `directionBetween`.
+    const after = path[i + 1];
+    const before = path[i - 1];
+    if (after && !south.has(after)) north.add(after);
+    if (before && !north.has(before)) south.add(before);
   }
   return { north: [...north], south: [...south] };
 }

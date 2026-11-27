@@ -97,3 +97,14 @@
   line-height: 1.4;
   color: var(--muted);
 }
+
+/* Untracked trains (Irish Rail has no information though they should be running): muted, with a "Not tracked"
+   tag and the timetable time, like the station page's hollow trains. */
+.departure-row--untracked .departure-row__due,
+.departure-row--untracked .departure-row__dest {
+  color: var(--muted);
+}
+
+.departure-row--untracked .train__timetable {
+  margin-right: 6px;
+}
