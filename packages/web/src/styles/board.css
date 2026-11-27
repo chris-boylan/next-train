@@ -64,6 +64,28 @@
   background: #8c1d40;
 }
 
+/* "Later · timetable": scheduled trains beyond the live window, quieter than live ones. */
+.later {
+  margin-top: 24px;
+}
+
+.later__note {
+  margin: 8px 0 4px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.later__row {
+  grid-template-columns: 64px 1fr;
+}
+
+.later__time {
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
 /* A note above a board's departures, e.g. that NI Railways trains aren't included. */
 .board__note {
   margin: 12px 0;

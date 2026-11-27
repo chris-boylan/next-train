@@ -4,8 +4,10 @@ import {
   type Departure,
   findStationByCode,
   intercityHeading,
+  irishSecondsOfDay,
   isCityStation,
   route as routeBetween,
+  scheduledMatches,
   type TrainCategory,
 } from '@dart-times/core';
 import { formatTime, useNow } from '../lib/clock';
@@ -15,6 +17,8 @@ import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
 import { OfficialName } from './TrackView';
 import { useDepartures } from '../lib/useDepartures';
+import { useScheduled } from '../lib/useScheduled';
+import { LaterDepartures } from '../components/LaterDepartures';
 
 interface Props {
   code: string;
@@ -41,6 +45,7 @@ interface Group {
 /** A station's departures in the next 90 minutes, as a board grouped by direction (or route and direction). */
 export function StationBoard({ code, name, mode, backLabel, onBack, favourite, live = true, note }: Props) {
   const { t, nameOf, destinationName, describe } = useI18n();
+  const scheduled = useScheduled(code);
   const { data, error } = useDepartures(code, mode, live);
   const now = useNow();
   const fetchedAt = data && new Date(data.fetchedAt);
@@ -176,6 +181,15 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
             </ol>
           </section>
         ))}
+        {scheduled && data && (
+          <LaterDepartures
+            departures={scheduled}
+            nowMinutes={Math.floor(irishSecondsOfDay(now.getTime()) / 60)}
+            liveCodes={new Set(data.departures.map((d) => d.trainCode))}
+            include={(d) => mode === 'all' || scheduledMatches(mode, d)}
+            showCategory={mode === 'all'}
+          />
+        )}
       </div>
     </div>
   );
