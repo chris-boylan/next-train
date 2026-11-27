@@ -111,24 +111,6 @@ function Screens() {
 
   const station = stationCode ? findStationByCode(stationCode, service.stations) : undefined;
   const routesView = routesViews[service.id] ?? { mode: 'all' };
-  if (station && service.id === 'nir') {
-    // No NI Railways live data: most stations just say so; where the Enterprise calls, its trains are shown.
-    const routeId = routesView.mode === 'byRoute' ? routesView.routeId : undefined;
-    const live = hasLiveData(station.code);
-    return (
-      <StationBoard
-        key={station.code}
-        code={station.code}
-        name={stationName(station)}
-        mode="all"
-        live={live}
-        note={live ? t.nirEnterpriseOnly : t.nirNoLiveData}
-        backLabel={(routeId && t.nirRoutes[routeId as keyof typeof t.nirRoutes]) || t.stations}
-        onBack={() => setStationCode(undefined)}
-        favourite={{ on: isFavourite(station.code), toggle: () => toggleFavourite(station.code) }}
-      />
-    );
-  }
   if (station && (service.id === 'commuter' || service.id === 'intercity')) {
     // Back goes to the route the station was picked from, when there is one.
     const routeId = routesView.mode === 'byRoute' ? routesView.routeId : undefined;
