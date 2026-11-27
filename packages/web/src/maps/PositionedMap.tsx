@@ -143,6 +143,35 @@ export function PositionedMap({
     return [[points[a]!.x, points[a]!.y], ...corners, [points[b]!.x, points[b]!.y]];
   };
 
+  // A live train's way between two stations along the drawn track, corners included: through any stations an
+  // express passes (Heuston to Kildare skips nine), and to a stand-in stop where one replaces the real station
+  // on that link (the Nenagh line's Ballybrophy).
+  const standIns = schematic.standIns ?? [];
+  const trackBetween = (from: string, to: string): [number, number][] | undefined => {
+    const swap = standIns.find((x) => [...x.link].sort().join('|') === [from, to].sort().join('|'));
+    const a = swap && from === swap.for ? swap.code : from;
+    const b = swap && to === swap.for ? swap.code : to;
+    if (!points[a] || !points[b]) return undefined;
+    const previous = new Map<string, string>([[a, a]]);
+    const queue = [a];
+    while (queue.length && !previous.has(b)) {
+      const here = queue.shift()!;
+      for (const [x, y] of edges) {
+        const next = x === here ? y : y === here ? x : undefined;
+        if (next && !previous.has(next)) {
+          previous.set(next, here);
+          queue.push(next);
+        }
+      }
+    }
+    if (!previous.has(b)) return undefined;
+    const chain = [b];
+    while (chain[0] !== a) chain.unshift(previous.get(chain[0]!)!);
+    // A long way round isn't a skipped stop: draw it straight rather than across half the map.
+    if (chain.length > 12) return undefined;
+    return chain.slice(1).flatMap((code, i) => routeOf(chain[i]!, code).slice(i === 0 ? 0 : 1));
+  };
+
   return (
     <nav className={`line-map schematic ${className}${corner ? ' line-map--with-bar' : ''}`} aria-label={label} style={{ width, height }}>
       {corner && (
@@ -248,7 +277,7 @@ export function PositionedMap({
           trains={trains}
           pointOf={(code) => points[code]}
           // Along the drawn line, corners included, where the two stations are neighbours on the map.
-          pathOf={(a, b) => (edges.some(([x, y]) => (x === a && y === b) || (x === b && y === a)) ? routeOf(a, b) : undefined)}
+          pathOf={trackBetween}
           orientation="track"
           onSelect={(train) => onSelectTrain?.(train)}
         />

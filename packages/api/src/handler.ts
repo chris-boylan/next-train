@@ -106,7 +106,7 @@ export function createHandler({ client, favourites, feedback }: ApiDeps) {
         return json(200, journey, DEPARTURES_CACHE);
       }
 
-      // Where every train on a service is right now, for the live map (DART and Enterprise so far).
+      // Where every train on a service is right now, for the live map (DART, Enterprise, Dublin Commuter and InterCity so far).
       if (method === 'GET' && path === '/api/trains') {
         const service = event.queryStringParameters?.service ?? 'dart';
         if (!isLiveService(service)) return error(400, `Live trains are only available for: ${LIVE_SERVICES.join(', ')}`);

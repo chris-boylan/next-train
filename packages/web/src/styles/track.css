@@ -803,3 +803,8 @@
 .trains__break--south .trains__gap {
   left: calc(50% + var(--lane-gap) / 2 + var(--lane-width) / 2 - 15px);
 }
+
+/* The note by an empty track can run to two lines ("No Commuter trains…" then "DART trains… do"). */
+.trains-empty {
+  white-space: pre-line;
+}

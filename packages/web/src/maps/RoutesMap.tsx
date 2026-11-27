@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import type { Service } from '@dart-times/core';
+import { type ReactNode, useMemo } from 'react';
+import type { LiveTrain, Service } from '@dart-times/core';
 import { type Lang, useI18n } from '../lib/i18n';
 import { PositionedMap } from './PositionedMap';
 import type { RouteMap } from './data/routeMaps';
@@ -33,6 +33,11 @@ interface Props<Id extends string> {
   favouriteCodes: string[];
   currentCode?: string;
   onSelect: (code: string) => void;
+  /** Live trains, drawn on the all-routes map when the viewer has turned them on. */
+  trains?: LiveTrain[];
+  onSelectTrain?: (train: LiveTrain) => void;
+  /** The Live switch, on the all-routes map's top strip. */
+  corner?: ReactNode;
 }
 
 /** Edges reachable from `root`: one hub's network, when a service has more than one. */
@@ -68,6 +73,9 @@ export function RoutesMap<Id extends string>({
   favouriteCodes,
   currentCode,
   onSelect,
+  trains,
+  onSelectTrain,
+  corner,
 }: Props<Id>) {
   const { t, lang, stationName } = useI18n();
   const schematic = useMemo(() => makeSchematic?.(lang), [makeSchematic, lang]);
@@ -133,6 +141,9 @@ export function RoutesMap<Id extends string>({
                 onSelect={(code) => onSelect(real(code))}
                 className={mapClassName}
                 label={t.allRoutes}
+                trains={trains}
+                onSelectTrain={onSelectTrain}
+                corner={corner}
               />
               {unplaced.length > 0 && (
                 <p className="network__unmapped">

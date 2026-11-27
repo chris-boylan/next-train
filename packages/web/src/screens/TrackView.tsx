@@ -609,7 +609,8 @@ function Trains({
       : others
         ? // Not "no trains" when another service's trains run this way: name ours, and say which do.
           // The track's own label already says where it goes, so the note just names the services.
-          `${t.noServiceTrains(service)} ${t.otherServicesRun(list(others.services.map((id) => t.serviceNames[id])), list(others.destinations.slice(0, 3).map(nameOf)), others.nextInMins)}`
+          // Two lines: ours first, then who does run (the note keeps line breaks).
+          `${t.noServiceTrains(service)}\n${t.otherServicesRun(list(others.services.map((id) => t.serviceNames[id])), list(others.destinations.slice(0, 3).map(nameOf)), others.nextInMins)}`
         : compass
           ? t.noTrains(t.direction[direction])
           : places.length

@@ -48,7 +48,7 @@ export function StationPicker({
   // Back from a station, the map is where you left it; opened from the service list, it starts at the top.
   const scrollRef = useScrollMemory<HTMLDivElement>(`map:${service.id}`);
   const [favouritesPlace] = useFavouritesPlace();
-  // Live trains: DART and Enterprise so far, and off until the viewer turns them on (one setting for both).
+  // Live trains: DART, Enterprise, Dublin Commuter and InterCity so far, and off until the viewer turns them on (one setting for both).
   const hasLiveTrains = isLiveService(service.id);
   const [liveOn, setLiveOn] = useLiveTrainsPref();
   const live = useLiveTrains(service.id, hasLiveTrains && liveOn);
@@ -127,6 +127,7 @@ export function StationPicker({
             schematic={commuterSchematicFor}
             hubs={['CNLLY', 'HSTON']}
             {...mapProps}
+            {...liveProps}
           />
         ) : service.id === 'intercity' ? (
           <RoutesMap
@@ -142,6 +143,7 @@ export function StationPicker({
             mapTermini={NETWORK_TERMINI}
             hubs={['HSTON', 'CNLLY']}
             {...mapProps}
+            {...liveProps}
           />
         ) : service.id === 'nir' ? (
           <RoutesMap

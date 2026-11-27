@@ -6,6 +6,19 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-27 · Live trains on the Dublin Commuter and InterCity maps
+
+**Decision:** the All routes maps for Dublin Commuter and InterCity show live trains, behind the same Live switch.
+They're placed from the positions feed like the DART's, kept to the service's own trains by the boards' `matches`
+rule (DART trains told apart by their E codes, since the feed has no train type). On these maps trains point along
+the track, and one between stations that aren't neighbours on the map follows the drawn track through the ones it
+passes (expresses), and to the Nenagh line's stand-in Ballybrophy. Trains Irish Rail isn't tracking aren't
+estimated here (unlike the Enterprise): a board check per station would be ~100 calls a refresh.
+
+**Why:** on 27 Nov at 19:55 the feed had 19 Commuter and 26 InterCity trains running; the existing placement put
+18 and 25 on their lines (the others were past the map's ends). Cork stays off: a three-hour sample found only
+Mallow–Cobh trains ever tracked, and those froze at Killarney Junction.
+
 ## 2026-11-27 · Station pages at hubs open on "All" routes
 
 **Decision:** a Commuter or InterCity station on several routes gets an "All" chip first, and opens on it: every

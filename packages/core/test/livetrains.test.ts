@@ -192,3 +192,20 @@ describe('getLiveTrains: Enterprise, checked against the station boards', () => 
     expect(codes).toContain('A122');
   });
 });
+
+describe('getLiveTrains: Dublin Commuter and InterCity', () => {
+  // Recorded at 19:55 on 27 Nov: 19 Commuter and 26 InterCity trains running.
+  const client = () => routedClient('current-trains-evening.xml');
+
+  it('places nearly every running Commuter train on its routes, and no DART or InterCity ones', async () => {
+    const trains = await getLiveTrains(client(), 'commuter');
+    expect(trains.length).toBeGreaterThanOrEqual(18);
+    expect(trains.every((t) => !t.code.startsWith('E') && !t.code.startsWith('A'))).toBe(true);
+  });
+
+  it('places nearly every running InterCity train, the Enterprise left out', async () => {
+    const trains = await getLiveTrains(client(), 'intercity');
+    expect(trains.length).toBeGreaterThanOrEqual(25);
+    expect(trains.every((t) => t.code.startsWith('A') && t.destination !== 'Belfast' && t.origin !== 'Belfast')).toBe(true);
+  });
+});
