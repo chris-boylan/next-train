@@ -41,6 +41,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feat/timetable-on-track` | Timetabled trains on the station page's tracks where there are no live ones |
 | `feat/verify-deploy` | Live-site check after every deploy (version, API, timetable, www redirect) |
 | `feat/nir-timetable` | NI Railways timetabled trains, from Translink's TransXChange timetable |
+| `feat/nir-track-view` | NI Railways stations on the two-track station page, from the timetable |
 | `fix/deploy-on-request` | Pipeline deploys only when run by hand, not on every merge |
 
 ## Using the web app
@@ -88,7 +89,10 @@ The app always opens on the **service picker**: DART, Dublin Commuter, InterCity
 
 ## Translink NIR
 
-Northern Ireland Railways, as its own service (Translink's teal and lime on the tile). **There's no live data**: Irish Rail's feed has no NI Railways trains, and OpenDataNI's real-time feed isn't working. So NIR trains are shown at their **timetabled** times, from now, under "Timetable" with an NIR badge. Belfast Grand Central, Lisburn, Portadown and Newry also show their live Enterprise (and Irish Rail) trains.
+Northern Ireland Railways, as its own service (Translink's teal and lime on the tile). **There's no live data**: Irish Rail's feed has no NI Railways trains, and OpenDataNI's real-time feed isn't working. So NIR trains are shown at their **timetabled** times, from now. Belfast Grand Central, Portadown and Newry also show their live Enterprise trains.
+
+- **Station page:** the same two-track page as the DART, on `NIR_TRACK_LINE` (`core/src/nir.ts`): one line from Newry through Portadown, Lisburn and **Grand Central** (a through station) across the city to Lanyon Place, branching to Bangor, and at York Street to Larne and Derry (Portrush at Coleraine). So "towards Belfast" from Portadown is Northbound, as on the Enterprise. NIR trains show their **clock time** as the big number (a countdown would look live) with a **Timetable** tag; they're solid at stations with no live trains and hollow beside live Enterprise trains, which they fall in among in time order. They can't be tapped (no live journey). After the last train the page says **No more trains today** and shows tomorrow's first ones, tagged **Tomorrow**. The header says "timetable only".
+- **All-stations map:** NI stations open a station board with the same timetabled trains.
 
 ### NIR timetable
 

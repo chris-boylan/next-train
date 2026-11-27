@@ -370,6 +370,15 @@
   color: var(--muted);
 }
 
+/* NI Railways trains (timetable only) show their clock time, which is wider than a countdown. */
+.train__due--clock {
+  letter-spacing: -0.02em;
+}
+
+.train--next .train__due--clock {
+  font-size: 2.3rem;
+}
+
 .train__timetable {
   padding: 0 4px;
   border: 1px solid currentColor;
@@ -442,8 +451,13 @@
   }
 
   /* Hours and minutes need a size down to fit beside the track. */
-  .train__due:has(.train__unit--hours) {
+  .train__due:has(.train__unit--hours),
+  .train__due--clock {
     font-size: 1.35rem;
+  }
+
+  .train--next .train__due--clock {
+    font-size: 1.9rem;
   }
 
   /* Tighter units too, so the Irish "1U 15NÓIM" fits as well as "1H 15MIN". */

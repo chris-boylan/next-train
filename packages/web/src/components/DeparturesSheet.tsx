@@ -25,6 +25,8 @@ interface Props {
   line: Line;
   /** For the timetabled trains after the live ones. */
   serviceId: ServiceId;
+  /** False at NI Railways stations with no live trains: there's only the timetable. */
+  live?: boolean;
   direction: Direction;
   /** All departures in this direction for the next 90 minutes. */
   departures: Departure[];
@@ -34,8 +36,9 @@ interface Props {
 }
 
 /** Every departure in one direction, with quick "going to" picks. */
-export function DeparturesSheet({ station, line, serviceId, direction, departures, goingTo, onGoingTo, onClose }: Props) {
+export function DeparturesSheet({ station, line, serviceId, live = true, direction, departures, goingTo, onGoingTo, onClose }: Props) {
   const scheduled = useScheduled(station.code);
+  const nir = serviceId === 'nir';
   const now = useNow();
   const { t, stationName, nameOf, destinationName, describe } = useI18n();
   const [choosingOther, setChoosingOther] = useState(false);
@@ -106,14 +109,20 @@ export function DeparturesSheet({ station, line, serviceId, direction, departure
               </li>
             ))}
           </ol>
-          {!shown.length && <p className="sheet__empty">{t.noMatching}</p>}
+          {live && !shown.length && <p className="sheet__empty">{t.noMatching}</p>}
           {goingTo && <HiddenNote all={departures} shown={shown} />}
           {scheduled && (
             <LaterDepartures
               departures={scheduled}
               nowMinutes={Math.floor(irishSecondsOfDay(now.getTime()) / 60)}
               liveCodes={new Set(departures.map((d) => d.trainCode))}
-              include={(d) => scheduledHeading(d, { service: serviceId, station: station.code, direction, line, goingTo })}
+              include={(d) =>
+                scheduledHeading(d, { service: nir ? ['nir', 'enterprise'] : serviceId, station: station.code, direction, line, goingTo })
+              }
+              // NI Railways trains are timetable-only, from now: "Timetable", said once here.
+              title={nir ? t.timetable : undefined}
+              note={nir ? t.nirTimetableNote : undefined}
+              limit={nir ? 20 : undefined}
             />
           )}
         </>

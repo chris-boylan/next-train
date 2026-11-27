@@ -277,7 +277,8 @@ export function scheduledBeyondLive(
 export function scheduledHeading(
   d: ScheduledDeparture,
   { service, station, direction, line, goingTo }: {
-    service: Parameters<typeof scheduledMatches>[0];
+    /** One service, or several (an NIR station page also lists the Enterprise). */
+    service: Parameters<typeof scheduledMatches>[0] | Parameters<typeof scheduledMatches>[0][];
     station: string;
     direction: Direction;
     line: Line;
@@ -285,7 +286,7 @@ export function scheduledHeading(
   },
 ): boolean {
   return (
-    scheduledMatches(service, d) &&
+    (Array.isArray(service) ? service : [service]).some((s) => scheduledMatches(s, d)) &&
     !!d.destinationCode &&
     directionBetween(station, d.destinationCode, line) === direction &&
     (!goingTo || d.destinationCode === goingTo || callsAt(station, d.destinationCode, goingTo, line))
