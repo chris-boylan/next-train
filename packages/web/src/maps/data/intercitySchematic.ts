@@ -80,8 +80,19 @@ function schematicFromNetwork(codes: string[], routeMap: Pick<RouteMap, 'allEdge
       const via = network.points[path[i]!];
       if (i < path.length - 1 && via) corners.push([via.x, via.y]);
     }
-    if (corners.length) bends[`${a}|${b}`] = corners;
+    // Copies (connections can share the all-stations map's corners, and squeezing moves each once), keeping only
+    // real corners: the stations it skips on a straight run aren't corners, and would stop the run being squeezed.
+    const from = [points[a]!.x, points[a]!.y] as Point;
+    const to = [points[b]!.x, points[b]!.y] as Point;
+    const kept = corners.filter((c, k) => {
+      const before = k === 0 ? from : corners[k - 1]!;
+      const after = k === corners.length - 1 ? to : corners[k + 1]!;
+      return (c[0] - before[0]) * (after[1] - c[1]) !== (c[1] - before[1]) * (after[0] - c[0]);
+    });
+    if (kept.length) bends[`${a}|${b}`] = kept.map(([x, y]): Point => [x, y]);
   }
+
+  squeezeEmptyBands(points, bends, routeMap.allEdges, standIns);
 
   // Lift everything to the top of this service's network (the all-stations map starts with NI at the top).
   const ys = [...Object.values(points).map((p) => p.y), ...Object.values(bends).flat().map(([, y]) => y)];
@@ -94,4 +105,46 @@ function schematicFromNetwork(codes: string[], routeMap: Pick<RouteMap, 'allEdge
     labelMaxWidth: network.labelMaxWidth,
     standIns,
   };
+}
+
+/** The tallest a band with no stations or corners may be, on a service's own map. */
+const MAX_EMPTY_BAND = 72;
+
+/**
+ * Shortens tall empty bands: a service's map keeps only its own stations, so where it skips the all-stations map's
+ * (Sligo trains run non-stop from Drumcondra to Maynooth), its lines run a long way with nothing on them. A band
+ * between two heights with no station or corner in it, crossed only by lines running straight up and down, is
+ * cut down to MAX_EMPTY_BAND, moving everything below it up. Diagonals are never stretched or squashed.
+ */
+function squeezeEmptyBands(
+  points: Record<string, SchematicPoint>,
+  bends: Record<string, Point[]>,
+  edges: [string, string][],
+  standIns: { code: string; for: string; link: [string, string] }[],
+) {
+  const at = (code: string): Point | undefined => (points[code] ? [points[code]!.x, points[code]!.y] : undefined);
+  const lines: Point[][] = withStandIns(edges, standIns).flatMap(([a, b]) => {
+    const from = at(a);
+    const to = at(b);
+    if (!from || !to) return [];
+    return [[from, ...(bends[`${a}|${b}`] ?? [...(bends[`${b}|${a}`] ?? [])].reverse()), to]];
+  });
+  const heights = [...new Set([...Object.values(points).map((p) => p.y), ...lines.flat().map(([, y]) => y)])].sort((a, b) => a - b);
+  // From the bottom up, so each cut only moves what's below it.
+  for (let i = heights.length - 1; i > 0; i--) {
+    const top = heights[i - 1]!;
+    const bottom = heights[i]!;
+    const cut = bottom - top - MAX_EMPTY_BAND;
+    if (cut <= 0) continue;
+    const straight = lines.every((line) =>
+      line.slice(1).every(([x, y], j) => {
+        const [px, py] = line[j]!;
+        const crosses = Math.min(py, y) <= top && Math.max(py, y) >= bottom;
+        return !crosses || px === x;
+      }),
+    );
+    if (!straight) continue;
+    for (const p of Object.values(points)) if (p.y >= bottom) p.y -= cut;
+    for (const corners of Object.values(bends)) for (const c of corners) if (c[1] >= bottom) c[1] -= cut;
+  }
 }

@@ -18,6 +18,8 @@ export interface SchematicPoint {
   labelDy?: number;
   /** A big station whose name keeps the map's usual size (still bold), where a larger one wouldn't fit. */
   smallHubLabel?: boolean;
+  /** A terminus that isn't an interchange, e.g. Grand Canal Dock on the Commuter map: its name in the heaviest type. */
+  boldLabel?: boolean;
   /** Wrap this label wider than this; overrides the map's labelMaxWidth. */
   labelWidth?: number;
 }

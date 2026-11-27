@@ -214,6 +214,7 @@ describe('API handler: live trains', () => {
     expect((await get('/api/trains')).statusCode).toBe(200);
     expect((await get('/api/trains?service=enterprise')).statusCode).toBe(200);
     expect((await get('/api/trains?service=cork')).statusCode).toBe(400);
-    expect((await get('/api/trains?service=intercity')).statusCode).toBe(400);
+    expect((await get('/api/trains?service=intercity')).statusCode).toBe(200);
+    expect((await get('/api/trains?service=commuter')).statusCode).toBe(200);
   });
 });

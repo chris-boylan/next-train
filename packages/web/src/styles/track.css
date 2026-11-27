@@ -760,3 +760,51 @@
   margin-right: 8px;
   vertical-align: 2px;
 }
+
+/* Today's last train on a track: a solid tag, so it stands out from the hollow timetable one. */
+.train__last {
+  padding: 0 4px;
+  border: 1px solid var(--text);
+  border-radius: 3px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.train__meta .train__last {
+  margin-right: 4px;
+}
+
+/* A break in the track between today's trains and tomorrow's: a bar across this track's line in the station
+   sign's colour (like the sign band, so it reads as the end of today). The train after it says "Tomorrow". */
+.trains__break {
+  position: relative;
+  height: 22px;
+}
+
+.trains__gap {
+  position: absolute;
+  top: 50%;
+  /* Exactly the track's width (.lane__shaft), so it reads as part of the line, not across it. */
+  width: 30px;
+  height: 12px;
+  transform: translateY(-50%);
+  background: var(--band-bg);
+}
+
+.trains__break--north .trains__gap {
+  left: calc(50% - var(--lane-gap) / 2 - var(--lane-width) / 2 - 15px);
+}
+
+.trains__break--south .trains__gap {
+  left: calc(50% + var(--lane-gap) / 2 + var(--lane-width) / 2 - 15px);
+}
+
+/* The note by an empty track can run to two lines ("No Commuter trains…" then "DART trains… do"). */
+.trains-empty {
+  white-space: pre-line;
+}

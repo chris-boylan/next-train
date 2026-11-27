@@ -146,34 +146,40 @@ export function networkSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
   column(['CLMRS', 'BYHNS', 'CSREA', 'RSCMN'], MAYO_X, manulla[1] + 180, 1, 'left');
 
   // ---------- Heuston, Park West and the main line to Kildare ----------
-  const junction: Point = [X2, connollyY + 40];
-  stop('HSTON', [X3 - 48, junction[1]], 'above', { labelDx: 4, labelWidth: 58, labelDy: -8 });
+  // Heuston's line leaves it at 45° and meets the Phoenix Park line coming down from Drumcondra, just above Park West.
+  const heustonY = connollyY + 40;
+  const heustonX = X3 - 56;
+  const junction: Point = [X2, heustonY + (heustonX - X2)];
+  stop('HSTON', [heustonX, heustonY], 'above', { labelDx: 0, labelWidth: 58, labelDy: -8 });
   stop('CHORC', [X2, junction[1] + 32], 'right', { labelWidth: 68 });
   column(['CLDKN', 'KISHO', 'ADAMF', 'HZLCH', 'SALNS', 'NBRGE', 'CURAH', 'KDARE'], X2, at('CHORC')[1] + 56, 1);
   bend('HSTON', 'CHORC', junction);
   bend('DCDRA', 'CHORC', [X2, connollyY - 6], junction);
 
   // ---------- Athlone and Galway ----------
-  // Athlone sits west of Dublin: Mayo's line comes in from the north-west, Galway leaves south-west.
+  // Athlone sits west of Dublin: Mayo's line comes in from the north-west, Galway leaves south-west, and the line
+  // from Dublin comes in from the east (see Portarlington, below).
   const athlone: Point = [X1, connollyY + 10];
   stop('ATLNE', athlone, 'left');
   const rscmn = at('RSCMN');
   bend('RSCMN', 'ATLNE', [MAYO_X, rscmn[1] + 30], [X0, rscmn[1] + 30 + (MAYO_X - X0)], [X0, athlone[1] - (X1 - X0)]);
-  // Athenry is a junction (geography bent to fit): Galway is a short stub east of it, and the line to Ennis and
-  // Limerick carries on down the west edge. Attymon sits a little higher so Oranmore's angled name clears it.
+  // Galway, a city, sits at the end of a sideways Y (geography bent to fit): the lines from Athlone (above) and
+  // from Ennis (below) angle in to meet at Athenry, and one stem runs east through Oranmore to Galway, which gets a
+  // city's circle and name. The Tullamore line keeps a lane further east to leave the stem room.
   const ballinasloeY = athlone[1] + (X1 - X0) + 24;
   column(['BSLOE', 'WLAWN', 'ATMON'], X0, ballinasloeY, 1, 'right', 28);
   bend('ATLNE', 'BSLOE', [X0, athlone[1] + (X1 - X0)]);
-  const athenry: Point = [X0, ballinasloeY + 2 * 28 + 80];
-  // Three names in a tight corner, stacked: Galway above its end of the stub (in the map's usual size: a bigger
-  // one would run into the Tullamore line), Athenry just above the stub beside its dot, Oranmore below the stub.
-  // Irish names wrap onto two lines here, so they sit a little higher.
-  stop('ATHRY', athenry, 'right', { labelDy: lang === 'ga' ? -28 : -24 });
-  stop('ORNMR', [X0 + 26, athenry[1]], 'below', { labelDx: 8, labelDy: -12 });
-  stop('GALWY', [X0 + 54, athenry[1]], 'above', { labelDy: lang === 'ga' ? -40 : -27, smallHubLabel: true });
+  const armX = 32;
+  const athenry: Point = [X0 + armX, ballinasloeY + 2 * 28 + 70];
+  bend('ATMON', 'ATHRY', [X0, athenry[1] - armX]);
+  // Athenry's name sits up by the top of the Y (clear of the arm), Galway's above its circle a little lower, and
+  // Oranmore's below the stem. Irish "Baile Átha an Rí" wraps onto two lines, so it sits higher still.
+  stop('ATHRY', athenry, 'above', { labelDx: 10, labelDy: lang === 'ga' ? -40 : -31 });
+  stop('ORNMR', [X0 + 60, athenry[1]], 'below', { labelDy: -10 });
+  stop('GALWY', [X0 + 92, athenry[1]], 'above', { labelDx: -18, labelDy: -9 });
   // Craughwell fits above the Tullamore line's swing west; the rest of the line to Ennis waits until below it.
-  // (Irish "Creachmhaoil" wraps onto two lines, so it sits a little higher to clear the swing.)
-  stop('CRGHW', [X0, athenry[1] + (lang === 'ga' ? 34 : 56)]);
+  stop('CRGHW', [X0, athenry[1] + armX + 16]);
+  bend('ATHRY', 'CRGHW', [X0, athenry[1] + armX]);
 
   // ---------- Kildare, Portarlington, the Waterford line ----------
   // The main line leaves Kildare south-west for Portarlington (Monasterevin just past Kildare, its name to
@@ -182,14 +188,30 @@ export function networkSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
   const portarlington: Point = [X1, kildare[1] + (X2 - X1)];
   stop('MONVN', [X2 - 20, kildare[1] + 20], 'left');
   stop('PTRTN', portarlington, 'left');
+  // Athlone is a sideways Y too: the line from Portarlington comes in from the east as its stem, and splits at
+  // Athlone into Mayo's arm (up and west) and Galway's (down and west). The stem leaves Athlone straight east,
+  // eases down at 45° into a lane of its own (Galway's stem needs the room west of it), names on the left, then
+  // swings west round Monasterevin's name into Portarlington.
   const claraX = 40;
-  between(['CLARA', 'TMORE'], athlone, [X1, kildare[1] - 60]);
-  bend('TMORE', 'PTRTN', [X1, kildare[1] - 60], [claraX, kildare[1] - 20], [claraX, portarlington[1] - (X1 - claraX)]);
+  const claraLaneX = X1 + 37;
+  const stemEase = 14;
+  stop('CLARA', [claraLaneX, athlone[1] + 51], 'left');
+  stop('TMORE', [claraLaneX, athlone[1] + 81], 'left');
+  bend('ATLNE', 'CLARA', [claraLaneX - stemEase, athlone[1]], [claraLaneX, athlone[1] + stemEase]);
+  // A V at 45° both ways: down-left past Monasterevin's name, one corner at the west edge of the swing, then into
+  // Portarlington.
+  const swingFoot: Point = [claraX, portarlington[1] - (X1 - claraX)];
+  bend('TMORE', 'PTRTN', [claraLaneX, swingFoot[1] - (claraLaneX - claraX)], swingFoot);
   // The Waterford line steps a little east of Kildare, giving the main line's names more room.
   const waterfordX = X2 + (lang === 'ga' ? 10 : 14);
   // Waterford is a through station here: the line from Kildare comes down to it, and the line from Limerick
   // Junction climbs up to it from Tipperary (see below), so its stations carry on down the same lane.
-  column(['ATHY', 'CRLOW', 'MNEBG', 'KKNNY', 'THTWN', 'WFORD', 'CKOSR', 'CLMEL', 'CAHIR', 'TIPRY'], waterfordX, kildare[1] + 2 * ROW, 1, 'right', 46);
+  column(['ATHY', 'CRLOW', 'MNEBG', 'KKNNY', 'THTWN', 'WFORD'], waterfordX, kildare[1] + 2 * ROW, 1, 'right', 46);
+  // Below Waterford, up to the corner where the line from Limerick Junction turns into this lane: Tipperary sits a
+  // little above the corner (a station on a bend reads as an end), and the others are spaced between.
+  const waterfordLaneFoot: Point = [waterfordX, at('WFORD')[1] + 4 * 46];
+  stop('TIPRY', [waterfordX, waterfordLaneFoot[1] - 40]);
+  between(['CKOSR', 'CLMEL', 'CAHIR'], at('WFORD'), at('TIPRY'));
   bend('KDARE', 'ATHY', [X2, kildare[1] + 16], [waterfordX, kildare[1] + 32]);
   points.WFORD!.smallHubLabel = true;
   // Kilkenny is a big station, but its name has to fit between the Waterford and coast lines.
@@ -212,7 +234,7 @@ export function networkSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
   // Limerick Junction to Waterford (geography bent to fit): east off the junction at 45°, down beside the main
   // line, then across to Tipperary at the foot of the Waterford lane, which it climbs to Waterford.
   const ljLaneX = X1 + 30;
-  bend('LMRKJ', 'TIPRY', [ljLaneX, lj[1] + (ljLaneX - X1)], [ljLaneX, at('TIPRY')[1]]);
+  bend('LMRKJ', 'TIPRY', [ljLaneX, lj[1] + (ljLaneX - X1)], [ljLaneX, waterfordLaneFoot[1]], waterfordLaneFoot);
   // The Nenagh line: down from Limerick, ending at a stop for Ballybrophy on the main line (NENAGH_END: drawing
   // it back up to Ballybrophy would cross the main line and Limerick Junction's link).
   column(['CCONL', 'BHILL', 'NNAGH', 'CJRDN', 'RCREA', NENAGH_END], X0, limerickY + 40, 1);
@@ -239,12 +261,13 @@ export function networkSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
   };
   const right = X3 - 7 - 18;
   text(X1 - 7 - 18 - X0, ['NI_MOSSW', 'NI_ANTRM', 'NI_BMENA', 'NI_CULLY', 'NI_BMONY', 'NI_CROCK', 'NI_BELLA', 'NI_DERRY', 'CLBAR', 'WPORT', 'BSLOE', 'WLAWN', 'ATMON', 'CRGHW', 'ARHAN', 'GORT', 'ENNIS', 'SXMBR', 'LMRCK', 'CCONL', 'BHILL', 'NNAGH', 'CJRDN', 'RCREA', NENAGH_END, 'BTEER', 'MLSRT', 'RMORE', 'KLRNY', 'FFORE', 'TRLEE']);
-  text(56, ['ATHRY', 'GALWY']);
+  text(48, ['ATHRY']);
+  text(58, ['GALWY']);
   // Portarlington's name sits left of it, over the line to Ennis, so it wraps clear of that line.
   points.PTRTN!.labelWidth = 52;
   text(70, ['NI_UNIV', 'NI_DHUVR', 'NI_PRUSH', 'NI_LARNH', 'NI_LARNT', 'NI_GLYNN', 'NI_MAGHM', 'NI_BCARY', 'NI_WHEAD', 'NI_DOWNS', 'NI_CFERG', 'NI_CLIPP', 'NI_TROOP', 'NI_GRNIS', 'NI_JORDN', 'NI_WABBY', 'NI_YORKG']);
   text(waterfordX - 7 - 18 - X1, ['PTLSE', 'BBRHY', 'TPMOR', 'THRLS', 'LMRKJ', 'CVILL', 'MLLOW']);
-  text(X2 - 7 - 18 - X1, ['CLARA', 'TMORE']);
+  text(60, ['CLARA', 'TMORE']);
   text(right - X2, ['CHORC', 'CLDKN', 'KISHO', 'ADAMF', 'HZLCH', 'SALNS', 'NBRGE', 'CURAH', 'KDARE']);
   text(right - waterfordX, ['ATHY', 'CRLOW', 'MNEBG', 'KKNNY', 'THTWN', 'WFORD', 'CKOSR', 'CLMEL', 'CAHIR', 'TIPRY']);
   text(right - m3X, ['HAFLD', 'DBYNE', 'M3WAY']);

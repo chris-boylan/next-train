@@ -38,6 +38,11 @@ const CORNER_RADIUS = 28;
 export const INTERCHANGES: ReadonlySet<string> = new Set(['CNLLY', 'HSTON', 'BFSTC', 'CORK', 'LMRCK', 'GALWY', 'WFORD', 'RLEPT', 'KKNNY']);
 /** Matches .line-map__track's stroke-width. */
 const TRACK_WIDTH = 10;
+/** Each route's stripe on shared track, as on the tube map: track carrying several routes gets wider rather than
+ *  splitting one track's width (four routes in 10 px were too thin to see). Two routes still fit 10 px. */
+const STRIPE = 5;
+/** How far a track reaches either side of its line, carrying `routes` routes. */
+const halfWidth = (routes: number) => Math.max(TRACK_WIDTH, routes * STRIPE) / 2;
 
 /** Shifts a line sideways by `by` (positive: to its left, travelling along it), keeping corners mitred. */
 function offsetLine(points: [number, number][], by: number): [number, number][] {
@@ -56,6 +61,51 @@ function offsetLine(points: [number, number][], by: number): [number, number][] 
     const scale = by / ((mx * n1[0] + my * n1[1]) || 1);
     return [p[0] + mx * scale, p[1] + my * scale];
   });
+}
+
+/** Like offsetLine, but each point has its own sideways shift (for easing a route in and out of a shared band). */
+function offsetEach(points: [number, number][], by: number[]): [number, number][] {
+  return points.map((p, i) => offsetLine(points, by[i]!)[i]!);
+}
+
+/** How far along a connection a route eases sideways into or out of its stripe in a shared band. */
+const EASE_LENGTH = 18;
+
+/**
+ * A route's stripe along a connection, easing from `from` (its shift where it joins the last connection) to
+ * `base` (its place on this one) and on to `to` at the far end, so lines drift into and out of shared bands
+ * instead of stepping sideways at the station.
+ */
+function easedStripe(line: [number, number][], from: number, base: number, to: number): [number, number][] {
+  if (from === base && to === base) return offsetLine(line, base);
+  const lengths = line.slice(1).map((p, i) => Math.hypot(p[0] - line[i]![0], p[1] - line[i]![1]));
+  const total = lengths.reduce((t, l) => t + l, 0);
+  const ease = Math.min(EASE_LENGTH, total / 3);
+  // Sample the stretches where the shift changes, so the drift is a curve, not a kink.
+  const marks = new Set<number>([0, total]);
+  for (let k = 1; k <= 6; k++) {
+    if (from !== base) marks.add((ease * k) / 6);
+    if (to !== base) marks.add(total - (ease * k) / 6);
+  }
+  const at = (d: number): [number, number] => {
+    let left = d;
+    for (let i = 0; i < lengths.length; i++) {
+      const l = lengths[i]!;
+      if (left <= l || i === lengths.length - 1) {
+        const t = l ? Math.min(1, left / l) : 0;
+        return [line[i]![0] + (line[i + 1]![0] - line[i]![0]) * t, line[i]![1] + (line[i + 1]![1] - line[i]![1]) * t];
+      }
+      left -= l;
+    }
+    return line.at(-1)!;
+  };
+  // Keep the corners: every original point, plus the sample points.
+  const corners = line.slice(1, -1).map((_, i) => lengths.slice(0, i + 1).reduce((t, l) => t + l, 0));
+  const ds = [...new Set([...marks, ...corners])].sort((x, y) => x - y);
+  const smooth = (t: number) => t * t * (3 - 2 * t);
+  const shift = (d: number) =>
+    d < ease ? from + (base - from) * smooth(d / ease) : d > total - ease ? base + (to - base) * smooth((d - (total - ease)) / ease) : base;
+  return offsetEach(ds.map(at), ds.map(shift));
 }
 
 /** A line through `points`, with each corner replaced by a curve of up to CORNER_RADIUS. */
@@ -77,19 +127,24 @@ function roundedPath(points: [number, number][], radius = CORNER_RADIUS): string
 }
 
 /** Ticks point towards the label. */
-function tick(p: SchematicPoint): string {
-  if (p.label === 'angled' || p.label === 'above') return `M${p.x},${p.y} v-12`;
-  if (p.label === 'left') return `M${p.x},${p.y} h-12`;
-  return `M${p.x},${p.y} h12`;
+/** Ticks point towards the label, 7 px past the track's edge (wider where several routes share it). */
+function tick(p: SchematicPoint, extra = 0): string {
+  const length = 12 + extra;
+  if (p.label === 'angled' || p.label === 'above') return `M${p.x},${p.y} v-${length}`;
+  // A name under a station on a level line (Oranmore under Galway's stem): the tick points down to it.
+  if (p.label === 'below') return `M${p.x},${p.y} v${length}`;
+  if (p.label === 'left') return `M${p.x},${p.y} h-${length}`;
+  return `M${p.x},${p.y} h${length}`;
 }
 
-function labelStyle(p: SchematicPoint, circle: boolean, mapMaxWidth?: number): CSSProperties {
-  const style = placeLabel(p, circle, mapMaxWidth);
+/** `extra`: how much wider than a single track the track is here, so the name keeps its gap from the edge. */
+function labelStyle(p: SchematicPoint, circle: boolean, mapMaxWidth?: number, extra = 0): CSSProperties {
+  const style = placeLabel(p, circle, mapMaxWidth, extra);
   return p.labelDy ? { ...style, top: (style.top as number) + p.labelDy } : style;
 }
 
-function placeLabel(p: SchematicPoint, circle: boolean, mapMaxWidth?: number): CSSProperties {
-  const dx = p.labelDx ?? 0;
+function placeLabel(p: SchematicPoint, circle: boolean, mapMaxWidth?: number, extra = 0): CSSProperties {
+  const dx = (p.labelDx ?? 0) + (p.label === 'left' ? -extra : p.label === 'right' || p.label === 'angled' ? extra : 0);
   const maxWidth = p.labelWidth ?? mapMaxWidth;
   switch (p.label) {
     case 'right':
@@ -132,6 +187,9 @@ export function PositionedMap({
     const c = colourOf?.(a, b);
     return Array.isArray(c) && c.length > 0 ? c : [typeof c === 'string' ? c : undefined];
   };
+  // How much wider than one track the widest track at a station is (four Commuter routes through Pearse).
+  const extraAt = (code: string) =>
+    Math.max(0, ...edges.filter((e) => e.includes(code)).map(([a, b]) => halfWidth(coloursOf(a, b).length) - TRACK_WIDTH / 2));
   const tickStyle = (code: string) => {
     const edge = edges.find((e) => e.includes(code));
     const colour = edge && coloursOf(...edge)[0];
@@ -141,6 +199,87 @@ export function PositionedMap({
   const routeOf = (a: string, b: string): [number, number][] => {
     const corners = bends[`${a}|${b}`] ?? [...(bends[`${b}|${a}`] ?? [])].reverse();
     return [[points[a]!.x, points[a]!.y], ...corners, [points[b]!.x, points[b]!.y]];
+  };
+  // Each connection's stripes. Lines run top to bottom (then left to right) first, so each route's stripe stays on
+  // the same side from one connection to the next.
+  interface Lane {
+    ordered: [number, number][];
+    start: string;
+    end: string;
+    colours: (string | undefined)[];
+    stripe: number;
+    offsets: number[];
+  }
+  const lanes = new Map<string, Lane>();
+  for (const [a, b] of edges) {
+    const line = routeOf(a, b);
+    const [first, last] = [line[0]!, line.at(-1)!];
+    const forward = first[1] < last[1] || (first[1] === last[1] && first[0] < last[0]);
+    const colours = coloursOf(a, b);
+    const n = colours.length;
+    const stripe = n === 1 ? TRACK_WIDTH : (halfWidth(n) * 2) / n;
+    lanes.set(`${a}|${b}`, {
+      ordered: forward ? line : [...line].reverse(),
+      start: forward ? a : b,
+      end: forward ? b : a,
+      colours,
+      stripe,
+      offsets: colours.map((_, i) => (n === 1 ? 0 : (i - (n - 1) / 2) * stripe)),
+    });
+  }
+  /** Where stripe `i` of `lane` meets the same route on the next connection at `node`, in this connection's frame,
+   *  so both ease to the same point: the wider band's place. Its own place if the route ends here. */
+  const meeting = (lane: Lane, i: number, node: string): number => {
+    const own = lane.offsets[i]!;
+    const colour = lane.colours[i];
+    for (const [key, other] of lanes) {
+      if (other === lane || (other.start !== node && other.end !== node)) continue;
+      const j = other.colours.indexOf(colour);
+      if (j < 0 || (lane.colours.length === 1 && other.colours.length === 1)) continue;
+      // A band no wider than one track (two routes) already lines up with a lone route's edges: the lone route
+      // stays centred and the band's stripes split off at the station (the Enterprise at Newry and Dundalk).
+      if (lane.colours.length === 1 && halfWidth(other.colours.length) * 2 <= TRACK_WIDTH) return own;
+      // Travelling on through the station keeps "left" the same side; two connections both leaving (or both
+      // arriving at) the station flip it.
+      const through = (lane.start === node) !== (other.start === node);
+      const theirs = through ? other.offsets[j]! : -other.offsets[j]!;
+      void key;
+      // The wider band keeps its full width up to the station; the narrower line does the drifting (between two
+      // bands of the same width, they meet halfway).
+      if (lane.colours.length > other.colours.length) return own;
+      if (lane.colours.length < other.colours.length) return theirs;
+      return (own + theirs) / 2;
+    }
+    return own;
+  };
+
+  // A live train's way between two stations along the drawn track, corners included: through any stations an
+  // express passes (Heuston to Kildare skips nine), and to a stand-in stop where one replaces the real station
+  // on that link (the Nenagh line's Ballybrophy).
+  const standIns = schematic.standIns ?? [];
+  const trackBetween = (from: string, to: string): [number, number][] | undefined => {
+    const swap = standIns.find((x) => [...x.link].sort().join('|') === [from, to].sort().join('|'));
+    const a = swap && from === swap.for ? swap.code : from;
+    const b = swap && to === swap.for ? swap.code : to;
+    if (!points[a] || !points[b]) return undefined;
+    const previous = new Map<string, string>([[a, a]]);
+    const queue = [a];
+    while (queue.length && !previous.has(b)) {
+      const here = queue.shift()!;
+      for (const [x, y] of edges) {
+        const next = x === here ? y : y === here ? x : undefined;
+        if (next && !previous.has(next)) {
+          previous.set(next, here);
+          queue.push(next);
+        }
+      }
+    }
+    if (!previous.has(b)) return undefined;
+    const chain = [b];
+    while (chain[0] !== a) chain.unshift(previous.get(chain[0]!)!);
+    // A long way round isn't a skipped stop: draw it straight rather than across half the map.
+    if (chain.length > 12) return undefined;
+    return chain.slice(1).flatMap((code, i) => routeOf(chain[i]!, code).slice(i === 0 ? 0 : 1));
   };
 
   return (
@@ -160,33 +299,37 @@ export function PositionedMap({
           </text>
         )}
         {edges.flatMap(([a, b]) => {
-          const colours = coloursOf(a, b);
-          const line = routeOf(a, b);
-          if (colours.length === 1) {
-            const colour = colours[0];
-            return [
+          const lane = lanes.get(`${a}|${b}`)!;
+          // Every connection is drawn as stripes, one per route (a single route is one full-width stripe), each
+          // eased into its neighbours' stripes at the stations either end so shared bands join smoothly.
+          // Under a shared band, the band's full width in its middle route's colour, so no white shows between the
+          // stripes where they bend (each stripe's corner is drawn on its own, so they don't nest exactly).
+          const underlay =
+            lane.colours.length > 1 ? (
               <path
-                key={`${a}|${b}`}
-                d={roundedPath(line, curveOf(a, b))}
+                key={`${a}|${b}|under`}
+                d={roundedPath(lane.ordered, curveOf(a, b))}
                 className="line-map__track"
-                style={colour ? { stroke: colour } : undefined}
-              />,
-            ];
-          }
-          // Shared track: one stripe per route, side by side across the track's width. Lines all run top to
-          // bottom (then left to right) first, so each route's stripe stays on the same side from one
-          // connection to the next.
-          const [first, last] = [line[0]!, line.at(-1)!];
-          const ordered = first[1] < last[1] || (first[1] === last[1] && first[0] < last[0]) ? line : [...line].reverse();
-          const stripe = TRACK_WIDTH / colours.length;
-          return colours.map((colour, i) => (
-            <path
-              key={`${a}|${b}|${i}`}
-              d={roundedPath(offsetLine(ordered, (i - (colours.length - 1) / 2) * stripe), curveOf(a, b))}
-              className="line-map__track"
-              style={{ strokeWidth: stripe, strokeLinejoin: 'miter', ...(colour ? { stroke: colour } : {}) }}
-            />
-          ));
+                style={{
+                  strokeWidth: lane.stripe * lane.colours.length,
+                  ...(lane.colours[Math.floor(lane.colours.length / 2)] ? { stroke: lane.colours[Math.floor(lane.colours.length / 2)] } : {}),
+                }}
+              />
+            ) : null;
+          return [underlay, ...lane.colours.map((colour, i) => {
+            const [from, to] = [meeting(lane, i, lane.start), meeting(lane, i, lane.end)];
+            return (
+              <path
+                key={`${a}|${b}|${i}`}
+                d={roundedPath(easedStripe(lane.ordered, from, lane.offsets[i]!, to), curveOf(a, b))}
+                className="line-map__track"
+                style={{
+                  ...(lane.colours.length > 1 && { strokeWidth: lane.stripe + 0.5, strokeLinejoin: 'round' as const }),
+                  ...(colour ? { stroke: colour } : {}),
+                }}
+              />
+            );
+          })];
         })}
         {codes.map((code) => {
           const p = points[code]!;
@@ -196,11 +339,12 @@ export function PositionedMap({
               key={code}
               cx={p.x}
               cy={p.y}
-              r={hub ? 12 : 9}
+              // Big enough to cover a wide shared track.
+              r={Math.max(hub ? 12 : 9, extraAt(code) + TRACK_WIDTH / 2 + 4)}
               className={`line-map__dot${hub ? ' line-map__dot--hub' : ''}${code === currentCode ? ' line-map__dot--current' : ''}`}
             />
           ) : (
-            <path key={code} d={tick(p)} className="line-map__tick" style={tickStyle(code)} />
+            <path key={code} d={tick(p, extraAt(code))} className="line-map__tick" style={tickStyle(code)} />
           );
         })}
       </svg>
@@ -208,7 +352,7 @@ export function PositionedMap({
       {codes.map((code) => {
         const p = points[code]!;
         const favourite = favouriteCodes.includes(code);
-        const className = `schematic__stop schematic__stop--${p.label}${labelMaxWidth ? ' schematic__stop--wrap' : ''}${major(code) || INTERCHANGES.has(code) ? ' line-map__stop--major' : ''}${INTERCHANGES.has(code) ? ` schematic__stop--hub${p.smallHubLabel ? ' schematic__stop--hub-small' : ''}` : ''}${code === currentCode ? ' line-map__stop--current' : ''}${noData(code) ? ' schematic__stop--no-data' : ''}`;
+        const className = `schematic__stop schematic__stop--${p.label}${labelMaxWidth ? ' schematic__stop--wrap' : ''}${major(code) || INTERCHANGES.has(code) ? ' line-map__stop--major' : ''}${INTERCHANGES.has(code) ? ` schematic__stop--hub${p.smallHubLabel ? ' schematic__stop--hub-small' : ''}` : ''}${p.boldLabel ? ' schematic__stop--bold' : ''}${code === currentCode ? ' line-map__stop--current' : ''}${noData(code) ? ' schematic__stop--no-data' : ''}`;
         const content = (
           <>
             {/* One span for the whole name: Caps puts Irish prefixes in their own spans, which the flex
@@ -223,14 +367,14 @@ export function PositionedMap({
           <button
             key={code}
             className={className}
-            style={labelStyle(p, major(code) || code === currentCode, labelMaxWidth)}
+            style={labelStyle(p, major(code) || code === currentCode, labelMaxWidth, extraAt(code))}
             onClick={() => onSelect(code)}
             aria-label={`${name(code)}${noData(code) ? `, ${t.timetableOnly}` : ''}${favourite ? `, ${t.favourite}` : ''}`}
           >
             {content}
           </button>
         ) : (
-          <span key={code} className={className} style={labelStyle(p, major(code) || code === currentCode, labelMaxWidth)}>
+          <span key={code} className={className} style={labelStyle(p, major(code) || code === currentCode, labelMaxWidth, extraAt(code))}>
             {content}
           </span>
         );
@@ -248,7 +392,7 @@ export function PositionedMap({
           trains={trains}
           pointOf={(code) => points[code]}
           // Along the drawn line, corners included, where the two stations are neighbours on the map.
-          pathOf={(a, b) => (edges.some(([x, y]) => (x === a && y === b) || (x === b && y === a)) ? routeOf(a, b) : undefined)}
+          pathOf={trackBetween}
           orientation="track"
           onSelect={(train) => onSelectTrain?.(train)}
         />

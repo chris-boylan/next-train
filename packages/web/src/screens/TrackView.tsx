@@ -1,4 +1,4 @@
-import { type CSSProperties, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { type CSSProperties, Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ScrollingName } from '../components/ScrollingName';
 import {
   adjacentStations,
@@ -16,7 +16,10 @@ import {
   scheduledBeyondLive,
   type ScheduledDeparture,
   type Service,
+  type Placement,
   stationLines,
+  allRoutesLine,
+  trackOnAll,
   type Station,
   terminiFrom,
   LIVE_WINDOW_MINS,
@@ -85,11 +88,16 @@ export function TrackView({
   const nir = service.id === 'nir';
   const liveStation = !nir || hasLiveData(station.code);
   const { data, error } = useDepartures(station.code, nir ? 'all' : service.id, liveStation);
-  const timetable = useScheduled(station.code, true, nir);
+  // Tomorrow's timetable too, so a page after the last train shows the first one in the morning (Sligo after 19:05).
+  const timetable = useScheduled(station.code, true, true);
   // The station's lines: one, or one per route at a Commuter hub (chosen with the chips under the header).
   const lines = useMemo(() => stationLines(service, station.code), [service, station.code]);
-  const [lineId, setLineId] = useState(() => lines.find((l) => l.id === initialLineId)?.id ?? lines[0]!.id);
-  const current = lines.find((l) => l.id === lineId) ?? lines[0]!;
+  // At a hub (several routes), "All" first: every route's trains on one pair of tracks. A route picked on the
+  // map (initialLineId) opens on that route instead.
+  const all = useMemo(() => allRoutesLine(lines, station.code), [lines, station.code]);
+  const options = useMemo(() => (all ? [all, ...lines] : lines), [all, lines]);
+  const [lineId, setLineId] = useState(() => options.find((l) => l.id === initialLineId)?.id ?? options[0]!.id);
+  const current = options.find((l) => l.id === lineId) ?? options[0]!;
   const { line } = current;
   // Northbound/Southbound are compass directions on the DART, Enterprise, Cork and NIR; on Commuter routes they're
   // outbound and inbound, so tracks are named by where their trains go.
@@ -143,8 +151,8 @@ export function TrackView({
 
   // Each train's line and track from our own line layout (here → its destination), so services whose API
   // directions read "To Cork" still land on the right track, and Commuter trains on their route.
-  const onTrack = (direction: Direction) => (p: { lineId: string; direction: Direction } | undefined) =>
-    !!p && p.lineId === current.id && p.direction === direction;
+  const onTrack = (direction: Direction) => (p: Placement | undefined) =>
+    current.id === 'all' && all ? trackOnAll(all, p) === direction : !!p && p.lineId === current.id && p.direction === direction;
   const allIn = (direction: Direction) => data?.departures.filter((d) => onTrack(direction)(placeDeparture(service, station.code, lines, d))) ?? [];
   const timetabledOn = (direction: Direction) => (d: ScheduledDeparture) => onTrack(direction)(placeTimetabled(service, station.code, lines, d));
 
@@ -174,7 +182,7 @@ export function TrackView({
     return next.size ? { services: [...next.keys()], destinations, nextInMins: Math.min(...next.values()) } : undefined;
   };
   const directionName = (direction: Direction) =>
-    compass ? t.direction[direction] : t.towards2(list(terminiFrom(station.code, direction, line).map(nameOf)));
+    compass ? t.direction[direction] : t.towards2(list(terminiFrom(station.code, direction, line).filter((end) => !passedThrough(end)).map(nameOf)));
   const shownIn = (direction: Direction) =>
     goingTo && goingDirection === direction ? departuresGoingTo(allIn(direction), station.code, goingTo, line) : allIn(direction);
   const dimmed = (direction: Direction) => !!goingDirection && goingDirection !== direction;
@@ -217,7 +225,10 @@ export function TrackView({
             include: (d) =>
               timetabledOn(direction)(d) &&
               (goingDirection !== direction || !goingTo || d.destinationCode === goingTo || callsAt(station.code, d.destinationCode!, goingTo, line)),
-          })
+          }).filter(
+            // Irish Rail: at most tomorrow's first train on a track, after today's; NI Railways lists the day ahead.
+            (d, i, list) => nir || !(d as TimetabledDeparture).tomorrow || list.findIndex((x) => (x as TimetabledDeparture).tomorrow) === i,
+          )
         : [];
     // Live and timetabled trains in time order. Irish Rail's timetabled trains are beyond the live window, so they
     // always follow the live ones; NI Railways' (no live data) fall in among the Enterprise's live trains.
@@ -227,6 +238,11 @@ export function TrackView({
     ].sort((a, b) => a.at - b.at);
     const items = all.slice(0, perDirection);
     const isToday = (x: TrackTrain) => !x.timetabled?.tomorrow;
+    // The last train today on this track, when tomorrow's first follows it: the timetable is loaded and has
+    // nothing more today (with timetabled trains off, or no file, nothing is called the last).
+    const firstTomorrow = all.findIndex((x) => !isToday(x));
+    const lastToday = firstTomorrow > 0 ? all[firstTomorrow - 1] : undefined;
+    const lastTodayCode = lastToday && (lastToday.live?.trainCode ?? lastToday.timetabled?.trainCode);
     // "+ N more": live trains beyond those shown; on an NIR page, the rest of today's trains.
     const moreCount = hidden ? 0 : nir ? all.filter(isToday).length - items.filter(isToday).length : Math.max(0, live.length - perDirection);
     return (
@@ -246,14 +262,24 @@ export function TrackView({
         onTimetabled={setTimetableInfo}
         serviceId={service.id}
         others={hidden ? undefined : othersIn(direction)}
+        lastTodayCode={lastTodayCode}
       />
     );
   };
 
   // South of Belfast every NIR train northbound goes through Grand Central: name it, not all four branch ends.
   const viaBelfast = (ends: string[]) => (nir && ends.includes('BFSTC') ? ['BFSTC'] : ends);
-  const north = viaBelfast(terminiFrom(station.code, 'Northbound', line));
-  const south = viaBelfast(terminiFrom(station.code, 'Southbound', line));
+  // Where a track's trains go. Not the end of a line that doesn't come through here, when the lines that do run
+  // straight past it: from Kildare, Ballybrophy (where the Nenagh line starts) and Limerick Junction aren't where
+  // trains are going. Turn-backs (Hazelhatch) aren't line ends, and Limerick from Limerick Junction is one.
+  const passedThrough = (end: string) => {
+    const isEnd = (p: string[]) => p[0] === end || p.at(-1) === end;
+    const throughHere = line.paths.filter((p) => p.includes(station.code) && p.includes(end));
+    return line.paths.some(isEnd) && throughHere.length > 0 && !throughHere.some(isEnd);
+  };
+  const endsOf = (direction: Direction) => viaBelfast(terminiFrom(station.code, direction, line).filter((end) => !passedThrough(end)));
+  const north = endsOf('Northbound');
+  const south = endsOf('Southbound');
   const neighbours = adjacentStations(station.code, line);
   // Chips: each route's name and map colour.
   const routeNames: Record<string, string> = service.id === 'intercity' ? t.intercityRoutes : t.commuterRoutes;
@@ -304,17 +330,26 @@ export function TrackView({
         </div>
       </header>
 
-      {lines.length > 1 && (
+      {options.length > 1 && (
         <nav className="line-chips" aria-label={t.lines}>
-          {lines.map((l) => (
+          {options.map((l) => (
             <button
               key={l.id}
               className={`line-chip${l.id === current.id ? ' line-chip--on' : ''}`}
               aria-pressed={l.id === current.id}
               onClick={() => setLineId(l.id)}
             >
-              <span className="line-chip__swatch" style={{ background: lineColour(l.id) }} />
-              {lineName(l.id)}
+              {/* "All" has every route's colour, side by side. */}
+              <span
+                className="line-chip__swatch"
+                style={{
+                  background:
+                    l.id === 'all'
+                      ? `linear-gradient(to right, ${lines.map((r, i) => `${lineColour(r.id)} ${(i / lines.length) * 100}% ${((i + 1) / lines.length) * 100}%`).join(', ')})`
+                      : lineColour(l.id),
+                }}
+              />
+              {l.id === 'all' ? t.allRoutesChip : lineName(l.id)}
             </button>
           ))}
         </nav>
@@ -521,6 +556,7 @@ function Trains({
   onTimetabled,
   serviceId,
   others,
+  lastTodayCode,
 }: {
   direction: Direction;
   /** Live and timetabled trains, in time order, as many as fit. */
@@ -547,6 +583,8 @@ function Trains({
   serviceId: ServiceId;
   /** Other services' trains this way, when this track has none of ours. */
   others?: OtherServices;
+  /** The last train today on this track (see trainsFor), tagged "Last today". */
+  lastTodayCode?: string;
 }) {
   const { t, destinationName, describe, nameOf, list } = useI18n();
   const side = direction === 'Northbound' ? 'north' : 'south';
@@ -559,6 +597,8 @@ function Trains({
   let message: string | undefined;
   if (!ends.length && !items.length) message = t.terminateHere;
   else if (nir) message = !items.length ? t.noTimetabledTrains : noneToday ? t.noMoreToday : undefined;
+  // Irish Rail after the last train: tomorrow's first is shown, so say there are no more today.
+  else if (noneToday && !goingToName) message = t.noMoreToday;
   else if (!anyLive) {
     // Named by where this track's trains go: its ends, or (past the end of our line, e.g. Maynooth to Longford)
     // the timetabled trains' destinations.
@@ -569,7 +609,8 @@ function Trains({
       : others
         ? // Not "no trains" when another service's trains run this way: name ours, and say which do.
           // The track's own label already says where it goes, so the note just names the services.
-          `${t.noServiceTrains(service)} ${t.otherServicesRun(list(others.services.map((id) => t.serviceNames[id])), list(others.destinations.slice(0, 3).map(nameOf)), others.nextInMins)}`
+          // Two short paragraphs: ours first, then who does run (the note keeps line breaks).
+          `${t.noServiceTrains(service)}\n\n${t.otherServicesRun(list(others.services.map((id) => t.serviceNames[id])), list(others.destinations.slice(0, 3).map(nameOf)), others.nextInMins)}`
         : compass
           ? t.noTrains(t.direction[direction])
           : places.length
@@ -598,7 +639,7 @@ function Trains({
               data-train={d.trainCode}
               // Untracked: drawn hollow like a timetabled train, since its time is only the timetable's.
               className={`train train--${side}${i === 0 ? ' train--next' : ''}${d.untracked ? ' train--scheduled train--untracked' : ''}`}
-              aria-label={describe(d)}
+              aria-label={`${describe(d)}${d.trainCode === lastTodayCode ? `, ${t.lastTrainToday}` : ''}`}
             >
               {/* The whole row opens the train's look-ahead. */}
               <button
@@ -616,6 +657,7 @@ function Trains({
                 </span>
                 {/* Late: scheduled time struck through, the delay, then the expected time (delay already included). */}
                 <span className="train__meta">
+                  {d.trainCode === lastTodayCode && <span className="train__last">{t.lastToday}</span>}
                   {d.untracked ? (
                     <>
                       <span className="train__timetable">{t.notTracked}</span>
@@ -634,14 +676,23 @@ function Trains({
               </div>
             </li>
           ) : (
-            <TimetabledTrain
-              key={`${s!.trainCode}-${s!.minutes}`}
-              d={s!}
-              side={side}
-              next={i === 0 && !liveStation}
-              hollow={liveStation}
-              onOpen={() => onTimetabled(s!)}
-            />
+            <Fragment key={`${s!.trainCode}-${s!.minutes}`}>
+              {/* A break in the track before tomorrow's first train, after today's. */}
+              {s!.tomorrow && i > 0 && !shown[i - 1]!.timetabled?.tomorrow && (
+                // Just the bar: the train after it says "Tomorrow" itself.
+                <li className={`trains__break trains__break--${side}`} aria-hidden>
+                  <span className="trains__gap" />
+                </li>
+              )}
+              <TimetabledTrain
+                d={s!}
+                side={side}
+                next={i === 0 && !liveStation}
+                hollow={liveStation}
+                lastToday={s!.trainCode === lastTodayCode && !s!.tomorrow}
+                onOpen={() => onTimetabled(s!)}
+              />
+            </Fragment>
           ),
         )}
       </ol>
@@ -661,22 +712,26 @@ function TimetabledTrain({
   side,
   next,
   hollow,
+  lastToday,
   onOpen,
 }: {
   d: TimetabledDeparture;
   side: 'north' | 'south';
   next: boolean;
   hollow: boolean;
+  /** Today's last train on this track: "Last today" in place of the timetable tag (the hollow train says that). */
+  lastToday: boolean;
   onOpen: () => void;
 }) {
   const { t, scheduledDestination } = useI18n();
   const now = useNow();
-  const clock = d.category === 'nir';
+  // Clock times for NI Railways (a countdown would look live) and for tomorrow's trains ("669 min" reads oddly).
+  const clock = d.category === 'nir' || !!d.tomorrow;
   const destination = scheduledDestination(d);
   return (
     <li
       className={`train train--${side}${next ? ' train--next' : ''}${hollow ? ' train--scheduled' : ''}`}
-      aria-label={`${t.describeScheduled(destination, d.time)}${d.tomorrow ? `, ${t.tomorrow}` : ''}`}
+      aria-label={`${t.describeScheduled(destination, d.time)}${d.tomorrow ? `, ${t.tomorrow}` : ''}${lastToday ? `, ${t.lastTrainToday}` : ''}`}
     >
       <button className="train__open" aria-label={t.whyTimetabled(destination)} onClick={onOpen} />
       <TrainGlyph />
@@ -689,7 +744,11 @@ function TimetabledTrain({
         </span>
         <span className="train__meta">
           {/* Tomorrow's trains can only be timetabled, so that tag says both (two tags don't fit beside the track). */}
-          <span className="train__timetable">{d.tomorrow ? t.tomorrow : t.timetabled}</span>
+          {lastToday ? (
+            <span className="train__last">{t.lastToday}</span>
+          ) : (
+            <span className="train__timetable">{d.tomorrow ? t.tomorrow : t.timetabled}</span>
+          )}
           {!clock && <span className="train__planned">{d.time}</span>}
         </span>
       </div>

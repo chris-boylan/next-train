@@ -8,7 +8,7 @@
 // when they belong to the page's service.
 import { COMMUTER_ROUTES, type CommuterRouteId, commuterHeading, isCityStation } from './commuter';
 import { INTERCITY_ROUTES, type IntercityRouteId, intercityHeading } from './intercity';
-import { directionBetween, type Line } from './line';
+import { adjacentStations, directionBetween, type Line } from './line';
 import { findStationByCode } from './stations';
 import type { Service, ServiceId } from './services';
 import { type ScheduledDeparture, scheduledMatches } from './timetable';
@@ -16,7 +16,7 @@ import type { Departure, Direction } from './types';
 
 export interface StationLine {
   /** `main` for a service's only line, else the route's id. */
-  id: 'main' | CommuterRouteId | IntercityRouteId;
+  id: 'main' | 'all' | CommuterRouteId | IntercityRouteId;
   /** The line as this station's page draws it: on Commuter and InterCity routes, turned so Northbound (the up
    *  track) heads north where the line clearly runs north–south (see `orientAt`). */
   line: Line;
@@ -61,6 +61,9 @@ function southward(diff: { n: number; e: number } | undefined, ratio: number): b
  */
 export function orientAt(line: Line, code: string): { line: Line; outboundDown: boolean } {
   let firstFlipped: boolean | undefined;
+  // Which side each neighbour ended up on, so later paths through the same neighbour agree (at Limerick
+  // Junction, Heuston–Limerick and Limerick Junction–Ennis both leave towards Limerick: one track for both).
+  const side = new Map<string, 'out' | 'in'>();
   const paths = line.paths.map((path) => {
     const i = path.indexOf(code);
     if (i < 0) return path;
@@ -71,7 +74,12 @@ export function orientAt(line: Line, code: string): { line: Line; outboundDown: 
     const back = before ? offset(code, before) : undefined;
     const diff = after && before ? out && back && { n: out.n - back.n, e: out.e - back.e } : after ? out : back && { n: -back.n, e: -back.e };
     const whole = offset(path[0]!, path.at(-1)!);
-    const flip = southward(diff, 0.5) ?? southward(whole, 0.25) ?? false;
+    const own = southward(diff, 0.5) ?? southward(whole, 0.25) ?? false;
+    // Drawn as "out" (Northbound, up) unless flipped: a neighbour already placed decides, the next stop first.
+    const known = (after && side.get(after)) ?? (before && side.get(before) && (side.get(before) === 'out' ? 'in' : 'out'));
+    const flip = known ? known === 'in' : own;
+    if (after && !side.has(after)) side.set(after, flip ? 'in' : 'out');
+    if (before && !side.has(before)) side.set(before, flip ? 'out' : 'in');
     firstFlipped ??= flip;
     return flip ? [...path].reverse() : path;
   });
@@ -145,4 +153,50 @@ export function placeTimetabled(service: Service, code: string, lines: StationLi
   const line = lines[0]!;
   const direction = directionBetween(code, d.destinationCode, line.line);
   return direction && { lineId: line.id, direction };
+}
+
+const opposite = (d: Direction): Direction => (d === 'Northbound' ? 'Southbound' : 'Northbound');
+
+/** Every route through a hub on one pair of tracks (the station page's "All"), and which routes were turned round. */
+export interface AllRoutesLine extends StationLine {
+  id: 'all';
+  /** Routes whose tracks are swapped here to match the first route's: their Northbound is this line's Southbound. */
+  flipped: ReadonlySet<StationLine['id']>;
+}
+
+/**
+ * All of a station's routes as one line, for a hub where several meet (Kildare: Cork & Kerry, Galway & Mayo,
+ * Limerick, Waterford). Each route is drawn north-up on its own (see `orientAt`), but a route running east–west
+ * keeps "outbound is up", so two routes can disagree about which side a shared neighbour is on (Galway & Mayo has
+ * Heuston down at Kildare, Cork & Kerry has it up). Each route is lined up with the first by a neighbour they
+ * share, so every train goes on the side its next station really is. Undefined with only one route.
+ */
+export function allRoutesLine(lines: StationLine[], code: string): AllRoutesLine | undefined {
+  if (lines.length < 2) return undefined;
+  const first = adjacentStations(code, lines[0]!.line);
+  const flipped = new Set<StationLine['id']>();
+  for (const l of lines.slice(1)) {
+    const own = adjacentStations(code, l.line);
+    const disagrees =
+      own.north.some((n) => first.south.includes(n) && !first.north.includes(n)) ||
+      own.south.some((n) => first.north.includes(n) && !first.south.includes(n));
+    if (disagrees) flipped.add(l.id);
+  }
+  const paths: string[][] = [];
+  const termini: Line['termini'] = { Northbound: [], Southbound: [] };
+  for (const l of lines) {
+    const flip = flipped.has(l.id);
+    for (const path of l.line.paths) paths.push(flip ? [...path].reverse() : path);
+    for (const direction of ['Northbound', 'Southbound'] as const) {
+      const to = flip ? opposite(direction) : direction;
+      for (const end of l.line.termini[direction]) if (!termini[to].includes(end)) termini[to].push(end);
+    }
+  }
+  return { id: 'all', line: { paths, termini }, flipped };
+}
+
+/** A placed train's track on the all-routes line: its own route's track, swapped if that route was turned round. */
+export function trackOnAll(all: AllRoutesLine, placement: Placement | undefined): Direction | undefined {
+  if (!placement) return undefined;
+  return all.flipped.has(placement.lineId) ? opposite(placement.direction) : placement.direction;
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { isLiveService, type LiveTrain, searchStations, type Service, type Station } from '@dart-times/core';
 import { BranchLineMap } from '../maps/BranchLineMap';
-import { COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
+import { COMMUTER_MAP_TERMINI, COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
 import { commuterSchematicFor } from '../maps/data/commuterSchematic';
 import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
 import { intercitySchematic, nirSchematic } from '../maps/data/intercitySchematic';
@@ -48,7 +48,7 @@ export function StationPicker({
   // Back from a station, the map is where you left it; opened from the service list, it starts at the top.
   const scrollRef = useScrollMemory<HTMLDivElement>(`map:${service.id}`);
   const [favouritesPlace] = useFavouritesPlace();
-  // Live trains: DART and Enterprise so far, and off until the viewer turns them on (one setting for both).
+  // Live trains: DART, Enterprise, Dublin Commuter and InterCity so far, and off until the viewer turns them on (one setting for both).
   const hasLiveTrains = isLiveService(service.id);
   const [liveOn, setLiveOn] = useLiveTrainsPref();
   const live = useLiveTrains(service.id, hasLiveTrains && liveOn);
@@ -125,8 +125,10 @@ export function StationPicker({
             routeMap={COMMUTER_ROUTE_MAP}
             routeName={(id) => t.commuterRoutes[id]}
             schematic={commuterSchematicFor}
+            mapTermini={COMMUTER_MAP_TERMINI}
             hubs={['CNLLY', 'HSTON']}
             {...mapProps}
+            {...liveProps}
           />
         ) : service.id === 'intercity' ? (
           <RoutesMap
@@ -142,6 +144,7 @@ export function StationPicker({
             mapTermini={NETWORK_TERMINI}
             hubs={['HSTON', 'CNLLY']}
             {...mapProps}
+            {...liveProps}
           />
         ) : service.id === 'nir' ? (
           <RoutesMap

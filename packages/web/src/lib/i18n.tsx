@@ -27,9 +27,6 @@ const en = {
   allStations: 'All stations',
   // Not just Irish Rail's: the map has NI Railways' stations too.
   allStationsNote: 'Every rail station in Ireland on one map',
-  // All-stations map: stations Irish Rail lists that no train in its published timetable calls at (the closed
-  // Waterford–Rosslare line). Lines with even a few trains a day are drawn, from the timetable.
-  noPassengerTrains: 'No passenger trains in Irish Rail’s timetable',
   // Stations on lines with trains that the all-stations (and InterCity) map can't draw yet; their boards work from search.
   notDrawnYet: 'Trains run here, but this map doesn’t draw their line yet (search to see their times)',
   italicStations: 'Stations in italics',
@@ -48,6 +45,8 @@ const en = {
   whyTimetabled: (destination: string) => `Why the train to ${destination} shows its timetabled time`,
   map: 'Map',
   allRoutes: 'All routes',
+  // The station page's chip for every route at a hub, on one pair of tracks.
+  allRoutesChip: 'All',
   byRoute: 'By route',
   commuterRoutes: { northern: 'Northern', western: 'Western', southWestern: 'South Western', southEastern: 'South Eastern' },
   intercityRoutes: {
@@ -75,8 +74,13 @@ const en = {
   // When this service has none but another's trains run that way (Commuter at Kilbarrack, DARTs running).
   noServiceTrains: (service: string) => `No ${service} trains in the next 90 minutes.`,
   otherServicesRun: (services: string, places: string, mins: number) =>
-    `${services} trains to ${places} do${mins <= 0 ? ', one due now' : `, the next in ${mins} min`}.`,
+    `${services} trains to ${places} departing ${mins <= 0 ? 'now' : `in the next ${mins} min`}.`,
   tomorrow: 'Tomorrow',
+  // Today's last train on a track, when tomorrow's first follows it.
+  lastToday: 'Last today',
+  // The list board's section for tomorrow's first train to each destination.
+  tomorrowFirst: 'Tomorrow · first trains',
+  lastTrainToday: 'last train today',
   noMoreToday: 'No more trains today',
   noTimetabledTrains: 'No timetabled trains',
   nirTimetableNote: 'Timetabled times from Translink. NI Railways has no live times, so delays and cancellations don’t show.',
@@ -257,7 +261,6 @@ const ga: Messages = {
   dublinBelfast: 'Baile Átha Cliath – Béal Feirste',
   allStations: 'Gach stáisiún',
   allStationsNote: 'Gach stáisiún iarnróid in Éirinn ar léarscáil amháin',
-  noPassengerTrains: 'Gan traenacha paisinéirí i gclár ama Iarnród Éireann',
   notDrawnYet: 'Ritheann traenacha anseo, ach níl a líne ar an léarscáil seo fós (cuardaigh chun a n-amanna a fheiceáil)',
   italicStations: 'Stáisiúin i gcló iodálach:',
   timetableOnlyNote: 'níl acu ach amanna an chláir ama: níl amanna beo ar fáil d’Iarnród Thuaisceart Éireann.',
@@ -274,6 +277,7 @@ const ga: Messages = {
   whyTimetabled: (destination) => `Cén fáth a dtaispeántar am an chláir ama don traein go dtí ${destination}`,
   map: 'Léarscáil',
   allRoutes: 'Gach bealach',
+  allRoutesChip: 'Gach ceann',
   byRoute: 'De réir bealaigh',
   // Irish Rail publishes no Irish names for its commuter routes, so these use the standard compass regions
   // (tuaisceart, iarthar, iardheisceart, oirdheisceart) in the genitive: "the Northern line" and so on.
@@ -307,8 +311,11 @@ const ga: Messages = {
   noTrainsTowards: (places) => `Níl aon traein i dtreo ${places} sna 90 nóiméad atá romhainn`,
   noServiceTrains: (service) => `Níl aon traein ${service} sna 90 nóiméad atá romhainn.`,
   otherServicesRun: (services, places, mins) =>
-    `Ach ritheann traenacha ${services} go dtí ${places}${mins <= 0 ? ', ceann ag teacht anois' : `, an chéad cheann i gceann ${mins} nóim`}.`,
+    `Traenacha ${services} go dtí ${places} ag imeacht ${mins <= 0 ? 'anois' : `sna ${mins} nóim atá romhainn`}.`,
   tomorrow: 'Amárach',
+  lastToday: 'Deireanach inniu',
+  tomorrowFirst: 'Amárach · na chéad traenacha',
+  lastTrainToday: 'an traein dheireanach inniu',
   noMoreToday: 'Níl a thuilleadh traenacha inniu',
   noTimetabledTrains: 'Níl aon traein sa chlár ama',
   nirTimetableNote: 'Amanna an chláir ama ó Translink. Níl amanna beo ag Iarnród Thuaisceart Éireann, mar sin ní thaispeántar moilleanna ná cealuithe.',

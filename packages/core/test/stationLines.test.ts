@@ -6,6 +6,8 @@ import {
   type ScheduledDeparture,
   SERVICES,
   stationLines,
+  allRoutesLine,
+  trackOnAll,
   terminiFrom,
   toDepartures,
 } from '../src';
@@ -136,5 +138,29 @@ describe('station pages point up towards the north', () => {
       ({ trainCode: 'A1', originCode: 'CORK', destinationCode, direction: '' }) as Parameters<typeof placeDeparture>[3];
     expect(placeDeparture(intercity, 'CORK', lines, dep('HSTON'))?.direction).toBe('Northbound');
     expect(placeDeparture(intercity, 'CORK', lines, dep('TRLEE'))?.direction).toBe('Northbound');
+  });
+});
+
+describe('all routes at a hub, on one pair of tracks', () => {
+  const intercity = SERVICES.intercity;
+
+  it("lines Galway & Mayo up with the other routes at Kildare, so Heuston is up for every route", () => {
+    const lines = stationLines(intercity, 'KDARE');
+    const all = allRoutesLine(lines, 'KDARE')!;
+    expect(all.flipped.has('galwayMayo')).toBe(true);
+    expect(terminiFrom('KDARE', 'Northbound', all.line)).toEqual(['HSTON']);
+    expect(terminiFrom('KDARE', 'Southbound', all.line).sort()).toEqual(expect.arrayContaining(['CORK', 'GALWY', 'LMRCK', 'WFORD']));
+    const dep = (originCode: string, destinationCode: string) =>
+      ({ trainCode: 'A1', originCode, destinationCode, direction: '' }) as Parameters<typeof placeDeparture>[3];
+    for (const to of ['GALWY', 'CORK', 'WFORD', 'WPORT']) {
+      expect(trackOnAll(all, placeDeparture(intercity, 'KDARE', lines, dep('HSTON', to))), to).toBe('Southbound');
+    }
+    expect(trackOnAll(all, placeDeparture(intercity, 'KDARE', lines, dep('GALWY', 'HSTON')))).toBe('Northbound');
+    expect(trackOnAll(all, placeDeparture(intercity, 'KDARE', lines, dep('CORK', 'HSTON')))).toBe('Northbound');
+  });
+
+  it('only exists where several routes meet', () => {
+    expect(allRoutesLine(stationLines(intercity, 'WPORT'), 'WPORT')).toBeUndefined();
+    expect(allRoutesLine(stationLines(SERVICES.commuter, 'CNLLY'), 'CNLLY')?.line.paths.length).toBeGreaterThan(3);
   });
 });

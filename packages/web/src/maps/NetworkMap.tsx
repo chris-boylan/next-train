@@ -37,8 +37,15 @@ const LEGEND: MapService[] = ['dart', 'commuter', 'intercity', 'cork', 'enterpri
 const MAP_CODES = [...connected];
 const degree = new Map<string, number>();
 for (const [a, b] of MAP_EDGES) for (const c of [a, b]) degree.set(c, (degree.get(c) ?? 0) + 1);
-// Circles for ends of lines, junctions and termini, ticks for the rest.
-const major = (code: string) => degree.get(code) !== 2 || NETWORK_TERMINI.has(code);
+/** Mid-line stations where a service's line ends while the track goes on (DART at Malahide, NI Railways at Newry). */
+const SERVICE_ENDS = new Set(
+  MAP_CODES.filter((code) => {
+    const lists = MAP_EDGES.filter((e) => e.includes(code)).map(([a, b]) => SERVICES_BY_TRACK.get(pairKey(real(a), real(b))) ?? []);
+    return lists.length === 2 && lists.flat().some((s) => lists.filter((l) => l.includes(s)).length === 1);
+  }),
+);
+// Circles for ends of lines, junctions, termini and where a service ends, ticks for the rest.
+const major = (code: string) => degree.get(code) !== 2 || NETWORK_TERMINI.has(code) || SERVICE_ENDS.has(code);
 
 // Every station on the map in the shape the shared search expects. DART and Enterprise stations bring
 // their aliases and Irish names; the rest search by their Irish Rail name. Search doesn't use positions,
@@ -65,8 +72,6 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
   const schematic = useMemo(() => networkSchematic(lang), [lang]);
   const [query, setQuery] = useState('');
   const results = query.trim() ? searchStations(query, SEARCHABLE) : [];
-  // No train in the timetable at all (the closed Waterford–Rosslare line), and lines with trains but no room yet.
-  const unmapped = useMemo(() => NETWORK_STATIONS.filter((s) => !connected.has(s.code) && !NOT_DRAWN.includes(s.code)), []);
   // Every station opens its board; Northern Ireland ones without live times show NI Railways' timetable there.
   const open = (code: string) => onSelectStation(real(code), name(real(code)));
 
@@ -136,11 +141,6 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
             {NOT_DRAWN.length > 0 && (
               <p className="network__unmapped">
                 {t.notDrawnYet}: {NOT_DRAWN.map((code) => name(code)).join(', ')}
-              </p>
-            )}
-            {unmapped.length > 0 && (
-              <p className="network__unmapped">
-                {t.noPassengerTrains}: {unmapped.map((s) => name(s.code)).join(', ')}
               </p>
             )}
           </>

@@ -166,7 +166,7 @@ export function progressPast(from: string, passed: string, to: string): number |
  * Services whose maps can show live trains so far. Not Cork: its commuter trains aren't in Irish Rail's positions
  * feed (their boards say "No Information"), though `placeTrain` and the map support it if that changes.
  */
-export const LIVE_SERVICES = ['dart', 'enterprise'] as const satisfies readonly ServiceId[];
+export const LIVE_SERVICES = ['dart', 'enterprise', 'commuter', 'intercity'] as const satisfies readonly ServiceId[];
 export type LiveServiceId = (typeof LIVE_SERVICES)[number];
 
 export function isLiveService(value: unknown): value is LiveServiceId {
@@ -283,6 +283,7 @@ function asStationData(raw: RawTrainPosition, msg: ParsedTrainMessage): RawStati
     Traincode: raw.TrainCode,
     Origin: msg.origin ?? '',
     Destination: msg.destination ?? '',
-    Traintype: 'Train',
+    // The positions feed has no train type; DART codes start with E (E117), as the departures' DART type does.
+    Traintype: raw.TrainCode.trim().startsWith('E') ? 'DART' : 'Train',
   } as RawStationData;
 }

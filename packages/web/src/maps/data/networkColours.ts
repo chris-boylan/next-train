@@ -15,8 +15,9 @@ export const SERVICE_LINE_COLOURS: Record<MapService, string> = {
   commuter: 'var(--svc-commuter)',
   intercity: 'var(--svc-intercity)',
   cork: 'var(--svc-cork)',
-  enterprise: 'var(--svc-enterprise)',
+  // NI Railways before the Enterprise, so the Enterprise keeps the same side of the band from Belfast to Dublin.
   ni: 'var(--svc-ni)',
+  enterprise: 'var(--svc-enterprise)',
 };
 
 const SERVICE_LINES: [MapService, Line[]][] = [
