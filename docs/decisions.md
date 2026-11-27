@@ -6,6 +6,21 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-27 · All-stations map: the south-west bends geography to fit every line
+
+**Decision:** the Ennis–Athenry, Nenagh and Limerick Junction–Waterford lines are drawn on the all-stations map
+(and the InterCity map, which shares its layout). To fit at 340 px with every name clear of the track, geography
+gives way: Galway is a short stub east of Athenry; the Ennis line runs down the west edge (Craughwell above the
+Tullamore swing, the rest below it) to Limerick; Limerick Junction–Waterford leaves the junction, runs down and
+across to Tipperary and climbs the Waterford lane to Waterford; and the Nenagh line runs down from Limerick to a
+stand-in Ballybrophy stop, named and opened as Ballybrophy, since drawing its track back up to the main line would
+cross it. The main line spreads out a little so Limerick Junction lines up with Limerick; Tralee, Mallow and Cork
+move down.
+
+**Why:** the map's lanes have room for one column of names each; the west edge already carried Galway, Ennis,
+Limerick and Tralee. Widening the map would add only about 40 px on a phone, not a lane. A separate south-west map
+or strips under the map were the alternatives; the owner preferred bending the geography on the one map.
+
 ## 2026-11-27 · Enterprise live map: estimate untracked trains from the boards
 
 **Decision:** the Enterprise map's `/api/trains` also reads its six stations' boards. A train in the positions

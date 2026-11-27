@@ -3,7 +3,7 @@ import { findStationByCode, searchStations, type Station } from '@dart-times/cor
 import { useI18n } from '../lib/i18n';
 import { NETWORK_EDGES, NETWORK_STATIONS } from './data/network.data';
 import { useNetworkName } from './data/networkNames';
-import { NETWORK_SCHEMATIC, NETWORK_TERMINI, networkSchematic, withBreaks } from './data/networkSchematic';
+import { NENAGH_END, NETWORK_SCHEMATIC, NETWORK_TERMINI, networkSchematic, withBreaks } from './data/networkSchematic';
 import { servicesByTrack, SERVICE_LINE_COLOURS, trackColours, type MapService } from './data/networkColours';
 import { hasNoData, isNorthern, NI_STATIONS, withNorthernTrack } from './data/northernStations';
 import { OptionsMenu } from '../components/OptionsMenu';
@@ -21,12 +21,18 @@ const pairKey = (a: string, b: string) => [a, b].sort().join('|');
  * line (trains go via the junction), so it's left off.
  */
 const TRACK = withNorthernTrack(NETWORK_EDGES).filter(([a, b]) => pairKey(a, b) !== pairKey('LMRCK', 'THRLS'));
+/** The Nenagh line ends at its own Ballybrophy stop (see NENAGH_END), so its last link goes there instead. */
+const DRAWN_TRACK = TRACK.map(([a, b]): [string, string] =>
+  pairKey(a, b) === pairKey('BBRHY', 'RCREA') ? [NENAGH_END, 'RCREA'] : [a, b],
+);
+/** The real station a drawn code stands for: only the Nenagh line's Ballybrophy stop differs. */
+const real = (code: string) => (code === NENAGH_END ? 'BBRHY' : code);
 /** Lines the hand-placed layout doesn't draw yet (see networkSchematic.ts): trains run, the map has no room. */
-export const NOT_DRAWN = [...new Set(TRACK.flat())].filter((code) => !NETWORK_SCHEMATIC.points[code]);
-export const MAP_EDGES = TRACK.filter(([a, b]) => NETWORK_SCHEMATIC.points[a] && NETWORK_SCHEMATIC.points[b]);
+export const NOT_DRAWN = [...new Set(DRAWN_TRACK.flat())].filter((code) => !NETWORK_SCHEMATIC.points[code]);
+export const MAP_EDGES = DRAWN_TRACK.filter(([a, b]) => NETWORK_SCHEMATIC.points[a] && NETWORK_SCHEMATIC.points[b]);
 const connected = new Set(MAP_EDGES.flat());
 // Each piece of track in the colours of the services using it (see networkColours.ts).
-const SERVICES_BY_TRACK = servicesByTrack(MAP_EDGES, isNorthern);
+const SERVICES_BY_TRACK = servicesByTrack(TRACK.filter(([a, b]) => NETWORK_SCHEMATIC.points[a] && NETWORK_SCHEMATIC.points[b] || pairKey(a, b) === pairKey('BBRHY', 'RCREA')), isNorthern);
 const LEGEND: MapService[] = ['dart', 'commuter', 'intercity', 'cork', 'enterprise', 'ni'];
 const MAP_CODES = [...connected];
 const degree = new Map<string, number>();
@@ -62,7 +68,7 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
   // No train in the timetable at all (the closed Waterford–Rosslare line), and lines with trains but no room yet.
   const unmapped = useMemo(() => NETWORK_STATIONS.filter((s) => !connected.has(s.code) && !NOT_DRAWN.includes(s.code)), []);
   // Every station opens its board; Northern Ireland ones without live times show NI Railways' timetable there.
-  const open = (code: string) => onSelectStation(code, name(code));
+  const open = (code: string) => onSelectStation(real(code), name(real(code)));
 
   return (
     <div className="screen network">
@@ -116,9 +122,9 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
               schematic={schematic}
               edges={MAP_EDGES}
               codes={MAP_CODES}
-              name={(code) => withBreaks(name(code))}
+              name={(code) => withBreaks(name(real(code)))}
               major={major}
-              colourOf={(a, b) => trackColours(SERVICES_BY_TRACK, a, b)}
+              colourOf={(a, b) => trackColours(SERVICES_BY_TRACK, real(a), real(b))}
               onSelect={open}
               noData={hasNoData}
               className="schematic--compact schematic--network"

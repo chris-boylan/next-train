@@ -36,9 +36,9 @@ describe('all-stations map layout', () => {
     }
   });
 
-  it('leaves off only the three lines it has no room for yet, which trains do run on', () => {
-    // Ennis–Athenry, Ballybrophy–Limerick (Nenagh) and Limerick Junction–Waterford: from the timetable.
-    expect([...NOT_DRAWN].sort()).toEqual(['ARHAN', 'BHILL', 'CAHIR', 'CCONL', 'CJRDN', 'CKOSR', 'CLMEL', 'CRGHW', 'GORT', 'NNAGH', 'RCREA', 'TIPRY']);
+  it('draws every line with trains, including Ennis–Athenry, Nenagh and Limerick Junction–Waterford', () => {
+    expect(NOT_DRAWN).toEqual([]);
+    for (const code of ['CRGHW', 'ARHAN', 'GORT', 'RCREA', 'NNAGH', 'CCONL', 'TIPRY', 'CLMEL', 'CKOSR']) expect(points[code], code).toBeDefined();
   });
 
   it('gives no two stations the same spot', () => {

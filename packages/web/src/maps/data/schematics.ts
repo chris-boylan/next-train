@@ -35,7 +35,33 @@ export interface Schematic {
   curves?: Record<string, number>;
   /** Wrap names wider than this onto a second line (for maps with lines side by side). */
   labelMaxWidth?: number;
+  /**
+   * Stops drawn in place of a real station on one link, where drawing the track to the station itself would
+   * cross other lines (the Nenagh line's own Ballybrophy stop). Maps draw `link` to `code` instead, and name
+   * and open it as `for`.
+   */
+  standIns?: StandIn[];
 }
+
+export interface StandIn {
+  code: string;
+  for: string;
+  link: [string, string];
+}
+
+const pairOf = (a: string, b: string) => [a, b].sort().join('|');
+
+/** A map's edges with each stand-in's link redrawn to the stand-in. */
+export function withStandIns(edges: [string, string][], standIns: StandIn[] = []): [string, string][] {
+  return edges.map(([a, b]): [string, string] => {
+    const s = standIns.find((x) => pairOf(...x.link) === pairOf(a, b));
+    if (!s) return [a, b];
+    return a === s.for ? [s.code, b] : [a, s.code];
+  });
+}
+
+/** The real station a drawn code stands for. */
+export const realCode = (code: string, standIns: StandIn[] = []) => standIns.find((s) => s.code === code)?.for ?? code;
 
 export const SCHEMATICS: Partial<Record<ServiceId, Schematic>> = {
   // Cork: Mallow is north of the city; the main line runs east along the harbour to Glounthaune, where
