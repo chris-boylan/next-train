@@ -17,6 +17,11 @@ export interface RawStationData {
   Stationcode: string;
   Origin: string;
   Destination: string;
+  /** When Irish Rail answered, `HH:mm:ss`. */
+  Querytime: string;
+  /** When the train starts its run, `HH:mm`. */
+  Origintime: string;
+  /** "En Route" once the train is tracked; "No Information" before it starts, or when it isn't being tracked. */
   Status: string;
   Lastlocation: string;
   Duein: string;

@@ -522,7 +522,13 @@ function Trains({
       <ol className={`trains trains--${side}`}>
         {shown.map(({ live: d, timetabled: s }, i) =>
           d ? (
-            <li key={d.trainCode} data-train={d.trainCode} className={`train train--${side}${i === 0 ? ' train--next' : ''}`} aria-label={describe(d)}>
+            <li
+              key={d.trainCode}
+              data-train={d.trainCode}
+              // Untracked: drawn hollow like a timetabled train, since its time is only the timetable's.
+              className={`train train--${side}${i === 0 ? ' train--next' : ''}${d.untracked ? ' train--scheduled train--untracked' : ''}`}
+              aria-label={describe(d)}
+            >
               {/* The whole row opens the train's look-ahead. */}
               <button
                 className="train__open"
@@ -539,7 +545,12 @@ function Trains({
                 </span>
                 {/* Late: scheduled time struck through, the delay, then the expected time (delay already included). */}
                 <span className="train__meta">
-                  {d.lateMins > 0 ? (
+                  {d.untracked ? (
+                    <>
+                      <span className="train__timetable">{t.notTracked}</span>
+                      <span className="train__planned">{d.scheduledDepart}</span>
+                    </>
+                  ) : d.lateMins > 0 ? (
                     <>
                       <s className="train__scheduled">{d.scheduledDepart}</s>
                       <span className={`late late--${delaySeverity(d.lateMins)}`}>+{d.lateMins}</span>

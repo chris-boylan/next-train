@@ -47,4 +47,10 @@ export interface Departure {
   /** What kind of service this is (see `trainCategory`). */
   category: TrainCategory;
   lastLocation: string;
+  /**
+   * True when Irish Rail isn't tracking a train that should already be running: it says "No Information" though
+   * the train's start time has passed. Its times are then just the timetable, and "0 minutes late" means unknown.
+   * Trains that haven't started yet aren't flagged (they all say "No Information" until they leave).
+   */
+  untracked?: boolean;
 }

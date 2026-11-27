@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfObjStationData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://api.irishrail.ie/realtime/">
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>D531 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Mallow</Origin>
+    <Destination>Cobh</Destination>
+    <Origintime>17:30</Origintime>
+    <Destinationtime>18:26</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Killarney Junction</Lastlocation>
+    <Duein>20</Duein>
+    <Late>-3</Late>
+    <Exparrival>17:53</Exparrival>
+    <Expdepart>17:56</Expdepart>
+    <Scharrival>17:56</Scharrival>
+    <Schdepart>17:59</Schdepart>
+    <Direction>To Cobh</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>D532 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Cork</Origin>
+    <Destination>Cobh</Destination>
+    <Origintime>18:30</Origintime>
+    <Destinationtime>18:56</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>54</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>18:30</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>18:30</Schdepart>
+    <Direction>To Cobh</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>D534 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Mallow</Origin>
+    <Destination>Cobh</Destination>
+    <Origintime>18:30</Origintime>
+    <Destinationtime>19:26</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>83</Duein>
+    <Late>0</Late>
+    <Exparrival>18:56</Exparrival>
+    <Expdepart>18:59</Expdepart>
+    <Scharrival>18:56</Scharrival>
+    <Schdepart>18:59</Schdepart>
+    <Direction>To Cobh</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>P572 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Midleton</Origin>
+    <Destination>Cork</Destination>
+    <Origintime>17:15</Origintime>
+    <Destinationtime>17:38</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>2</Duein>
+    <Late>0</Late>
+    <Exparrival>17:38</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>17:38</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Cork</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>A218 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Heuston</Origin>
+    <Destination>Cork</Destination>
+    <Origintime>15:00</Origintime>
+    <Destinationtime>17:32</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed Mallow</Lastlocation>
+    <Duein>28</Duein>
+    <Late>32</Late>
+    <Exparrival>18:04</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>17:32</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Cork</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>P573 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Midleton</Origin>
+    <Destination>Cork</Destination>
+    <Origintime>17:45</Origintime>
+    <Destinationtime>18:08</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>32</Duein>
+    <Late>0</Late>
+    <Exparrival>18:08</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>18:08</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Cork</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>P530 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Cobh</Origin>
+    <Destination>Cork</Destination>
+    <Origintime>18:00</Origintime>
+    <Destinationtime>18:25</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>49</Duein>
+    <Late>0</Late>
+    <Exparrival>18:25</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>18:25</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Cork</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>P574 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Midleton</Origin>
+    <Destination>Cork</Destination>
+    <Origintime>18:15</Origintime>
+    <Destinationtime>18:38</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>62</Duein>
+    <Late>0</Late>
+    <Exparrival>18:38</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>18:38</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Cork</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>A220 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Dublin Heuston</Origin>
+    <Destination>Cork</Destination>
+    <Origintime>16:00</Origintime>
+    <Destinationtime>18:28</Destinationtime>
+    <Status>En Route</Status>
+    <Lastlocation>Departed LJ458</Lastlocation>
+    <Duein>65</Duein>
+    <Late>13</Late>
+    <Exparrival>18:41</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>18:28</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Cork</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>A313 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Tralee</Origin>
+    <Destination>Cork</Destination>
+    <Origintime>17:05</Origintime>
+    <Destinationtime>19:04</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>88</Duein>
+    <Late>0</Late>
+    <Exparrival>19:04</Exparrival>
+    <Expdepart>00:00</Expdepart>
+    <Scharrival>19:04</Scharrival>
+    <Schdepart>00:00</Schdepart>
+    <Direction>To Cork</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>D</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>A227 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Cork</Origin>
+    <Destination>Dublin Heuston</Destination>
+    <Origintime>18:25</Origintime>
+    <Destinationtime>21:02</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>49</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>18:25</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>18:25</Schdepart>
+    <Direction>To Dublin Heuston</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>P529 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Cobh</Origin>
+    <Destination>Mallow</Destination>
+    <Origintime>17:30</Origintime>
+    <Destinationtime>18:22</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>22</Duein>
+    <Late>0</Late>
+    <Exparrival>17:55</Exparrival>
+    <Expdepart>17:58</Expdepart>
+    <Scharrival>17:55</Scharrival>
+    <Schdepart>17:58</Schdepart>
+    <Direction>To Mallow</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>P532 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Cobh</Origin>
+    <Destination>Mallow</Destination>
+    <Origintime>18:30</Origintime>
+    <Destinationtime>19:22</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>82</Duein>
+    <Late>0</Late>
+    <Exparrival>18:55</Exparrival>
+    <Expdepart>18:58</Expdepart>
+    <Scharrival>18:55</Scharrival>
+    <Schdepart>18:58</Schdepart>
+    <Direction>To Mallow</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>S</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>D574 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Cork</Origin>
+    <Destination>Midleton</Destination>
+    <Origintime>17:45</Origintime>
+    <Destinationtime>18:08</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>9</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>17:45</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>17:45</Schdepart>
+    <Direction>To Midleton</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>D575 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Cork</Origin>
+    <Destination>Midleton</Destination>
+    <Origintime>18:15</Origintime>
+    <Destinationtime>18:38</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>39</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>18:15</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>18:15</Schdepart>
+    <Direction>To Midleton</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+  <objStationData>
+    <Servertime>2026-11-27T17:36:11.037</Servertime>
+    <Traincode>D576 </Traincode>
+    <Stationfullname>Cork</Stationfullname>
+    <Stationcode>CORK</Stationcode>
+    <Querytime>17:36:11</Querytime>
+    <Traindate>27 Nov 2026</Traindate>
+    <Origin>Cork</Origin>
+    <Destination>Midleton</Destination>
+    <Origintime>18:45</Origintime>
+    <Destinationtime>19:08</Destinationtime>
+    <Status>No Information</Status>
+    <Lastlocation />
+    <Duein>69</Duein>
+    <Late>0</Late>
+    <Exparrival>00:00</Exparrival>
+    <Expdepart>18:45</Expdepart>
+    <Scharrival>00:00</Scharrival>
+    <Schdepart>18:45</Schdepart>
+    <Direction>To Midleton</Direction>
+    <Traintype>Train</Traintype>
+    <Locationtype>O</Locationtype>
+  </objStationData>
+</ArrayOfObjStationData>

@@ -6,6 +6,17 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-27 · Untracked trains shown as "Not tracked", not as on time
+
+**Decision:** a departure whose status is "No Information" more than 2 minutes after its start time is marked
+`untracked`. The station page draws it hollow, like a timetabled train, with a "Not tracked" tag and its timetable
+time; the boards and sheets show the same tag, and screen readers say "not being tracked". No lateness is shown.
+
+**Why:** Irish Rail lists every train as "No Information" until it leaves, so the status alone would flag half of
+every board. Some trains (on 27 Nov, most Cork commuter trains) are never picked up: they keep "No Information",
+with `Late=0` and expected = scheduled, so they looked tracked and on time when nobody knew. The start time and the
+answer's query time come in the same row, so the check doesn't depend on the device clock.
+
 ## 2026-11-27 · Live trains on the line maps, opt-in, placed from one feed call
 
 **Decision:** the DART and Enterprise maps can show every running train, behind a small "Live" switch on the map's top strip that's off

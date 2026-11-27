@@ -316,6 +316,7 @@ The live API only looks 90 minutes ahead. Beyond that, station boards and the "+
 - **Terminating trains** are listed with `Locationtype=D` and `Expdepart=00:00`, and are filtered out.
 - **Directions** outside the DART read "To Cork", "To Maynooth" and so on. These look like line directions, not destinations.
 - **Look-ahead:** live data covers at most 90 minutes.
+- **Untracked trains look on time:** every train says `Status=No Information` until it starts its run, but some (often Cork commuter trains) keep saying it while running, with no last location, `Late=0` and expected = scheduled: the timetable, not a tracked time. Once a train's start time is more than 2 minutes past (compared with the answer's own `Querytime`, not the device clock), departures mark it `untracked` and the app shows it hollow with a "Not tracked" tag and its timetable time, no lateness.
 
 **Stop lists**
 - **Cancelled stops** (`LocationType=C`) are skipped, so a train that starts partway still matches its line.

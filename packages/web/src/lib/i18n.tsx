@@ -34,6 +34,8 @@ const en = {
   noTrainsAnyDirection: 'No trains in the next 90 minutes.',
   later: 'Later · timetable',
   timetabled: 'Timetable',
+  // A train Irish Rail should be tracking by now but isn't: its time is only the timetable's.
+  notTracked: 'Not tracked',
   laterNote: (mins: number) => `Timetabled times. Live times and delays appear about ${mins} minutes before.`,
   map: 'Map',
   allRoutes: 'All routes',
@@ -200,6 +202,7 @@ const en = {
     `Train to ${destination}, next stop ${next}` +
     (lateMins > 0 ? `, ${lateMins} minute${lateMins === 1 ? '' : 's'} late` : ''),
   describeScheduled: (destination: string, time: string) => `to ${destination} at ${time}, timetabled, no live information yet`,
+  describeUntracked: (destination: string, time: string) => `to ${destination} at ${time}, timetabled, not being tracked`,
   describe: (destination: string, dueInMins: number, lateMins: number, style: CountdownStyle) =>
     `to ${destination} ${dueInMins <= 0 ? 'due now' : `in ${spokenDue(dueInMins, style)}`}` +
     (lateMins > 0 ? `, running ${lateMins} minute${lateMins === 1 ? '' : 's'} late` : ''),
@@ -243,6 +246,7 @@ const ga: Messages = {
   noTrainsAnyDirection: 'Níl aon traein sna 90 nóiméad atá romhainn.',
   later: 'Níos déanaí · clár ama',
   timetabled: 'Clár ama',
+  notTracked: 'Gan rianú',
   laterNote: (mins) => `Amanna an chláir ama. Feictear amanna beo agus moilleanna thart ar ${mins} nóiméad roimh ré.`,
   map: 'Léarscáil',
   allRoutes: 'Gach bealach',
@@ -415,6 +419,7 @@ const ga: Messages = {
   describeTrain: (destination, next, lateMins) =>
     `Traein go dtí ${destination}, an chéad stad eile ${next}` + (lateMins > 0 ? `, ${lateMins} nóiméad déanach` : ''),
   describeScheduled: (destination, time) => `go dtí ${destination} ag ${time}, de réir an chláir ama`,
+  describeUntracked: (destination, time) => `go dtí ${destination} ag ${time}, de réir an chláir ama, gan rianú`,
   // Spoken in minutes whatever the countdown style: hours need Irish number mutations (uair, huaire, n-uaire).
   describe: (destination, dueInMins, lateMins) =>
     `go dtí ${destination}, ${dueInMins <= 0 ? 'ag teacht anois' : `i gceann ${dueInMins} nóiméad`}` +
@@ -475,7 +480,11 @@ export function useI18n() {
     d.destinationCode ? nameOf(d.destinationCode) : d.destination.replace(/\s*\(.*?\)/g, '');
   const list = (items: string[]) =>
     items.length <= 1 ? items.join('') : `${items.slice(0, -1).join(', ')} ${t.and} ${items.at(-1)}`;
-  const describe = (d: Departure) => t.describe(destinationName(d), d.dueInMins, d.lateMins, countdownStyle);
+  // Untracked trains: only the timetable time is known, so no countdown or lateness is read out as if live.
+  const describe = (d: Departure) =>
+    d.untracked
+      ? t.describeUntracked(destinationName(d), d.scheduledDepart)
+      : t.describe(destinationName(d), d.dueInMins, d.lateMins, countdownStyle);
 
   return { lang, setLang, t, stationName, nameOf, destinationName, scheduledDestination, list, describe };
 }

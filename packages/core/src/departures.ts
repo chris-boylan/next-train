@@ -39,6 +39,30 @@ function terminatesHere(raw: RawStationData): boolean {
   return raw.Locationtype === 'D' || raw.Destination === raw.Stationfullname;
 }
 
+/** How long after its start time a train with no information counts as untracked, not just slow to report. */
+export const UNTRACKED_AFTER_MINS = 2;
+
+const clockMinutes = (time: string | undefined) => {
+  const m = time?.trim().match(/^(\d{1,2}):(\d{2})/);
+  return m ? Number(m[1]) * 60 + Number(m[2]) : undefined;
+};
+
+/**
+ * Whether Irish Rail is tracking a train. Every train says "No Information" until it starts its run, so that only
+ * means "untracked" once the start time has passed. Compared with the answer's own query time, not the device clock.
+ */
+export function isTracked(r: Pick<RawStationData, 'Status' | 'Querytime' | 'Origintime'>): boolean {
+  if (r.Status?.trim() !== 'No Information') return true;
+  const now = clockMinutes(r.Querytime);
+  const start = clockMinutes(r.Origintime);
+  if (now === undefined || start === undefined) return true;
+  // The shorter way round midnight: a 23:55 start is 10 minutes ago at 00:05.
+  let since = now - start;
+  if (since > 720) since -= 1440;
+  if (since < -720) since += 1440;
+  return since <= UNTRACKED_AFTER_MINS;
+}
+
 function toInt(value: string): number {
   const n = Number.parseInt(value, 10);
   return Number.isFinite(n) ? n : 0;
@@ -69,6 +93,7 @@ export function toDepartures(raw: RawStationData[], options: DepartureOptions = 
         trainType: r.Traintype,
         category: trainCategory(r),
         lastLocation: r.Lastlocation,
+        ...(!isTracked(r) && { untracked: true }),
       }),
     )
     .sort((a, b) => a.dueInMins - b.dueInMins);
