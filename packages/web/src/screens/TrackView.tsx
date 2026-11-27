@@ -38,15 +38,26 @@ import { OptionsMenu } from '../components/OptionsMenu';
 import { getGoingTo, setGoingTo } from '../lib/prefs';
 import { useDepartures } from '../lib/useDepartures';
 import { type TimetabledDeparture, useScheduled } from '../lib/useScheduled';
-import { useMediaQuery } from '../lib/useMediaQuery';
 import { enterTracks, leaveTracks } from '../lib/viewSwitch';
 import { COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
 import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
 
-/** Trains shown on each track; very short screens (e.g. 320×568 phones) only fit two above the "more" link. */
+/** At most this many trains on each track; fewer when they don't fit in its half of the screen (see trainsThatFit). */
 const TRAINS_PER_DIRECTION = 3;
-const TRAINS_PER_DIRECTION_SHORT = 2;
-const SHORT_SCREEN = '(max-height: 600px)';
+
+/**
+ * How many trains fit in a half of the screen this tall, above (or below) its "more" link. The first train is
+ * the bigger "next" one. Measured rather than guessed from the screen's height, because route chips, a name
+ * on two lines or the going-to filter take room too. Sizes match track.css and sheets.css.
+ */
+export function trainsThatFit(halfHeight: number): number {
+  const PADDING = 8; // .half's, on the platform side (the far side's may hold the "more" link's edge)
+  const MORE_LINK = 36; // .more's min-height
+  const NEXT_ROW = 80; // .train--next
+  const ROW = 64 + 4; // .train, and the gap between trains
+  const room = halfHeight - PADDING - MORE_LINK;
+  return Math.max(1, Math.min(TRAINS_PER_DIRECTION, 1 + Math.floor((room - NEXT_ROW) / ROW)));
+}
 /** Data refreshes every 30s; older than this and something's wrong (e.g. no signal). */
 const STALE_AFTER_MS = 90_000;
 
@@ -211,7 +222,19 @@ export function TrackView({
     onShowBoard();
   };
 
-  const perDirection = useMediaQuery(SHORT_SCREEN) ? TRAINS_PER_DIRECTION_SHORT : TRAINS_PER_DIRECTION;
+  // The halves share the screen equally, so the top one's height does for both.
+  const halfRef = useRef<HTMLElement>(null);
+  const [halfHeight, setHalfHeight] = useState<number>();
+  useLayoutEffect(() => {
+    const half = halfRef.current;
+    if (!half) return;
+    const measure = () => setHalfHeight(half.clientHeight);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(half);
+    return () => observer.disconnect();
+  }, []);
+  const perDirection = halfHeight ? trainsThatFit(halfHeight) : TRAINS_PER_DIRECTION;
   const nowMinutes = Math.floor(irishSecondsOfDay(now.getTime()) / 60);
   const liveCodes = new Set(data?.departures.map((d) => d.trainCode));
   const trainsFor = (direction: Direction, ends: string[]) => {
@@ -360,7 +383,7 @@ export function TrackView({
         style={{ '--return-fade-delay': `${RETURN_FADE_DELAY_MS}ms`, '--return-fade-ms': `${RETURN_FADE_MS}ms` } as CSSProperties}
       >
         {/* Top half: southbound trains on their way in, nearest at the bottom. Green arrow continues up to its termini. */}
-        <section className="half half--top" aria-label={compass ? t.towards(t.direction.Southbound, list(south.map(nameOf))) : directionName('Southbound')}>
+        <section className="half half--top" ref={halfRef} aria-label={compass ? t.towards(t.direction.Southbound, list(south.map(nameOf))) : directionName('Southbound')}>
           {/* Orange runs edge to edge through its trains; green carries on past the platform to its arrowhead halfway up. */}
           {north.length > 0 && <Lane direction="Northbound" withHead dimmed={dimmed('Northbound')} />}
           <Lane direction="Southbound" dimmed={dimmed('Southbound')} />
