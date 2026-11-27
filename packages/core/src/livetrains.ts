@@ -8,7 +8,7 @@
 import type { IrishRailClient, RawStationData, RawTrainPosition } from './irishRailClient';
 import { adjacentStations, directionBetween, type Line, route } from './line';
 import { SERVICES, type ServiceId } from './services';
-import { findStationByName } from './stations';
+import { findStationByCode, findStationByName } from './stations';
 import type { Direction } from './types';
 
 export type TrainState = 'arrived' | 'departed' | 'not-started' | 'terminated' | 'unknown';
@@ -106,6 +106,9 @@ export function placeTrain(raw: RawTrainPosition, serviceId: ServiceId = 'dart')
   const direction =
     (last && last !== next ? directionBetween(last, next, line) : undefined) ??
     (destinationCode && destinationCode !== next ? directionBetween(next, destinationCode, line) : undefined) ??
+    // Next stop is the last one and the last location is off the line (Belfast–Connolly "Departed Portmarnock"):
+    // the way from where it started. The API's own direction reads "To Dublin Connolly" off the DART.
+    (originCode && originCode !== next ? directionBetween(originCode, next, line) : undefined) ??
     (raw.Direction === 'Northbound' || raw.Direction === 'Southbound' ? raw.Direction : undefined);
   if (!direction) return undefined;
 
@@ -125,9 +128,32 @@ export function placeTrain(raw: RawTrainPosition, serviceId: ServiceId = 'dart')
       : { ...base, from: last, progress: DEPARTED_PROGRESS };
   }
 
-  // Last seen at a signal: approach the next stop from the station before it, on the way the train is going.
+  // Last seen somewhere not on this line: between the station before the next stop and the next stop.
   const before = previousStation(next, direction, originCode, line);
-  return before ? { ...base, from: before, progress: SIGNAL_PROGRESS } : { ...base, at: next, progress: 0 };
+  if (!before) return { ...base, at: next, progress: 0 };
+  // A station the train passes without stopping (an Enterprise "Departed Raheny"): as far along as it really is.
+  // Otherwise a signal or junction, drawn just short of the next stop.
+  const passed = msg.last ? findStationByName(msg.last) : undefined;
+  const progress = passed ? progressPast(before, passed.code, next) : undefined;
+  return { ...base, from: before, progress: progress ?? SIGNAL_PROGRESS };
+}
+
+/** Straight-line distance between two stations, in km; undefined if either has no position. */
+function distanceKm(a: string, b: string): number | undefined {
+  const p = findStationByCode(a);
+  const q = findStationByCode(b);
+  if (!p || !q || (!p.lat && !p.lon) || (!q.lat && !q.lon)) return undefined;
+  const n = (q.lat - p.lat) * 111;
+  const e = (q.lon - p.lon) * 111 * Math.cos((p.lat * Math.PI) / 180);
+  return Math.hypot(n, e);
+}
+
+/** How far from `from` to `to` a train at `passed` is (0–1), by real distances; kept off the two dots themselves. */
+export function progressPast(from: string, passed: string, to: string): number | undefined {
+  const done = distanceKm(from, passed);
+  const left = distanceKm(passed, to);
+  if (done === undefined || left === undefined || done + left === 0) return undefined;
+  return Math.min(0.9, Math.max(0.1, done / (done + left)));
 }
 
 /**

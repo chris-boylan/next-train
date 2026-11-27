@@ -129,3 +129,22 @@ describe('placeTrain: Cork', () => {
     expect(placeTrain(mallow, 'cork')).toBeUndefined();
   });
 });
+
+describe('placeTrain: stations passed without stopping', () => {
+  it('puts an Enterprise just past Raheny near Connolly, not near Drogheda', () => {
+    const train = placeTrain(raw('A124\\n17:50 - Dublin Connolly to Belfast (10 mins late)\\nDeparted Raheny next stop Drogheda'), 'enterprise');
+    expect(train).toMatchObject({ from: 'CNLLY', to: 'DGHDA', direction: 'Northbound' });
+    expect(train!.progress).toBeLessThan(0.25);
+  });
+
+  it('puts one past Portmarnock most of the way to Connolly', () => {
+    const train = placeTrain(raw('A121\\n16:00 - Belfast to Dublin Connolly (8 mins late)\\nDeparted Portmarnock next stop Dublin Connolly'), 'enterprise');
+    expect(train).toMatchObject({ from: 'DGHDA', to: 'CNLLY', direction: 'Southbound' });
+    expect(train!.progress).toBeGreaterThan(0.6);
+  });
+
+  it('still draws a train at a signal just short of its next stop', () => {
+    const train = placeTrain(raw('A124\\n17:50 - Dublin Connolly to Belfast (0 mins late)\\nDeparted North Strand Junction next stop Drogheda'), 'enterprise');
+    expect(train?.progress).toBe(SIGNAL_PROGRESS);
+  });
+});
