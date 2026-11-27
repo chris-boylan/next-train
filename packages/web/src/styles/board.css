@@ -64,6 +64,11 @@
   background: #8c1d40;
 }
 
+/* NI Railways: Translink's teal, as on the Translink NIR tile. */
+.badge--nir {
+  background: #084f5c;
+}
+
 /* "Later · timetable": scheduled trains beyond the live window, quieter than live ones. */
 .later {
   margin-top: 24px;

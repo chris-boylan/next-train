@@ -113,7 +113,7 @@ describe('scheduledMatches', () => {
 describe('timetable files', () => {
   it('writes one file per station per day, plus an index', async () => {
     const { timetableFiles, irishDate } = await import('../src');
-    const out = timetableFiles(files, ['20261127', '20261128'], STATIONS, '2026-11-27T03:30:00Z');
+    const out = timetableFiles([(date) => buildTimetable(files, date, STATIONS)], ['20261127', '20261128'], '2026-11-27T03:30:00Z');
     expect([...out.keys()].sort()).toEqual([
       'timetable/20261127/BRAY.json',
       'timetable/20261127/PERSE.json',

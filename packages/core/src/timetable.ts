@@ -7,6 +7,12 @@ import type { Direction, Station, TrainCategory } from './types';
 /** How far ahead the live API looks. Timetabled trains are shown only beyond it: live data wins inside it. */
 export const LIVE_WINDOW_MINS = 90;
 
+/**
+ * How far ahead live data covers a timetabled train: the live window, or nothing for NI Railways, which has no
+ * live data, so its timetabled trains show from now.
+ */
+export const liveWindowFor = (d: Pick<ScheduledDeparture, 'category'>) => (d.category === 'nir' ? 0 : LIVE_WINDOW_MINS);
+
 /** The GTFS files this needs, as text. */
 export interface GtfsFiles {
   stops: string;
@@ -234,6 +240,8 @@ export function scheduledMatches(service: 'dart' | 'enterprise' | 'cork' | 'comm
       return cork;
     case 'commuter':
       return d.category === 'commuter' && !cork;
+    case 'nir':
+      return d.category === 'nir';
     default:
       return false;
   }
@@ -242,7 +250,7 @@ export function scheduledMatches(service: 'dart' | 'enterprise' | 'cork' | 'comm
 /**
  * Timetabled trains to show alongside live ones: after the live window (inside it, live data is the truth, and
  * a timetabled train missing from it may well be cancelled), not already shown live, and passing `include`.
- * In time order, at most `limit`.
+ * NI Railways trains have no live data, so they show from now (`liveWindowFor`). In time order, at most `limit`.
  */
 export function scheduledBeyondLive(
   departures: ScheduledDeparture[],
@@ -257,7 +265,7 @@ export function scheduledBeyondLive(
 ): ScheduledDeparture[] {
   if (limit <= 0) return [];
   return departures
-    .filter((d) => d.minutes > nowMinutes + LIVE_WINDOW_MINS && !liveCodes.has(d.trainCode) && include(d))
+    .filter((d) => d.minutes > nowMinutes + liveWindowFor(d) && !liveCodes.has(d.trainCode) && include(d))
     .slice(0, limit);
 }
 
@@ -302,14 +310,26 @@ export interface StationTimetableFile {
 /** Where a station's timetable file for a service day lives (in the site bucket, and so on the website). */
 export const timetablePath = (date: string, code: string) => `timetable/${date}/${code}.json`;
 
+/** One day's timetable from one source (Irish Rail's GTFS, NI Railways' TransXChange). */
+export type TimetableSource = (date: string) => Timetable;
+
+/** Several sources' timetables for one day as one: each station's departures from all of them, in time order. */
+export function mergeTimetables(date: string, timetables: Timetable[]): Timetable {
+  const byStation: Record<string, ScheduledDeparture[]> = {};
+  for (const t of timetables) for (const [code, list] of Object.entries(t.byStation)) (byStation[code] ??= []).push(...list);
+  for (const list of Object.values(byStation)) list.sort((a, b) => a.minutes - b.minutes);
+  return { date, byStation };
+}
+
 /**
  * Every station's timetable file for each date, keyed by path, plus `timetable/<date>/index.json` listing the
- * stations. Built once a day by the timetable job (and locally by `npm run timetable:local`).
+ * stations, from all `sources` together. Built once a day by the timetable job (and locally by
+ * `npm run timetable:local`).
  */
-export function timetableFiles(gtfs: GtfsFiles, dates: string[], stations: Station[], generatedAt: string): Map<string, string> {
+export function timetableFiles(sources: TimetableSource[], dates: string[], generatedAt: string): Map<string, string> {
   const files = new Map<string, string>();
   for (const date of dates) {
-    const { byStation } = buildTimetable(gtfs, date, stations);
+    const { byStation } = mergeTimetables(date, sources.map((source) => source(date)));
     for (const [code, departures] of Object.entries(byStation)) {
       const file: StationTimetableFile = { date, code, generatedAt, departures };
       files.set(timetablePath(date, code), JSON.stringify(file));

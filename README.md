@@ -40,6 +40,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feat/hours-countdown` | Options choice to show times over an hour as hours and minutes (`1h 26 min`) |
 | `feat/timetable-on-track` | Timetabled trains on the station page's tracks where there are no live ones |
 | `feat/verify-deploy` | Live-site check after every deploy (version, API, timetable, www redirect) |
+| `feat/nir-timetable` | NI Railways timetabled trains, from Translink's TransXChange timetable |
 | `fix/deploy-on-request` | Pipeline deploys only when run by hand, not on every merge |
 
 ## Using the web app
@@ -87,7 +88,15 @@ The app always opens on the **service picker**: DART, Dublin Commuter, InterCity
 
 ## Translink NIR
 
-Northern Ireland Railways, as its own service (Translink's teal and lime on the tile). **There's no live data**: Irish Rail's feed has no NI Railways trains, so station pages say so. Belfast Grand Central, Portadown and Newry also show their live Enterprise (and Irish Rail) trains.
+Northern Ireland Railways, as its own service (Translink's teal and lime on the tile). **There's no live data**: Irish Rail's feed has no NI Railways trains, and OpenDataNI's real-time feed isn't working. So NIR trains are shown at their **timetabled** times, from now, under "Timetable" with an NIR badge. Belfast Grand Central, Lisburn, Portadown and Newry also show their live Enterprise (and Irish Rail) trains.
+
+### NIR timetable
+
+- **Source:** "Translink Northern Ireland Rail Timetable Data" on OpenDataNI (TransXChange XML, Open Government Licence; https://admin.opendatani.gov.uk/dataset/nir20160126v2). It also has the Enterprise, which is skipped: Irish Rail's GTFS has it, with the live API's train codes.
+- **Parsing:** `core/src/transxchange.ts`. Each journey has a start time and a journey pattern whose links give run and wait times, so stop times are added up along the pattern. Stops are matched to our stations by position (and name), as GTFS stops are. Weekly day types and days of (non-)operation are read; there are no bank-holiday rules in Translink's file.
+- **Getting a new release in:** OpenDataNI refuses scripted downloads and each release has a new file name, so the daily job can't fetch it. Download the ZIP in a browser and run `npm run nir:upload -- <file.zip> --profile next-train` (the `.xml` inside works too). It goes to the private `TimetableSources` bucket (never served by CloudFront), and the upload triggers the timetable job, so the new times are live within a couple of minutes.
+- **Reminders:** each release covers a few months (the September 2026 one ends on 13 December). The job emails the alerts topic when there's no NIR timetable, within 10 days of the end, and after it. If the NIR file can't be read, Irish Rail's timetable is still written.
+- **Locally:** `NIR_TIMETABLE=path/to/release.zip npm run timetable:local` adds NIR to the local timetable files.
 
 | Route | Runs |
 |---|---|
@@ -104,8 +113,8 @@ Northern Ireland Railways, as its own service (Translink's teal and lime on the 
 
 ## All stations and station boards
 
-- **All stations** shows every Irish Rail station on one vertical schematic that fits a phone's width (`web/src/maps/NetworkMap.tsx`), with search.
-- **Station boards:** tap a station for its board (`web/src/screens/StationBoard.tsx`). It shows every train in the next 90 minutes, grouped by the direction the API gives, each labelled **DART**, **Enterprise**, **InterCity** or **Commuter** (`trainCategory` in `core/src/departures.ts`).
+- **All stations** shows every station in Ireland on one vertical schematic that fits a phone's width (`web/src/maps/NetworkMap.tsx`), with search. Northern Ireland stations without live times are in italics ("timetable only"); tapping one opens its board with NI Railways' timetabled trains, as from the Translink NIR service.
+- **Station boards:** tap a station for its board (`web/src/screens/StationBoard.tsx`). It shows every train in the next 90 minutes, grouped by the direction the API gives, each labelled **DART**, **Enterprise**, **InterCity**, **Commuter** or (timetabled only) **NIR** (`trainCategory` in `core/src/departures.ts`).
 - **InterCity vs Commuter:** InterCity is identified by train codes starting with "A". That's an observed pattern, not documented by Irish Rail.
 - **Where the network data comes from:** the API lists station locations but not how they connect. `npm run build-network -w @dart-times/core` samples every running train's stop list, which includes stations passed without stopping, and writes the connections to `web/src/maps/data/network.data.ts`. Each run adds to earlier ones, so run it at different times to fill gaps. It also merges duplicate station codes, drops links that skip a station, and estimates missing positions. About 16 stations on lightly used lines (Nenagh, Clonmel, Gort…) aren't connected yet.
 

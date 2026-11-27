@@ -97,5 +97,5 @@ const enterpriseStops = new Set(SERVICES.enterprise.stations.map((s) => s.code))
 /** Whether a station is in Northern Ireland (any line, Enterprise or NI Railways). */
 export const isNorthern = (code: string) => NI_CODES.has(code);
 
-/** NI stations we have no live times for: shown in italics; tapping one says so. */
+/** NI stations we have no live times for: shown in italics (NI Railways' timetable only). */
 export const hasNoData = (code: string) => NI_CODES.has(code) && !enterpriseStops.has(code);
