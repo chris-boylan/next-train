@@ -128,3 +128,29 @@
   --band-north: #b5121b;
   --band-south: #a3282f;
 }
+
+/* Translink NIR: Translink's teal and lime. Text versions darkened (light) or lightened (dark) for contrast. */
+:root[data-service='nir'] {
+  --north: #084f5c;
+  --south: #afca1a;
+  --north-text: #084f5c;
+  --south-text: #586600;
+  --band-north: #5fc0cf;
+  --band-south: #c9e04a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-service='nir']:not([data-theme='light']) {
+    --north: #2d8a99;
+    --south: #afca1a;
+    --north-text: #7fcad6;
+    --south-text: #c6dd45;
+  }
+}
+
+:root[data-service='nir'][data-theme='dark'] {
+  --north: #2d8a99;
+  --south: #afca1a;
+  --north-text: #7fcad6;
+  --south-text: #c6dd45;
+}

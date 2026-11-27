@@ -58,6 +58,12 @@
   --tile-south: #69b3e7;
 }
 
+/* Translink NIR: Translink's teal (its site's header) and lime (its footer strip). */
+.service-tile--nir {
+  --tile-north: #084f5c;
+  --tile-south: #afca1a;
+}
+
 .service-tile {
   display: grid;
   grid-template-columns: auto 1fr auto;
