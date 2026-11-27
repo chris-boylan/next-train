@@ -75,14 +75,13 @@ export function OptionsMenu() {
               { value: 'home', label: t.favouritesOnHome },
             ]}
           />
-          {/* Examples rather than names, so it's clear at a glance what each one looks like. */}
           <Choice<CountdownStyle>
             label={t.countdownStyle}
             value={countdownStyle}
             onChange={setCountdownStyle}
             options={[
-              { value: 'minutes', label: `86 ${t.min}` },
-              { value: 'hours', label: `1${t.hour} 26 ${t.min}` },
+              { value: 'minutes', label: t.countdownMinutes },
+              { value: 'hours', label: t.countdownHours },
             ]}
           />
           <button
