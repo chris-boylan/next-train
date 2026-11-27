@@ -44,6 +44,11 @@ export function commuterSchematic(row: number): Schematic {
     COAST_LABEL,
   );
 
+  // Grand Canal Dock is a terminus (a circle, its name in capitals, three lines at this width): its name lifts a
+  // little and Lansdowne Road's drops a little, to keep a gap between them.
+  points.GCDK = { ...points.GCDK!, labelDy: -3 };
+  points.LDWNE = { ...points.LDWNE!, labelDy: 4 };
+
   // Connolly, Drumcondra and Broombridge sit on one straight 45° line heading north-west, which carries on
   // until it curves up into the Western line by Pelletstown. Each name sits on a side clear of the lines.
   const diagonal = (dx: number): [number, number] => [COAST_X - dx, CONNOLLY_Y - dx];
@@ -69,8 +74,8 @@ export function commuterSchematic(row: number): Schematic {
   // other or Park West's name.
   // A little above Park West, so both lines have room to sweep into it.
   const heustonJunction: [number, number] = [WEST_X, 770];
-  // Far enough from the coastal line for Heuston's interchange-sized name.
-  points.HSTON = { x: 120, y: 770, label: 'right', labelWidth: 96 };
+  // Far enough west that Heuston's interchange-sized name stays well clear of the coastal line's stripes.
+  points.HSTON = { x: 96, y: 770, label: 'right', labelWidth: 96 };
   column(['CHORC', 'CLDKN', 'KISHO', 'ADAMF', 'HZLCH', 'SALNS', 'NBRGE', 'CURAH', 'KDARE', 'MONVN', 'PTRTN', 'PTLSE'], WEST_X, 840, 1, WEST_LABEL);
 
   const bends: Record<string, [number, number][]> = {

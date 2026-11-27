@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { isLiveService, type LiveTrain, searchStations, type Service, type Station } from '@dart-times/core';
 import { BranchLineMap } from '../maps/BranchLineMap';
-import { COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
+import { COMMUTER_MAP_TERMINI, COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
 import { commuterSchematicFor } from '../maps/data/commuterSchematic';
 import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
 import { intercitySchematic, nirSchematic } from '../maps/data/intercitySchematic';
@@ -125,6 +125,7 @@ export function StationPicker({
             routeMap={COMMUTER_ROUTE_MAP}
             routeName={(id) => t.commuterRoutes[id]}
             schematic={commuterSchematicFor}
+            mapTermini={COMMUTER_MAP_TERMINI}
             hubs={['CNLLY', 'HSTON']}
             {...mapProps}
             {...liveProps}
