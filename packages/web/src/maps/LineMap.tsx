@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react';
 import { BRANCHES, findStationByCode, JUNCTION, TRUNK } from '@dart-times/core';
 import { Caps, useI18n } from '../lib/i18n';
 import { MapHits } from './MapHits';
+import { INTERCHANGES } from './PositionedMap';
 
 interface Props {
   favouriteCodes: string[];
@@ -40,6 +41,10 @@ const lastBranchY = rowY(branchRows - 1);
 // Termini, the junction, and Bray (where many trains turn back) get bigger dots and bold names.
 const ENDS = new Set<string>([BRANCHES.malahide.at(-1)!, BRANCHES.howth.at(-1)!, TRUNK[0], JUNCTION, 'BRAY']);
 
+// Connolly, where the DART meets the Commuter, Enterprise and InterCity lines and the Luas, gets the bigger
+// interchange ring and a larger name, as on the other maps.
+const isHub = (code: string) => INTERCHANGES.has(code);
+
 const branchPath = (x: number) =>
   `M${x},${rowY(0)} V${lastBranchY} C${x},${lastBranchY + ROW * 0.6} ${X.trunk},${junctionY - ROW * 0.6} ${X.trunk},${junctionY}`;
 
@@ -71,15 +76,15 @@ export function LineMap({ favouriteCodes, currentCode, onSelect }: Props) {
           {t.cityCentre}
         </text>
 
-        {/* Beck style: circles for termini, the junction and the current station; ticks for the rest. */}
+        {/* Beck style: circles for termini, the junction, interchanges and the current station; ticks for the rest. */}
         {POINTS.map((p) =>
-          ENDS.has(p.code) || p.code === currentCode ? (
+          ENDS.has(p.code) || isHub(p.code) || p.code === currentCode ? (
             <circle
               key={p.code}
               cx={p.x}
               cy={p.y}
-              r={9}
-              className={`line-map__dot${p.code === currentCode ? ' line-map__dot--current' : ''}`}
+              r={isHub(p.code) ? 12 : 9}
+              className={`line-map__dot${isHub(p.code) ? ' line-map__dot--hub' : ''}${p.code === currentCode ? ' line-map__dot--current' : ''}`}
             />
           ) : (
             <path key={p.code} d={tickPath(p)} className="line-map__tick" />
@@ -93,7 +98,7 @@ export function LineMap({ favouriteCodes, currentCode, onSelect }: Props) {
         return (
           <button
             key={p.code}
-            className={`line-map__stop line-map__stop--${p.side}${p.code === currentCode ? ' line-map__stop--current' : ''}${ENDS.has(p.code) ? ' line-map__stop--major' : ''}`}
+            className={`line-map__stop line-map__stop--${p.side}${p.code === currentCode ? ' line-map__stop--current' : ''}${ENDS.has(p.code) || isHub(p.code) ? ' line-map__stop--major' : ''}${isHub(p.code) ? ' line-map__stop--hub' : ''}`}
             style={stopStyle(p)}
             onClick={() => onSelect(p.code)}
             aria-label={`${stationName(station, true)}${favourite ? `, ${t.favourite}` : ''}`}
