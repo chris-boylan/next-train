@@ -65,8 +65,6 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
   const schematic = useMemo(() => networkSchematic(lang), [lang]);
   const [query, setQuery] = useState('');
   const results = query.trim() ? searchStations(query, SEARCHABLE) : [];
-  // No train in the timetable at all (the closed Waterford–Rosslare line), and lines with trains but no room yet.
-  const unmapped = useMemo(() => NETWORK_STATIONS.filter((s) => !connected.has(s.code) && !NOT_DRAWN.includes(s.code)), []);
   // Every station opens its board; Northern Ireland ones without live times show NI Railways' timetable there.
   const open = (code: string) => onSelectStation(real(code), name(real(code)));
 
@@ -136,11 +134,6 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
             {NOT_DRAWN.length > 0 && (
               <p className="network__unmapped">
                 {t.notDrawnYet}: {NOT_DRAWN.map((code) => name(code)).join(', ')}
-              </p>
-            )}
-            {unmapped.length > 0 && (
-              <p className="network__unmapped">
-                {t.noPassengerTrains}: {unmapped.map((s) => name(s.code)).join(', ')}
               </p>
             )}
           </>

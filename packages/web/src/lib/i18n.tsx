@@ -27,9 +27,6 @@ const en = {
   allStations: 'All stations',
   // Not just Irish Rail's: the map has NI Railways' stations too.
   allStationsNote: 'Every rail station in Ireland on one map',
-  // All-stations map: stations Irish Rail lists that no train in its published timetable calls at (the closed
-  // Waterford–Rosslare line). Lines with even a few trains a day are drawn, from the timetable.
-  noPassengerTrains: 'No passenger trains in Irish Rail’s timetable',
   // Stations on lines with trains that the all-stations (and InterCity) map can't draw yet; their boards work from search.
   notDrawnYet: 'Trains run here, but this map doesn’t draw their line yet (search to see their times)',
   italicStations: 'Stations in italics',
@@ -262,7 +259,6 @@ const ga: Messages = {
   dublinBelfast: 'Baile Átha Cliath – Béal Feirste',
   allStations: 'Gach stáisiún',
   allStationsNote: 'Gach stáisiún iarnróid in Éirinn ar léarscáil amháin',
-  noPassengerTrains: 'Gan traenacha paisinéirí i gclár ama Iarnród Éireann',
   notDrawnYet: 'Ritheann traenacha anseo, ach níl a líne ar an léarscáil seo fós (cuardaigh chun a n-amanna a fheiceáil)',
   italicStations: 'Stáisiúin i gcló iodálach:',
   timetableOnlyNote: 'níl acu ach amanna an chláir ama: níl amanna beo ar fáil d’Iarnród Thuaisceart Éireann.',
