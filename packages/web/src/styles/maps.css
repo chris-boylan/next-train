@@ -258,14 +258,15 @@
 
 /* ---------- Service line colours (all-stations map) ---------- */
 /* The same colours as the service tiles, lightened in dark mode where a deep colour would vanish. NI Railways
-   is muted: it has no live times yet. */
+   is the teal of its own pages (a lighter shade than its sign, to stay clear of InterCity's green); its stations'
+   names are in italics, which is what says they have timetabled times only. */
 :root {
   --svc-dart: #169b62;
   --svc-commuter: #2f6fb5;
   --svc-intercity: #00573f;
   --svc-cork: #b5121b;
   --svc-enterprise: #5b2a86;
-  --svc-ni: #a3a3a8;
+  --svc-ni: #2d8a99;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -274,7 +275,7 @@
     --svc-intercity: #93c4b1;
     --svc-cork: #e0323c;
     --svc-enterprise: #8f5fcc;
-    --svc-ni: #6e6e73;
+    --svc-ni: #5fc0cf;
   }
 }
 
@@ -283,7 +284,7 @@
   --svc-intercity: #93c4b1;
   --svc-cork: #e0323c;
   --svc-enterprise: #8f5fcc;
-  --svc-ni: #6e6e73;
+  --svc-ni: #5fc0cf;
 }
 
 /* ---------- Interchanges (Connolly, Heuston, Belfast) ---------- */
