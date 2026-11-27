@@ -120,7 +120,7 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
   }
 
   return (
-    <div className={`board${entering ? ' board--entering' : ''}`} ref={rootRef} onAnimationEnd={(e) => entering && e.target !== e.currentTarget && onEntered?.()}>
+    <div className={`screen board${entering ? ' board--entering' : ''}`} ref={rootRef} onAnimationEnd={(e) => entering && e.target !== e.currentTarget && onEntered?.()}>
       <header className="track-view__bar">
         <button className="chip" onClick={onBack}>
           ‹ {backLabel}
@@ -141,7 +141,6 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
           </p>
         </div>
         <div className="track-view__actions">
-          <OptionsMenu />
           {favourite && (
             <button
               className={`star${favourite.on ? ' star--on' : ''}`}
@@ -152,72 +151,75 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
               {favourite.on ? '★' : '☆'}
             </button>
           )}
+          <OptionsMenu />
         </div>
       </header>
 
-      <div className="board__sign">
-        <h1 className={`platform__name${name.length > 20 ? ' platform__name--longer' : name.length > 13 ? ' platform__name--long' : ''}`}>
-          {onShowTracks ? (
-            <button className="platform__switch" onClick={showTracks} aria-label={`${name}: ${t.showOnTracks}`} title={t.showOnTracks}>
+      <div className="screen__scroll">
+        <div className="board__sign">
+          <h1 className={`platform__name${name.length > 20 ? ' platform__name--longer' : name.length > 13 ? ' platform__name--long' : ''}`}>
+            {onShowTracks ? (
+              <button className="platform__switch" onClick={showTracks} aria-label={`${name}: ${t.showOnTracks}`} title={t.showOnTracks}>
+                <Caps text={name} />
+                <TracksIcon />
+              </button>
+            ) : (
               <Caps text={name} />
-              <TracksIcon />
-            </button>
-          ) : (
-            <Caps text={name} />
-          )}
-        </h1>
-        <OfficialName station={findStationByCode(code)} />
-      </div>
+            )}
+          </h1>
+          <OfficialName station={findStationByCode(code)} />
+        </div>
 
-      <div className="board__body">
-        {note && <p className="board__note">{note}</p>}
-        {data && !data.departures.length && <p className="sheet__empty">{t.noTrainsAnyDirection}</p>}
-        {[...groups.values()].map((group) => (
-          <section key={group.key} className="board__group">
-            <h2 className="destinations__heading" style={group.colour ? { borderBottomColor: group.colour } : undefined}>
-              {group.colour && <span className="board__route-swatch" style={{ background: group.colour }} />}
-              <Caps text={group.label} />
-            </h2>
-            <ol className="departure-list">
-              {group.departures.map((d) => (
-                <li key={d.trainCode} className="departure-row board__row" aria-label={describe(d)}>
-                  <span className={`departure-row__due${d.dueInMins <= 0 ? ' departure-row__due--now' : ''}`}>
-                    {d.dueInMins <= 0 ? t.due : <DueIn mins={d.dueInMins} />}
-                  </span>
-                  <span className="board__what">
-                    <span className="departure-row__dest">
-                      <Caps text={destinationName(d)} />
+        <div className="board__body">
+          {note && <p className="board__note">{note}</p>}
+          {data && !data.departures.length && <p className="sheet__empty">{t.noTrainsAnyDirection}</p>}
+          {[...groups.values()].map((group) => (
+            <section key={group.key} className="board__group">
+              <h2 className="destinations__heading" style={group.colour ? { borderBottomColor: group.colour } : undefined}>
+                {group.colour && <span className="board__route-swatch" style={{ background: group.colour }} />}
+                <Caps text={group.label} />
+              </h2>
+              <ol className="departure-list">
+                {group.departures.map((d) => (
+                  <li key={d.trainCode} className="departure-row board__row" aria-label={describe(d)}>
+                    <span className={`departure-row__due${d.dueInMins <= 0 ? ' departure-row__due--now' : ''}`}>
+                      {d.dueInMins <= 0 ? t.due : <DueIn mins={d.dueInMins} />}
                     </span>
-                    {mode === 'all' && <CategoryBadge category={d.category} />}
-                  </span>
-                  <span className="departure-row__time">
-                    {d.lateMins > 0 && (
-                      <>
-                        <s className="train__scheduled">{d.scheduledDepart}</s>
-                        <span className={`late late--${delaySeverity(d.lateMins)}`}>+{d.lateMins}</span>
-                      </>
-                    )}
-                    <span className="train__expected">{d.expectedDepart}</span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </section>
-        ))}
-        {/* Stations with no live data at all (most of NI Railways) show the timetable straight away. */}
-        {scheduled && (data || !live) && (
-          <LaterDepartures
-            departures={scheduled}
-            nowMinutes={Math.floor(irishSecondsOfDay(now.getTime()) / 60)}
-            liveCodes={new Set(data?.departures.map((d) => d.trainCode))}
-            include={(d) => mode === 'all' || scheduledMatches(mode, d)}
-            showCategory={mode === 'all'}
-            limit={hasNir ? 15 : undefined}
-            title={hasNir ? t.timetable : undefined}
-            // Said once: in the board's note when there is one (NI Railways stations), else here.
-            note={hasNir ? (note ? null : t.nirTimetableNote) : undefined}
-          />
-        )}
+                    <span className="board__what">
+                      <span className="departure-row__dest">
+                        <Caps text={destinationName(d)} />
+                      </span>
+                      {mode === 'all' && <CategoryBadge category={d.category} />}
+                    </span>
+                    <span className="departure-row__time">
+                      {d.lateMins > 0 && (
+                        <>
+                          <s className="train__scheduled">{d.scheduledDepart}</s>
+                          <span className={`late late--${delaySeverity(d.lateMins)}`}>+{d.lateMins}</span>
+                        </>
+                      )}
+                      <span className="train__expected">{d.expectedDepart}</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ))}
+          {/* Stations with no live data at all (most of NI Railways) show the timetable straight away. */}
+          {scheduled && (data || !live) && (
+            <LaterDepartures
+              departures={scheduled}
+              nowMinutes={Math.floor(irishSecondsOfDay(now.getTime()) / 60)}
+              liveCodes={new Set(data?.departures.map((d) => d.trainCode))}
+              include={(d) => mode === 'all' || scheduledMatches(mode, d)}
+              showCategory={mode === 'all'}
+              limit={hasNir ? 15 : undefined}
+              title={hasNir ? t.timetable : undefined}
+              // Said once: in the board's note when there is one (NI Railways stations), else here.
+              note={hasNir ? (note ? null : t.nirTimetableNote) : undefined}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

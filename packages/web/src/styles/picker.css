@@ -3,16 +3,12 @@
 /* ---------- Station picker ---------- */
 
 .picker {
-  max-width: 560px;
-  margin: 0 auto;
-  padding: 0 16px 32px;
+  padding: 0 16px;
 }
 
 .picker__header {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  padding: calc(16px + env(safe-area-inset-top)) 0 12px;
+  /* 12px puts the title row's middle 32px down, level with the station page's 64px header. */
+  padding: calc(12px + env(safe-area-inset-top)) 0 12px;
   background: var(--bg);
   border-bottom: 2px solid var(--rule);
 }
