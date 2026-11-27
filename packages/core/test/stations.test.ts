@@ -107,3 +107,29 @@ describe('official station names', () => {
     expect(findStationByCode('HOWTH')?.officialName).toBeUndefined();
   });
 });
+
+describe('searchStations from the first letter', () => {
+  const codes = (q: string) => searchStations(q).map((s) => s.code);
+
+  it('lists names starting with one or two letters first', () => {
+    expect(codes('b').slice(0, 4).sort()).toEqual(['BRAY', 'BROCK', 'BTSTN', 'BYSDE']);
+    expect(codes('ho')).toEqual(['HOWTH', 'HWTHJ']);
+  });
+
+  it('then names with a later word starting with them, then Irish names', () => {
+    const m = codes('m');
+    expect(m[0]).toBe('MHIDE');
+    expect(m[1]).toBe('SHILL');
+    // Howth's Irish name, Binn Éadair, still finds it, after the English matches.
+    const b = codes('b');
+    expect(b).toContain('HOWTH');
+    expect(b.indexOf('HOWTH')).toBeGreaterThan(b.indexOf('BRAY'));
+  });
+
+  it('leaves nicknames and typos for three letters and more', () => {
+    expect(codes('xq')).toEqual([]);
+    expect(codes('b')).not.toContain('GCDK'); // Barrow Street
+    expect(codes('barrow')).toContain('GCDK');
+    expect(resolveStation('connoly')?.code).toBe('CNLLY');
+  });
+});
