@@ -146,8 +146,11 @@ export function networkSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
   column(['CLMRS', 'BYHNS', 'CSREA', 'RSCMN'], MAYO_X, manulla[1] + 180, 1, 'left');
 
   // ---------- Heuston, Park West and the main line to Kildare ----------
-  const junction: Point = [X2, connollyY + 40];
-  stop('HSTON', [X3 - 48, junction[1]], 'above', { labelDx: 4, labelWidth: 58, labelDy: -8 });
+  // Heuston's line leaves it at 45° and meets the Phoenix Park line coming down from Drumcondra, just above Park West.
+  const heustonY = connollyY + 40;
+  const heustonX = X3 - 48;
+  const junction: Point = [X2, heustonY + (heustonX - X2)];
+  stop('HSTON', [heustonX, heustonY], 'above', { labelDx: 4, labelWidth: 58, labelDy: -8 });
   stop('CHORC', [X2, junction[1] + 32], 'right', { labelWidth: 68 });
   column(['CLDKN', 'KISHO', 'ADAMF', 'HZLCH', 'SALNS', 'NBRGE', 'CURAH', 'KDARE'], X2, at('CHORC')[1] + 56, 1);
   bend('HSTON', 'CHORC', junction);

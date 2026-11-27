@@ -297,7 +297,21 @@ export function PositionedMap({
           const lane = lanes.get(`${a}|${b}`)!;
           // Every connection is drawn as stripes, one per route (a single route is one full-width stripe), each
           // eased into its neighbours' stripes at the stations either end so shared bands join smoothly.
-          return lane.colours.map((colour, i) => (
+          // Under a shared band, the band's full width in its middle route's colour, so no white shows between the
+          // stripes where they bend (each stripe's corner is drawn on its own, so they don't nest exactly).
+          const underlay =
+            lane.colours.length > 1 ? (
+              <path
+                key={`${a}|${b}|under`}
+                d={roundedPath(lane.ordered, curveOf(a, b))}
+                className="line-map__track"
+                style={{
+                  strokeWidth: lane.stripe * lane.colours.length,
+                  ...(lane.colours[Math.floor(lane.colours.length / 2)] ? { stroke: lane.colours[Math.floor(lane.colours.length / 2)] } : {}),
+                }}
+              />
+            ) : null;
+          return [underlay, ...lane.colours.map((colour, i) => (
             <path
               key={`${a}|${b}|${i}`}
               d={roundedPath(
@@ -310,7 +324,7 @@ export function PositionedMap({
                 ...(colour ? { stroke: colour } : {}),
               }}
             />
-          ));
+          ))];
         })}
         {codes.map((code) => {
           const p = points[code]!;
