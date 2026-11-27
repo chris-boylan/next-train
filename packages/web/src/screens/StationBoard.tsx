@@ -1,7 +1,8 @@
 import {
   commuterHeading,
-  type Departure,
   delaySeverity,
+  type Departure,
+  findStationByCode,
   intercityHeading,
   isCityStation,
   route as routeBetween,
@@ -12,6 +13,7 @@ import { COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
 import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
+import { OfficialName } from './TrackView';
 import { useDepartures } from '../lib/useDepartures';
 
 interface Props {
@@ -23,6 +25,10 @@ interface Props {
   backLabel: string;
   onBack: () => void;
   favourite?: { on: boolean; toggle: () => void };
+  /** False for stations with no live data at all (most NI Railways stations): nothing is fetched. */
+  live?: boolean;
+  /** A note above the departures, e.g. that NI Railways trains aren't included. */
+  note?: string;
 }
 
 interface Group {
@@ -33,9 +39,9 @@ interface Group {
 }
 
 /** A station's departures in the next 90 minutes, as a board grouped by direction (or route and direction). */
-export function StationBoard({ code, name, mode, backLabel, onBack, favourite }: Props) {
+export function StationBoard({ code, name, mode, backLabel, onBack, favourite, live = true, note }: Props) {
   const { t, nameOf, destinationName, describe } = useI18n();
-  const { data, error } = useDepartures(code, mode);
+  const { data, error } = useDepartures(code, mode, live);
   const now = useNow();
   const fetchedAt = data && new Date(data.fetchedAt);
 
@@ -108,7 +114,7 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite }:
                 {error && ` · ${t.retrying}`}
               </>
             ) : (
-              (error ?? t.loading)
+              (error ?? (live ? t.loading : t.noLiveData))
             )}
           </p>
         </div>
@@ -131,9 +137,11 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite }:
         <h1 className="platform__name">
           <Caps text={name} />
         </h1>
+        <OfficialName station={findStationByCode(code)} />
       </div>
 
       <div className="board__body">
+        {note && <p className="board__note">{note}</p>}
         {data && !data.departures.length && <p className="sheet__empty">{t.noTrainsAnyDirection}</p>}
         {[...groups.values()].map((group) => (
           <section key={group.key} className="board__group">

@@ -2,10 +2,11 @@ import type { RawStationData } from './irishRailClient';
 import { COMMUTER_ROUTES, COMMUTER_STATION_CODES } from './commuter';
 import { INTERCITY_ROUTES, INTERCITY_STATION_CODES } from './intercity';
 import { CORK_LINE, DART_LINE, ENTERPRISE_LINE, type Line } from './line';
+import { NIR_ROUTES, NIR_STATION_CODES } from './nir';
 import { ALL_STATIONS, CORK_STATIONS, DART_STATIONS, ENTERPRISE_STATIONS } from './stations';
 import type { Station } from './types';
 
-export type ServiceId = 'dart' | 'enterprise' | 'cork' | 'commuter' | 'intercity';
+export type ServiceId = 'dart' | 'enterprise' | 'cork' | 'commuter' | 'intercity' | 'nir';
 
 export interface Service {
   id: ServiceId;
@@ -23,6 +24,9 @@ export const COMMUTER_STATIONS: Station[] = stationsFor(COMMUTER_STATION_CODES, 
 
 /** Every Intercity station, shared ones (Heuston, Kildare, Mallow, Cork…) included, in route order. */
 export const INTERCITY_STATIONS: Station[] = stationsFor(INTERCITY_STATION_CODES, 'Intercity');
+
+/** Every Translink NI Railways station, in route order. */
+export const NIR_STATIONS: Station[] = stationsFor(NIR_STATION_CODES, 'NI Railways');
 
 function stationsFor(codes: string[], service: string): Station[] {
   return codes.map((code) => {
@@ -78,8 +82,15 @@ export const SERVICES: Record<ServiceId, Service> = {
     // Every InterCity train has an "A" code, local runs (Ennis–Limerick Junction, Tralee–Mallow) included.
     matches: (raw) => raw.Traintype !== 'DART' && isIntercityCode(raw) && !isEnterprise(raw),
   },
+  nir: {
+    id: 'nir',
+    // No live data: Irish Rail's feed has no NI Railways trains, so nothing on a board matches.
+    line: { paths: NIR_ROUTES.flatMap((r) => r.line.paths), termini: { Northbound: [], Southbound: [] } },
+    stations: NIR_STATIONS,
+    matches: () => false,
+  },
 };
 
 export function isServiceId(value: unknown): value is ServiceId {
-  return value === 'dart' || value === 'enterprise' || value === 'cork' || value === 'commuter' || value === 'intercity';
+  return value === 'dart' || value === 'enterprise' || value === 'cork' || value === 'commuter' || value === 'intercity' || value === 'nir';
 }

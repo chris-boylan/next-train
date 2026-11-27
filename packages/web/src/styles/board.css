@@ -63,3 +63,13 @@
 .badge--commuter {
   background: #8c1d40;
 }
+
+/* A note above a board's departures, e.g. that NI Railways trains aren't included. */
+.board__note {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-left: 4px solid var(--rule);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--muted);
+}

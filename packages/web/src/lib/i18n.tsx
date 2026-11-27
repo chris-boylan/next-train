@@ -4,6 +4,7 @@ import {
   type Direction,
   findStationByCode,
   type IntercityRouteId,
+  type NirRouteId,
   type ServiceId,
   type Station,
   type TrainCategory,
@@ -18,7 +19,7 @@ const KEY = 'dart-times:lang';
 const en = {
   services: 'Services',
   chooseService: 'Choose a service',
-  serviceNames: { dart: 'DART', enterprise: 'Enterprise', cork: 'Cork Commuter', commuter: 'Dublin Commuter', intercity: 'InterCity' } as Record<ServiceId, string>,
+  serviceNames: { dart: 'DART', enterprise: 'Enterprise', cork: 'Cork Commuter', commuter: 'Dublin Commuter', intercity: 'InterCity', nir: 'Translink NIR' } as Record<ServiceId, string>,
   dublinBelfast: 'Dublin – Belfast',
   allStations: 'All stations',
   allStationsNote: 'Every Irish Rail station on one map',
@@ -42,6 +43,15 @@ const en = {
     sligo: 'Sligo',
     rosslare: 'Rosslare',
   } as Record<IntercityRouteId, string>,
+  nirRoutes: {
+    bangor: 'Bangor',
+    larne: 'Larne',
+    derry: 'Derry',
+    portrush: 'Portrush',
+    portadown: 'Portadown & Newry',
+  } as Record<NirRouteId, string>,
+  nirNoLiveData: 'NI Railways times aren’t available, so there are no live trains for this station.',
+  nirEnterpriseOnly: 'NI Railways times aren’t available. Only Enterprise and Irish Rail trains are shown here.',
   stationCount: (n: number) => `${n} stations`,
   dublin: 'Dublin',
   towards2: (place: string) => `towards ${place}`,
@@ -169,6 +179,8 @@ const ga: Messages = {
     cork: 'Comaitéara Chorcaí',
     commuter: 'Comaitéara Bhaile Átha Cliath',
     intercity: 'Idirchathrach',
+    // A brand name, like DART and Enterprise.
+    nir: 'Translink NIR',
   },
   // As on Irish Rail's bilingual Dublin–Belfast timetable.
   dublinBelfast: 'Baile Átha Cliath – Béal Feirste',
@@ -202,7 +214,16 @@ const ga: Messages = {
     waterford: 'Port Láirge',
     sligo: 'Sligeach',
     rosslare: 'Ros Láir',
+  },  nirRoutes: {
+    bangor: 'Beannchar',
+    larne: 'Latharna',
+    derry: 'Doire',
+    portrush: 'Port Rois',
+    portadown: 'Port an Dúnáin agus an tIúr',
   },
+  nirNoLiveData: 'Níl amanna Iarnróid Thuaisceart Éireann ar fáil, mar sin níl aon traein bheo don stáisiún seo.',
+  nirEnterpriseOnly: 'Níl amanna Iarnróid Thuaisceart Éireann ar fáil. Ní thaispeántar anseo ach traenacha an Enterprise agus Iarnród Éireann.',
+
   stationCount: (n) => `${n} stáisiún`,
   dublin: 'Baile Átha Cliath',
   towards2: (place) => `go dtí ${place}`,

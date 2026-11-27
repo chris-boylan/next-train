@@ -61,7 +61,8 @@ describe('searchStations', () => {
 
 describe('Irish names', () => {
   it('has an official Irish name for every station, on every service', () => {
-    expect(ALL_STATIONS.filter((s) => !s.irishName).map((s) => s.code)).toEqual([]);
+    // NI Railways stations named after buildings or developments (City Hospital, Lanyon Place…) stay in English.
+    expect(ALL_STATIONS.filter((s) => !s.irishName && !s.code.startsWith('NI_')).map((s) => s.code)).toEqual([]);
   });
 
   it('uses short forms that mirror the English short name', () => {
@@ -83,5 +84,26 @@ describe('Belfast Grand Central', () => {
     expect(station?.name).toBe('Belfast Grand Central');
     expect(findStationByName('Belfast Grand Central')?.code).toBe('BFSTC');
     expect(searchStations('grand central', ALL_STATIONS).map((s) => s.code)).toContain('BFSTC');
+  });
+});
+
+describe('official station names', () => {
+  it('finds stations by their official commemorative names', () => {
+    const codes = (q: string) => searchStations(q, ALL_STATIONS).map((s) => s.code);
+    expect(codes('Kent')).toContain('CORK');
+    expect(codes('kent station')).toContain('CORK');
+    expect(codes('Cork Kent')).toContain('CORK');
+    expect(codes('Ceannt')).toContain('GALWY');
+    expect(codes('Colbert')).toContain('LMRCK');
+    expect(codes('Clarke')).toContain('DDALK');
+    expect(codes('Daly')).toContain('BRAY');
+    expect(codes("O'Hanrahan")).toContain('WXFRD');
+  });
+
+  it('gives a subtitle where the official name differs from the place name, but not for Dublin', () => {
+    expect(findStationByCode('CORK')?.officialName).toBe('Kent Station');
+    expect(findStationByCode('SLIGO')?.officialName).toBe('Mac Diarmada Station');
+    expect(findStationByCode('CNLLY')?.officialName).toBeUndefined();
+    expect(findStationByCode('HOWTH')?.officialName).toBeUndefined();
   });
 });

@@ -14,9 +14,9 @@ interface Props {
 /**
  * Most-used first, by passenger journeys on the NTA's 2024 National Rail Census day: DART 87,058; Dublin
  * commuter 62,857; InterCity 50,753; Cork commuter and regional 9,617; Enterprise 6,214 (Tables 8 and 12).
- * The app keeps no usage stats of its own.
+ * Translink NIR comes last: it has no live times. The app keeps no usage stats of its own.
  */
-export const SERVICE_ORDER: ServiceId[] = ['dart', 'commuter', 'intercity', 'cork', 'enterprise'];
+export const SERVICE_ORDER: ServiceId[] = ['dart', 'commuter', 'intercity', 'cork', 'enterprise', 'nir'];
 
 /** The top level: pick a service, then its map, then a station. */
 export function ServicePicker({ onSelect, onOpenNetwork, favourites, onSelectFavourite }: Props) {
@@ -28,6 +28,7 @@ export function ServicePicker({ onSelect, onOpenNetwork, favourites, onSelectFav
     cork: `${nameOf('CORK')} – ${nameOf('COBH')} · ${nameOf('MDLTN')} · ${nameOf('MLLOW')}`,
     commuter: `${nameOf('DDALK')} · ${nameOf('MYNTH')} · ${nameOf('PTLSE')} · ${nameOf('GOREY')}`,
     intercity: `${nameOf('CORK')} · ${nameOf('GALWY')} · ${nameOf('LMRCK')} · ${nameOf('SLIGO')} · ${nameOf('WFORD')}`,
+    nir: `${nameOf('NI_BANGR')} · ${t.nirRoutes.larne} · ${nameOf('NI_DERRY')} · ${nameOf('NI_PRUSH')} · ${nameOf('NEWRY')}`,
   };
 
   return (

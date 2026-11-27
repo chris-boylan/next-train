@@ -4,7 +4,8 @@ import { BranchLineMap } from '../maps/BranchLineMap';
 import { COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
 import { commuterSchematicFor } from '../maps/data/commuterSchematic';
 import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
-import { intercitySchematic } from '../maps/data/intercitySchematic';
+import { intercitySchematic, nirSchematic } from '../maps/data/intercitySchematic';
+import { NIR_ROUTE_MAP } from '../maps/data/nirRoutes';
 import { NETWORK_TERMINI, withBreaks } from '../maps/data/networkSchematic';
 import { LineMap } from '../maps/LineMap';
 import { SchematicMap } from '../maps/SchematicMap';
@@ -121,6 +122,21 @@ export function StationPicker({
           mapName={withBreaks}
           mapTermini={NETWORK_TERMINI}
           hubs={['HSTON', 'CNLLY']}
+          {...mapProps}
+        />
+      ) : service.id === 'nir' ? (
+        <RoutesMap
+          view={routesView}
+          onViewChange={onRoutesViewChange}
+          service={service}
+          routeMap={NIR_ROUTE_MAP}
+          routeName={(id) => t.nirRoutes[id]}
+          // Drawn from the all-stations map's Northern Ireland, like InterCity's map.
+          schematic={nirSchematic}
+          mapClassName="schematic--compact"
+          mapName={withBreaks}
+          mapTermini={NETWORK_TERMINI}
+          hubs={['BFSTC']}
           {...mapProps}
         />
       ) : SCHEMATICS[service.id] ? (
