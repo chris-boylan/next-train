@@ -14,10 +14,10 @@ function setup(now = Date.parse('2026-11-26T12:00:00Z')) {
   return { repo, sent, service, advance: (ms: number) => (clock += ms) };
 }
 
-const ok = { message: 'The Howth trains are missing', elapsedMs: 10_000 };
+const ok = { message: 'The Howth trains are missing', email: 'rider@example.ie', elapsedMs: 10_000 };
 
 describe('FeedbackService', () => {
-  it('saves and emails a valid message, trimmed, with optional details', async () => {
+  it('saves and emails a valid message, trimmed, with its details', async () => {
     const { repo, sent, service } = setup();
     const result = await service.submit('dev-1', { ...ok, message: '  Hello there  ', email: ' me@example.ie ', lang: 'ga', appVersion: 'abc123' }, { userAgent: 'Safari' });
     expect(result).toEqual({ ok: true });
@@ -32,7 +32,9 @@ describe('FeedbackService', () => {
     expect(await service.submit('dev-1', { ...ok, message: 'hi' })).toMatchObject({ ok: false, reason: 'INVALID' });
     expect(await service.submit('dev-1', { ...ok, message: 'x'.repeat(FEEDBACK_LIMITS.maxMessage + 1) })).toMatchObject({ ok: false, reason: 'INVALID' });
     expect(await service.submit('dev-1', { ...ok, email: 'not-an-email' })).toMatchObject({ ok: false, reason: 'INVALID' });
-    expect(await service.submit('dev-1', { message: 42 })).toMatchObject({ ok: false, reason: 'INVALID' });
+    expect(await service.submit('dev-1', { ...ok, email: '' })).toMatchObject({ ok: false, reason: 'INVALID', message: 'An email address is required' });
+    expect(await service.submit('dev-1', { message: 'No email at all', elapsedMs: 10_000 })).toMatchObject({ ok: false, reason: 'INVALID' });
+    expect(await service.submit('dev-1', { message: 42, email: 'rider@example.ie' })).toMatchObject({ ok: false, reason: 'INVALID' });
     expect(repo.entries).toEqual([]);
   });
 

@@ -1,14 +1,22 @@
 import { useState } from 'react';
 import {
-  type Departure,
+  callsAt,
   delaySeverity,
+  type Departure,
   departuresGoingTo,
   type Direction,
+  directionBetween,
+  irishSecondsOfDay,
   type Line,
+  scheduledMatches,
+  type ServiceId,
   type Station,
   terminiFrom,
 } from '@dart-times/core';
 import { DestinationList } from './DestinationList';
+import { LaterDepartures } from './LaterDepartures';
+import { useScheduled } from '../lib/useScheduled';
+import { useNow } from '../lib/clock';
 import { HiddenNote } from './HiddenNote';
 import { Caps, useI18n } from '../lib/i18n';
 import { DueIn } from './DueIn';
@@ -17,6 +25,8 @@ import { Sheet } from './Sheet';
 interface Props {
   station: Station;
   line: Line;
+  /** For the timetabled trains after the live ones. */
+  serviceId: ServiceId;
   direction: Direction;
   /** All departures in this direction for the next 90 minutes. */
   departures: Departure[];
@@ -26,7 +36,9 @@ interface Props {
 }
 
 /** Every departure in one direction, with quick "going to" picks. */
-export function DeparturesSheet({ station, line, direction, departures, goingTo, onGoingTo, onClose }: Props) {
+export function DeparturesSheet({ station, line, serviceId, direction, departures, goingTo, onGoingTo, onClose }: Props) {
+  const scheduled = useScheduled(station.code);
+  const now = useNow();
   const { t, stationName, nameOf, destinationName, describe } = useI18n();
   const [choosingOther, setChoosingOther] = useState(false);
   const quickPicks = terminiFrom(station.code, direction, line);
@@ -98,6 +110,19 @@ export function DeparturesSheet({ station, line, direction, departures, goingTo,
           </ol>
           {!shown.length && <p className="sheet__empty">{t.noMatching}</p>}
           {goingTo && <HiddenNote all={departures} shown={shown} />}
+          {scheduled && (
+            <LaterDepartures
+              departures={scheduled}
+              nowMinutes={Math.floor(irishSecondsOfDay(now.getTime()) / 60)}
+              liveCodes={new Set(departures.map((d) => d.trainCode))}
+              include={(d) =>
+                scheduledMatches(serviceId, d) &&
+                !!d.destinationCode &&
+                directionBetween(station.code, d.destinationCode, line) === direction &&
+                (!goingTo || d.destinationCode === goingTo || callsAt(station.code, d.destinationCode, goingTo, line))
+              }
+            />
+          )}
         </>
       )}
     </Sheet>

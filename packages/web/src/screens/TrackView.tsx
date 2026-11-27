@@ -191,6 +191,7 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
             <h1 className={`platform__name${name.length > 20 ? ' platform__name--longer' : name.length > 13 ? ' platform__name--long' : ''}`}>
               <Caps text={name} />
             </h1>
+            <OfficialName station={station} />
             {/* Only shown while a filter is on: tap the name to change it in that direction's panel, ✕ to clear. */}
             {goingTo && goingDirection && (
               <div className="going-to">
@@ -235,6 +236,7 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
         <DeparturesSheet
           station={station}
           line={line}
+          serviceId={service.id}
           direction={sheetDirection}
           departures={allIn(sheetDirection)}
           goingTo={goingDirection === sheetDirection ? goingTo : undefined}
@@ -244,6 +246,16 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
       )}
     </div>
   );
+}
+
+/**
+ * The station's official name under the sign, e.g. "Kent Station" under CORK. English only for now: in Irish
+ * these names change form (Stáisiún Cheannt, Stáisiún Uí Chléirigh…), which needs checking by a fluent speaker.
+ */
+export function OfficialName({ station }: { station?: Station }) {
+  const { lang } = useI18n();
+  if (!station?.officialName || lang !== 'en') return null;
+  return <p className="platform__official">{station.officialName}</p>;
 }
 
 /** Links to the next station(s) along the line: north above the station name, south below it. */

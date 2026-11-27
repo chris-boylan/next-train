@@ -1,5 +1,6 @@
 import { execSync } from 'node:child_process';
-import { defineConfig } from 'vite';
+import { existsSync, readFileSync } from 'node:fs';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
@@ -15,10 +16,36 @@ function appVersion(): string {
   }
 }
 
+/**
+ * Dev server only: serves the timetable files from .timetable/ (built by `npm run timetable:local`) at
+ * /timetable/..., as CloudFront serves the daily job's files in production. Never part of a build.
+ */
+function localTimetable(): Plugin {
+  const dir = new URL('./.timetable/', import.meta.url);
+  return {
+    name: 'local-timetable',
+    apply: 'serve',
+    configureServer(server) {
+      server.middlewares.use('/timetable/', (req, res, next) => {
+        const file = new URL((req.url ?? '').replace(/^\//, '').split('?')[0]!, dir);
+        if (!file.pathname.startsWith(dir.pathname)) return next();
+        // A missing file is a 404 (CloudFront answers 403), not the app's page.
+        if (!existsSync(file)) {
+          res.statusCode = 404;
+          return res.end();
+        }
+        res.setHeader('content-type', 'application/json');
+        res.end(readFileSync(file));
+      });
+    },
+  };
+}
+
 export default defineConfig({
   define: { __APP_VERSION__: JSON.stringify(appVersion()) },
   plugins: [
     react(),
+    localTimetable(),
     // Installable on the home screen ("Add to Home Screen" on iOS). The service worker precaches the app shell so
     // it opens instantly and offline; live times always come from the network.
     VitePWA({

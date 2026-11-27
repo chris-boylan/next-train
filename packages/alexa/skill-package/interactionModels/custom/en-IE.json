@@ -297,6 +297,9 @@
               "name": {
                 "value": "Dun Laoghaire",
                 "synonyms": [
+                  "Mallin",
+                  "Mallin Station",
+                  "Dun Laoghaire Mallin",
                   "Dunleary",
                   "Dun Leary"
                 ]
@@ -350,7 +353,11 @@
               "id": "BRAY",
               "name": {
                 "value": "Bray",
-                "synonyms": []
+                "synonyms": [
+                  "Daly",
+                  "Daly Station",
+                  "Bray Daly"
+                ]
               }
             },
             {
