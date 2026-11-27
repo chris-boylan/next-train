@@ -132,7 +132,8 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
   return (
     <div className="track-view">
       <header className="track-view__bar">
-        {journey ? (
+        {/* Back to "Stations" as soon as closing starts, while the track and train are still gliding back. */}
+        {journey && !closingJourney ? (
           <button className="chip" onClick={closeJourney}>
             ✕ {t.journey.close}
           </button>
