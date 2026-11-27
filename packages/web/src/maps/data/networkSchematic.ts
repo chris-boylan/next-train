@@ -189,7 +189,12 @@ export function networkSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
   const waterfordX = X2 + (lang === 'ga' ? 10 : 14);
   // Waterford is a through station here: the line from Kildare comes down to it, and the line from Limerick
   // Junction climbs up to it from Tipperary (see below), so its stations carry on down the same lane.
-  column(['ATHY', 'CRLOW', 'MNEBG', 'KKNNY', 'THTWN', 'WFORD', 'CKOSR', 'CLMEL', 'CAHIR', 'TIPRY'], waterfordX, kildare[1] + 2 * ROW, 1, 'right', 46);
+  column(['ATHY', 'CRLOW', 'MNEBG', 'KKNNY', 'THTWN', 'WFORD'], waterfordX, kildare[1] + 2 * ROW, 1, 'right', 46);
+  // Below Waterford, up to the corner where the line from Limerick Junction turns into this lane: Tipperary sits a
+  // little above the corner (a station on a bend reads as an end), and the others are spaced between.
+  const waterfordLaneFoot: Point = [waterfordX, at('WFORD')[1] + 4 * 46];
+  stop('TIPRY', [waterfordX, waterfordLaneFoot[1] - 40]);
+  between(['CKOSR', 'CLMEL', 'CAHIR'], at('WFORD'), at('TIPRY'));
   bend('KDARE', 'ATHY', [X2, kildare[1] + 16], [waterfordX, kildare[1] + 32]);
   points.WFORD!.smallHubLabel = true;
   // Kilkenny is a big station, but its name has to fit between the Waterford and coast lines.
@@ -212,7 +217,7 @@ export function networkSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
   // Limerick Junction to Waterford (geography bent to fit): east off the junction at 45°, down beside the main
   // line, then across to Tipperary at the foot of the Waterford lane, which it climbs to Waterford.
   const ljLaneX = X1 + 30;
-  bend('LMRKJ', 'TIPRY', [ljLaneX, lj[1] + (ljLaneX - X1)], [ljLaneX, at('TIPRY')[1]]);
+  bend('LMRKJ', 'TIPRY', [ljLaneX, lj[1] + (ljLaneX - X1)], [ljLaneX, waterfordLaneFoot[1]], waterfordLaneFoot);
   // The Nenagh line: down from Limerick, ending at a stop for Ballybrophy on the main line (NENAGH_END: drawing
   // it back up to Ballybrophy would cross the main line and Limerick Junction's link).
   column(['CCONL', 'BHILL', 'NNAGH', 'CJRDN', 'RCREA', NENAGH_END], X0, limerickY + 40, 1);
