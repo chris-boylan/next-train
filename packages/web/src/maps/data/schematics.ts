@@ -42,7 +42,7 @@ export const SCHEMATICS: Partial<Record<ServiceId, Schematic>> = {
   // the Midleton line carries on east and the Cobh line drops south past Fota.
   cork: {
     width: 340,
-    height: 520,
+    height: 545,
     points: {
       // Spaced so the longest angled name (Irish "Mainistir na Corann") still fits a phone's width.
       MLLOW: { x: 34, y: 50, label: 'right' },
@@ -51,17 +51,22 @@ export const SCHEMATICS: Partial<Record<ServiceId, Schematic>> = {
       GHANE: { x: 160, y: 260, label: 'angled' },
       CGTWL: { x: 204, y: 260, label: 'angled' },
       MDLTN: { x: 248, y: 260, label: 'angled' },
-      FOTA: { x: 196, y: 340, label: 'right' },
-      CGLOE: { x: 196, y: 395, label: 'right' },
-      RBROK: { x: 196, y: 450, label: 'right' },
-      COBH: { x: 196, y: 500, label: 'right' },
+      FOTA: { x: 196, y: 365, label: 'right' },
+      CGLOE: { x: 196, y: 420, label: 'right' },
+      RBROK: { x: 196, y: 475, label: 'right' },
+      COBH: { x: 196, y: 525, label: 'right' },
     },
     bends: {
       // The Mallow line comes south and sweeps east into Cork.
       'MLLOW|CORK': [[34, 260]],
-      // The Cobh line leaves Glounthaune heading east, then curves south past Fota.
-      // Leaves Glounthaune itself at 45°, so the dot sits on the split.
-      'GHANE|FOTA': [[196, 296]],
+      // The Cobh line leaves Glounthaune at 45° (so the dot sits on the split), then turns south gradually:
+      // several small changes of direction (about 45° → 60° → 80° → straight down) read as one long sweep.
+      // It can't simply move further right for a wider curve: the Irish names on this line would overflow.
+      'GHANE|FOTA': [
+        [178, 279],
+        [189, 300],
+        [196, 326],
+      ],
     },
   },
 };
