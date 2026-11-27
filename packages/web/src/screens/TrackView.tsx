@@ -1,4 +1,4 @@
-import { type CSSProperties, useCallback, useEffect, useMemo, useState } from 'react';
+import { type CSSProperties, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   adjacentStations,
   callsAt,
@@ -30,6 +30,7 @@ import { getGoingTo, setGoingTo } from '../lib/prefs';
 import { useDepartures } from '../lib/useDepartures';
 import { type TimetabledDeparture, useScheduled } from '../lib/useScheduled';
 import { useMediaQuery } from '../lib/useMediaQuery';
+import { enterTracks, leaveTracks } from '../lib/viewSwitch';
 import { COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
 import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
 
@@ -51,13 +52,27 @@ interface Props {
   initialLineId?: string;
   /** The list button by the station name: show this station as a board instead. */
   onShowBoard?: () => void;
+  /** Arrived from the station's board (its tracks button): play the transition in, then call `onEntered`. */
+  enterFromBoard?: boolean;
+  onEntered?: () => void;
 }
 
 /**
  * The station on a double track: northbound (green) on the left, coming up from the bottom;
  * southbound (orange) on the right, coming down from the top. Nearest trains sit closest to the station.
  */
-export function TrackView({ service, station, isFavourite, onToggleFavourite, onChangeStation, onSelectStation, initialLineId, onShowBoard }: Props) {
+export function TrackView({
+  service,
+  station,
+  isFavourite,
+  onToggleFavourite,
+  onChangeStation,
+  onSelectStation,
+  initialLineId,
+  onShowBoard,
+  enterFromBoard = false,
+  onEntered,
+}: Props) {
   const { t, stationName, nameOf, list } = useI18n();
   // NI Railways has no live data: its trains come from the timetable, and only stations where the Enterprise
   // calls (Grand Central, Portadown, Newry) have live trains, which come from every Irish Rail train there.
@@ -138,6 +153,28 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
     return () => document.documentElement.classList.remove('scroll-locked');
   }, []);
 
+  // The switch to and from the board (see lib/viewSwitch.ts). Entering, the trains stay hidden until the tracks
+  // are back; leaving, the board only takes over once the sign is in its place.
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [entering, setEntering] = useState(enterFromBoard);
+  const [leaving, setLeaving] = useState(false);
+  // Once per page: React's development mode runs mount effects twice, and a second run would measure the sign
+  // mid-move and override the first.
+  const entered = useRef(false);
+  useLayoutEffect(() => {
+    if (!enterFromBoard || !rootRef.current || entered.current) return;
+    entered.current = true;
+    void enterTracks(rootRef.current, () => setEntering(false)).then(() => onEntered?.());
+    // Once, as the page first appears.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const showBoard = async () => {
+    if (!onShowBoard || leaving || journey || !rootRef.current) return;
+    setLeaving(true);
+    await leaveTracks(rootRef.current);
+    onShowBoard();
+  };
+
   const perDirection = useMediaQuery(SHORT_SCREEN) ? TRAINS_PER_DIRECTION_SHORT : TRAINS_PER_DIRECTION;
   const nowMinutes = Math.floor(irishSecondsOfDay(now.getTime()) / 60);
   const liveCodes = new Set(data?.departures.map((d) => d.trainCode));
@@ -196,7 +233,7 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
       : COMMUTER_ROUTE_MAP.colour(id as Parameters<typeof COMMUTER_ROUTE_MAP.colour>[0]);
 
   return (
-    <div className="track-view">
+    <div className={`track-view${entering ? ' track-view--entering' : ''}`} ref={rootRef}>
       <header className="track-view__bar">
         {/* Back to "Stations" as soon as closing starts, while the track and train are still gliding back. */}
         {journey && !closingJourney ? (
@@ -274,7 +311,7 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
             <h1 className={`platform__name${name.length > 20 ? ' platform__name--longer' : name.length > 13 ? ' platform__name--long' : ''}`}>
               {onShowBoard ? (
                 // The name switches the station to its list board (and the board's name switches back).
-                <button className="platform__switch" onClick={onShowBoard} aria-label={`${name}: ${t.showAsList}`} title={t.showAsList}>
+                <button className="platform__switch" onClick={showBoard} aria-label={`${name}: ${t.showAsList}`} title={t.showAsList}>
                   <Caps text={name} />
                   <ListIcon />
                 </button>

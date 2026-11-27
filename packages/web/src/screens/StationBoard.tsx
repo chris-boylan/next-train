@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import {
   commuterHeading,
   delaySeverity,
@@ -20,6 +21,7 @@ import { OptionsMenu } from '../components/OptionsMenu';
 import { OfficialName, TracksIcon } from './TrackView';
 import { useDepartures } from '../lib/useDepartures';
 import { useScheduled } from '../lib/useScheduled';
+import { leaveBoard } from '../lib/viewSwitch';
 import { LaterDepartures } from '../components/LaterDepartures';
 
 interface Props {
@@ -37,6 +39,9 @@ interface Props {
   note?: string;
   /** The tracks button by the station name: show this station on its two tracks instead. */
   onShowTracks?: () => void;
+  /** Arrived from the station's tracks: the list fades in, then `onEntered`. */
+  entering?: boolean;
+  onEntered?: () => void;
 }
 
 interface Group {
@@ -47,7 +52,13 @@ interface Group {
 }
 
 /** A station's departures in the next 90 minutes, as a board grouped by direction (or route and direction). */
-export function StationBoard({ code, name, mode, backLabel, onBack, favourite, live = true, note, onShowTracks }: Props) {
+export function StationBoard({ code, name, mode, backLabel, onBack, favourite, live = true, note, onShowTracks, entering = false, onEntered }: Props) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const showTracks = async () => {
+    if (!onShowTracks || !rootRef.current) return;
+    await leaveBoard(rootRef.current);
+    onShowTracks();
+  };
   const { t, nameOf, destinationName, describe } = useI18n();
   const scheduled = useScheduled(code);
   // NI Railways trains are timetable-only, from now: the section is "Timetable", not "Later".
@@ -109,7 +120,7 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
   }
 
   return (
-    <div className="board">
+    <div className={`board${entering ? ' board--entering' : ''}`} ref={rootRef} onAnimationEnd={(e) => entering && e.target !== e.currentTarget && onEntered?.()}>
       <header className="track-view__bar">
         <button className="chip" onClick={onBack}>
           ‹ {backLabel}
@@ -145,9 +156,9 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
       </header>
 
       <div className="board__sign">
-        <h1 className="platform__name">
+        <h1 className={`platform__name${name.length > 20 ? ' platform__name--longer' : name.length > 13 ? ' platform__name--long' : ''}`}>
           {onShowTracks ? (
-            <button className="platform__switch" onClick={onShowTracks} aria-label={`${name}: ${t.showOnTracks}`} title={t.showOnTracks}>
+            <button className="platform__switch" onClick={showTracks} aria-label={`${name}: ${t.showOnTracks}`} title={t.showOnTracks}>
               <Caps text={name} />
               <TracksIcon />
             </button>

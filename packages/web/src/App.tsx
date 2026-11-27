@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { findStationByCode, hasLiveData, isServiceId, SERVICES, type ServiceId, type Station } from '@dart-times/core';
 import { fetchFavourites, setFavourite } from './lib/api';
 import { getDeviceId } from './lib/deviceId';
@@ -42,6 +43,14 @@ function Screens() {
   });
   const [favourites, setFavourites] = useState<Station[]>([]);
   const [stationView, setStationView] = useStationView();
+  // Which page a tracks/board switch is arriving on, for its transition in (cleared once it has played).
+  const [arriving, setArriving] = useState<'tracks' | 'board'>();
+  // The view setting is an external store, whose updates render straight away: commit `arriving` first, or the
+  // new page would appear before it knows it's arriving and skip its transition.
+  const switchView = (view: 'tracks' | 'board') => {
+    flushSync(() => setArriving(view));
+    setStationView(view);
+  };
   const [showNetwork, setShowNetwork] = useState(false);
   // A station opened from the all-stations map, or from a favourite on the home page.
   const [boardStation, setBoardStation] = useState<{ code: string; name: string; from: 'map' | 'home' }>();
@@ -135,7 +144,9 @@ function Screens() {
         backLabel={backLabel}
         onBack={() => setStationCode(undefined)}
         favourite={{ on: isFavourite(station.code), toggle: () => toggleFavourite(station.code) }}
-        onShowTracks={() => setStationView('tracks')}
+        onShowTracks={() => switchView('tracks')}
+        entering={arriving === 'board'}
+        onEntered={() => setArriving(undefined)}
       />
     );
   }
@@ -149,7 +160,9 @@ function Screens() {
       onChangeStation={() => setStationCode(undefined)}
       onSelectStation={selectStation}
       initialLineId={routeId}
-      onShowBoard={() => setStationView('board')}
+      onShowBoard={() => switchView('board')}
+      enterFromBoard={arriving === 'tracks'}
+      onEntered={() => setArriving(undefined)}
     />
   ) : (
     <StationPicker
