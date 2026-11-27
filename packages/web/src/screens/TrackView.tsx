@@ -1,4 +1,4 @@
-import { type CSSProperties, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { type CSSProperties, Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ScrollingName } from '../components/ScrollingName';
 import {
   adjacentStations,
@@ -238,6 +238,11 @@ export function TrackView({
     ].sort((a, b) => a.at - b.at);
     const items = all.slice(0, perDirection);
     const isToday = (x: TrackTrain) => !x.timetabled?.tomorrow;
+    // The last train today on this track, when tomorrow's first follows it: the timetable is loaded and has
+    // nothing more today (with timetabled trains off, or no file, nothing is called the last).
+    const firstTomorrow = all.findIndex((x) => !isToday(x));
+    const lastToday = firstTomorrow > 0 ? all[firstTomorrow - 1] : undefined;
+    const lastTodayCode = lastToday && (lastToday.live?.trainCode ?? lastToday.timetabled?.trainCode);
     // "+ N more": live trains beyond those shown; on an NIR page, the rest of today's trains.
     const moreCount = hidden ? 0 : nir ? all.filter(isToday).length - items.filter(isToday).length : Math.max(0, live.length - perDirection);
     return (
@@ -257,6 +262,7 @@ export function TrackView({
         onTimetabled={setTimetableInfo}
         serviceId={service.id}
         others={hidden ? undefined : othersIn(direction)}
+        lastTodayCode={lastTodayCode}
       />
     );
   };
@@ -550,6 +556,7 @@ function Trains({
   onTimetabled,
   serviceId,
   others,
+  lastTodayCode,
 }: {
   direction: Direction;
   /** Live and timetabled trains, in time order, as many as fit. */
@@ -576,6 +583,8 @@ function Trains({
   serviceId: ServiceId;
   /** Other services' trains this way, when this track has none of ours. */
   others?: OtherServices;
+  /** The last train today on this track (see trainsFor), tagged "Last today". */
+  lastTodayCode?: string;
 }) {
   const { t, destinationName, describe, nameOf, list } = useI18n();
   const side = direction === 'Northbound' ? 'north' : 'south';
@@ -629,7 +638,7 @@ function Trains({
               data-train={d.trainCode}
               // Untracked: drawn hollow like a timetabled train, since its time is only the timetable's.
               className={`train train--${side}${i === 0 ? ' train--next' : ''}${d.untracked ? ' train--scheduled train--untracked' : ''}`}
-              aria-label={describe(d)}
+              aria-label={`${describe(d)}${d.trainCode === lastTodayCode ? `, ${t.lastTrainToday}` : ''}`}
             >
               {/* The whole row opens the train's look-ahead. */}
               <button
@@ -647,6 +656,7 @@ function Trains({
                 </span>
                 {/* Late: scheduled time struck through, the delay, then the expected time (delay already included). */}
                 <span className="train__meta">
+                  {d.trainCode === lastTodayCode && <span className="train__last">{t.lastToday}</span>}
                   {d.untracked ? (
                     <>
                       <span className="train__timetable">{t.notTracked}</span>
@@ -665,14 +675,23 @@ function Trains({
               </div>
             </li>
           ) : (
-            <TimetabledTrain
-              key={`${s!.trainCode}-${s!.minutes}`}
-              d={s!}
-              side={side}
-              next={i === 0 && !liveStation}
-              hollow={liveStation}
-              onOpen={() => onTimetabled(s!)}
-            />
+            <Fragment key={`${s!.trainCode}-${s!.minutes}`}>
+              {/* A break in the track before tomorrow's first train, after today's. */}
+              {s!.tomorrow && i > 0 && !shown[i - 1]!.timetabled?.tomorrow && (
+                <li className={`trains__break trains__break--${side}`} aria-hidden>
+                  <span className="trains__gap" />
+                  <span className="trains__break-label">{t.tomorrow}</span>
+                </li>
+              )}
+              <TimetabledTrain
+                d={s!}
+                side={side}
+                next={i === 0 && !liveStation}
+                hollow={liveStation}
+                lastToday={s!.trainCode === lastTodayCode && !s!.tomorrow}
+                onOpen={() => onTimetabled(s!)}
+              />
+            </Fragment>
           ),
         )}
       </ol>
@@ -692,12 +711,15 @@ function TimetabledTrain({
   side,
   next,
   hollow,
+  lastToday,
   onOpen,
 }: {
   d: TimetabledDeparture;
   side: 'north' | 'south';
   next: boolean;
   hollow: boolean;
+  /** Today's last train on this track: "Last today" in place of the timetable tag (the hollow train says that). */
+  lastToday: boolean;
   onOpen: () => void;
 }) {
   const { t, scheduledDestination } = useI18n();
@@ -708,7 +730,7 @@ function TimetabledTrain({
   return (
     <li
       className={`train train--${side}${next ? ' train--next' : ''}${hollow ? ' train--scheduled' : ''}`}
-      aria-label={`${t.describeScheduled(destination, d.time)}${d.tomorrow ? `, ${t.tomorrow}` : ''}`}
+      aria-label={`${t.describeScheduled(destination, d.time)}${d.tomorrow ? `, ${t.tomorrow}` : ''}${lastToday ? `, ${t.lastTrainToday}` : ''}`}
     >
       <button className="train__open" aria-label={t.whyTimetabled(destination)} onClick={onOpen} />
       <TrainGlyph />
@@ -721,7 +743,11 @@ function TimetabledTrain({
         </span>
         <span className="train__meta">
           {/* Tomorrow's trains can only be timetabled, so that tag says both (two tags don't fit beside the track). */}
-          <span className="train__timetable">{d.tomorrow ? t.tomorrow : t.timetabled}</span>
+          {lastToday ? (
+            <span className="train__last">{t.lastToday}</span>
+          ) : (
+            <span className="train__timetable">{d.tomorrow ? t.tomorrow : t.timetabled}</span>
+          )}
           {!clock && <span className="train__planned">{d.time}</span>}
         </span>
       </div>

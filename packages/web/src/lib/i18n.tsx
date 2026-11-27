@@ -79,6 +79,9 @@ const en = {
   otherServicesRun: (services: string, places: string, mins: number) =>
     `${services} trains to ${places} do${mins <= 0 ? ', one due now' : `, the next in ${mins} min`}.`,
   tomorrow: 'Tomorrow',
+  // Today's last train on a track, when tomorrow's first follows it.
+  lastToday: 'Last today',
+  lastTrainToday: 'last train today',
   noMoreToday: 'No more trains today',
   noTimetabledTrains: 'No timetabled trains',
   nirTimetableNote: 'Timetabled times from Translink. NI Railways has no live times, so delays and cancellations don’t show.',
@@ -312,6 +315,8 @@ const ga: Messages = {
   otherServicesRun: (services, places, mins) =>
     `Ach ritheann traenacha ${services} go dtí ${places}${mins <= 0 ? ', ceann ag teacht anois' : `, an chéad cheann i gceann ${mins} nóim`}.`,
   tomorrow: 'Amárach',
+  lastToday: 'Deireanach inniu',
+  lastTrainToday: 'an traein dheireanach inniu',
   noMoreToday: 'Níl a thuilleadh traenacha inniu',
   noTimetabledTrains: 'Níl aon traein sa chlár ama',
   nirTimetableNote: 'Amanna an chláir ama ó Translink. Níl amanna beo ag Iarnród Thuaisceart Éireann, mar sin ní thaispeántar moilleanna ná cealuithe.',

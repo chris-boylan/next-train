@@ -760,3 +760,63 @@
   margin-right: 8px;
   vertical-align: 2px;
 }
+
+/* Today's last train on a track: a solid tag, so it stands out from the hollow timetable one. */
+.train__last {
+  padding: 0 4px;
+  border: 1px solid var(--text);
+  border-radius: 3px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.train__meta .train__last {
+  margin-right: 4px;
+}
+
+/* A break in the track between today's trains and tomorrow's: a gap across this track's line, and the day. */
+.trains__break {
+  position: relative;
+  height: 30px;
+}
+
+.trains__gap {
+  position: absolute;
+  top: 50%;
+  width: 40px;
+  height: 12px;
+  transform: translateY(-50%);
+  background: var(--bg);
+}
+
+.trains__break--north .trains__gap {
+  left: calc(50% - var(--lane-gap) / 2 - var(--lane-width) / 2 - 20px);
+}
+
+.trains__break--south .trains__gap {
+  left: calc(50% + var(--lane-gap) / 2 + var(--lane-width) / 2 - 20px);
+}
+
+.trains__break-label {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.trains__break--north .trains__break-label {
+  right: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 8px);
+}
+
+.trains__break--south .trains__break-label {
+  left: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 8px);
+}
