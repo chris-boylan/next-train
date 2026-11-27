@@ -13,3 +13,4 @@ export * from './journey';
 export * from './timetable';
 export * from './transxchange';
 export * from './nir';
+export * from './stationLines';

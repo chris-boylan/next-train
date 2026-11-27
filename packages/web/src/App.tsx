@@ -4,6 +4,7 @@ import { fetchFavourites, setFavourite } from './lib/api';
 import { getDeviceId } from './lib/deviceId';
 import { HelpContext } from './lib/help';
 import { useI18n } from './lib/i18n';
+import { useStationView } from './lib/prefs';
 import { NetworkMap } from './maps/NetworkMap';
 import type { RoutesView } from './maps/RoutesMap';
 import { HelpPage } from './screens/HelpPage';
@@ -40,6 +41,7 @@ function Screens() {
     return service && code ? findStationByCode(code, service.stations)?.code : undefined;
   });
   const [favourites, setFavourites] = useState<Station[]>([]);
+  const [stationView, setStationView] = useStationView();
   const [showNetwork, setShowNetwork] = useState(false);
   // A station opened from the all-stations map, or from a favourite on the home page.
   const [boardStation, setBoardStation] = useState<{ code: string; name: string; from: 'map' | 'home' }>();
@@ -111,22 +113,29 @@ function Screens() {
 
   const station = stationCode ? findStationByCode(stationCode, service.stations) : undefined;
   const routesView = routesViews[service.id] ?? { mode: 'all' };
-  if (station && (service.id === 'commuter' || service.id === 'intercity')) {
-    // Back goes to the route the station was picked from, when there is one.
-    const routeId = routesView.mode === 'byRoute' ? routesView.routeId : undefined;
-    const routeNames: Record<string, string> = service.id === 'commuter' ? t.commuterRoutes : t.intercityRoutes;
+  // The route the station was picked from on the map, when there is one: back goes to it, and a Commuter hub's
+  // station page opens on it.
+  const routeId = routesView.mode === 'byRoute' ? routesView.routeId : undefined;
+  // Every station opens on its two tracks, or (by the button by its name) as a board, remembered.
+  if (station && stationView === 'board') {
+    const routeNames: Record<string, string> =
+      service.id === 'commuter' ? t.commuterRoutes : service.id === 'intercity' ? t.intercityRoutes : service.id === 'nir' ? t.nirRoutes : {};
     const backLabel = (routeId && routeNames[routeId]) || t.stations;
-    // Commuter and Intercity stations can sit on several routes (Connolly is on four commuter routes), so they
-    // get a board grouped by route and direction rather than the two-track page.
+    // NI Railways stations have no live data, except where the Enterprise calls; the board says so.
+    const nir = service.id === 'nir';
+    const live = !nir || hasLiveData(station.code);
     return (
       <StationBoard
         key={station.code}
         code={station.code}
         name={stationName(station)}
-        mode={service.id}
+        mode={nir ? 'all' : service.id}
+        live={live}
+        note={nir ? (live ? t.nirEnterpriseOnly : t.nirNoLiveData) : undefined}
         backLabel={backLabel}
         onBack={() => setStationCode(undefined)}
         favourite={{ on: isFavourite(station.code), toggle: () => toggleFavourite(station.code) }}
+        onShowTracks={() => setStationView('tracks')}
       />
     );
   }
@@ -139,6 +148,8 @@ function Screens() {
       onToggleFavourite={() => toggleFavourite(station.code)}
       onChangeStation={() => setStationCode(undefined)}
       onSelectStation={selectStation}
+      initialLineId={routeId}
+      onShowBoard={() => setStationView('board')}
     />
   ) : (
     <StationPicker
