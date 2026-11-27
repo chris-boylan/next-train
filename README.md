@@ -38,6 +38,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feat/train-journey` | Tap a train for its stops to the terminus with expected times |
 | `feature/favourites-home` | Options choice to show favourites in each service or together on the home page; favourites for every service's stations |
 | `feat/hours-countdown` | Options choice to show times over an hour as hours and minutes (`1h 26 min`) |
+| `feat/verify-deploy` | Live-site check after every deploy (version, API, timetable, www redirect) |
 | `fix/deploy-on-request` | Pipeline deploys only when run by hand, not on every merge |
 
 ## Using the web app
@@ -242,6 +243,8 @@ Then test with `ask dialog --locale en-IE` from `packages/alexa`.
 ### CI/CD (GitHub Actions)
 
 `.github/workflows/ci.yml` runs typecheck, tests, the web build and `cdk synth` on every pull request and every merge to `main`. It deploys to AWS only on request: Actions → CI/CD → **Run workflow** on `main` runs the checks and, if they pass, deploys. Merging doesn't deploy. Deploys go one at a time; a newer one waits for a running one rather than interrupting it.
+
+- **Checked after every deploy:** `packages/infra/scripts/verify-deploy.sh` then tests the live site from outside: it loads and serves the commit just deployed, `index.html` is `no-cache`, the API answers, today's timetable file exists (it waits up to 5 min for the post-deploy timetable job), and `www` redirects to the apex. Any failure turns the run red. Run it by hand with `npm run verify-deploy -- https://nexttrain.ie`.
 
 - **No AWS keys in GitHub:** the deploy job swaps a GitHub-signed token for short-lived credentials for the `next-train-github-deploy` role. Only this repo's `production` environment can assume it, and it can only hand off to CDK's bootstrap roles.
 - **That role lives in its own stack,** `NextTrainGitHubDeploy`, deployed by hand once (`npm run deploy:github -w @dart-times/infra -- --profile <profile>`). `npm run deploy` only deploys the `DartTimes*` stacks, so the pipeline can't change its own permissions.

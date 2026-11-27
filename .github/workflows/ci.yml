@@ -78,3 +78,7 @@ jobs:
           npm run deploy -- --require-approval never --outputs-file "$RUNNER_TEMP/outputs.json" \
             -c "domainName=$DOMAIN_NAME" -c "budgetEmail=$BUDGET_EMAIL"
           echo "site_url=$(jq -r '.DartTimes.SiteUrl' "$RUNNER_TEMP/outputs.json")" >> "$GITHUB_OUTPUT"
+      # CloudFormation finishing doesn't mean the site works: check it from outside, as a phone would (the new
+      # commit is served, the API answers, today's timetable file exists, www redirects). Fails the run if not.
+      - name: Check the live site
+        run: packages/infra/scripts/verify-deploy.sh "${{ steps.deploy.outputs.site_url }}" "$GITHUB_SHA"
