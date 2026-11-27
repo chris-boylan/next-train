@@ -8,11 +8,13 @@ const LEAVE_MS = 300;
 /**
  * Whether to greet this visitor: only on a first ever visit, in a browser tab, opened on the home page. Someone
  * arriving from a station or help link came for that, and the installed app is past the point of inviting.
- * Without storage we can't remember having shown it, so it isn't shown at all.
+ * Without storage we can't remember having shown it, so it isn't shown at all. `?welcome` always shows it.
  */
 export function shouldWelcome(): boolean {
   try {
     const params = new URLSearchParams(location.search);
+    // ?welcome shows it again, for trying it out.
+    if (params.has('welcome')) return true;
     if (isStandalone() || ['service', 'station', 'help'].some((p) => params.has(p))) return false;
     if (localStorage.getItem(SEEN_KEY)) return false;
     // Seen as soon as it's shown, so it never comes back, even if the tab is closed on it.
