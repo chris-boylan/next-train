@@ -129,6 +129,68 @@
   --band-south: #a3282f;
 }
 
+/* Dublin Commuter: the blues on its service tile (Dublin's mid blue outbound, sky blue inbound). Irish Rail
+   retired its Commuter livery, so these are the app's own. Text versions darkened for contrast on white. */
+:root[data-service='commuter'] {
+  --north: #2f6fb5;
+  --south: #69b3e7;
+  --north-text: #2a64a3;
+  --south-text: #1d5f99;
+  --band-north: #8cc4f0;
+  --band-south: #b8dcf5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-service='commuter']:not([data-theme='light']) {
+    --north: #4a8ad0;
+    --south: #8cc4f0;
+    --north-text: #8cc4f0;
+    --south-text: #b8dcf5;
+    --band-north: #25599a;
+    --band-south: #1c639e;
+  }
+}
+
+:root[data-service='commuter'][data-theme='dark'] {
+  --north: #4a8ad0;
+  --south: #8cc4f0;
+  --north-text: #8cc4f0;
+  --south-text: #b8dcf5;
+  --band-north: #25599a;
+  --band-south: #1c639e;
+}
+
+/* InterCity: Irish Rail's InterCity dark green (outbound) and silver-grey (inbound), as on its service tile.
+   The grey's text version is darkened for contrast on white. */
+:root[data-service='intercity'] {
+  --north: #00573f;
+  --south: #a7a9ac;
+  --north-text: #00573f;
+  --south-text: #5c5f63;
+  --band-north: #4fc79a;
+  --band-south: #c9cbce;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-service='intercity']:not([data-theme='light']) {
+    --north: #1f8a66;
+    --south: #c2c4c7;
+    --north-text: #5fd1a4;
+    --south-text: #d0d2d5;
+    --band-north: #00573f;
+    --band-south: #56595d;
+  }
+}
+
+:root[data-service='intercity'][data-theme='dark'] {
+  --north: #1f8a66;
+  --south: #c2c4c7;
+  --north-text: #5fd1a4;
+  --south-text: #d0d2d5;
+  --band-north: #00573f;
+  --band-south: #56595d;
+}
+
 /* Translink NIR: Translink's teal and lime. Text versions darkened (light) or lightened (dark) for contrast. */
 :root[data-service='nir'] {
   --north: #084f5c;
