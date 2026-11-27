@@ -29,6 +29,16 @@ API's train codes, so trains shown live aren't repeated. Local development build
 `npm run timetable:local` into `packages/web/.timetable/`, served only by the Vite dev server (never in a build).
 GTFS-Realtime (needs the NTA key) is a later step, for cancellations and a second live source.
 
+## 2026-11-27 · Feedback needs an email address; messages capped at 1,000 characters
+
+**Decision:** the help page's feedback form requires an email address (checked in the browser and by the API), and
+messages are limited to 1,000 characters with a visible counter. The help page also explains where the times come
+from (the live API, the timetable, Northern Ireland) and describes the station page for any service, not just the
+DART.
+
+**Why:** every message can then be answered, and a cap keeps messages readable and the inbox manageable.
+**Updates** the help page entry (2026-11-26), where the email was optional and messages could be 2,000 characters.
+
 ## 2026-11-27 · Translink NIR as its own service, without live data
 
 **Decision:** Northern Ireland Railways is a separate "Translink NIR" service: Translink's teal `#084f5c` and lime
