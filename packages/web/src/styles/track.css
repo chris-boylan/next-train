@@ -779,7 +779,8 @@
   margin-right: 4px;
 }
 
-/* A break in the track between today's trains and tomorrow's: a gap across this track's line, and the day. */
+/* A break in the track between today's trains and tomorrow's: a bar across this track's line in the station
+   sign's colour (like the sign band, so it reads as the end of today), and the day beside it. */
 .trains__break {
   position: relative;
   height: 30px;
@@ -791,7 +792,7 @@
   width: 40px;
   height: 12px;
   transform: translateY(-50%);
-  background: var(--bg);
+  background: var(--band-bg);
 }
 
 .trains__break--north .trains__gap {
