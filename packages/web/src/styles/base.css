@@ -47,6 +47,26 @@ body {
   padding-bottom: calc(32px + env(safe-area-inset-bottom));
 }
 
+/* No visible scrollbars: phones hide them anyway, and on a computer the bar down the side of the pinned screens
+   looks out of place. Scrolling (wheel, trackpad, touch, keyboard) works as before. */
+.screen__scroll,
+.options__panel,
+.sheet__body,
+.journey__stops,
+.favourites,
+.line-chips {
+  scrollbar-width: none;
+}
+
+.screen__scroll::-webkit-scrollbar,
+.options__panel::-webkit-scrollbar,
+.sheet__body::-webkit-scrollbar,
+.journey__stops::-webkit-scrollbar,
+.favourites::-webkit-scrollbar,
+.line-chips::-webkit-scrollbar {
+  display: none;
+}
+
 button {
   font: inherit;
   color: inherit;
