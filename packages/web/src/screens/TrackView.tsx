@@ -678,9 +678,9 @@ function Trains({
             <Fragment key={`${s!.trainCode}-${s!.minutes}`}>
               {/* A break in the track before tomorrow's first train, after today's. */}
               {s!.tomorrow && i > 0 && !shown[i - 1]!.timetabled?.tomorrow && (
+                // Just the bar: the train after it says "Tomorrow" itself.
                 <li className={`trains__break trains__break--${side}`} aria-hidden>
                   <span className="trains__gap" />
-                  <span className="trains__break-label">{t.tomorrow}</span>
                 </li>
               )}
               <TimetabledTrain

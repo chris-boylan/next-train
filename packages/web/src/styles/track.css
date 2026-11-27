@@ -780,44 +780,26 @@
 }
 
 /* A break in the track between today's trains and tomorrow's: a bar across this track's line in the station
-   sign's colour (like the sign band, so it reads as the end of today), and the day beside it. */
+   sign's colour (like the sign band, so it reads as the end of today). The train after it says "Tomorrow". */
 .trains__break {
   position: relative;
-  height: 30px;
+  height: 22px;
 }
 
 .trains__gap {
   position: absolute;
   top: 50%;
-  width: 40px;
+  /* Exactly the track's width (.lane__shaft), so it reads as part of the line, not across it. */
+  width: 30px;
   height: 12px;
   transform: translateY(-50%);
   background: var(--band-bg);
 }
 
 .trains__break--north .trains__gap {
-  left: calc(50% - var(--lane-gap) / 2 - var(--lane-width) / 2 - 20px);
+  left: calc(50% - var(--lane-gap) / 2 - var(--lane-width) / 2 - 15px);
 }
 
 .trains__break--south .trains__gap {
-  left: calc(50% + var(--lane-gap) / 2 + var(--lane-width) / 2 - 20px);
-}
-
-.trains__break-label {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted);
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.trains__break--north .trains__break-label {
-  right: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 8px);
-}
-
-.trains__break--south .trains__break-label {
-  left: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 8px);
+  left: calc(50% + var(--lane-gap) / 2 + var(--lane-width) / 2 - 15px);
 }
