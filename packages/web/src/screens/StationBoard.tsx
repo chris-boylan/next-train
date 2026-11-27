@@ -47,6 +47,8 @@ interface Group {
 export function StationBoard({ code, name, mode, backLabel, onBack, favourite, live = true, note }: Props) {
   const { t, nameOf, destinationName, describe } = useI18n();
   const scheduled = useScheduled(code);
+  // NI Railways trains are timetable-only, from now: the section is "Timetable", not "Later".
+  const hasNir = !!scheduled?.some((d) => d.category === 'nir');
   const { data, error } = useDepartures(code, mode, live);
   const now = useNow();
   const fetchedAt = data && new Date(data.fetchedAt);
@@ -181,13 +183,17 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
             </ol>
           </section>
         ))}
-        {scheduled && data && (
+        {/* Stations with no live data at all (most of NI Railways) show the timetable straight away. */}
+        {scheduled && (data || !live) && (
           <LaterDepartures
             departures={scheduled}
             nowMinutes={Math.floor(irishSecondsOfDay(now.getTime()) / 60)}
-            liveCodes={new Set(data.departures.map((d) => d.trainCode))}
+            liveCodes={new Set(data?.departures.map((d) => d.trainCode))}
             include={(d) => mode === 'all' || scheduledMatches(mode, d)}
             showCategory={mode === 'all'}
+            limit={hasNir ? 15 : undefined}
+            title={hasNir ? t.timetable : undefined}
+            note={hasNir ? t.nirTimetableNote : undefined}
           />
         )}
       </div>

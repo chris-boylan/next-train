@@ -39,6 +39,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feature/favourites-home` | Options choice to show favourites in each service or together on the home page; favourites for every service's stations |
 | `feat/hours-countdown` | Options choice to show times over an hour as hours and minutes (`1h 26 min`) |
 | `feat/timetable-on-track` | Timetabled trains on the station page's tracks where there are no live ones |
+| `feat/nir-timetable` | NI Railways timetabled trains, from Translink's TransXChange timetable |
 | `fix/deploy-on-request` | Pipeline deploys only when run by hand, not on every merge |
 
 ## Using the web app
@@ -86,7 +87,15 @@ The app always opens on the **service picker**: DART, Dublin Commuter, InterCity
 
 ## Translink NIR
 
-Northern Ireland Railways, as its own service (Translink's teal and lime on the tile). **There's no live data**: Irish Rail's feed has no NI Railways trains, so station pages say so. Belfast Grand Central, Portadown and Newry also show their live Enterprise (and Irish Rail) trains.
+Northern Ireland Railways, as its own service (Translink's teal and lime on the tile). **There's no live data**: Irish Rail's feed has no NI Railways trains, and OpenDataNI's real-time feed isn't working. So NIR trains are shown at their **timetabled** times, from now, under "Timetable" with an NIR badge. Belfast Grand Central, Lisburn, Portadown and Newry also show their live Enterprise (and Irish Rail) trains.
+
+### NIR timetable
+
+- **Source:** "Translink Northern Ireland Rail Timetable Data" on OpenDataNI (TransXChange XML, Open Government Licence; https://admin.opendatani.gov.uk/dataset/nir20160126v2). It also has the Enterprise, which is skipped: Irish Rail's GTFS has it, with the live API's train codes.
+- **Parsing:** `core/src/transxchange.ts`. Each journey has a start time and a journey pattern whose links give run and wait times, so stop times are added up along the pattern. Stops are matched to our stations by position (and name), as GTFS stops are. Weekly day types and days of (non-)operation are read; there are no bank-holiday rules in Translink's file.
+- **Getting a new release in:** OpenDataNI refuses scripted downloads and each release has a new file name, so the daily job can't fetch it. Download the ZIP in a browser and run `npm run nir:upload -- <file.zip> --profile next-train` (the `.xml` inside works too). It goes to the private `TimetableSources` bucket (never served by CloudFront), and the upload triggers the timetable job, so the new times are live within a couple of minutes.
+- **Reminders:** each release covers a few months (the September 2026 one ends on 13 December). The job emails the alerts topic when there's no NIR timetable, within 10 days of the end, and after it. If the NIR file can't be read, Irish Rail's timetable is still written.
+- **Locally:** `NIR_TIMETABLE=path/to/release.zip npm run timetable:local` adds NIR to the local timetable files.
 
 | Route | Runs |
 |---|---|

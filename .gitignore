@@ -10,3 +10,7 @@ packages/web/.timetable/
 # Local secrets (API keys); never commit
 .env
 .env.*
+
+# NI Railways timetable releases (uploaded to S3 with npm run nir:upload, never committed)
+TXC_*.xml
+nir-and-enterprise-*.zip

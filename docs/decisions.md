@@ -6,6 +6,23 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-27 · NI Railways from Translink's timetable, uploaded by hand
+
+**Decision:** NIR stations show NIR trains at their timetabled times, from Translink's TransXChange file on
+OpenDataNI, read by the same daily job as Irish Rail's GTFS and written into the same per-station files. NIR
+trains show from now (there's no live window to wait for); Irish Rail trains, including the Enterprise, still
+show timetabled only beyond the 90-minute live window. The Enterprise comes from Irish Rail's GTFS only. The owner
+uploads each release (`npm run nir:upload`) to a private bucket, which triggers a rebuild; the job emails a
+reminder from 10 days before a release runs out.
+
+**Why:** there's no working open live NIR data (OpenDataNI's real-time feed lists no endpoints, and Worldline's
+site isn't a feed). OpenDataNI refuses scripted downloads (HTTP 403) and each release has a new file name, so the
+job can't fetch it; releases come every few months, so a one-minute upload is cheaper than working around the
+block. The owner is asking Translink and OpenDataNI about real-time data and a stable download URL.
+
+**Next:** live NIR times if OpenDataNI's feed returns or Translink offers an API; automatic downloads if a stable
+URL is offered.
+
 ## 2026-11-27 · Timetable: built once a day into static files
 
 **Decision:** a scheduled Lambda (EventBridge, 03:30 UTC, and once after every deploy) downloads Irish Rail's GTFS
