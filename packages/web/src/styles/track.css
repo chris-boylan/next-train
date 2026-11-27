@@ -513,6 +513,8 @@
   z-index: 2;
   flex: none;
   display: grid;
+  /* One column no wider than the screen, so a long name is clipped and slides (ScrollingName), not cut off. */
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: 34px auto 34px;
   align-items: center;
   padding: 4px 16px;
@@ -528,6 +530,8 @@
   justify-content: center;
   gap: 4px;
   min-height: 0;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .platform__name {
@@ -547,6 +551,59 @@
   text-transform: uppercase;
   color: var(--band-text);
   opacity: 0.7;
+}
+
+.platform__name {
+  max-width: 100%;
+}
+
+/* A station's name stays on one line; one too long for the screen slides across to its end and back
+   (ScrollingName), pausing at each end. */
+.scrolling-name {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.scrolling-name__text {
+  display: inline-block;
+}
+
+.scrolling-name--moving {
+  /* Starts at the left like any line of text, rather than centred with both ends cut off. */
+  text-align: left;
+}
+
+.scrolling-name--moving .scrolling-name__text {
+  animation: name-scroll var(--name-cycle, 8s) ease-in-out infinite;
+}
+
+/* Pause at the start, slide to the end, pause, slide back: the slides are 70% of the cycle (MOVING_SHARE). */
+@keyframes name-scroll {
+  0%,
+  15% {
+    transform: translateX(0);
+  }
+  50%,
+  65% {
+    transform: translateX(var(--name-shift));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrolling-name {
+    white-space: normal;
+  }
+
+  .scrolling-name--moving .scrolling-name__text {
+    display: inline;
+    animation: none;
+  }
 }
 
 .platform__name--long {
@@ -631,6 +688,7 @@
   align-items: center;
   gap: 0.25em;
   max-width: 100%;
+  min-width: 0;
   padding: 0;
   border: 0;
   background: none;

@@ -1,4 +1,5 @@
 import { type CSSProperties, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { ScrollingName } from '../components/ScrollingName';
 import {
   adjacentStations,
   callsAt,
@@ -306,11 +307,11 @@ export function TrackView({
               {onShowBoard ? (
                 // The name switches the station to its list board (and the board's name switches back).
                 <button className="platform__switch" onClick={showBoard} aria-label={`${name}: ${t.showAsList}`} title={t.showAsList}>
-                  <Caps text={name} />
+                  <ScrollingName text={name} />
                   <ListIcon />
                 </button>
               ) : (
-                <Caps text={name} />
+                <ScrollingName text={name} />
               )}
             </h1>
             <OfficialName station={station} />
