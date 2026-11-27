@@ -32,7 +32,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `chore/daily-api-check` | Daily live check of the Irish Rail API, opening an issue on failure |
 | `fix/small-screens` | Station page fits iPhone SE and 320px-wide phones |
 | `feat/custom-domain` | Site served at https://nexttrain.ie (and www) |
-| `feat/gtfs-timetable` | Timetabled trains beyond the live 90 minutes, from Irish Rail's GTFS |
+| `feat/gtfs-timetable` | Timetabled trains beyond the live 90 minutes, from Irish Rail's GTFS (built daily into static files) |
 | `feat/help-page` | Help & about page with a feedback form (DynamoDB + SNS email) |
 | `feat/train-journey` | Tap a train for its stops to the terminus with expected times |
 | `feature/favourites-home` | Options choice to show favourites in each service or together on the home page; favourites for every service's stations |
@@ -241,11 +241,13 @@ The plan is to wrap this same web build in a native iOS app with [Capacitor](htt
 
 ## Timetable (GTFS)
 
-The live API only looks 90 minutes ahead. Beyond that, station boards and the "+ N more" sheet list **Later · timetable** trains from Irish Rail's GTFS timetable, published free by the National Transport Authority (`https://www.transportforireland.ie/transitData/Data/GTFS_Irish_Rail.zip`, rebuilt nightly, about 10 MB; no key needed).
+The live API only looks 90 minutes ahead. Beyond that, station boards and the "+ N more" sheet list **Later · timetable** trains from Irish Rail's GTFS timetable, published free by the National Transport Authority (`https://www.transportforireland.ie/transitData/Data/GTFS_Irish_Rail.zip`, rebuilt nightly, about 10 MB; no key needed). Why it's built this way: [docs/decisions.md](docs/decisions.md).
 
-- **How:** the API Lambda downloads the zip on first use, keeps it in memory (refreshed every 6 hours) and builds each service day on demand (`buildTimetable` in `core/src/timetable.ts`, about 0.1 s). No storage or scheduled job. The first timetable request in a new Lambda takes about a second longer; the API Lambda has 512 MB for it.
-- **Matching:** GTFS has no Irish Rail station codes, so stops are matched to ours by position (within 600 m), else by name within 3 km. Its trips carry the live API's train codes (E200…), so trains already shown live aren't listed twice.
-- **Endpoint:** `GET /api/stations/:code/scheduled?hours=6` (up to 12), cached 5 minutes. Handles the GTFS calendar (and its exceptions, e.g. Christmas) and trains running past midnight.
+- **Built once a day:** the timetable job (`api/src/timetableJob.ts`, a Lambda run by EventBridge at 03:30 UTC and once after each deploy) downloads the zip, builds yesterday's, today's and tomorrow's departures for every station (`timetableFiles` in `core/src/timetable.ts`) and writes them to the site bucket as `timetable/<date>/<code>.json`, about 440 small files. Yesterday's are for trains still running after midnight. An S3 rule deletes them after 3 days.
+- **Served as static files:** the app fetches `/timetable/<date>/<code>.json` from CloudFront (`web/src/lib/useScheduled.ts`). No API call; a missing file just means no timetable section.
+- **If the job fails:** live times carry on, the timetable goes stale, and a CloudWatch alarm emails the budget address (via an "alerts" SNS topic; confirm its subscription email once).
+- **Matching:** GTFS has no Irish Rail station codes, so stops are matched to ours by position (within 600 m), else by name within 3 km. Its trips carry the live API's train codes (E200…), so trains already shown live aren't listed twice. The GTFS calendar's exceptions (e.g. Christmas) and trains past midnight are handled.
+- **Locally:** `npm run timetable:local` builds the same files into `packages/web/.timetable/` (git-ignored); the Vite dev server serves them at `/timetable/...`. They're never part of a build.
 - **Next:** GTFS-Realtime (needs a free NTA key) could add cancellations and act as a second live source.
 
 ## API quirks handled

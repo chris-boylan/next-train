@@ -109,3 +109,21 @@ describe('scheduledMatches', () => {
     expect(scheduledMatches('enterprise', d('enterprise', 'BFSTC'))).toBe(true);
   });
 });
+
+describe('timetable files', () => {
+  it('writes one file per station per day, plus an index', async () => {
+    const { timetableFiles, irishDate } = await import('../src');
+    const out = timetableFiles(files, ['20261127', '20261128'], STATIONS, '2026-11-27T03:30:00Z');
+    expect([...out.keys()].sort()).toEqual([
+      'timetable/20261127/BRAY.json',
+      'timetable/20261127/PERSE.json',
+      'timetable/20261127/index.json',
+      'timetable/20261128/index.json',
+    ]);
+    expect(JSON.parse(out.get('timetable/20261127/PERSE.json')!)).toMatchObject({ date: '20261127', code: 'PERSE', departures: [{ trainCode: 'A200' }, { trainCode: 'E200' }, { trainCode: 'E202' }] });
+    expect(JSON.parse(out.get('timetable/20261128/index.json')!).stations).toEqual([]);
+    // Irish dates: 23:30 UTC in summer is already the next day in Ireland.
+    expect(irishDate(Date.parse('2026-07-01T23:30:00Z'))).toBe('20260702');
+    expect(irishDate(Date.parse('2026-11-27T12:00:00Z'), -1)).toBe('20261126');
+  });
+});

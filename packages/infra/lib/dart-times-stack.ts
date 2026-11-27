@@ -1,6 +1,10 @@
 import { fileURLToPath } from 'node:url';
 import { Annotations, CfnOutput, Duration, RemovalPolicy, Stack, type StackProps } from 'aws-cdk-lib';
 import { CfnBudget } from 'aws-cdk-lib/aws-budgets';
+import { ComparisonOperator, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
+import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
+import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
+import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import { FunctionUrlOrigin, S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
@@ -15,6 +19,7 @@ import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, CacheControl, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
+import { InvocationType, Trigger } from 'aws-cdk-lib/triggers';
 import type { Construct } from 'constructs';
 
 const repoPath = (relative: string) => fileURLToPath(new URL(`../../../${relative}`, import.meta.url));
@@ -69,8 +74,6 @@ export class DartTimesStack extends Stack {
       entry: repoPath('packages/api/src/index.ts'),
       logGroup: new LogGroup(this, 'ApiLogs', { retention: RetentionDays.ONE_MONTH }),
       timeout: Duration.seconds(10),
-      // Room to read Irish Rail's GTFS timetable (a 10 MB zip) into memory; Lambda's CPU scales with memory too.
-      memorySize: 512,
       environment: {
         ...lambdaDefaults.environment,
         FEEDBACK_TABLE: feedback.tableName,
@@ -207,6 +210,54 @@ export class DartTimesStack extends Stack {
           { notification: { notificationType: 'FORECASTED', comparisonOperator: 'GREATER_THAN', threshold: 100 }, subscribers },
         ],
       });
+    }
+
+    // ---------- Timetable (GTFS) ----------
+    // Built once a day rather than on request: a small job downloads Irish Rail's GTFS timetable (about 10 MB, from
+    // the NTA), builds yesterday's, today's and tomorrow's departures and writes one small JSON file per station per
+    // day into the site bucket (timetable/<date>/<code>.json). CloudFront serves them like any other file, so the
+    // API isn't involved. See docs/decisions.md.
+    const timetableFn = new NodejsFunction(this, 'TimetableFunction', {
+      ...lambdaDefaults,
+      entry: repoPath('packages/api/src/timetableJob.ts'),
+      logGroup: new LogGroup(this, 'TimetableLogs', { retention: RetentionDays.ONE_MONTH }),
+      // Parsing the timetable peaks at about 250 MB; more memory also means more CPU.
+      memorySize: 1024,
+      timeout: Duration.minutes(2),
+      environment: { SITE_BUCKET: siteBucket.bucketName },
+    });
+    siteBucket.grantPut(timetableFn, 'timetable/*');
+    // Every night at 03:30 UTC (03:30 in winter, 04:30 in summer, Irish time): after the NTA's nightly rebuild.
+    new Rule(this, 'TimetableSchedule', {
+      description: 'Build the next days\' timetable files from Irish Rail GTFS',
+      schedule: Schedule.cron({ minute: '30', hour: '3' }),
+      targets: [new LambdaFunction(timetableFn, { retryAttempts: 2 })],
+    });
+    // And once after every deploy, so a fresh stack has timetables straight away. Asynchronous, so a slow or
+    // failing NTA download can't fail the deploy (the alarm below reports it instead).
+    new Trigger(this, 'TimetableAfterDeploy', {
+      handler: timetableFn,
+      invocationType: InvocationType.EVENT,
+      executeAfter: [siteDeployment],
+      executeOnHandlerChange: true,
+    });
+    // Old days aren't needed: yesterday's file only matters for trains still running after midnight.
+    siteBucket.addLifecycleRule({ prefix: 'timetable/', expiration: Duration.days(3) });
+
+    // Tell the owner if the job fails (the app keeps showing live times; the timetable just goes stale).
+    if (props.budgetEmail) {
+      const alerts = new Topic(this, 'AlertsTopic', { displayName: 'Next Train? alerts' });
+      alerts.addSubscription(new EmailSubscription(props.budgetEmail));
+      timetableFn
+        .metricErrors({ period: Duration.hours(6) })
+        .createAlarm(this, 'TimetableJobFailed', {
+          alarmDescription: 'The daily timetable job failed (Irish Rail GTFS download or build). Check its logs.',
+          threshold: 1,
+          evaluationPeriods: 1,
+          comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+          treatMissingData: TreatMissingData.NOT_BREACHING,
+        })
+        .addAlarmAction(new SnsAction(alerts));
     }
 
     new CfnOutput(this, 'SiteUrl', {

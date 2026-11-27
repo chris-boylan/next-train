@@ -5,3 +5,4 @@ cdk.out/
 *.log
 .DS_Store
 .idea/
+packages/web/.timetable/

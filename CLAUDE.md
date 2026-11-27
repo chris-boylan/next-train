@@ -36,8 +36,12 @@ Deploy: normally via GitHub Actions on `main`. By hand: `npm run deploy -- --pro
 - **Hosting:** CloudFront → S3 for the site; `/api/stations/*` (cached 20 s, the handler sends `max-age=20`) and `/api/*` (uncached) → the API Lambda's Function URL with origin access control. No API Gateway. Optional `-c domainName=` adds a us-east-1 `CertStack`; `-c budgetEmail=` adds a budget alert. Pass CDK flags as `npm run deploy -- -c key=value`.
 - **CI/CD:** `.github/workflows/ci.yml` checks every PR and push (check job name is a required status check, keep it); on `main` it then deploys automatically if the checks pass (no approval), also via Run workflow, using the OIDC role in `infra/lib/github-deploy-stack.ts` (stack `NextTrainGitHubDeploy`, deployed by hand; `npm run deploy` only targets `DartTimes*`).
 - **Help & feedback:** `web/src/screens/HelpPage.tsx`, opened via `HelpContext` (`lib/help.ts`) from the options cog or `?help`. The form posts to `/api/feedback` (`FeedbackService` in `core/src/feedback.ts`, Dynamo storage in `core/src/dynamo.ts`, SNS email in `api/src/index.ts`). POSTs through CloudFront's OAC need an `x-amz-content-sha256` header, which `sendFeedback` in `lib/api.ts` adds.
-- **Timetable (GTFS):** `core/src/timetable.ts` builds per-station departures from Irish Rail's GTFS zip; `api/src/timetable.ts` (`GtfsTimetable`) downloads and caches it in the Lambda; `/api/stations/:code/scheduled`; shown as "Later · timetable" by `web/src/components/LaterDepartures.tsx` (after the 90-minute live window, skipping trains shown live).
+- **Timetable (GTFS):** built once a day, not on request: `api/src/timetableJob.ts` (EventBridge 03:30 UTC + after each deploy) writes `timetable/<date>/<code>.json` to the site bucket (`timetableFiles` in `core/src/timetable.ts`); the app reads them from CloudFront (`web/src/lib/useScheduled.ts`) and shows "Later · timetable" (`web/src/components/LaterDepartures.tsx`). Locally: `npm run timetable:local` → `packages/web/.timetable/`, served by the Vite dev server only.
 - **Favourites:** one DynamoDB table keyed `web:<device id>` / `alexa:<user id>`; web sends `x-device-id`.
+
+## Decisions
+
+Significant decisions and why are recorded in `docs/decisions.md` (newest first). Add an entry when a choice changes hosting, deployment, structure or presentation; supersede rather than rewrite.
 
 ## Tests
 

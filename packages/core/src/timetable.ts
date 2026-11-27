@@ -234,3 +234,38 @@ export function scheduledMatches(service: 'dart' | 'enterprise' | 'cork' | 'comm
       return false;
   }
 }
+
+/** `YYYYMMDD` in Irish time, `offsetDays` days from `nowMs` (negative for earlier). */
+export function irishDate(nowMs: number, offsetDays = 0): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Dublin', year: 'numeric', month: '2-digit', day: '2-digit' })
+    .format(new Date(nowMs + offsetDays * 86_400_000))
+    .replace(/-/g, '');
+}
+
+/** One station's timetable for one service day, as served at `timetable/<date>/<code>.json`. */
+export interface StationTimetableFile {
+  date: string;
+  code: string;
+  generatedAt: string;
+  departures: ScheduledDeparture[];
+}
+
+/** Where a station's timetable file for a service day lives (in the site bucket, and so on the website). */
+export const timetablePath = (date: string, code: string) => `timetable/${date}/${code}.json`;
+
+/**
+ * Every station's timetable file for each date, keyed by path, plus `timetable/<date>/index.json` listing the
+ * stations. Built once a day by the timetable job (and locally by `npm run timetable:local`).
+ */
+export function timetableFiles(gtfs: GtfsFiles, dates: string[], stations: Station[], generatedAt: string): Map<string, string> {
+  const files = new Map<string, string>();
+  for (const date of dates) {
+    const { byStation } = buildTimetable(gtfs, date, stations);
+    for (const [code, departures] of Object.entries(byStation)) {
+      const file: StationTimetableFile = { date, code, generatedAt, departures };
+      files.set(timetablePath(date, code), JSON.stringify(file));
+    }
+    files.set(`timetable/${date}/index.json`, JSON.stringify({ date, generatedAt, stations: Object.keys(byStation).sort() }));
+  }
+  return files;
+}
