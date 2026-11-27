@@ -6,6 +6,18 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-27 · Station pages at hubs open on "All" routes
+
+**Decision:** a Commuter or InterCity station on several routes gets an "All" chip first, and opens on it: every
+route's trains on one pair of tracks (`allRoutesLine`). Routes are lined up by a neighbour they share, so a route
+that keeps "outbound is up" (Galway & Mayo, east–west) is turned to match the rest at Kildare. Within a route, paths
+through the same neighbour now agree (`orientAt`), so at Limerick Junction Limerick and Ennis trains share a track.
+Track ends leave out the start of a line that trains from here only pass (Ballybrophy and Limerick Junction from
+Kildare). A route picked on the map still opens on that route.
+
+**Why:** at Kildare you had to pick Cork & Kerry, Galway & Mayo, Limerick or Waterford to see a train, when what
+you usually want is the next train either way.
+
 ## 2026-11-27 · All-stations map: the south-west bends geography to fit every line
 
 **Decision:** the Ennis–Athenry, Nenagh and Limerick Junction–Waterford lines are drawn on the all-stations map

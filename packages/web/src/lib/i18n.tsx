@@ -48,6 +48,8 @@ const en = {
   whyTimetabled: (destination: string) => `Why the train to ${destination} shows its timetabled time`,
   map: 'Map',
   allRoutes: 'All routes',
+  // The station page's chip for every route at a hub, on one pair of tracks.
+  allRoutesChip: 'All',
   byRoute: 'By route',
   commuterRoutes: { northern: 'Northern', western: 'Western', southWestern: 'South Western', southEastern: 'South Eastern' },
   intercityRoutes: {
@@ -274,6 +276,7 @@ const ga: Messages = {
   whyTimetabled: (destination) => `Cén fáth a dtaispeántar am an chláir ama don traein go dtí ${destination}`,
   map: 'Léarscáil',
   allRoutes: 'Gach bealach',
+  allRoutesChip: 'Gach ceann',
   byRoute: 'De réir bealaigh',
   // Irish Rail publishes no Irish names for its commuter routes, so these use the standard compass regions
   // (tuaisceart, iarthar, iardheisceart, oirdheisceart) in the genitive: "the Northern line" and so on.

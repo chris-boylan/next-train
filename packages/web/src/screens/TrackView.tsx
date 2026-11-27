@@ -16,7 +16,10 @@ import {
   scheduledBeyondLive,
   type ScheduledDeparture,
   type Service,
+  type Placement,
   stationLines,
+  allRoutesLine,
+  trackOnAll,
   type Station,
   terminiFrom,
   LIVE_WINDOW_MINS,
@@ -88,8 +91,12 @@ export function TrackView({
   const timetable = useScheduled(station.code, true, nir);
   // The station's lines: one, or one per route at a Commuter hub (chosen with the chips under the header).
   const lines = useMemo(() => stationLines(service, station.code), [service, station.code]);
-  const [lineId, setLineId] = useState(() => lines.find((l) => l.id === initialLineId)?.id ?? lines[0]!.id);
-  const current = lines.find((l) => l.id === lineId) ?? lines[0]!;
+  // At a hub (several routes), "All" first: every route's trains on one pair of tracks. A route picked on the
+  // map (initialLineId) opens on that route instead.
+  const all = useMemo(() => allRoutesLine(lines, station.code), [lines, station.code]);
+  const options = useMemo(() => (all ? [all, ...lines] : lines), [all, lines]);
+  const [lineId, setLineId] = useState(() => options.find((l) => l.id === initialLineId)?.id ?? options[0]!.id);
+  const current = options.find((l) => l.id === lineId) ?? options[0]!;
   const { line } = current;
   // Northbound/Southbound are compass directions on the DART, Enterprise, Cork and NIR; on Commuter routes they're
   // outbound and inbound, so tracks are named by where their trains go.
@@ -143,8 +150,8 @@ export function TrackView({
 
   // Each train's line and track from our own line layout (here → its destination), so services whose API
   // directions read "To Cork" still land on the right track, and Commuter trains on their route.
-  const onTrack = (direction: Direction) => (p: { lineId: string; direction: Direction } | undefined) =>
-    !!p && p.lineId === current.id && p.direction === direction;
+  const onTrack = (direction: Direction) => (p: Placement | undefined) =>
+    current.id === 'all' && all ? trackOnAll(all, p) === direction : !!p && p.lineId === current.id && p.direction === direction;
   const allIn = (direction: Direction) => data?.departures.filter((d) => onTrack(direction)(placeDeparture(service, station.code, lines, d))) ?? [];
   const timetabledOn = (direction: Direction) => (d: ScheduledDeparture) => onTrack(direction)(placeTimetabled(service, station.code, lines, d));
 
@@ -174,7 +181,7 @@ export function TrackView({
     return next.size ? { services: [...next.keys()], destinations, nextInMins: Math.min(...next.values()) } : undefined;
   };
   const directionName = (direction: Direction) =>
-    compass ? t.direction[direction] : t.towards2(list(terminiFrom(station.code, direction, line).map(nameOf)));
+    compass ? t.direction[direction] : t.towards2(list(terminiFrom(station.code, direction, line).filter((end) => !passedThrough(end)).map(nameOf)));
   const shownIn = (direction: Direction) =>
     goingTo && goingDirection === direction ? departuresGoingTo(allIn(direction), station.code, goingTo, line) : allIn(direction);
   const dimmed = (direction: Direction) => !!goingDirection && goingDirection !== direction;
@@ -252,8 +259,17 @@ export function TrackView({
 
   // South of Belfast every NIR train northbound goes through Grand Central: name it, not all four branch ends.
   const viaBelfast = (ends: string[]) => (nir && ends.includes('BFSTC') ? ['BFSTC'] : ends);
-  const north = viaBelfast(terminiFrom(station.code, 'Northbound', line));
-  const south = viaBelfast(terminiFrom(station.code, 'Southbound', line));
+  // Where a track's trains go. Not the end of a line that doesn't come through here, when the lines that do run
+  // straight past it: from Kildare, Ballybrophy (where the Nenagh line starts) and Limerick Junction aren't where
+  // trains are going. Turn-backs (Hazelhatch) aren't line ends, and Limerick from Limerick Junction is one.
+  const passedThrough = (end: string) => {
+    const isEnd = (p: string[]) => p[0] === end || p.at(-1) === end;
+    const throughHere = line.paths.filter((p) => p.includes(station.code) && p.includes(end));
+    return line.paths.some(isEnd) && throughHere.length > 0 && !throughHere.some(isEnd);
+  };
+  const endsOf = (direction: Direction) => viaBelfast(terminiFrom(station.code, direction, line).filter((end) => !passedThrough(end)));
+  const north = endsOf('Northbound');
+  const south = endsOf('Southbound');
   const neighbours = adjacentStations(station.code, line);
   // Chips: each route's name and map colour.
   const routeNames: Record<string, string> = service.id === 'intercity' ? t.intercityRoutes : t.commuterRoutes;
@@ -304,17 +320,26 @@ export function TrackView({
         </div>
       </header>
 
-      {lines.length > 1 && (
+      {options.length > 1 && (
         <nav className="line-chips" aria-label={t.lines}>
-          {lines.map((l) => (
+          {options.map((l) => (
             <button
               key={l.id}
               className={`line-chip${l.id === current.id ? ' line-chip--on' : ''}`}
               aria-pressed={l.id === current.id}
               onClick={() => setLineId(l.id)}
             >
-              <span className="line-chip__swatch" style={{ background: lineColour(l.id) }} />
-              {lineName(l.id)}
+              {/* "All" has every route's colour, side by side. */}
+              <span
+                className="line-chip__swatch"
+                style={{
+                  background:
+                    l.id === 'all'
+                      ? `linear-gradient(to right, ${lines.map((r, i) => `${lineColour(r.id)} ${(i / lines.length) * 100}% ${((i + 1) / lines.length) * 100}%`).join(', ')})`
+                      : lineColour(l.id),
+                }}
+              />
+              {l.id === 'all' ? t.allRoutesChip : lineName(l.id)}
             </button>
           ))}
         </nav>
