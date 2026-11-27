@@ -23,6 +23,31 @@ const DISPLAY_NAMES: Record<string, string> = {
   BFSTC: 'Belfast Grand Central',
 };
 
+// Stations' official commemorative names (most from the 1966 renaming after the 1916 leaders): "Cork" is Kent
+// Station, "Galway" is Ceannt Station. Irish Rail's live data and boards use the place name, so the app does too,
+// shows the official name as a subtitle, and finds the station by it. Dublin's Heuston, Connolly and Pearse aren't
+// listed: their official name is already the one shown.
+const OFFICIAL_NAMES: Record<string, string> = {
+  DLERY: 'Mallin',
+  BRAY: 'Daly',
+  DGHDA: 'MacBride',
+  DDALK: 'Clarke',
+  CORK: 'Kent',
+  LMRCK: 'Colbert',
+  GALWY: 'Ceannt',
+  SLIGO: 'Mac Diarmada',
+  WFORD: 'Plunkett',
+  KKNNY: 'MacDonagh',
+  WXFRD: "O'Hanrahan",
+  TRLEE: 'Casement',
+};
+
+/** Search terms for an official name: "Kent", "Kent Station", "Cork Kent". */
+function officialAliases(code: string, place: string): string[] {
+  const official = OFFICIAL_NAMES[code];
+  return official ? [official, `${official} Station`, `${place} ${official}`] : [];
+}
+
 // Names people (and Alexa's speech recognition) use that the API doesn't know about.
 const EXTRA_ALIASES: Record<string, string[]> = {
   CNLLY: ['Connolly Station', 'Amiens Street'],
@@ -48,13 +73,19 @@ function splitAlias(alias: string): string[] {
 function toStation(record: StationRecord): Station {
   const name = DISPLAY_NAMES[record.code] ?? record.name;
   const shortName = name.replace(/^Dublin\s+/i, '');
-  const aliases = [shortName, ...splitAlias(record.apiAlias), ...(EXTRA_ALIASES[record.code] ?? [])];
+  const aliases = [
+    shortName,
+    ...splitAlias(record.apiAlias),
+    ...officialAliases(record.code, shortName),
+    ...(EXTRA_ALIASES[record.code] ?? []),
+  ];
   const seen = new Set([name.toLowerCase()]);
   return {
     code: record.code,
     name,
     ...(name !== record.name && { apiName: record.name }),
     shortName,
+    ...(OFFICIAL_NAMES[record.code] && { officialName: `${OFFICIAL_NAMES[record.code]} Station` }),
     branch: branchOf(record.code) ?? 'trunk',
     irishName: IRISH_NAMES[record.code]?.name,
     irishShortName: IRISH_NAMES[record.code]?.short ?? IRISH_NAMES[record.code]?.name,

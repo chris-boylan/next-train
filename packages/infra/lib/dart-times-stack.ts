@@ -126,6 +126,28 @@ export class DartTimesStack extends Stack {
       enableAcceptEncodingBrotli: true,
     });
     const domainNames = props.domain ? [props.domain.name, `www.${props.domain.name}`] : undefined;
+    // One address for search engines: www.<domain> answers with a permanent redirect to <domain>, path and query kept.
+    const wwwRedirect =
+      props.domain &&
+      new cloudfront.Function(this, 'WwwRedirect', {
+        runtime: cloudfront.FunctionRuntime.JS_2_0,
+        comment: `www.${props.domain.name} → ${props.domain.name}`,
+        code: cloudfront.FunctionCode.fromInline(`
+function handler(event) {
+  var request = event.request;
+  var host = request.headers.host && request.headers.host.value;
+  if (host !== 'www.${props.domain.name}') return request;
+  var query = Object.keys(request.querystring).map(function (key) {
+    var param = request.querystring[key];
+    return param.value === '' ? key : key + '=' + param.value;
+  }).join('&');
+  return {
+    statusCode: 301,
+    statusDescription: 'Moved Permanently',
+    headers: { location: { value: 'https://${props.domain.name}' + request.uri + (query ? '?' + query : '') } },
+  };
+}`),
+      });
     const distribution = new cloudfront.Distribution(this, 'Site', {
       defaultRootObject: 'index.html',
       domainNames,
@@ -133,6 +155,9 @@ export class DartTimesStack extends Stack {
       defaultBehavior: {
         origin: S3BucketOrigin.withOriginAccessControl(siteBucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        functionAssociations: wwwRedirect
+          ? [{ function: wwwRedirect, eventType: cloudfront.FunctionEventType.VIEWER_REQUEST }]
+          : undefined,
       },
       additionalBehaviors: {
         '/api/stations/*': {
