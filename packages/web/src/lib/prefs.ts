@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import type { CountdownStyle } from './due';
 
 const GOING_TO_KEY = 'dart-times:going-to';
 
@@ -26,40 +27,41 @@ export function setGoingTo(key: string, destination: string | undefined): void {
   }
 }
 
+/**
+ * A choice kept in localStorage and shared live by every component that uses it (the options menu and the pages).
+ * Anything unrecognised in storage reads as `fallback`.
+ */
+function storedChoice<T extends string>(key: string, values: readonly T[], fallback: T): () => [T, (value: T) => void] {
+  const listeners = new Set<() => void>();
+  let current = fallback;
+  try {
+    const stored = localStorage.getItem(key);
+    if (values.includes(stored as T)) current = stored as T;
+  } catch {
+    // No storage: use the default.
+  }
+
+  const set = (value: T) => {
+    current = value;
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      // Applied for this visit only.
+    }
+    listeners.forEach((listener) => listener());
+  };
+  const subscribe = (listener: () => void) => {
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+  };
+
+  return () => [useSyncExternalStore(subscribe, () => current), set];
+}
+
 /** Where favourite stations show: on each service's map page ("service") or together on the home page ("home"). */
 export type FavouritesPlace = 'service' | 'home';
 
-const FAVOURITES_PLACE_KEY = 'dart-times:favourites-place';
-const placeListeners = new Set<() => void>();
+export const useFavouritesPlace = storedChoice<FavouritesPlace>('dart-times:favourites-place', ['service', 'home'], 'service');
 
-function readFavouritesPlace(): FavouritesPlace {
-  try {
-    return localStorage.getItem(FAVOURITES_PLACE_KEY) === 'home' ? 'home' : 'service';
-  } catch {
-    return 'service';
-  }
-}
-
-let favouritesPlace = readFavouritesPlace();
-
-function setFavouritesPlace(place: FavouritesPlace): void {
-  favouritesPlace = place;
-  try {
-    localStorage.setItem(FAVOURITES_PLACE_KEY, place);
-  } catch {
-    // Applied for this visit only.
-  }
-  placeListeners.forEach((listener) => listener());
-}
-
-/** The favourites placement and a setter, shared by every component that uses it (the options menu and the pages). */
-export function useFavouritesPlace(): [FavouritesPlace, (place: FavouritesPlace) => void] {
-  const place = useSyncExternalStore(
-    (listener) => {
-      placeListeners.add(listener);
-      return () => placeListeners.delete(listener);
-    },
-    () => favouritesPlace,
-  );
-  return [place, setFavouritesPlace];
-}
+/** Countdowns of an hour or more: "86 min" (the default) or "1h 26min". */
+export const useCountdownStyle = storedChoice<CountdownStyle>('dart-times:countdown-style', ['minutes', 'hours'], 'minutes');

@@ -314,6 +314,15 @@
   text-transform: uppercase;
 }
 
+/* "1H 18MIN": a gap after the hours, and the countdown stays on one line. */
+.train__unit--hours {
+  margin-right: 5px;
+}
+
+.train__due:has(.train__unit--hours) {
+  white-space: nowrap;
+}
+
 .train__dest {
   margin-top: 2px;
   font-size: 0.8rem;
@@ -403,6 +412,24 @@
 @media (max-width: 359px) {
   .train__scheduled {
     display: none;
+  }
+
+  /* Hours and minutes need a size down to fit beside the track. */
+  .train__due:has(.train__unit--hours) {
+    font-size: 1.35rem;
+  }
+
+  /* Tighter units too, so the Irish "1U 15NÓIM" fits as well as "1H 15MIN". */
+  .train__due:has(.train__unit--hours) .train__unit {
+    letter-spacing: 0.02em;
+  }
+
+  .train__due .train__unit--hours {
+    margin-right: 3px;
+  }
+
+  .train--next .train__due:has(.train__unit--hours) {
+    font-size: 1.9rem;
   }
 
   /* Keep the header on one line: "NOW" goes (the clock speaks for itself) and the back chip doesn't wrap. */

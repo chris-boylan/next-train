@@ -8,6 +8,8 @@ import {
   type Station,
   type TrainCategory,
 } from '@dart-times/core';
+import { type CountdownStyle, dueParts } from './due';
+import { useCountdownStyle } from './prefs';
 
 export type Lang = 'en' | 'ga';
 
@@ -68,6 +70,7 @@ const en = {
   filter: 'Filter',
   due: 'Due',
   min: 'min',
+  hour: 'h',
   direction: { Northbound: 'Northbound', Southbound: 'Southbound' } as Record<Direction, string>,
   nextStation: { north: 'Next station north', south: 'Next station south' },
   towards: (direction: string, places: string) => `${direction}, towards ${places}`,
@@ -90,6 +93,7 @@ const en = {
   favouritesPlace: 'Favourites',
   favouritesInService: 'In each service',
   favouritesOnHome: 'On home page',
+  countdownStyle: 'Times over an hour',
   install: 'Install',
   // iOS isn't available in Irish, so its button names are quoted in English in both languages.
   installTip: 'Tap Share, then “Add to Home Screen”, to open Next Train? like an app.',
@@ -149,12 +153,19 @@ const en = {
     loading: 'Loading the stops…',
     unavailable: 'Couldn’t load this train’s stops.',
   },
-  describe: (destination: string, dueInMins: number, lateMins: number) =>
-    `to ${destination} ${dueInMins <= 0 ? 'due now' : `in ${dueInMins} minute${dueInMins === 1 ? '' : 's'}`}` +
+  describe: (destination: string, dueInMins: number, lateMins: number, style: CountdownStyle) =>
+    `to ${destination} ${dueInMins <= 0 ? 'due now' : `in ${spokenDue(dueInMins, style)}`}` +
     (lateMins > 0 ? `, running ${lateMins} minute${lateMins === 1 ? '' : 's'} late` : ''),
 };
 
 type Messages = typeof en;
+
+/** "26 minutes", or in hours style "1 hour 26 minutes" / "2 hours". */
+function spokenDue(mins: number, style: CountdownStyle): string {
+  return dueParts(mins, style)
+    .map(({ value, unit }) => `${value} ${unit === 'h' ? 'hour' : 'minute'}${value === 1 ? '' : 's'}`)
+    .join(' ');
+}
 
 const ga: Messages = {
   services: 'Seirbhísí',
@@ -230,6 +241,7 @@ const ga: Messages = {
   filter: 'Scag',
   due: 'Ag teacht',
   min: 'nóim',
+  hour: 'u',
   direction: { Northbound: 'Ó thuaidh', Southbound: 'Ó dheas' },
   nextStation: { north: 'An chéad stáisiún eile ó thuaidh', south: 'An chéad stáisiún eile ó dheas' },
   towards: (direction, places) => `${direction}, go dtí ${places}`,
@@ -251,6 +263,7 @@ const ga: Messages = {
   favouritesPlace: 'Ceanáin',
   favouritesInService: 'I ngach seirbhís',
   favouritesOnHome: 'Ar an leathanach baile',
+  countdownStyle: 'Amanna thar uair an chloig',
   install: 'Suiteáil',
   installTip: 'Brúigh “Share”, ansin “Add to Home Screen”, chun Next Train? a oscailt mar aip.',
   help: {
@@ -309,6 +322,7 @@ const ga: Messages = {
     loading: 'Na stadanna á lódáil…',
     unavailable: 'Níorbh fhéidir stadanna na traenach seo a lódáil.',
   },
+  // Spoken in minutes whatever the countdown style: hours need Irish number mutations (uair, huaire, n-uaire).
   describe: (destination, dueInMins, lateMins) =>
     `go dtí ${destination}, ${dueInMins <= 0 ? 'ag teacht anois' : `i gceann ${dueInMins} nóiméad`}` +
     (lateMins > 0 ? `, ${lateMins} nóiméad déanach` : ''),
@@ -348,6 +362,7 @@ export function LangProvider({ children }: { children: ReactNode }) {
 export function useI18n() {
   const { lang, setLang } = useContext(LangContext);
   const t = MESSAGES[lang];
+  const [countdownStyle] = useCountdownStyle();
 
   const stationName = (station: Station, full = false) =>
     lang === 'ga' && station.irishName
@@ -364,7 +379,7 @@ export function useI18n() {
   const destinationName = (d: Departure) => (d.destinationCode ? nameOf(d.destinationCode) : d.destination);
   const list = (items: string[]) =>
     items.length <= 1 ? items.join('') : `${items.slice(0, -1).join(', ')} ${t.and} ${items.at(-1)}`;
-  const describe = (d: Departure) => t.describe(destinationName(d), d.dueInMins, d.lateMins);
+  const describe = (d: Departure) => t.describe(destinationName(d), d.dueInMins, d.lateMins, countdownStyle);
 
   return { lang, setLang, t, stationName, nameOf, destinationName, list, describe };
 }
