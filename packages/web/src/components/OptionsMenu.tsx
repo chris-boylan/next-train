@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useOpenHelp } from '../lib/help';
 import { type Lang, useI18n } from '../lib/i18n';
 import { type CountdownStyle } from '../lib/due';
-import { type FavouritesPlace, useCountdownStyle, useFavouritesPlace } from '../lib/prefs';
+import { type FavouritesPlace, useCountdownStyle, useFavouritesPlace, type TimetabledTrains, useTimetabledTrains } from '../lib/prefs';
 import { type Theme, useTheme } from '../lib/theme';
 
 /** iPhone/iPad Safari, not already opened from the home screen. iOS has no install prompt, so we explain how. */
@@ -20,6 +20,7 @@ export function OptionsMenu() {
   const openHelp = useOpenHelp();
   const [favouritesPlace, setFavouritesPlace] = useFavouritesPlace();
   const [countdownStyle, setCountdownStyle] = useCountdownStyle();
+  const [timetabledTrains, setTimetabledTrains] = useTimetabledTrains();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -84,6 +85,16 @@ export function OptionsMenu() {
               { value: 'hours', label: t.countdownHours },
             ]}
           />
+          <Choice<TimetabledTrains>
+            label={t.timetabledTrains}
+            value={timetabledTrains}
+            onChange={setTimetabledTrains}
+            options={[
+              { value: 'on', label: t.on },
+              { value: 'off', label: t.off },
+            ]}
+            note={t.timetabledTrainsNote}
+          />
           <button
             className="options__link"
             onClick={() => {
@@ -110,11 +121,14 @@ function Choice<T extends string>({
   value,
   onChange,
   options,
+  note,
 }: {
   label: string;
   value: T;
   onChange: (value: T) => void;
   options: { value: T; label: string }[];
+  /** A line under the choice, explaining it. */
+  note?: string;
 }) {
   return (
     <div className="options__row">
@@ -132,6 +146,7 @@ function Choice<T extends string>({
           </button>
         ))}
       </div>
+      {note && <p className="options__note">{note}</p>}
     </div>
   );
 }

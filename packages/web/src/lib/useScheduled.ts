@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { irishDate, irishSecondsOfDay, type ScheduledDeparture } from '@dart-times/core';
 import { fetchTimetable } from './api';
+import { useTimetabledTrains } from './prefs';
 
 const REFRESH_MS = 30 * 60_000;
 /** Until about 4am, trains from yesterday's service day may still be running (GTFS times past 24:00). */
@@ -13,6 +14,8 @@ export type TimetabledDeparture = ScheduledDeparture & { tomorrow?: boolean };
  * A station's timetabled departures for today's service day (plus yesterday's still running after midnight),
  * from the static files the daily timetable job writes. Minutes are after today's midnight, Irish time. With
  * `withTomorrow`, tomorrow's trains follow (minutes + 1440), so a page after the last train can show the first.
+ * With timetabled trains turned off in the options, only NI Railways' are kept (it has nothing else); every page
+ * gets its timetabled trains from here, so that one setting covers them all.
  */
 export function useScheduled(code: string, enabled = true, withTomorrow = false) {
   const [departures, setDepartures] = useState<TimetabledDeparture[]>();
@@ -43,5 +46,9 @@ export function useScheduled(code: string, enabled = true, withTomorrow = false)
       clearInterval(timer);
     };
   }, [code, enabled, withTomorrow]);
-  return departures;
+  const [timetabled] = useTimetabledTrains();
+  return useMemo(
+    () => (timetabled === 'on' ? departures : departures?.filter((d) => d.category === 'nir')),
+    [departures, timetabled],
+  );
 }

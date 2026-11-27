@@ -70,3 +70,11 @@ export const useCountdownStyle = storedChoice<CountdownStyle>('dart-times:countd
 export type StationView = 'tracks' | 'board';
 
 export const useStationView = storedChoice<StationView>('dart-times:station-view', ['tracks', 'board'], 'tracks');
+
+/**
+ * Irish Rail's timetabled trains (beyond the live window, and timetable-only stretches): shown (the default) or
+ * hidden. NI Railways always shows its timetable, since it has no live data at all.
+ */
+export type TimetabledTrains = 'on' | 'off';
+
+export const useTimetabledTrains = storedChoice<TimetabledTrains>('dart-times:timetabled-trains', ['on', 'off'], 'on');

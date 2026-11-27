@@ -117,6 +117,10 @@ const en = {
   countdownStyle: 'Times over an hour',
   countdownMinutes: 'Minutes',
   countdownHours: 'Hours & mins',
+  timetabledTrains: 'Timetabled trains',
+  timetabledTrainsNote: 'Irish Rail trains beyond the live 90 minutes. NI Railways always shows its timetable.',
+  on: 'On',
+  off: 'Off',
   install: 'Install',
   // iOS isn't available in Irish, so its button names are quoted in English in both languages.
   installTip: 'Tap Share, then “Add to Home Screen”, to open Next Train? like an app.',
@@ -316,6 +320,10 @@ const ga: Messages = {
   countdownStyle: 'Amanna thar uair an chloig',
   countdownMinutes: 'Nóiméid',
   countdownHours: 'Uaireanta & nóim',
+  timetabledTrains: 'Traenacha an chláir ama',
+  timetabledTrainsNote: 'Traenacha Iarnród Éireann thar na 90 nóiméad beo. Taispeántar clár ama Iarnród Thuaisceart Éireann i gcónaí.',
+  on: 'Ar siúl',
+  off: 'Múchta',
   install: 'Suiteáil',
   installTip: 'Brúigh “Share”, ansin “Add to Home Screen”, chun Next Train? a oscailt mar aip.',
   help: {
