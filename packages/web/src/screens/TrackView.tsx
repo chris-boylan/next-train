@@ -88,7 +88,8 @@ export function TrackView({
   const nir = service.id === 'nir';
   const liveStation = !nir || hasLiveData(station.code);
   const { data, error } = useDepartures(station.code, nir ? 'all' : service.id, liveStation);
-  const timetable = useScheduled(station.code, true, nir);
+  // Tomorrow's timetable too, so a page after the last train shows the first one in the morning (Sligo after 19:05).
+  const timetable = useScheduled(station.code, true, true);
   // The station's lines: one, or one per route at a Commuter hub (chosen with the chips under the header).
   const lines = useMemo(() => stationLines(service, station.code), [service, station.code]);
   // At a hub (several routes), "All" first: every route's trains on one pair of tracks. A route picked on the
@@ -224,7 +225,10 @@ export function TrackView({
             include: (d) =>
               timetabledOn(direction)(d) &&
               (goingDirection !== direction || !goingTo || d.destinationCode === goingTo || callsAt(station.code, d.destinationCode!, goingTo, line)),
-          })
+          }).filter(
+            // Irish Rail: at most tomorrow's first train on a track, after today's; NI Railways lists the day ahead.
+            (d, i, list) => nir || !(d as TimetabledDeparture).tomorrow || list.findIndex((x) => (x as TimetabledDeparture).tomorrow) === i,
+          )
         : [];
     // Live and timetabled trains in time order. Irish Rail's timetabled trains are beyond the live window, so they
     // always follow the live ones; NI Railways' (no live data) fall in among the Enterprise's live trains.
@@ -584,6 +588,8 @@ function Trains({
   let message: string | undefined;
   if (!ends.length && !items.length) message = t.terminateHere;
   else if (nir) message = !items.length ? t.noTimetabledTrains : noneToday ? t.noMoreToday : undefined;
+  // Irish Rail after the last train: tomorrow's first is shown, so say there are no more today.
+  else if (noneToday && !goingToName) message = t.noMoreToday;
   else if (!anyLive) {
     // Named by where this track's trains go: its ends, or (past the end of our line, e.g. Maynooth to Longford)
     // the timetabled trains' destinations.
@@ -696,7 +702,8 @@ function TimetabledTrain({
 }) {
   const { t, scheduledDestination } = useI18n();
   const now = useNow();
-  const clock = d.category === 'nir';
+  // Clock times for NI Railways (a countdown would look live) and for tomorrow's trains ("669 min" reads oddly).
+  const clock = d.category === 'nir' || !!d.tomorrow;
   const destination = scheduledDestination(d);
   return (
     <li
