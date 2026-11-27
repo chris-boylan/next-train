@@ -83,6 +83,11 @@ export function networkSchematic(lang: 'en' | 'ga' = 'en'): Schematic {
   const derryJunctionY = at('NI_YORKG')[1];
   column(['NI_MOSSW', 'NI_ANTRM', 'NI_BMENA', 'NI_CULLY', 'NI_BMONY'], X0, derryJunctionY - 40, -1, 'right', (derryJunctionY - 40 - coleraineY) / 5);
   bend('NI_YORKG', 'NI_MOSSW', [X0, derryJunctionY]);
+  // York Street's name sits under the Derry line leaving it; Ballymena and Carrickfergus share a row, so their
+  // names step apart.
+  points['NI_YORKG'] = { ...points['NI_YORKG']!, label: 'below', labelDx: -20 };
+  points['NI_BMENA'] = { ...points['NI_BMENA']!, labelDy: -10 };
+  points['NI_CFERG'] = { ...points['NI_CFERG']!, labelDy: 8 };
   stop('NI_COLER', [X0, coleraineY], 'below', { labelDx: 32, labelDy: -12 });
   column(['NI_CROCK', 'NI_BELLA', 'NI_DERRY'], X0, coleraineY - ROW, -1);
   // Portrush: east along the coast from Coleraine, then north.
