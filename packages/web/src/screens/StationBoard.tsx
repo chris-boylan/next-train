@@ -193,7 +193,8 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
             showCategory={mode === 'all'}
             limit={hasNir ? 15 : undefined}
             title={hasNir ? t.timetable : undefined}
-            note={hasNir ? t.nirTimetableNote : undefined}
+            // Said once: in the board's note when there is one (NI Railways stations), else here.
+            note={hasNir ? (note ? null : t.nirTimetableNote) : undefined}
           />
         )}
       </div>

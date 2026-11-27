@@ -13,7 +13,8 @@ interface Props {
   limit?: number;
   /** Instead of "Later · timetable" and its note, e.g. at NI Railways stations, which have no live times. */
   title?: string;
-  note?: string;
+  /** `null` for no note, when the page already explains (NI Railways stations' board note). */
+  note?: string | null;
 }
 
 /** "Later · timetable": scheduled trains beyond the live window, with no live information yet. */
@@ -26,7 +27,7 @@ export function LaterDepartures({ departures, nowMinutes, liveCodes, include, sh
       <h2 id="later-heading" className="destinations__heading later__heading">
         {title ?? t.later}
       </h2>
-      <p className="later__note">{note ?? t.laterNote(LIVE_WINDOW_MINS)}</p>
+      {note !== null && <p className="later__note">{note ?? t.laterNote(LIVE_WINDOW_MINS)}</p>}
       <ol className="departure-list">
         {later.map((d) => (
           <li key={`${d.trainCode}-${d.minutes}`} className="departure-row later__row">
