@@ -675,3 +675,18 @@
     animation: none;
   }
 }
+
+/* During the switch to and from the board, each colour's track as one line (lib/viewSwitch.ts), in a layer
+   over the halves and under the sign, clipped to the tracks: a line leaving goes out under the header. */
+.joined-tracks {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.joined-track {
+  position: absolute;
+  inset: 0;
+}
