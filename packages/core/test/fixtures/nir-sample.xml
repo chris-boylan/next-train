@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<!-- A cut-down Translink NIR TransXChange file, in the same shape as the September 2026 release: real stop
+     codes and positions, one NIR service with two journeys, and an Enterprise journey that must be left out. -->
+<TransXChange SchemaVersion="2.4" xmlns="http://www.transxchange.org.uk/">
+	<StopPoints>
+		<StopPoint CreationDateTime="2026-09-04T00:00:00">
+			<AtcoCode>9000BR6</AtcoCode>
+			<Descriptor><CommonName>Bangor Train Station</CommonName></Descriptor>
+			<Place><Location><Longitude>-5.672517</Longitude><Latitude>54.658483</Latitude></Location></Place>
+		</StopPoint>
+		<StopPoint CreationDateTime="2026-09-04T00:00:00">
+			<AtcoCode>9000HW4</AtcoCode>
+			<Descriptor><CommonName>Holywood Train Station</CommonName></Descriptor>
+			<Place><Location><Longitude>-5.839782</Longitude><Latitude>54.640948</Latitude></Location></Place>
+		</StopPoint>
+		<StopPoint CreationDateTime="2026-09-04T00:00:00">
+			<AtcoCode>9000SY3</AtcoCode>
+			<Descriptor><CommonName>Sydenham Train Station</CommonName></Descriptor>
+			<Place><Location><Longitude>-5.876811</Longitude><Latitude>54.60951</Latitude></Location></Place>
+		</StopPoint>
+		<StopPoint CreationDateTime="2026-09-04T00:00:00">
+			<AtcoCode>70009000GCP3</AtcoCode>
+			<Descriptor><CommonName>Grand Central Station</CommonName></Descriptor>
+			<Place><Location><Longitude>-5.939981</Longitude><Latitude>54.594767</Latitude></Location></Place>
+		</StopPoint>
+		<StopPoint CreationDateTime="2026-09-04T00:00:00">
+			<AtcoCode>9000DN2</AtcoCode>
+			<Descriptor><CommonName>Connolly Rail Station</CommonName></Descriptor>
+			<Place><Location><Longitude>-6.247219</Longitude><Latitude>53.352488</Latitude></Location></Place>
+		</StopPoint>
+	</StopPoints>
+	<JourneyPatternSections>
+		<JourneyPatternSection id="JPS_BANGOR_IN">
+			<JourneyPatternTimingLink id="L1">
+				<From SequenceNumber="1"><Activity>pickUp</Activity><StopPointRef>9000BR6</StopPointRef></From>
+				<To SequenceNumber="2"><WaitTime>PT1M</WaitTime><Activity>pickUpAndSetDown</Activity><StopPointRef>9000HW4</StopPointRef></To>
+				<RunTime>PT12M</RunTime>
+			</JourneyPatternTimingLink>
+			<JourneyPatternTimingLink id="L2">
+				<From SequenceNumber="2"><Activity>pickUpAndSetDown</Activity><StopPointRef>9000HW4</StopPointRef></From>
+				<To SequenceNumber="3"><Activity>pass</Activity><StopPointRef>9000SY3</StopPointRef></To>
+				<RunTime>PT3M30S</RunTime>
+			</JourneyPatternTimingLink>
+			<JourneyPatternTimingLink id="L3">
+				<From SequenceNumber="3"><Activity>pass</Activity><StopPointRef>9000SY3</StopPointRef></From>
+				<To SequenceNumber="4"><Activity>setDown</Activity><StopPointRef>70009000GCP3</StopPointRef></To>
+				<RunTime>PT6M30S</RunTime>
+			</JourneyPatternTimingLink>
+		</JourneyPatternSection>
+		<JourneyPatternSection id="JPS_ENT">
+			<JourneyPatternTimingLink id="E1">
+				<From SequenceNumber="1"><Activity>pickUp</Activity><StopPointRef>70009000GCP3</StopPointRef></From>
+				<To SequenceNumber="2"><Activity>setDown</Activity><StopPointRef>9000DN2</StopPointRef></To>
+				<RunTime>PT2H10M</RunTime>
+			</JourneyPatternTimingLink>
+		</JourneyPatternSection>
+	</JourneyPatternSections>
+	<Services>
+		<Service>
+			<ServiceCode>BANGOR</ServiceCode>
+			<Lines><Line id="BANGOR"><LineName>Bangor Line</LineName></Line></Lines>
+			<OperatingPeriod><StartDate>2026-09-10</StartDate><EndDate>2026-12-13</EndDate></OperatingPeriod>
+			<OperatingProfile><RegularDayType><DaysOfWeek><MondayToSunday /></DaysOfWeek></RegularDayType></OperatingProfile>
+			<RegisteredOperatorRef>OId_RailNI</RegisteredOperatorRef>
+			<StandardService>
+				<JourneyPattern id="JP_BANGOR_IN">
+					<Direction>inbound</Direction>
+					<JourneyPatternSectionRefs>JPS_BANGOR_IN</JourneyPatternSectionRefs>
+				</JourneyPattern>
+			</StandardService>
+		</Service>
+		<Service>
+			<ServiceCode>ENT</ServiceCode>
+			<Lines><Line id="ENT"><LineName>Belfast - Dublin (Enterprise)</LineName></Line></Lines>
+			<OperatingPeriod><StartDate>2026-09-10</StartDate><EndDate>2027-01-31</EndDate></OperatingPeriod>
+			<OperatingProfile><RegularDayType><DaysOfWeek><MondayToSunday /></DaysOfWeek></RegularDayType></OperatingProfile>
+			<RegisteredOperatorRef>OId_ENT</RegisteredOperatorRef>
+			<StandardService>
+				<JourneyPattern id="JP_ENT">
+					<JourneyPatternSectionRefs>JPS_ENT</JourneyPatternSectionRefs>
+				</JourneyPattern>
+			</StandardService>
+		</Service>
+	</Services>
+	<VehicleJourneys>
+		<VehicleJourney>
+			<PrivateCode>rai-weekday</PrivateCode>
+			<OperatingProfile>
+				<RegularDayType><DaysOfWeek><MondayToFriday /></DaysOfWeek></RegularDayType>
+				<SpecialDaysOperation>
+					<DaysOfNonOperation><DateRange><StartDate>2026-12-07</StartDate><EndDate>2026-12-13</EndDate></DateRange></DaysOfNonOperation>
+				</SpecialDaysOperation>
+			</OperatingProfile>
+			<VehicleJourneyCode>VJ_WEEKDAY</VehicleJourneyCode>
+			<ServiceRef>BANGOR</ServiceRef>
+			<JourneyPatternRef>JP_BANGOR_IN</JourneyPatternRef>
+			<DepartureTime>07:17:00</DepartureTime>
+		</VehicleJourney>
+		<VehicleJourney>
+			<PrivateCode>rai-late</PrivateCode>
+			<OperatingProfile><RegularDayType><DaysOfWeek><Saturday /></DaysOfWeek></RegularDayType></OperatingProfile>
+			<VehicleJourneyCode>VJ_LATE</VehicleJourneyCode>
+			<ServiceRef>BANGOR</ServiceRef>
+			<JourneyPatternRef>JP_BANGOR_IN</JourneyPatternRef>
+			<DepartureTime>23:55:00</DepartureTime>
+		</VehicleJourney>
+		<VehicleJourney>
+			<PrivateCode>ent</PrivateCode>
+			<VehicleJourneyCode>VJ_ENT</VehicleJourneyCode>
+			<ServiceRef>ENT</ServiceRef>
+			<JourneyPatternRef>JP_ENT</JourneyPatternRef>
+			<DepartureTime>08:00:00</DepartureTime>
+		</VehicleJourney>
+	</VehicleJourneys>
+</TransXChange>

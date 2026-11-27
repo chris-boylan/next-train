@@ -1,16 +1,21 @@
-import { type CSSProperties, useCallback, useEffect, useState } from 'react';
+import { type CSSProperties, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   adjacentStations,
+  callsAt,
   type Departure,
   delaySeverity,
   departuresGoingTo,
   type Direction,
   directionBetween,
+  hasCompassDirections,
+  hasLiveData,
   irishSecondsOfDay,
-  type ScheduledDeparture,
+  placeDeparture,
+  placeTimetabled,
   scheduledBeyondLive,
-  scheduledHeading,
+  type ScheduledDeparture,
   type Service,
+  stationLines,
   type Station,
   terminiFrom,
 } from '@dart-times/core';
@@ -23,8 +28,10 @@ import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
 import { getGoingTo, setGoingTo } from '../lib/prefs';
 import { useDepartures } from '../lib/useDepartures';
-import { useScheduled } from '../lib/useScheduled';
+import { type TimetabledDeparture, useScheduled } from '../lib/useScheduled';
 import { useMediaQuery } from '../lib/useMediaQuery';
+import { COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
+import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
 
 /** Trains shown on each track; very short screens (e.g. 320×568 phones) only fit two above the "more" link. */
 const TRAINS_PER_DIRECTION = 3;
@@ -40,17 +47,32 @@ interface Props {
   onToggleFavourite: () => void;
   onChangeStation: () => void;
   onSelectStation: (code: string) => void;
+  /** At a station on several lines (Commuter hubs), the one to open on: the route picked on the map. */
+  initialLineId?: string;
+  /** The list button by the station name: show this station as a board instead. */
+  onShowBoard?: () => void;
 }
 
 /**
  * The station on a double track: northbound (green) on the left, coming up from the bottom;
  * southbound (orange) on the right, coming down from the top. Nearest trains sit closest to the station.
  */
-export function TrackView({ service, station, isFavourite, onToggleFavourite, onChangeStation, onSelectStation }: Props) {
+export function TrackView({ service, station, isFavourite, onToggleFavourite, onChangeStation, onSelectStation, initialLineId, onShowBoard }: Props) {
   const { t, stationName, nameOf, list } = useI18n();
-  const { data, error } = useDepartures(station.code, service.id);
-  const timetable = useScheduled(station.code);
-  const { line } = service;
+  // NI Railways has no live data: its trains come from the timetable, and only stations where the Enterprise
+  // calls (Grand Central, Portadown, Newry) have live trains, which come from every Irish Rail train there.
+  const nir = service.id === 'nir';
+  const liveStation = !nir || hasLiveData(station.code);
+  const { data, error } = useDepartures(station.code, nir ? 'all' : service.id, liveStation);
+  const timetable = useScheduled(station.code, true, nir);
+  // The station's lines: one, or one per route at a Commuter hub (chosen with the chips under the header).
+  const lines = useMemo(() => stationLines(service, station.code), [service, station.code]);
+  const [lineId, setLineId] = useState(() => lines.find((l) => l.id === initialLineId)?.id ?? lines[0]!.id);
+  const current = lines.find((l) => l.id === lineId) ?? lines[0]!;
+  const { line } = current;
+  // Northbound/Southbound are compass directions on the DART, Enterprise, Cork and NIR; on Commuter routes they're
+  // outbound and inbound, so tracks are named by where their trains go.
+  const compass = hasCompassDirections(service.id);
   const now = useNow();
   const fetchedAt = data && new Date(data.fetchedAt);
   const stale = !!fetchedAt && now.getTime() - fetchedAt.getTime() > STALE_AFTER_MS;
@@ -96,11 +118,14 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
     });
   };
 
-  // Direction from our own line layout (here → the train's destination), so services whose API directions
-  // read "To Cork" rather than Northbound/Southbound still land on the right track. Falls back to the API.
-  const directionOf = (d: { destinationCode?: string; direction: string }) =>
-    (d.destinationCode && directionBetween(station.code, d.destinationCode, line)) || d.direction;
-  const allIn = (direction: Direction) => data?.departures.filter((d) => directionOf(d) === direction) ?? [];
+  // Each train's line and track from our own line layout (here → its destination), so services whose API
+  // directions read "To Cork" still land on the right track, and Commuter trains on their route.
+  const onTrack = (direction: Direction) => (p: { lineId: string; direction: Direction } | undefined) =>
+    !!p && p.lineId === current.id && p.direction === direction;
+  const allIn = (direction: Direction) => data?.departures.filter((d) => onTrack(direction)(placeDeparture(service, station.code, lines, d))) ?? [];
+  const timetabledOn = (direction: Direction) => (d: ScheduledDeparture) => onTrack(direction)(placeTimetabled(service, station.code, lines, d));
+  const directionName = (direction: Direction) =>
+    compass ? t.direction[direction] : t.towards2(list(terminiFrom(station.code, direction, line).map(nameOf)));
   const shownIn = (direction: Direction) =>
     goingTo && goingDirection === direction ? departuresGoingTo(allIn(direction), station.code, goingTo, line) : allIn(direction);
   const dimmed = (direction: Direction) => !!goingDirection && goingDirection !== direction;
@@ -117,45 +142,58 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
   const nowMinutes = Math.floor(irishSecondsOfDay(now.getTime()) / 60);
   const liveCodes = new Set(data?.departures.map((d) => d.trainCode));
   const trainsFor = (direction: Direction, ends: string[]) => {
-    const shown = shownIn(direction);
-    const live = dimmed(direction) ? [] : shown.slice(0, perDirection);
-    // Live trains first; any places left on the track go to timetabled trains beyond the live window.
-    const scheduled =
-      timetable && !dimmed(direction)
+    const hidden = dimmed(direction);
+    const live = hidden ? [] : shownIn(direction);
+    const timetabled =
+      timetable && !hidden
         ? scheduledBeyondLive(timetable, {
             nowMinutes,
             liveCodes,
             include: (d) =>
-              scheduledHeading(d, {
-                service: service.id,
-                station: station.code,
-                direction,
-                line,
-                goingTo: goingDirection === direction ? goingTo : undefined,
-              }),
-            limit: perDirection - live.length,
+              timetabledOn(direction)(d) &&
+              (goingDirection !== direction || !goingTo || d.destinationCode === goingTo || callsAt(station.code, d.destinationCode!, goingTo, line)),
           })
         : [];
+    // Live and timetabled trains in time order. Irish Rail's timetabled trains are beyond the live window, so they
+    // always follow the live ones; NI Railways' (no live data) fall in among the Enterprise's live trains.
+    const all: TrackTrain[] = [
+      ...live.map((d): TrackTrain => ({ live: d, at: nowMinutes + d.dueInMins })),
+      ...timetabled.map((d): TrackTrain => ({ timetabled: d, at: d.minutes })),
+    ].sort((a, b) => a.at - b.at);
+    const items = all.slice(0, perDirection);
+    const isToday = (x: TrackTrain) => !x.timetabled?.tomorrow;
+    // "+ N more": live trains beyond those shown; on an NIR page, the rest of today's trains.
+    const moreCount = hidden ? 0 : nir ? all.filter(isToday).length - items.filter(isToday).length : Math.max(0, live.length - perDirection);
     return (
       <Trains
         direction={direction}
-        trains={live}
-        scheduled={scheduled}
-        nowMinutes={nowMinutes}
-        moreCount={dimmed(direction) ? 0 : Math.max(0, shown.length - perDirection)}
+        items={items}
+        nir={nir}
+        compass={compass}
+        liveStation={liveStation}
+        moreCount={moreCount}
         onMore={() => setSheetDirection(direction)}
         ends={ends}
         goingToName={goingDirection === direction ? goingToName : undefined}
-        hidden={dimmed(direction)}
-        hasData={!!data}
+        hidden={hidden}
+        hasData={liveStation ? !!data : !!timetable}
         onOpen={(train, glyph) => openJourney(train, direction, glyph)}
       />
     );
   };
 
-  const north = terminiFrom(station.code, 'Northbound', line);
-  const south = terminiFrom(station.code, 'Southbound', line);
+  // South of Belfast every NIR train northbound goes through Grand Central: name it, not all four branch ends.
+  const viaBelfast = (ends: string[]) => (nir && ends.includes('BFSTC') ? ['BFSTC'] : ends);
+  const north = viaBelfast(terminiFrom(station.code, 'Northbound', line));
+  const south = viaBelfast(terminiFrom(station.code, 'Southbound', line));
   const neighbours = adjacentStations(station.code, line);
+  // Chips: each route's name and map colour.
+  const routeNames: Record<string, string> = service.id === 'intercity' ? t.intercityRoutes : t.commuterRoutes;
+  const lineName = (id: string) => routeNames[id] ?? id;
+  const lineColour = (id: string) =>
+    service.id === 'intercity'
+      ? INTERCITY_ROUTE_MAP.colour(id as Parameters<typeof INTERCITY_ROUTE_MAP.colour>[0])
+      : COMMUTER_ROUTE_MAP.colour(id as Parameters<typeof COMMUTER_ROUTE_MAP.colour>[0]);
 
   return (
     <div className="track-view">
@@ -181,7 +219,7 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
                 {error && ` · ${t.retrying}`}
               </>
             ) : (
-              (error ?? t.loading)
+              (error ?? (liveStation ? t.loading : t.timetableOnly))
             )}
           </p>
         </div>
@@ -198,12 +236,28 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
         </div>
       </header>
 
+      {lines.length > 1 && (
+        <nav className="line-chips" aria-label={t.lines}>
+          {lines.map((l) => (
+            <button
+              key={l.id}
+              className={`line-chip${l.id === current.id ? ' line-chip--on' : ''}`}
+              aria-pressed={l.id === current.id}
+              onClick={() => setLineId(l.id)}
+            >
+              <span className="line-chip__swatch" style={{ background: lineColour(l.id) }} />
+              {lineName(l.id)}
+            </button>
+          ))}
+        </nav>
+      )}
+
       <div
         className={`tracks${journey && !closingJourney ? ' tracks--journey' : ''}${closingJourney ? ' tracks--returning' : ''}`}
         style={{ '--return-fade-delay': `${RETURN_FADE_DELAY_MS}ms`, '--return-fade-ms': `${RETURN_FADE_MS}ms` } as CSSProperties}
       >
         {/* Top half: southbound trains on their way in, nearest at the bottom. Green arrow continues up to its termini. */}
-        <section className="half half--top" aria-label={t.towards(t.direction.Southbound, list(south.map(nameOf)))}>
+        <section className="half half--top" aria-label={compass ? t.towards(t.direction.Southbound, list(south.map(nameOf))) : directionName('Southbound')}>
           {/* Orange runs edge to edge through its trains; green carries on past the platform to its arrowhead halfway up. */}
           {north.length > 0 && <Lane direction="Northbound" withHead dimmed={dimmed('Northbound')} />}
           <Lane direction="Southbound" dimmed={dimmed('Southbound')} />
@@ -218,7 +272,15 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
           <div className="platform__middle">
             {/* Some Irish names are long; step the size down so they fit on one line on a phone. */}
             <h1 className={`platform__name${name.length > 20 ? ' platform__name--longer' : name.length > 13 ? ' platform__name--long' : ''}`}>
-              <Caps text={name} />
+              {onShowBoard ? (
+                // The name switches the station to its list board (and the board's name switches back).
+                <button className="platform__switch" onClick={onShowBoard} aria-label={`${name}: ${t.showAsList}`} title={t.showAsList}>
+                  <Caps text={name} />
+                  <ListIcon />
+                </button>
+              ) : (
+                <Caps text={name} />
+              )}
             </h1>
             <OfficialName station={station} />
             {/* Only shown while a filter is on: tap the name to change it in that direction's panel, ✕ to clear. */}
@@ -237,7 +299,7 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
         </div>
 
         {/* Bottom half: northbound trains on their way in, nearest at the top. Orange arrow continues down to its termini. */}
-        <section className="half half--bottom" aria-label={t.towards(t.direction.Northbound, list(north.map(nameOf)))}>
+        <section className="half half--bottom" aria-label={compass ? t.towards(t.direction.Northbound, list(north.map(nameOf))) : directionName('Northbound')}>
           {/* Green runs edge to edge through its trains; orange carries on past the platform to its arrowhead halfway down. */}
           <Lane direction="Northbound" dimmed={dimmed('Northbound')} />
           {south.length > 0 && <Lane direction="Southbound" withHead dimmed={dimmed('Southbound')} />}
@@ -266,7 +328,10 @@ export function TrackView({ service, station, isFavourite, onToggleFavourite, on
           station={station}
           line={line}
           serviceId={service.id}
+          live={liveStation}
           direction={sheetDirection}
+          directionName={directionName(sheetDirection)}
+          timetabledOn={timetabledOn(sheetDirection)}
           departures={allIn(sheetDirection)}
           goingTo={goingDirection === sheetDirection ? goingTo : undefined}
           onGoingTo={chooseGoingTo}
@@ -342,11 +407,15 @@ function Lane({ direction, withHead = false, dimmed }: { direction: Direction; w
   );
 }
 
+/** One place on a track: a live train, or a timetabled one, with when it leaves (minutes after today's midnight). */
+type TrackTrain = { live: Departure; timetabled?: undefined; at: number } | { live?: undefined; timetabled: TimetabledDeparture; at: number };
+
 function Trains({
   direction,
-  trains,
-  scheduled,
-  nowMinutes,
+  items,
+  nir,
+  compass,
+  liveStation,
   moreCount,
   onMore,
   ends,
@@ -356,11 +425,14 @@ function Trains({
   onOpen,
 }: {
   direction: Direction;
-  trains: Departure[];
-  /** Timetabled trains beyond the live window, filling the places live trains don't. */
-  scheduled: ScheduledDeparture[];
-  /** Minutes after today's midnight, Irish time, for the timetabled trains' countdowns. */
-  nowMinutes: number;
+  /** Live and timetabled trains, in time order, as many as fit. */
+  items: TrackTrain[];
+  /** An NI Railways page: timetabled trains are the norm, not a stand-in for live ones. */
+  nir: boolean;
+  /** Name the track by compass direction ("No northbound trains"), or else by where its trains go. */
+  compass: boolean;
+  /** False for NI Railways stations with no live trains at all: their timetabled trains are drawn solid. */
+  liveStation: boolean;
   /** Departures beyond the ones shown. The link to the full list (and its filters) shows either way. */
   moreCount: number;
   onMore: () => void;
@@ -373,84 +445,133 @@ function Trains({
   /** Tap a train for its look-ahead; gets the train's drawing so the view can start from it. */
   onOpen: (train: Departure, glyph: Element | null) => void;
 }) {
-  const { t, destinationName, scheduledDestination, describe } = useI18n();
+  const { t, destinationName, describe, nameOf, list } = useI18n();
   const side = direction === 'Northbound' ? 'north' : 'south';
   if (!hasData || hidden) return null;
-  // Nothing live in this direction: say so (by the platform), then show what the timetable has, if anything.
-  const empty = !trains.length && (
-    <p className={`trains-empty trains-empty--${side}`}>
-      {!ends.length ? t.terminateHere : goingToName ? t.noTrainsTo(goingToName) : t.noTrains(t.direction[direction])}
-    </p>
-  );
-  if (!trains.length && !scheduled.length) return empty;
+
+  // A note by the platform. Live services: nothing live this way in the live window. NI Railways: no more trains
+  // today (tomorrow's first ones follow), or none in the timetable at all.
+  const anyLive = items.some((x) => x.live);
+  const noneToday = items.length > 0 && items.every((x) => x.timetabled?.tomorrow);
+  let message: string | undefined;
+  if (!ends.length && !items.length) message = t.terminateHere;
+  else if (nir) message = !items.length ? t.noTimetabledTrains : noneToday ? t.noMoreToday : undefined;
+  else if (!anyLive) {
+    // Named by where this track's trains go: its ends, or (past the end of our line, e.g. Maynooth to Longford)
+    // the timetabled trains' destinations.
+    const places = ends.length ? ends : [...new Set(items.flatMap((x) => (x.timetabled?.destinationCode ? [x.timetabled.destinationCode] : [])))];
+    message = goingToName
+      ? t.noTrainsTo(goingToName)
+      : compass
+        ? t.noTrains(t.direction[direction])
+        : places.length
+          ? t.noTrainsTowards(list(places.map(nameOf)))
+          : t.noTrainsAnyDirection;
+  }
+  const note = message && <p className={`trains-empty trains-empty--${side}`}>{message}</p>;
+  if (!items.length) return note || null;
+  // The note takes a train's room: with it, one train fewer fits on a phone (the rest are under "+ N more").
+  const shown = note && items.length > 1 ? items.slice(0, -1) : items;
   const more = (
     <button className={`more more--${side}`} onClick={onMore}>
-      {moreCount > 0 ? t.more(moreCount) : t.filter}
+      {moreCount + items.length - shown.length > 0 ? t.more(moreCount + items.length - shown.length) : t.filter}
     </button>
   );
   // Southbound lists run bottom-up (nearest by the platform), so the link goes at the far end: the top.
   return (
     <>
       {side === 'south' && more}
-      {side === 'north' && empty}
+      {side === 'north' && note}
       <ol className={`trains trains--${side}`}>
-        {trains.map((d, i) => (
-          <li key={d.trainCode} data-train={d.trainCode} className={`train train--${side}${i === 0 ? ' train--next' : ''}`} aria-label={describe(d)}>
-            {/* The whole row opens the train's look-ahead. */}
-            <button
-              className="train__open"
-              aria-label={t.journey.open(destinationName(d))}
-              onClick={(e) => onOpen(d, e.currentTarget.parentElement?.querySelector('.train__glyph') ?? null)}
-            />
-            <TrainGlyph />
-            <div className="train__info">
-              <span className={`train__due${d.dueInMins <= 0 ? ' train__due--now' : ''}`}>
-                {d.dueInMins <= 0 ? t.due : <DueIn mins={d.dueInMins} />}
-              </span>
-              <span className={`train__dest${destinationName(d).length > 12 ? ' train__dest--long' : ''}`}>
-                <Caps text={destinationName(d)} />
-              </span>
-              {/* Late: scheduled time struck through, the delay, then the expected time (delay already included). */}
-              <span className="train__meta">
-                {d.lateMins > 0 ? (
-                  <>
-                    <s className="train__scheduled">{d.scheduledDepart}</s>
-                    <span className={`late late--${delaySeverity(d.lateMins)}`}>+{d.lateMins}</span>
-                    <span className="train__expected">{d.expectedDepart}</span>
-                  </>
-                ) : (
-                  d.expectedDepart
-                )}
-              </span>
-            </div>
-          </li>
-        ))}
-        {scheduled.map((d) => (
-          // Timetabled: no live position or journey yet, so it can't be opened, and it's drawn hollow.
-          <li
-            key={`${d.trainCode}-${d.minutes}`}
-            className={`train train--${side} train--scheduled`}
-            aria-label={t.describeScheduled(scheduledDestination(d), d.time)}
-          >
-            <TrainGlyph />
-            <div className="train__info">
-              <span className="train__due">
-                <DueIn mins={d.minutes - nowMinutes} />
-              </span>
-              <span className={`train__dest${scheduledDestination(d).length > 12 ? ' train__dest--long' : ''}`}>
-                <Caps text={scheduledDestination(d)} />
-              </span>
-              <span className="train__meta">
-                <span className="train__timetable">{t.timetabled}</span>
-                <span className="train__planned">{d.time}</span>
-              </span>
-            </div>
-          </li>
-        ))}
+        {shown.map(({ live: d, timetabled: s }, i) =>
+          d ? (
+            <li key={d.trainCode} data-train={d.trainCode} className={`train train--${side}${i === 0 ? ' train--next' : ''}`} aria-label={describe(d)}>
+              {/* The whole row opens the train's look-ahead. */}
+              <button
+                className="train__open"
+                aria-label={t.journey.open(destinationName(d))}
+                onClick={(e) => onOpen(d, e.currentTarget.parentElement?.querySelector('.train__glyph') ?? null)}
+              />
+              <TrainGlyph />
+              <div className="train__info">
+                <span className={`train__due${d.dueInMins <= 0 ? ' train__due--now' : ''}`}>
+                  {d.dueInMins <= 0 ? t.due : <DueIn mins={d.dueInMins} />}
+                </span>
+                <span className={`train__dest${destinationName(d).length > 12 ? ' train__dest--long' : ''}`}>
+                  <Caps text={destinationName(d)} />
+                </span>
+                {/* Late: scheduled time struck through, the delay, then the expected time (delay already included). */}
+                <span className="train__meta">
+                  {d.lateMins > 0 ? (
+                    <>
+                      <s className="train__scheduled">{d.scheduledDepart}</s>
+                      <span className={`late late--${delaySeverity(d.lateMins)}`}>+{d.lateMins}</span>
+                      <span className="train__expected">{d.expectedDepart}</span>
+                    </>
+                  ) : (
+                    d.expectedDepart
+                  )}
+                </span>
+              </div>
+            </li>
+          ) : (
+            <TimetabledTrain key={`${s!.trainCode}-${s!.minutes}`} d={s!} side={side} next={i === 0 && !liveStation} hollow={liveStation} />
+          ),
+        )}
       </ol>
-      {side === 'south' && empty}
+      {side === 'south' && note}
       {side === 'north' && more}
     </>
   );
 }
 
+/**
+ * A timetabled train: no live position or journey, so it can't be opened. NI Railways trains (never live) show
+ * their clock time, since a countdown would look live; Irish Rail's, beyond the live window, a countdown. Hollow
+ * among live trains, solid at stations with none.
+ */
+function TimetabledTrain({ d, side, next, hollow }: { d: TimetabledDeparture; side: 'north' | 'south'; next: boolean; hollow: boolean }) {
+  const { t, scheduledDestination } = useI18n();
+  const now = useNow();
+  const clock = d.category === 'nir';
+  const destination = scheduledDestination(d);
+  return (
+    <li
+      className={`train train--${side}${next ? ' train--next' : ''}${hollow ? ' train--scheduled' : ''}`}
+      aria-label={`${t.describeScheduled(destination, d.time)}${d.tomorrow ? `, ${t.tomorrow}` : ''}`}
+    >
+      <TrainGlyph />
+      <div className="train__info">
+        <span className={`train__due${clock ? ' train__due--clock' : ''}`}>
+          {clock ? d.time : <DueIn mins={d.minutes - Math.floor(irishSecondsOfDay(now.getTime()) / 60)} />}
+        </span>
+        <span className={`train__dest${destination.length > 12 ? ' train__dest--long' : ''}`}>
+          <Caps text={destination} />
+        </span>
+        <span className="train__meta">
+          {/* Tomorrow's trains can only be timetabled, so that tag says both (two tags don't fit beside the track). */}
+          <span className="train__timetable">{d.tomorrow ? t.tomorrow : t.timetabled}</span>
+          {!clock && <span className="train__planned">{d.time}</span>}
+        </span>
+      </div>
+    </li>
+  );
+}
+
+/** Three lines: "show as a list". */
+export function ListIcon() {
+  return (
+    <svg className="switch-icon" viewBox="0 0 24 24" aria-hidden>
+      <path d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  );
+}
+
+/** Two tracks with arrows: "show on the tracks". */
+export function TracksIcon() {
+  return (
+    <svg className="switch-icon" viewBox="0 0 24 24" aria-hidden>
+      <path d="M8 21V4M5 7l3-3 3 3M16 3v17M13 17l3 3 3-3" />
+    </svg>
+  );
+}

@@ -15,7 +15,8 @@ import { NodejsFunction, type NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { AaaaRecord, ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
-import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
+import { BlockPublicAccess, Bucket, EventType } from 'aws-cdk-lib/aws-s3';
+import { LambdaDestination } from 'aws-cdk-lib/aws-s3-notifications';
 import { BucketDeployment, CacheControl, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
@@ -242,16 +243,36 @@ function handler(event) {
     // the NTA), builds yesterday's, today's and tomorrow's departures and writes one small JSON file per station per
     // day into the site bucket (timetable/<date>/<code>.json). CloudFront serves them like any other file, so the
     // API isn't involved. See docs/decisions.md.
+    // Files the job reads but the website must never serve: NI Railways' timetable, which the owner uploads
+    // (OpenDataNI refuses scripted downloads). Not behind CloudFront.
+    const sourcesBucket = new Bucket(this, 'TimetableSources', {
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      enforceSSL: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+    // The owner's alerts (job failures, and the NIR timetable running out), when there's an email to send them to.
+    const alerts = props.budgetEmail ? new Topic(this, 'AlertsTopic', { displayName: 'Next Train? alerts' }) : undefined;
+    if (alerts && props.budgetEmail) alerts.addSubscription(new EmailSubscription(props.budgetEmail));
+
     const timetableFn = new NodejsFunction(this, 'TimetableFunction', {
       ...lambdaDefaults,
       entry: repoPath('packages/api/src/timetableJob.ts'),
       logGroup: new LogGroup(this, 'TimetableLogs', { retention: RetentionDays.ONE_MONTH }),
-      // Parsing the timetable peaks at about 250 MB; more memory also means more CPU.
+      // Parsing the timetables peaks at about 300 MB; more memory also means more CPU.
       memorySize: 1024,
       timeout: Duration.minutes(2),
-      environment: { SITE_BUCKET: siteBucket.bucketName },
+      environment: {
+        SITE_BUCKET: siteBucket.bucketName,
+        TIMETABLE_SOURCES_BUCKET: sourcesBucket.bucketName,
+        ...(alerts ? { ALERTS_TOPIC_ARN: alerts.topicArn } : {}),
+      },
     });
     siteBucket.grantPut(timetableFn, 'timetable/*');
+    sourcesBucket.grantRead(timetableFn, 'nir/*');
+    alerts?.grantPublish(timetableFn);
+    // A new NIR release is in use a minute after it's uploaded, not the next night.
+    sourcesBucket.addEventNotification(EventType.OBJECT_CREATED, new LambdaDestination(timetableFn), { prefix: 'nir/' });
     // Every night at 03:30 UTC (03:30 in winter, 04:30 in summer, Irish time): after the NTA's nightly rebuild.
     new Rule(this, 'TimetableSchedule', {
       description: 'Build the next days\' timetable files from Irish Rail GTFS',
@@ -270,9 +291,7 @@ function handler(event) {
     siteBucket.addLifecycleRule({ prefix: 'timetable/', expiration: Duration.days(3) });
 
     // Tell the owner if the job fails (the app keeps showing live times; the timetable just goes stale).
-    if (props.budgetEmail) {
-      const alerts = new Topic(this, 'AlertsTopic', { displayName: 'Next Train? alerts' });
-      alerts.addSubscription(new EmailSubscription(props.budgetEmail));
+    if (alerts) {
       timetableFn
         .metricErrors({ period: Duration.hours(6) })
         .createAlarm(this, 'TimetableJobFailed', {
@@ -290,5 +309,7 @@ function handler(event) {
     });
     new CfnOutput(this, 'CloudFrontUrl', { value: `https://${distribution.distributionDomainName}` });
     new CfnOutput(this, 'AlexaFunctionArn', { value: alexaFn.functionArn });
+    // Where `npm run nir:upload` puts each NI Railways timetable release.
+    new CfnOutput(this, 'TimetableSourcesBucket', { value: sourcesBucket.bucketName });
   }
 }

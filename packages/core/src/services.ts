@@ -2,7 +2,7 @@ import type { RawStationData } from './irishRailClient';
 import { COMMUTER_ROUTES, COMMUTER_STATION_CODES } from './commuter';
 import { INTERCITY_ROUTES, INTERCITY_STATION_CODES } from './intercity';
 import { CORK_LINE, DART_LINE, ENTERPRISE_LINE, type Line } from './line';
-import { NIR_ROUTES, NIR_STATION_CODES } from './nir';
+import { NIR_STATION_CODES, NIR_TRACK_LINE } from './nir';
 import { ALL_STATIONS, CORK_STATIONS, DART_STATIONS, ENTERPRISE_STATIONS } from './stations';
 import type { Station } from './types';
 
@@ -84,8 +84,9 @@ export const SERVICES: Record<ServiceId, Service> = {
   },
   nir: {
     id: 'nir',
-    // No live data: Irish Rail's feed has no NI Railways trains, so nothing on a board matches.
-    line: { paths: NIR_ROUTES.flatMap((r) => r.line.paths), termini: { Northbound: [], Southbound: [] } },
+    // No live data: Irish Rail's feed has no NI Railways trains, so no live train matches (they're timetabled).
+    // One through line for the station page's two tracks (see NIR_TRACK_LINE); the map uses NIR_ROUTES.
+    line: NIR_TRACK_LINE,
     stations: NIR_STATIONS,
     matches: () => false,
   },

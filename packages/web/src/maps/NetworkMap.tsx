@@ -8,7 +8,6 @@ import { servicesByTrack, SERVICE_LINE_COLOURS, trackColours, type MapService } 
 import { hasNoData, isNorthern, NI_STATIONS, withNorthernTrack } from './data/northernStations';
 import { OptionsMenu } from '../components/OptionsMenu';
 import { PositionedMap } from './PositionedMap';
-import { Sheet } from '../components/Sheet';
 
 interface Props {
   onBack: () => void;
@@ -47,7 +46,7 @@ const SEARCHABLE: Station[] = [...NETWORK_STATIONS, ...NI_STATIONS.map((s) => ({
     },
 );
 
-/** Every Irish Rail station as one schematic, fitting the screen's width and scrolling down. Not linked to live times yet. */
+/** Every station in Ireland as one schematic, fitting the screen's width and scrolling down. */
 export function NetworkMap({ onBack, onSelectStation }: Props) {
   const { t, lang } = useI18n();
   const name = useNetworkName();
@@ -56,9 +55,8 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
   const [query, setQuery] = useState('');
   const results = query.trim() ? searchStations(query, SEARCHABLE) : [];
   const unmapped = useMemo(() => NETWORK_STATIONS.filter((s) => !connected.has(s.code)), []);
-  // Northern Ireland stations without live times open a note saying so, rather than an empty board.
-  const [noDataCode, setNoDataCode] = useState<string>();
-  const open = (code: string) => (hasNoData(code) ? setNoDataCode(code) : onSelectStation(code, name(code)));
+  // Every station opens its board; Northern Ireland ones without live times show NI Railways' timetable there.
+  const open = (code: string) => onSelectStation(code, name(code));
 
   return (
     <div className="network">
@@ -86,7 +84,7 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
             <li key={s.code} className="station-row">
               {hasNoData(s.code) ? (
                 <button className="station-row__name station-row__name--no-data" onClick={() => open(s.code)}>
-                  {name(s.code)} <span className="network__no-data-note">· {t.noLiveData}</span>
+                  {name(s.code)} <span className="network__no-data-note">· {t.timetableOnly}</span>
                 </button>
               ) : (
                 <button className="station-row__name" onClick={() => open(s.code)}>
@@ -103,7 +101,7 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
             {LEGEND.map((s) => (
               <li key={s}>
                 <span className="commuter__swatch" style={{ background: SERVICE_LINE_COLOURS[s] }} />
-                {s === 'ni' ? `${t.niRailways} (${t.noLiveData})` : t.serviceNames[s]}
+                {s === 'ni' ? `${t.niRailways} (${t.timetableOnly})` : t.serviceNames[s]}
               </li>
             ))}
           </ul>
@@ -120,7 +118,7 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
             label={t.allStations}
           />
           <p className="network__unmapped">
-            <em>{t.italicStations}</em> {t.noLiveDataNote}
+            <em>{t.italicStations}</em> {t.timetableOnlyNote}
           </p>
           {unmapped.length > 0 && (
             <p className="network__unmapped">
@@ -130,13 +128,6 @@ export function NetworkMap({ onBack, onSelectStation }: Props) {
         </>
       )}
 
-      {noDataCode && (
-        <Sheet title={name(noDataCode)} onClose={() => setNoDataCode(undefined)}>
-          <p className="sheet__note">
-            <strong>{t.noLiveDataTitle}.</strong> {t.noLiveDataExplained}
-          </p>
-        </Sheet>
-      )}
     </div>
   );
 }

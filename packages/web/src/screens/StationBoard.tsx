@@ -8,6 +8,7 @@ import {
   isCityStation,
   route as routeBetween,
   scheduledMatches,
+  type ServiceId,
   type TrainCategory,
 } from '@dart-times/core';
 import { formatTime, useNow } from '../lib/clock';
@@ -16,7 +17,7 @@ import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
 import { DueIn } from '../components/DueIn';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
-import { OfficialName } from './TrackView';
+import { OfficialName, TracksIcon } from './TrackView';
 import { useDepartures } from '../lib/useDepartures';
 import { useScheduled } from '../lib/useScheduled';
 import { LaterDepartures } from '../components/LaterDepartures';
@@ -26,7 +27,7 @@ interface Props {
   name: string;
   /** "all": every train at the station, grouped by the API's direction. "commuter" and "intercity": that
    *  service's trains only, grouped by route and direction (e.g. "Northern · towards Dundalk"). */
-  mode: 'all' | 'commuter' | 'intercity';
+  mode: 'all' | ServiceId;
   backLabel: string;
   onBack: () => void;
   favourite?: { on: boolean; toggle: () => void };
@@ -34,6 +35,8 @@ interface Props {
   live?: boolean;
   /** A note above the departures, e.g. that NI Railways trains aren't included. */
   note?: string;
+  /** The tracks button by the station name: show this station on its two tracks instead. */
+  onShowTracks?: () => void;
 }
 
 interface Group {
@@ -44,9 +47,11 @@ interface Group {
 }
 
 /** A station's departures in the next 90 minutes, as a board grouped by direction (or route and direction). */
-export function StationBoard({ code, name, mode, backLabel, onBack, favourite, live = true, note }: Props) {
+export function StationBoard({ code, name, mode, backLabel, onBack, favourite, live = true, note, onShowTracks }: Props) {
   const { t, nameOf, destinationName, describe } = useI18n();
   const scheduled = useScheduled(code);
+  // NI Railways trains are timetable-only, from now: the section is "Timetable", not "Later".
+  const hasNir = !!scheduled?.some((d) => d.category === 'nir');
   const { data, error } = useDepartures(code, mode, live);
   const now = useNow();
   const fetchedAt = data && new Date(data.fetchedAt);
@@ -120,7 +125,7 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
                 {error && ` · ${t.retrying}`}
               </>
             ) : (
-              (error ?? (live ? t.loading : t.noLiveData))
+              (error ?? (live ? t.loading : t.timetableOnly))
             )}
           </p>
         </div>
@@ -141,7 +146,14 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
 
       <div className="board__sign">
         <h1 className="platform__name">
-          <Caps text={name} />
+          {onShowTracks ? (
+            <button className="platform__switch" onClick={onShowTracks} aria-label={`${name}: ${t.showOnTracks}`} title={t.showOnTracks}>
+              <Caps text={name} />
+              <TracksIcon />
+            </button>
+          ) : (
+            <Caps text={name} />
+          )}
         </h1>
         <OfficialName station={findStationByCode(code)} />
       </div>
@@ -181,13 +193,18 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
             </ol>
           </section>
         ))}
-        {scheduled && data && (
+        {/* Stations with no live data at all (most of NI Railways) show the timetable straight away. */}
+        {scheduled && (data || !live) && (
           <LaterDepartures
             departures={scheduled}
             nowMinutes={Math.floor(irishSecondsOfDay(now.getTime()) / 60)}
-            liveCodes={new Set(data.departures.map((d) => d.trainCode))}
+            liveCodes={new Set(data?.departures.map((d) => d.trainCode))}
             include={(d) => mode === 'all' || scheduledMatches(mode, d)}
             showCategory={mode === 'all'}
+            limit={hasNir ? 15 : undefined}
+            title={hasNir ? t.timetable : undefined}
+            // Said once: in the board's note when there is one (NI Railways stations), else here.
+            note={hasNir ? (note ? null : t.nirTimetableNote) : undefined}
           />
         )}
       </div>

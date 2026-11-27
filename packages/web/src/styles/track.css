@@ -370,6 +370,15 @@
   color: var(--muted);
 }
 
+/* NI Railways trains (timetable only) show their clock time, which is wider than a countdown. */
+.train__due--clock {
+  letter-spacing: -0.02em;
+}
+
+.train--next .train__due--clock {
+  font-size: 2.3rem;
+}
+
 .train__timetable {
   padding: 0 4px;
   border: 1px solid currentColor;
@@ -442,8 +451,13 @@
   }
 
   /* Hours and minutes need a size down to fit beside the track. */
-  .train__due:has(.train__unit--hours) {
+  .train__due:has(.train__unit--hours),
+  .train__due--clock {
     font-size: 1.35rem;
+  }
+
+  .train--next .train__due--clock {
+    font-size: 1.9rem;
   }
 
   /* Tighter units too, so the Irish "1U 15NÓIM" fits as well as "1H 15MIN". */
@@ -571,4 +585,71 @@
 .neighbour:focus-visible {
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* Line chips: at a station on several lines (Commuter hubs), which line's two tracks to show. */
+.line-chips {
+  flex: none;
+  display: flex;
+  gap: 6px;
+  padding: 6px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--border);
+}
+
+.line-chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 2px solid var(--text);
+  background: var(--bg);
+  color: var(--text);
+  font: 800 0.72rem var(--font);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.line-chip--on {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.line-chip__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+/* The station name as the switch between the two tracks and the list board. */
+.platform__switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.switch-icon {
+  flex: none;
+  width: 0.5em;
+  height: 0.5em;
+  min-width: 16px;
+  min-height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.7;
 }

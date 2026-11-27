@@ -40,6 +40,10 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `feat/hours-countdown` | Options choice to show times over an hour as hours and minutes (`1h 26 min`) |
 | `feat/timetable-on-track` | Timetabled trains on the station page's tracks where there are no live ones |
 | `feat/verify-deploy` | Live-site check after every deploy (version, API, timetable, www redirect) |
+| `feat/nir-timetable` | NI Railways timetabled trains, from Translink's TransXChange timetable |
+| `feat/nir-track-view` | NI Railways stations on the two-track station page, from the timetable |
+| `feat/timetable-toggle` | Options choice to hide Irish Rail's timetabled trains (NI Railways keeps its timetable) |
+| `feat/station-lines` | Two-track station pages for Commuter and InterCity, with a chip per route at hubs; station name switches to the list board |
 | `fix/deploy-on-request` | Pipeline deploys only when run by hand, not on every merge |
 
 ## Using the web app
@@ -48,6 +52,7 @@ The app always opens on the **service picker**: DART, Dublin Commuter, InterCity
 
 - **Line maps:** tap a station to open it. Search finds stations by English or Irish name, fadas optional, and tolerates small typos ("connoly"). Favourites appear as chips: on each service's page, or all together on the home page if the options cog says so (a home-page favourite opens every train at that station).
 - **Station page** (`web/src/screens/TrackView.tsx`):
+- **List or tracks:** tap the station name (☰) for a list board of the same station; on the board, tap the name (⇅) for the tracks again. The choice is remembered on the device (`useStationView`).
   - **Tracks:** a fixed-size station sign sits between two tracks. The darker northbound track runs up the left, the lighter southbound track runs down the right, and each arrowhead names where trains in that direction end up.
   - **Trains:** the next 3 trains each way approach the platform. Late trains show ~~scheduled~~ `+delay` expected.
   - **Next stations:** links above and below the station name step to the next station north or south. At a junction, both branches are shown.
@@ -55,7 +60,7 @@ The app always opens on the **service picker**: DART, Dublin Commuter, InterCity
   - **Refresh:** every 30 s while the tab is visible.
 - **Train look-ahead:** tap a train on the station page. The station sign and the other track fade, the train's track glides to the centre and runs the full height, and the train settles at the end it's coming from (bottom for northbound, top for southbound). Its stops to the terminus line the track with expected arrival time, minutes away and any delay, plus where the train is now ("Left Tara Street 1 min ago"). Tap the train or Close to go back. Data: `GET /api/trains/:code/journey?from=STATION` (`buildJourney` in `core/src/journey.ts`, from `getTrainMovementsXML`), cached at the edge for 20 s; refreshed every 30 s while open (`web/src/components/JourneyView.tsx`).
 - **Going-to filter:** each section ends in "+ N more" (or "Filter"), which opens every departure that way for the next 90 minutes with "going to" chips. Choosing a destination hides trains that won't get you there and dims the other track. A chip under the station name clears it. The choice is remembered per station.
-- **Options cog:** language (English | Irish), appearance (Light | Dark), where favourites go, and how times over an hour read (Minutes | Hours & mins, i.e. `86 min` or `1h 26 min`; minutes by default, saved per device). Light/dark follows the phone unless you choose. On an iPhone or iPad in Safari it also explains how to install the app.
+- **Options cog:** language (English | Irish), appearance (Light | Dark), where favourites go, and whether Irish Rail's timetabled trains show (On | Off, on by default; NI Railways always shows its timetable, `useTimetabledTrains`, applied in `useScheduled`), how times over an hour read (Minutes | Hours & mins, i.e. `86 min` or `1h 26 min`; minutes by default, saved per device). Light/dark follows the phone unless you choose. On an iPhone or iPad in Safari it also explains how to install the app.
 - **Help & about** (options cog, or `?help`): how to read a station page, tips, where the times come from, privacy, and a **questions & feedback** form. Messages go to `POST /api/feedback`, are stored in the `Feedback` DynamoDB table for a year, and emailed to the owner through an SNS topic (subscribed to `budgetEmail`; AWS sends a one-off "Confirm subscription" email that must be clicked). Spam limits: a hidden honeypot field, at least 3 s on the form, 3 messages per device per hour and 50 a day in total (`FEEDBACK_LIMITS` in `core/src/feedback.ts`). The help page also shows the build date and commit.
 - **Options cog:** language (English | Irish) and appearance (Light | Dark). Light/dark follows the phone unless you choose. On an iPhone or iPad in Safari it also explains how to install the app.
 - **Help & about** (options cog, or `?help`): how to read a station page, tips, where the times come from, privacy, and a **questions & feedback** form. Messages (up to 1,000 characters, with a required email address so they can be answered) go to `POST /api/feedback`, are stored in the `Feedback` DynamoDB table for a year, and emailed to the owner through an SNS topic (subscribed to `budgetEmail`; AWS sends a one-off "Confirm subscription" email that must be clicked). Spam limits: a hidden honeypot field, at least 3 s on the form, 3 messages per device per hour and 50 a day in total (`FEEDBACK_LIMITS` in `core/src/feedback.ts`). The help page also shows the build date and commit.
@@ -87,7 +92,18 @@ The app always opens on the **service picker**: DART, Dublin Commuter, InterCity
 
 ## Translink NIR
 
-Northern Ireland Railways, as its own service (Translink's teal and lime on the tile). **There's no live data**: Irish Rail's feed has no NI Railways trains, so station pages say so. Belfast Grand Central, Portadown and Newry also show their live Enterprise (and Irish Rail) trains.
+Northern Ireland Railways, as its own service (Translink's teal and lime on the tile). **There's no live data**: Irish Rail's feed has no NI Railways trains, and OpenDataNI's real-time feed isn't working. So NIR trains are shown at their **timetabled** times, from now. Belfast Grand Central, Portadown and Newry also show their live Enterprise trains.
+
+- **Station page:** the same two-track page as the DART, on `NIR_TRACK_LINE` (`core/src/nir.ts`): one line from Newry through Portadown, Lisburn and **Grand Central** (a through station) across the city to Lanyon Place, branching to Bangor, and at York Street to Larne and Derry (Portrush at Coleraine). So "towards Belfast" from Portadown is Northbound, as on the Enterprise. NIR trains show their **clock time** as the big number (a countdown would look live) with a **Timetable** tag; they're solid at stations with no live trains and hollow beside live Enterprise trains, which they fall in among in time order. They can't be tapped (no live journey). After the last train the page says **No more trains today** and shows tomorrow's first ones, tagged **Tomorrow**. The header says "timetable only".
+- **All-stations map:** NI stations open a station board with the same timetabled trains.
+
+### NIR timetable
+
+- **Source:** "Translink Northern Ireland Rail Timetable Data" on OpenDataNI (TransXChange XML, Open Government Licence; https://admin.opendatani.gov.uk/dataset/nir20160126v2). It also has the Enterprise, which is skipped: Irish Rail's GTFS has it, with the live API's train codes.
+- **Parsing:** `core/src/transxchange.ts`. Each journey has a start time and a journey pattern whose links give run and wait times, so stop times are added up along the pattern. Stops are matched to our stations by position (and name), as GTFS stops are. Weekly day types and days of (non-)operation are read; there are no bank-holiday rules in Translink's file.
+- **Getting a new release in:** OpenDataNI refuses scripted downloads and each release has a new file name, so the daily job can't fetch it. Download the ZIP in a browser and run `npm run nir:upload -- <file.zip> --profile next-train` (the `.xml` inside works too). It goes to the private `TimetableSources` bucket (never served by CloudFront), and the upload triggers the timetable job, so the new times are live within a couple of minutes.
+- **Reminders:** each release covers a few months (the September 2026 one ends on 13 December). The job emails the alerts topic when there's no NIR timetable, within 10 days of the end, and after it. If the NIR file can't be read, Irish Rail's timetable is still written.
+- **Locally:** `NIR_TIMETABLE=path/to/release.zip npm run timetable:local` adds NIR to the local timetable files.
 
 | Route | Runs |
 |---|---|
@@ -104,8 +120,8 @@ Northern Ireland Railways, as its own service (Translink's teal and lime on the 
 
 ## All stations and station boards
 
-- **All stations** shows every Irish Rail station on one vertical schematic that fits a phone's width (`web/src/maps/NetworkMap.tsx`), with search.
-- **Station boards:** tap a station for its board (`web/src/screens/StationBoard.tsx`). It shows every train in the next 90 minutes, grouped by the direction the API gives, each labelled **DART**, **Enterprise**, **InterCity** or **Commuter** (`trainCategory` in `core/src/departures.ts`).
+- **All stations** shows every station in Ireland on one vertical schematic that fits a phone's width (`web/src/maps/NetworkMap.tsx`), with search. Northern Ireland stations without live times are in italics ("timetable only"); tapping one opens its board with NI Railways' timetabled trains, as from the Translink NIR service.
+- **Station boards:** tap a station for its board (`web/src/screens/StationBoard.tsx`). It shows every train in the next 90 minutes, grouped by the direction the API gives, each labelled **DART**, **Enterprise**, **InterCity**, **Commuter** or (timetabled only) **NIR** (`trainCategory` in `core/src/departures.ts`).
 - **InterCity vs Commuter:** InterCity is identified by train codes starting with "A". That's an observed pattern, not documented by Irish Rail.
 - **Where the network data comes from:** the API lists station locations but not how they connect. `npm run build-network -w @dart-times/core` samples every running train's stop list, which includes stations passed without stopping, and writes the connections to `web/src/maps/data/network.data.ts`. Each run adds to earlier ones, so run it at different times to fill gaps. It also merges duplicate station codes, drops links that skip a station, and estimates missing positions. About 16 stations on lightly used lines (Nenagh, Clonmel, Gort…) aren't connected yet.
 
@@ -121,7 +137,8 @@ Four routes, defined in `core/src/commuter.ts` with each route's paths running c
 | **South Eastern** | Connolly – down the DART line – Greystones – Wicklow – Arklow – Gorey |
 
 - **Map** (`web/src/maps/RoutesMap.tsx`, shared with InterCity): a toggle switches between **All routes**, one geography-inspired map with Connolly and Heuston as hubs (`web/src/maps/data/commuterSchematic.ts`), and **By route**, which shows one route at a time.
-- **Station boards:** commuter stations can be on several routes (Connolly is on four), so tapping one opens a board grouped by route and direction, e.g. "Northern · towards Drogheda / Dundalk", rather than the two-track page.
+- **Station page:** the same two-track page as the DART. A station on several routes (Connolly is on four) gets a chip per route (Northern · Western · South Western · South Eastern) above the tracks, opening on the route picked on the map; each route's tracks are outbound and inbound, named by where trains go ("towards Maynooth"). Each train goes on its route (`commuterHeading`); one whose route can't be told still lands on a track (`placeDeparture` in `core/src/stationLines.ts`), so none can drop off the page. Tap the station name for the board instead.
+- **Station boards:** grouped by route and direction, e.g. "Northern · towards Drogheda / Dundalk".
   - **How trains are placed** (`commuterHeading`): on a route serving both this station and the destination if there is one. Otherwise, a train heading into the city centre goes under this station's route, and a train running through the city goes under its destination's route.
   - **Inbound groups** read "towards Dublin", except at city-centre stations, where they name the destination.
   - **Unplaced trains:** those to places off the network (e.g. Longford) are grouped by the API's own direction.
@@ -140,6 +157,7 @@ Six routes, defined in `core/src/intercity.ts`. Each route's paths run from its 
 | **Sligo** | Connolly – Drumcondra – Maynooth – Mullingar – Longford – Sligo |
 | **Rosslare** | Connolly – Dún Laoghaire – Bray – Wicklow – Arklow – Gorey – Wexford – Rosslare Europort |
 
+- **Station page:** two tracks per route, with a chip per route where several meet (Kildare, Thurles, Limerick Junction, Athenry, Heuston…), as on the Commuter. Tap the station name for the board.
 - **Station boards** are grouped by route and by the next station each train runs to, so trains leaving in different directions get their own groups even on one route (at Mallow: towards Cork, towards Tralee, towards Heuston). Each group names where its trains are going.
   - **How trains are placed** (`intercityHeading`): on a route serving both this station and the destination. Routes share track (Heuston to Limerick Junction carries Cork, Kerry and Limerick trains), so the route that also serves the train's origin wins.
 - **Map:** **All routes** is drawn from the all-stations map (`web/src/maps/data/intercitySchematic.ts`), in its compact type: each station keeps its place there, and each connection follows the same track, through the commuter stations InterCity trains skip. Shared track shows each route's colour side by side. Stations the all-stations map doesn't place yet (the Nenagh line, Gort–Craughwell, Limerick Junction–Waterford) are listed under the map and appear once it places them. **By route** shows one route at a time, with every station.

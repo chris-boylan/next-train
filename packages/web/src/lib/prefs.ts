@@ -65,3 +65,16 @@ export const useFavouritesPlace = storedChoice<FavouritesPlace>('dart-times:favo
 
 /** Countdowns of an hour or more: "86 min" (the default) or "1h 26min". */
 export const useCountdownStyle = storedChoice<CountdownStyle>('dart-times:countdown-style', ['minutes', 'hours'], 'minutes');
+
+/** A station shown on its two tracks (the default) or as a list board; switched by the button by its name. */
+export type StationView = 'tracks' | 'board';
+
+export const useStationView = storedChoice<StationView>('dart-times:station-view', ['tracks', 'board'], 'tracks');
+
+/**
+ * Irish Rail's timetabled trains (beyond the live window, and timetable-only stretches): shown (the default) or
+ * hidden. NI Railways always shows its timetable, since it has no live data at all.
+ */
+export type TimetabledTrains = 'on' | 'off';
+
+export const useTimetabledTrains = storedChoice<TimetabledTrains>('dart-times:timetabled-trains', ['on', 'off'], 'on');
