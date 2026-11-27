@@ -174,18 +174,34 @@
   font-weight: 700;
 }
 
-/* Beside the green arrowhead (top left) and the orange arrowhead (bottom right). */
+/* Beside the green arrowhead (top left) and the orange arrowhead (bottom right). Each spans its half, with a
+   spacer half the half's height on the far side from the platform, so the names start beside the arrowhead.
+   A long list (eight places from Tara Street) shrinks the spacer and slides away from the station sign,
+   rather than running behind it. */
+.terminus--north,
+.terminus--south {
+  top: 8px;
+  bottom: 8px;
+  margin: 0;
+}
+
+.terminus--north::before,
+.terminus--south::after {
+  content: '';
+  flex: 0 1 50%;
+}
+
 .terminus--north {
-  top: 50%;
   right: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
   align-items: flex-end;
+  justify-content: flex-start;
   text-align: right;
   color: var(--north-text);
 }
 
 .terminus--south {
-  bottom: 50%;
   left: calc(50% + var(--lane-width) + var(--lane-gap) / 2 + 10px);
+  justify-content: flex-end;
   color: var(--south-text);
 }
 
@@ -212,6 +228,15 @@
 .train--next {
   height: 80px;
   --glyph-width: 40px;
+}
+
+/* Room for "Last today" on a line of its own, when it doesn't fit beside a late train's times (see .train__meta). */
+.train:has(.train__last) {
+  height: 80px;
+}
+
+.train--next:has(.train__last) {
+  height: 96px;
 }
 
 /* New trains slide in along their track, in their direction of travel. */
@@ -336,14 +361,23 @@
   white-space: nowrap;
 }
 
+/* When "Last today" and a late train's times don't both fit, the tag wraps onto a line of its own below the times
+   (wrap-reverse puts the overflow line on top), rather than running off the screen. */
 .train__meta {
   display: flex;
-  gap: 4px;
+  flex-wrap: wrap-reverse;
+  gap: 3px 4px;
   white-space: nowrap;
   align-items: center;
   font-size: 0.75rem;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
+}
+
+.train__times {
+  display: flex;
+  gap: 4px;
+  align-items: center;
 }
 
 .train__scheduled {

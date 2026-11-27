@@ -26,6 +26,14 @@ describe('alongPath', () => {
 });
 
 describe('placeTrains', () => {
+  // On 27 Nov the InterCity map went blank: a train standing at a station asked the drawn track for the way from
+  // that station to itself, got an empty path, and placing it along that threw.
+  it('places a train standing at a station when the drawn track gives no way to go along', () => {
+    const [atB] = placeTrains([train({ at: 'B', to: 'B' })], pointOf, () => []);
+    expect(atB).toMatchObject({ x: expect.any(Number), y: expect.any(Number) });
+    expect(alongPath([], 0.5)).toMatchObject({ dx: 0, dy: 0 });
+  });
+
   it('points straight up or down on a north–south map, whatever the slant', () => {
     const [north] = placeTrains([train({ from: 'A', to: 'C', direction: 'Northbound' })], pointOf);
     expect(north!.angle).toBe(0);

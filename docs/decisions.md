@@ -6,6 +6,20 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-27 · A one-time welcome, with an invitation to install
+
+**Decision:** a first ever visit to the home page gets a quiet full-screen welcome (`components/Welcome.tsx`): the
+icon, the name, one line on what it does, an invitation to add it to the home screen, and "Find a train". Where the
+browser has an install prompt (Android Chrome) the invitation is a button that opens it; on iPhone Safari it's the
+Share → Add to Home Screen tip; elsewhere there's no invitation. It's marked seen in `localStorage` as soon as it
+shows, so it never comes back. It isn't shown in the installed app (iOS gives that its own storage, so it would
+otherwise greet again), to visitors arriving on a station or help link (they came for that), or where storage
+isn't available (we couldn't remember having shown it).
+
+**Why:** installing is what turns a one-off visit into the app on someone's phone, and most people don't know a
+website can be installed. Once, on the first visit, is enough to tell them; anything more often gets in the way of
+the times.
+
 ## 2026-11-27 · Live trains on the Dublin Commuter and InterCity maps
 
 **Decision:** the All routes maps for Dublin Commuter and InterCity show live trains, behind the same Live switch.
