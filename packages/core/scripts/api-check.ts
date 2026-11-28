@@ -1,7 +1,7 @@
 // Daily health check against the live Irish Rail and Luas APIs (run by .github/workflows/api-check.yml).
 // Neither has versioning or a changelog, so this fails loudly if their data goes missing or changes shape.
 // Usage: npm run api-check -w @dart-times/core
-import { getLuasDepartures, IrishRailClient, LUAS_STATION_CODES, LuasClient, SERVICES, type ServiceId } from '../src';
+import { getLuasDepartures, IrishRailClient, LUAS_STATION_CODES, LuasClient, SERVICES, type ServiceId, TRANSLINK_STOPS } from '../src';
 
 const client = new IrishRailClient({ timeoutMs: 15_000 });
 const problems: string[] = [];
@@ -68,8 +68,19 @@ const plannerPage = planner.ok ? await planner.text() : '';
 check(planner.ok, `ticket link: the journey planner returned HTTP ${planner.status}`);
 check(/hafas_webapp/.test(plannerPage), 'ticket link: the journey planner is no longer the HAFAS web app (does ?S= still fill "From"?)');
 
+// 6. NI Railways' ticket button opens Translink's "Plan and buy" with Translink's own station ID
+// (translinkStops.data.ts, from npm run update-translink-stops). Its station search should still give Coleraine the
+// ID we have: if Translink renumber their stations, the button would open on the wrong one, or none.
+const translinkPlanner = await fetch('https://www.translink.co.uk/JourneyPlannerV2?isQuickBuy=true', { signal: AbortSignal.timeout(15_000) });
+check(translinkPlanner.ok, `ticket link: Translink's journey planner returned HTTP ${translinkPlanner.status}`);
+const coleraine = (await (await fetch('https://www.translink.co.uk/locationApi/find?SearchString=Coleraine', { signal: AbortSignal.timeout(15_000) })).json()) as {
+  Locations?: { Id: string; LocationType: string }[];
+} | null;
+const coleraineId = coleraine?.Locations?.find((l) => l.LocationType === 'Train stop')?.Id;
+check(coleraineId === TRANSLINK_STOPS.NI_COLER?.id, `ticket link: Translink's ID for Coleraine is now ${coleraineId}, not ${TRANSLINK_STOPS.NI_COLER?.id} (run npm run update-translink-stops)`);
+
 if (problems.length) {
   console.error(`\nAPI check failed:\n${problems.map((p) => `- ${p}`).join('\n')}`);
   process.exit(1);
 }
-console.log('Irish Rail, Luas and ticket link check passed.');
+console.log('Irish Rail, Luas and ticket links check passed.');

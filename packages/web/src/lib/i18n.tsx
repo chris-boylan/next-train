@@ -109,8 +109,8 @@ const en = {
   findStation: 'Find a station',
   findStop: 'Find a stop',
   serviceNews: 'Service news',
-  // The station page's ticket button: opens Irish Rail's planner from this station, in a new tab.
-  buyTickets: 'Buy tickets on irishrail.ie',
+  // The station page's ticket button: opens the planner from this station, in a new tab.
+  buyTickets: { irishrail: 'Buy tickets on irishrail.ie', translink: 'Buy tickets on translink.co.uk' },
   serviceNewsMore: 'Travel updates on luas.ie',
   favouriteStations: 'Favourite stations',
   noMatch: (query: string) => `No station matches “${query}”.`,
@@ -168,10 +168,11 @@ const en = {
   // iOS isn't available in Irish, so its button names are quoted in English in both languages.
   installTip: 'Tap Share, then “Add to Home Screen”, to open Next\u00a0Train? like an app.',
   welcome: {
-    lead: 'Live Irish Rail times: when the next train is coming, at a glance.',
+    // NI Railways has no live times (its trains are timetabled), so "live" is only claimed for the other two.
+    lead: 'When the next train or tram is coming, at a glance: live Irish Rail and Luas times, and NI Railways too.',
     invite: 'Add it to your home screen to open it like an app.',
     addToHomeScreen: 'Add to home screen',
-    start: 'Find a train',
+    start: 'Find a train or tram',
     // Safari's button names, as they read on an iPhone in English.
     iosSteps: [
       { text: 'Tap the ≡ button at the bottom left', icon: 'menu' },
@@ -232,7 +233,7 @@ const en = {
     failed: 'Couldn’t send your message. Please check your connection and try again.',
     tooMany: 'You’ve sent a few messages already. Please try again later.',
     aboutTitle: 'About',
-    about: 'Next Train? is unofficial and isn’t affiliated with Iarnród Éireann.',
+    about: 'Next Train? is unofficial and isn’t affiliated with Iarnród Éireann, Transport Infrastructure Ireland (the Luas) or Translink.',
     design: 'Design inspired by the Swiss (International Typographic) Style, with wayfinding-style arrows, and Harry Beck’s London Underground map. Typeface: Inter Tight (SIL Open Font License).',
     version: (version: string) => `Version ${version}`,
   },
@@ -386,7 +387,7 @@ const ga: Messages = {
   findStation: 'Aimsigh stáisiún',
   findStop: 'Aimsigh stad',
   serviceNews: 'Nuacht seirbhíse',
-  buyTickets: 'Ceannaigh ticéid ar irishrail.ie',
+  buyTickets: { irishrail: 'Ceannaigh ticéid ar irishrail.ie', translink: 'Ceannaigh ticéid ar translink.co.uk' },
   serviceNewsMore: 'Nuashonruithe taistil ar luas.ie',
   favouriteStations: 'Stáisiúin is fearr leat',
   noMatch: (query) => `Níl stáisiún ar bith a mheaitseálann “${query}”.`,
@@ -440,10 +441,10 @@ const ga: Messages = {
   install: 'Suiteáil',
   installTip: 'Brúigh “Share”, ansin “Add to Home Screen”, chun Next\u00a0Train? a oscailt mar aip.',
   welcome: {
-    lead: 'Amanna beo Iarnród Éireann: cathain a bheidh an chéad traein eile ag teacht, d’aon sracfhéachaint.',
+    lead: 'Cathain a bheidh an chéad traein nó tram eile ag teacht, d’aon sracfhéachaint: amanna beo Iarnród Éireann agus an Luas, agus Iarnród Thuaisceart Éireann freisin.',
     invite: 'Cuir ar do scáileán baile é chun é a oscailt mar aip.',
     addToHomeScreen: 'Cuir ar an scáileán baile',
-    start: 'Aimsigh traein',
+    start: 'Aimsigh traein nó tram',
     // iOS isn't available in Irish, so its button names are quoted in English.
     iosSteps: [
       { text: 'Brúigh an cnaipe ≡ thíos ar chlé', icon: 'menu' },
@@ -505,7 +506,7 @@ const ga: Messages = {
     failed: 'Níorbh fhéidir do theachtaireacht a sheoladh. Seiceáil do cheangal agus bain triail eile as.',
     tooMany: 'Tá cúpla teachtaireacht seolta agat cheana. Bain triail eile as ar ball.',
     aboutTitle: 'Eolas',
-    about: 'Níl Next Train? oifigiúil agus níl baint aige le hIarnród Éireann.',
+    about: 'Níl Next Train? oifigiúil agus níl baint aige le hIarnród Éireann, le Bonneagar Iompair Éireann (an Luas) ná le Translink.',
     design: 'Dearadh spreagtha ag an Stíl Eilvéiseach (an Stíl Chlóghrafaíochta Idirnáisiúnta), le saigheada ar nós comharthaí treo, agus ag léarscáil Faoi Thalamh Londan le Harry Beck. Cló: Inter Tight (SIL Open Font License).',
     version: (version) => `Leagan ${version}`,
   },

@@ -15,6 +15,7 @@
     "update-stations": "tsx scripts/update-stations.ts",
     "update-luas-stops": "tsx scripts/update-luas-stops.ts",
     "update-luas-run-times": "tsx scripts/update-luas-run-times.ts",
+    "update-translink-stops": "tsx scripts/update-translink-stops.ts",
     "build-network": "tsx scripts/build-network.ts",
     "api-check": "tsx scripts/api-check.ts"
   },

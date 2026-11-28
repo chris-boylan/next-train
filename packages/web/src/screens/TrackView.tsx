@@ -33,7 +33,7 @@ import { DeparturesSheet } from '../components/DeparturesSheet';
 import { Sheet } from '../components/Sheet';
 import { JOURNEY_CLOSE_MS, type JourneyOrigin, JourneyView, RETURN_FADE_DELAY_MS, RETURN_FADE_MS } from '../components/JourneyView';
 import { TrainGlyph } from '../components/TrainGlyph';
-import { sellsTicketsOnline, TicketLink } from '../components/TicketLink';
+import { TicketLink, ticketSite } from '../components/TicketLink';
 import { DueIn } from '../components/DueIn';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
@@ -214,6 +214,8 @@ export function TrackView({
   const dimmed = (direction: Direction) => !!goingDirection && goingDirection !== direction;
   // A Luas stop on the city-centre loop is served one way only: only its one track is drawn, in the middle.
   const unserved = service.id === 'luas' ? luasUnservedAt(station.code) : undefined;
+  // Where to buy tickets from here (Irish Rail's or Translink's site), if they're sold online.
+  const tickets = ticketSite(service.id, station);
   const laneDimmed = (direction: Direction) => dimmed(direction);
   // Its unserved track isn't drawn at all: the one track it has runs down the middle of the screen.
   const drawn = (direction: Direction) => unserved !== direction;
@@ -477,7 +479,7 @@ export function TrackView({
         </section>
 
         {/* Inside the tracks, so it fades with them when a train's look-ahead opens. */}
-        {sellsTicketsOnline(service.id) && <TicketLink station={station} />}
+        {tickets && <TicketLink to={tickets} />}
 
         {journey && (
           <JourneyView

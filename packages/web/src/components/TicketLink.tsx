@@ -1,33 +1,47 @@
-import type { ServiceId, Station } from '@dart-times/core';
+import { type ServiceId, type Station, TRANSLINK_STOPS } from '@dart-times/core';
 import { useI18n } from '../lib/i18n';
 
 /** Irish Rail's journey planner, which is also where its tickets are bought (HaCon's HAFAS web app). */
-const PLANNER_URL = 'https://journeyplanner.irishrail.ie/webapp/';
+const IRISH_RAIL_PLANNER = 'https://journeyplanner.irishrail.ie/webapp/';
+/** Translink's journey planner, in its "Plan and buy" mode. */
+const TRANSLINK_PLANNER = 'https://www.translink.co.uk/JourneyPlannerV2';
+
+/** Services whose tickets Irish Rail sells online. Not the DART (Leap or the station's machines) or the Luas. */
+const SOLD_BY_IRISH_RAIL: ReadonlySet<ServiceId> = new Set(['commuter', 'intercity', 'enterprise', 'cork']);
+
+export interface TicketSite {
+  href: string;
+  site: 'irishrail' | 'translink';
+}
 
 /**
- * Services whose tickets are bought online. Not the DART (Leap or the station's machines), NI Railways
- * (Translink's) or the Luas (Leap or the stop's machines).
+ * Where to buy tickets from this station, with "From" filled, or undefined where tickets aren't bought online.
+ * - Irish Rail: `?S=<station>` (undocumented, but the planner reads it, and matches our names: "Connolly" → Dublin
+ *   Connolly). Irish Rail's own name where we show another (Belfast Grand Central is "Belfast" to Irish Rail).
+ * - Translink, for NI Railways: "Plan and buy" (`isQuickBuy`) with Translink's own ID for the station
+ *   (translinkStops.data.ts): a name alone fills the box but selects no station.
+ * The daily API check watches both.
  */
-const SOLD_ONLINE: ReadonlySet<ServiceId> = new Set(['commuter', 'intercity', 'enterprise', 'cork']);
-
-export const sellsTicketsOnline = (service: ServiceId) => SOLD_ONLINE.has(service);
-
-/**
- * The planner opened at this station: `?S=` fills "From" (undocumented, but the planner reads it, and matches
- * our names: "Connolly" → Dublin Connolly, "Limerick" → Limerick (Colbert)). Irish Rail's own name for the
- * station where we show another (Belfast Grand Central is "Belfast" to Irish Rail). The daily API check watches it.
- */
-export const ticketUrl = (station: Station) => `${PLANNER_URL}?S=${encodeURIComponent(station.apiName ?? station.name)}`;
+export function ticketSite(service: ServiceId, station: Station): TicketSite | undefined {
+  if (SOLD_BY_IRISH_RAIL.has(service)) {
+    return { site: 'irishrail', href: `${IRISH_RAIL_PLANNER}?S=${encodeURIComponent(station.apiName ?? station.name)}` };
+  }
+  const stop = service === 'nir' ? TRANSLINK_STOPS[station.code] : undefined;
+  if (!stop) return undefined;
+  const params = new URLSearchParams({ originId: stop.id, originName: stop.name, originType: 'Train stop', isQuickBuy: 'true' });
+  return { site: 'translink', href: `${TRANSLINK_PLANNER}?${params}` };
+}
 
 /**
  * A square button like the options cog, bottom right of the station page: a ticket with an arrow out of it, for
- * buying tickets from this station on irishrail.ie (a new tab). The ticket is solid with the arrow cut through it,
- * like the cog's hole.
+ * buying tickets from this station on Irish Rail's or Translink's site (a new tab). The ticket is solid with the
+ * arrow cut through it, like the cog's hole.
  */
-export function TicketLink({ station }: { station: Station }) {
+export function TicketLink({ to }: { to: TicketSite }) {
   const { t } = useI18n();
+  const label = t.buyTickets[to.site];
   return (
-    <a className="ticket-link" href={ticketUrl(station)} target="_blank" rel="noopener noreferrer" aria-label={t.buyTickets} title={t.buyTickets}>
+    <a className="ticket-link" href={to.href} target="_blank" rel="noopener noreferrer" aria-label={label} title={label}>
       {/* Framed close round the ticket, so it fills the button as fully as the cog does. */}
       <svg className="ticket-link__icon" viewBox="2 2.5 20 19" aria-hidden>
         <defs>
