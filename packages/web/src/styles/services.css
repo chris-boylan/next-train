@@ -181,11 +181,12 @@
   justify-content: center;
   gap: 5px;
   height: 2rem;
-  padding: 0 2px;
+  /* Half a pixel lower, so the dots' top meets the capitals' top and the name sits on their baseline. */
+  padding: 1px 2px 0;
   border: 0;
   background: none;
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   font-weight: 700;
   line-height: 1;
   text-transform: uppercase;
@@ -206,20 +207,20 @@
 
 .home-title__dots {
   display: flex;
-  gap: 4px;
+  gap: 5px;
 }
 
 .home-title__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
   background: currentColor;
   opacity: 0.45;
   transition: width 200ms ease-out;
 }
 
 .home-title__dot--on {
-  width: 16px;
+  width: 20px;
   opacity: 1;
   background: var(--text);
 }
