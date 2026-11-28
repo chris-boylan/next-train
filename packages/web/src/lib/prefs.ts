@@ -87,7 +87,7 @@ export function useLiveTrainsPref(): [boolean, (on: boolean) => void] {
   return [choice === 'on', (on) => setChoice(on ? 'on' : 'off')];
 }
 
-/** How the station page draws DART, InterCity and Enterprise trains: white with one detail in colour (the
+/** How the station page draws DART, InterCity and Enterprise trains: plain white, told apart by shape (the
  *  default), or in their full livery. */
 export type TrainIcons = 'white' | 'colour';
 

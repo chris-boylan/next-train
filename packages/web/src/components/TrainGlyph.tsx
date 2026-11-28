@@ -11,9 +11,9 @@ import { useTrainIcons } from '../lib/prefs';
  * - The Luas: a tram, rounder, with its pantograph up to the wire.
  * - Anything else (Commuter, Cork, NI Railways): the plain box every train had before.
  *
- * Trains come white with each one's single most recognisable detail in colour (the default), or in their full
- * livery (Options → Train icons). Either way the outline is the same, and a timetabled or untracked train is drawn
- * hollow and dashed with its details faded (track.css), so it never passes for a live one.
+ * Trains come plain white, black and grey, told apart by shape alone (the default), or in their full livery
+ * (Options → Train icons). Either way the outline is the same, and a timetabled or untracked train is drawn hollow
+ * and dashed with its details faded (track.css), so it never passes for a live one.
  */
 export function TrainGlyph({ category }: { category?: TrainCategory }) {
   const [style] = useTrainIcons();
@@ -41,7 +41,7 @@ const Body = ({ d, livery }: { d: string; livery?: string }) => (
 const Outline = ({ d }: { d: string }) => <path d={d} className="glyph-outline" />;
 /** A livery detail: faded on a hollow train, like the windows. */
 const Paint = ({ d, fill }: { d: string; fill: string }) => <path d={d} fill={fill} className="glyph-paint" />;
-/** A light in a dark housing, for fronts painted yellow (where a yellow light wouldn't show). */
+/** A light in a dark housing, as on the real trains' fronts. */
 const Lamp = ({ x, y, w, h }: { x: number; y: number; w: number; h: number }) => (
   <>
     <rect x={x} y={y} width={w} height={h} rx={1} className="glyph-window" />
@@ -65,7 +65,6 @@ const DartFace = () => (
 const DartWhite = () => (
   <>
     <Body d={DART_BODY} />
-    <Paint d={DART_PANEL} fill="#ffd400" />
     <DartFace />
     <Outline d={DART_BODY} />
   </>
@@ -82,7 +81,6 @@ const DartLivery = () => (
 
 // --- InterCity ---
 const IC_BODY = 'M3.5 49.5V17C3.5 8.5 10 3.5 20 3.5S36.5 8.5 36.5 17v32.5Z';
-const IC_NOSE = 'M3.5 30h33v19.5h-33Z';
 const IC_ROOF = 'M3.5 17C3.5 8.5 10 3.5 20 3.5S36.5 8.5 36.5 17v13h-33Z';
 const InterCityFace = () => (
   <>
@@ -105,7 +103,6 @@ const InterCityFace = () => (
 const InterCityWhite = () => (
   <>
     <Body d={IC_BODY} />
-    <Paint d={IC_NOSE} fill="#ffd400" />
     <InterCityFace />
     <Outline d={IC_BODY} />
   </>
@@ -132,11 +129,9 @@ const EnterpriseWindows = () => (
 const EnterpriseWhite = () => (
   <>
     <Body d={ENT_BODY} />
-    <Paint d={r(3, 25.5, 34, 4.5)} fill="#5b2a86" />
-    <Paint d={r(3, 30, 34, 2)} fill="#a273d2" />
     <EnterpriseWindows />
-    <rect x={6.5} y={36} width={6} height={4.5} className="glyph-light" />
-    <rect x={27.5} y={36} width={6} height={4.5} className="glyph-light" />
+    <Lamp x={6} y={36} w={7} h={5} />
+    <Lamp x={27} y={36} w={7} h={5} />
     <Outline d={ENT_BODY} />
   </>
 );
