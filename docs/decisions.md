@@ -6,6 +6,19 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-28 · Luas trams as one service, from the Luas Forecasting API
+
+**Decision:** the Luas is a service of its own, with both lines on one map (a chip each, as Dublin Commuter's
+routes). Live times come from TII's Luas Forecasting API through our API Lambda, in the same `Departure` shape as
+trains, so the station page and list board work unchanged. The first version has times, maps, search, favourites
+and the line's disruption message. It has no live trams on the map, no journey view and no timetable.
+
+**Why:** the feed only gives each stop's next trams (minutes and destination), with no tram IDs or positions.
+Placing trams on a map would mean guessing from every stop's times (about 67 calls a refresh), and there's no
+journey to look up. Two separate services were considered, since the lines share no stops; one service keeps the
+picker short and matches how people speak of "the Luas". The feed's documentation is from 2016, so the daily API
+check now covers it too.
+
 ## 2026-11-27 · A one-time welcome, with an invitation to install
 
 **Decision:** a first ever visit to the home page gets a quiet full-screen welcome (`components/Welcome.tsx`): the

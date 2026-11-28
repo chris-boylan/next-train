@@ -249,6 +249,10 @@ export function TrackView({
   }, []);
   const nowMinutes = Math.floor(irishSecondsOfDay(now.getTime()) / 60);
   const liveCodes = new Set(data?.departures.map((d) => d.trainCode));
+  // The Luas feed's word on a track: the line's disruption message if there is one, else whether trams stop here
+  // this way at all (one side of the city-centre loop doesn't).
+  const luasNoteFor = (direction: Direction) =>
+    data?.luas?.disrupted ? data.luas.message : data?.luas?.noService.includes(direction) ? t.luasOneWay : undefined;
   const trainsFor = (direction: Direction, ends: string[]) => {
     const hidden = dimmed(direction);
     const live = hidden ? [] : shownIn(direction);
@@ -296,6 +300,7 @@ export function TrackView({
         onMore={() => setSheetDirection(direction)}
         ends={ends}
         goingToName={goingDirection === direction ? goingToName : undefined}
+        luasNote={luasNoteFor(direction)}
         hidden={hidden}
         hasData={liveStation ? !!data : !!timetable}
         onOpen={(train, glyph) => openJourney(train, direction, glyph, train.trainCode === lastTodayCode)}
@@ -595,6 +600,7 @@ const SERVICE_CATEGORY: Record<ServiceId, TrainCategory | undefined> = {
   intercity: 'intercity',
   cork: 'commuter',
   nir: undefined,
+  luas: 'luas',
 };
 
 type TrackTrain = { live: Departure; timetabled?: undefined; at: number } | { live?: undefined; timetabled: TimetabledDeparture; at: number };
@@ -616,6 +622,7 @@ function Trains({
   serviceId,
   others,
   lastTodayCode,
+  luasNote,
 }: {
   direction: Direction;
   /** Live and timetabled trains, in time order, as many as fit. */
@@ -644,6 +651,8 @@ function Trains({
   others?: OtherServices;
   /** The last train today on this track (see trainsFor), tagged "Last today". */
   lastTodayCode?: string;
+  /** On the Luas: a disruption the feed reports, or that no tram stops here this way (see luasNoteFor). */
+  luasNote?: string;
 }) {
   const { t, destinationName, describe, nameOf, list } = useI18n();
   const side = direction === 'Northbound' ? 'north' : 'south';
@@ -686,7 +695,9 @@ function Trains({
   const anyLive = items.some((x) => x.live);
   const noneToday = items.length > 0 && items.every((x) => x.timetabled?.tomorrow);
   let message: string | undefined;
-  if (!ends.length && !items.length) message = t.terminateHere;
+  const luas = serviceId === 'luas';
+  if (luas) message = luasNote ?? (!items.length ? (ends.length ? t.noTrams : t.tramsTerminateHere) : undefined);
+  else if (!ends.length && !items.length) message = t.terminateHere;
   else if (nir) message = !items.length ? t.noTimetabledTrains : noneToday ? t.noMoreToday : undefined;
   // Irish Rail after the last train: tomorrow's first is shown, so say there are no more today.
   else if (noneToday && !goingToName) message = t.noMoreToday;
@@ -753,11 +764,14 @@ function Trains({
               aria-label={`${describe(d)}${d.trainCode === lastTodayCode ? `, ${t.lastTrainToday}` : ''}`}
             >
               {/* The whole row opens the train's look-ahead. */}
-              <button
-                className="train__open"
-                aria-label={t.journey.open(destinationName(d))}
-                onClick={(e) => onOpen(d, e.currentTarget.parentElement?.querySelector('.train__glyph') ?? null)}
-              />
+              {/* Trams have no ID to look their journey up by, so a Luas row doesn't open one. */}
+              {d.category !== 'luas' && (
+                <button
+                  className="train__open"
+                  aria-label={t.journey.open(destinationName(d))}
+                  onClick={(e) => onOpen(d, e.currentTarget.parentElement?.querySelector('.train__glyph') ?? null)}
+                />
+              )}
               <TrainGlyph />
               <div className="train__info">
                 <span className={`train__due${d.dueInMins <= 0 ? ' train__due--now' : ''}`}>

@@ -6,6 +6,7 @@ import { CORK_STATION_DATA } from './stations.cork.data';
 import { ENTERPRISE_STATION_DATA } from './stations.enterprise.data';
 import { INTERCITY_STATION_DATA } from './stations.intercity.data';
 import { NIR_STATION_DATA } from './stations.nir.data';
+import { LUAS_STATION_DATA } from './stations.luas.data';
 import { IRISH_NAMES } from './stations.ga';
 
 export interface StationRecord {
@@ -61,6 +62,16 @@ const EXTRA_ALIASES: Record<string, string[]> = {
   CTARF: ['Clontarf'],
   BFSTC: ['Belfast', 'Grand Central', 'Great Victoria Street'],
   HWTHJ: ['Donaghmede'],
+  // Luas stops
+  LU_STS: ["Stephen's Green", 'Stephens Green', 'St Stephens Green'],
+  LU_OGP: ['GPO', "O'Connell Street"],
+  LU_OUP: ["O'Connell Street Upper"],
+  LU_MYS: ['Mayor Square', 'NCI'],
+  LU_BRD: ['Broadstone', 'TU Dublin'],
+  LU_CIT: ['Citywest'],
+  LU_HOS: ['Tallaght Hospital'],
+  LU_TPT: ['Point', '3Arena'],
+  LU_JAM: ["St James's Hospital", 'James'],
 };
 
 function splitAlias(alias: string): string[] {
@@ -71,7 +82,8 @@ function splitAlias(alias: string): string[] {
 }
 
 function toStation(record: StationRecord): Station {
-  const name = DISPLAY_NAMES[record.code] ?? record.name;
+  // Luas stop names use a hyphen as a dash ("O'Connell - GPO"): shown as one.
+  const name = DISPLAY_NAMES[record.code] ?? (record.code.startsWith('LU_') ? record.name.replace(/ - /g, ' – ') : record.name);
   const shortName = name.replace(/^Dublin\s+/i, '');
   const aliases = [
     shortName,
@@ -135,6 +147,9 @@ export const INTERCITY_ONLY_STATIONS: Station[] = INTERCITY_STATION_DATA.map(toS
 /** Northern Ireland Railways stations not already above (Belfast, Portadown and Newry are Enterprise stations). */
 export const NIR_ONLY_STATIONS: Station[] = NIR_STATION_DATA.map(toStation);
 
+/** Luas tram stops (both lines), with LU_ codes. They share no stops with the railways. */
+export const LUAS_STATIONS: Station[] = LUAS_STATION_DATA.map(toStation);
+
 /** Every station the apps know about, across all services. Lookups by code or name use this. */
 export const ALL_STATIONS: Station[] = [
   ...DART_STATIONS,
@@ -143,6 +158,8 @@ export const ALL_STATIONS: Station[] = [
   ...COMMUTER_ONLY_STATIONS,
   ...INTERCITY_ONLY_STATIONS,
   ...NIR_ONLY_STATIONS,
+  // Last, so a railway station wins a name lookup over a Luas stop of the same name (Broombridge).
+  ...LUAS_STATIONS,
 ];
 
 /** The official Irish name for any station code, including stations only on the all-stations map. */

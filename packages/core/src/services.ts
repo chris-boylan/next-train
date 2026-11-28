@@ -3,10 +3,11 @@ import { COMMUTER_ROUTES, COMMUTER_STATION_CODES } from './commuter';
 import { INTERCITY_ROUTES, INTERCITY_STATION_CODES } from './intercity';
 import { CORK_LINE, DART_LINE, ENTERPRISE_LINE, type Line } from './line';
 import { NIR_STATION_CODES, NIR_TRACK_LINE } from './nir';
-import { ALL_STATIONS, CORK_STATIONS, DART_STATIONS, ENTERPRISE_STATIONS } from './stations';
+import { ALL_STATIONS, CORK_STATIONS, DART_STATIONS, ENTERPRISE_STATIONS, LUAS_STATIONS } from './stations';
+import { LUAS_LINE } from './luas';
 import type { Station } from './types';
 
-export type ServiceId = 'dart' | 'enterprise' | 'cork' | 'commuter' | 'intercity' | 'nir';
+export type ServiceId = 'dart' | 'enterprise' | 'cork' | 'commuter' | 'intercity' | 'nir' | 'luas';
 
 export interface Service {
   id: ServiceId;
@@ -90,8 +91,16 @@ export const SERVICES: Record<ServiceId, Service> = {
     stations: NIR_STATIONS,
     matches: () => false,
   },
+  luas: {
+    id: 'luas',
+    // Live times come from the Luas feed (luas.ts), not Irish Rail's boards, so no Irish Rail train matches.
+    // Both lines as one; the map draws them as two routes (LUAS_ROUTES).
+    line: LUAS_LINE,
+    stations: LUAS_STATIONS,
+    matches: () => false,
+  },
 };
 
 export function isServiceId(value: unknown): value is ServiceId {
-  return value === 'dart' || value === 'enterprise' || value === 'cork' || value === 'commuter' || value === 'intercity' || value === 'nir';
+  return value === 'dart' || value === 'enterprise' || value === 'cork' || value === 'commuter' || value === 'intercity' || value === 'nir' || value === 'luas';
 }

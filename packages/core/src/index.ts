@@ -15,3 +15,5 @@ export * from './transxchange';
 export * from './nir';
 export * from './stationLines';
 export * from './livetrains';
+export * from './luas';
+export * from './luasClient';

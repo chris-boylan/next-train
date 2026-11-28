@@ -13,6 +13,7 @@
     "smoke": "tsx scripts/smoke.ts",
     "verify-line": "tsx scripts/verify-line.ts",
     "update-stations": "tsx scripts/update-stations.ts",
+    "update-luas-stops": "tsx scripts/update-luas-stops.ts",
     "build-network": "tsx scripts/build-network.ts",
     "api-check": "tsx scripts/api-check.ts"
   },

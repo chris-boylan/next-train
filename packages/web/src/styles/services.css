@@ -58,6 +58,12 @@
   --tile-south: #69b3e7;
 }
 
+/* Luas: its two lines, red and green. */
+.service-tile--luas {
+  --tile-north: #c8102e;
+  --tile-south: #00843d;
+}
+
 /* Translink NIR: Translink's teal (its site's header) and lime (its footer strip). */
 .service-tile--nir {
   --tile-north: #084f5c;
