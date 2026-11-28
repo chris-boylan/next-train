@@ -47,17 +47,28 @@ const TRAINS_PER_DIRECTION = 3;
 
 /**
  * How many trains fit in a half of the screen this tall, above (or below) its "more" link. The first train is
- * the bigger "next" one. Measured rather than guessed from the screen's height, because route chips, a name
- * on two lines or the going-to filter take room too. Sizes match track.css and sheets.css.
+ * the bigger "next" one; `extras` is any extra height each of the first few needs (a "Last today" tag, the break
+ * before tomorrow's first train). Measured rather than guessed from the screen's height, because route chips, a
+ * name on two lines or the going-to filter take room too. Sizes match track.css and sheets.css.
  */
-export function trainsThatFit(halfHeight: number): number {
+export function trainsThatFit(halfHeight: number, extras: number[] = []): number {
   const PADDING = 8; // .half's, on the platform side (the far side's may hold the "more" link's edge)
   const MORE_LINK = 36; // .more's min-height
   const NEXT_ROW = 80; // .train--next
   const ROW = 64 + 4; // .train, and the gap between trains
-  const room = halfHeight - PADDING - MORE_LINK;
-  return Math.max(1, Math.min(TRAINS_PER_DIRECTION, 1 + Math.floor((room - NEXT_ROW) / ROW)));
+  let room = halfHeight - PADDING - MORE_LINK;
+  let count = 0;
+  while (count < TRAINS_PER_DIRECTION) {
+    room -= (count === 0 ? NEXT_ROW : ROW) + (extras[count] ?? 0);
+    if (room < 0) break;
+    count++;
+  }
+  return Math.max(1, count);
 }
+
+/** Extra height (track.css) for "Last today" on a train, and for the break in the track before tomorrow's first. */
+const LAST_TODAY_EXTRA = 16;
+const TOMORROW_BREAK_EXTRA = 22 + 4;
 /** Data refreshes every 30s; older than this and something's wrong (e.g. no signal). */
 const STALE_AFTER_MS = 90_000;
 
@@ -234,7 +245,6 @@ export function TrackView({
     observer.observe(half);
     return () => observer.disconnect();
   }, []);
-  const perDirection = halfHeight ? trainsThatFit(halfHeight) : TRAINS_PER_DIRECTION;
   const nowMinutes = Math.floor(irishSecondsOfDay(now.getTime()) / 60);
   const liveCodes = new Set(data?.departures.map((d) => d.trainCode));
   const trainsFor = (direction: Direction, ends: string[]) => {
@@ -259,13 +269,18 @@ export function TrackView({
       ...live.map((d): TrackTrain => ({ live: d, at: nowMinutes + d.dueInMins })),
       ...timetabled.map((d): TrackTrain => ({ timetabled: d, at: d.minutes })),
     ].sort((a, b) => a.at - b.at);
-    const items = all.slice(0, perDirection);
     const isToday = (x: TrackTrain) => !x.timetabled?.tomorrow;
     // The last train today on this track, when tomorrow's first follows it: the timetable is loaded and has
     // nothing more today (with timetabled trains off, or no file, nothing is called the last).
     const firstTomorrow = all.findIndex((x) => !isToday(x));
     const lastToday = firstTomorrow > 0 ? all[firstTomorrow - 1] : undefined;
     const lastTodayCode = lastToday && (lastToday.live?.trainCode ?? lastToday.timetabled?.trainCode);
+    // As many as fit, counting the taller "Last today" row and the break before tomorrow's train.
+    const extras = all
+      .slice(0, TRAINS_PER_DIRECTION)
+      .map((x, i) => (x === lastToday ? LAST_TODAY_EXTRA : 0) + (i > 0 && i === firstTomorrow ? TOMORROW_BREAK_EXTRA : 0));
+    const perDirection = halfHeight ? trainsThatFit(halfHeight, extras) : TRAINS_PER_DIRECTION;
+    const items = all.slice(0, perDirection);
     // "+ N more": live trains beyond those shown; on an NIR page, the rest of today's trains.
     const moreCount = hidden ? 0 : nir ? all.filter(isToday).length - items.filter(isToday).length : Math.max(0, live.length - perDirection);
     return (
@@ -611,6 +626,38 @@ function Trains({
 }) {
   const { t, destinationName, describe, nameOf, list } = useI18n();
   const side = direction === 'Northbound' ? 'north' : 'south';
+  // Trains to leave off after measuring, because what's drawn didn't fit in this half (a long note, names on two
+  // lines): counted for this set of trains, and started again when they change or the screen does.
+  const listRef = useRef<HTMLOListElement>(null);
+  const fitKey = items.map((x) => x.live?.trainCode ?? x.timetabled?.trainCode).join() + `|${others?.services.join() ?? ''}`;
+  const [fit, setFit] = useState({ key: fitKey, drop: 0 });
+  const drop = fit.key === fitKey ? fit.drop : 0;
+  // How many steps of leaving things off there are for what's drawn now (see where `steps` is set below).
+  const stepsRef = useRef(0);
+  useLayoutEffect(() => {
+    const half = listRef.current?.closest('.half');
+    if (!half) return;
+    const box = half.getBoundingClientRect();
+    // The list, the note and the link are laid out in the half; the trains inside slide in with transforms, so
+    // they're left out of the measuring.
+    const spills = [...half.querySelectorAll(':scope > .trains, :scope > .more, :scope > .trains-empty')].some((el) => {
+      const r = el.getBoundingClientRect();
+      return r.top < box.top - 0.5 || r.bottom > box.bottom + 0.5;
+    });
+    if (spills && drop < stepsRef.current) setFit({ key: fitKey, drop: drop + 1 });
+  });
+  useEffect(() => {
+    const half = listRef.current?.closest('.half');
+    if (!half) return;
+    let height = half.clientHeight;
+    const observer = new ResizeObserver(() => {
+      if (half.clientHeight === height) return;
+      height = half.clientHeight;
+      setFit((f) => ({ ...f, drop: 0 }));
+    });
+    observer.observe(half);
+    return () => observer.disconnect();
+  }, [hasData, hidden]);
   if (!hasData || hidden) return null;
 
   // A note by the platform. Live services: nothing live this way in the live window. NI Railways: no more trains
@@ -640,10 +687,30 @@ function Trains({
             ? t.noTrainsTowards(list(places.map(nameOf)))
             : t.noTrainsAnyDirection;
   }
-  const note = message && <p className={`trains-empty trains-empty--${side}`}>{message}</p>;
+  // Paragraphs (split at blank lines) sit a half line apart, not a whole one: every line counts beside a track.
+  // Where even the note alone doesn't fit (a short phone), it keeps only its last paragraph: who does run here,
+  // which says ours don't.
+  const paragraphs = message?.split('\n\n') ?? [];
+  const base = paragraphs.length ? Math.min(1, items.length) : items.length;
+  const min = paragraphs.length ? 0 : 1;
+  const steps = Math.max(0, base - min) + (paragraphs.length > 1 ? 1 : 0);
+  stepsRef.current = items.length ? steps : paragraphs.length > 1 ? 1 : 0;
+  const compact = paragraphs.length > 1 && drop > (items.length ? base - min : -1);
+  const note = message && (
+    <p className={`trains-empty trains-empty--${side}`}>
+      {(compact ? paragraphs.slice(-1) : paragraphs).map((paragraph) => (
+        <span key={paragraph} className="trains-empty__para">
+          {paragraph}
+        </span>
+      ))}
+    </p>
+  );
   if (!items.length) return note || null;
-  // The note takes a train's room: with it, one train fewer fits on a phone (the rest are under "+ N more").
-  const shown = note && items.length > 1 ? items.slice(0, -1) : items;
+  // The note (several lines: no trains of ours, and which service does run) takes most of the half, so with it
+  // at most the first train shows, and none if even that doesn't fit; the rest are under "+ N more". Without a
+  // note, the next train always shows.
+  const count = Math.max(min, base - drop);
+  const shown = items.slice(0, count);
   const more = (
     <button className={`more more--${side}`} onClick={onMore}>
       {moreCount + items.length - shown.length > 0 ? t.more(moreCount + items.length - shown.length) : t.filter}
@@ -654,7 +721,7 @@ function Trains({
     <>
       {side === 'south' && more}
       {side === 'north' && note}
-      <ol className={`trains trains--${side}`}>
+      <ol className={`trains trains--${side}`} ref={listRef}>
         {shown.map(({ live: d, timetabled: s }, i) =>
           d ? (
             <li

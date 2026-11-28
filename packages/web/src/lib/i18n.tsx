@@ -147,6 +147,17 @@ const en = {
     invite: 'Add it to your home screen to open it like an app.',
     addToHomeScreen: 'Add to home screen',
     start: 'Find a train',
+    // Safari's button names, as they read on an iPhone in English.
+    iosSteps: [
+      { text: 'Tap the ≡ button at the bottom left', icon: 'menu' },
+      { text: 'Tap Share', icon: 'share' },
+      { text: 'Tap View More', icon: 'more' },
+      { text: 'Tap Add to Home Screen', icon: 'add' },
+    ] as { text: string; icon: 'menu' | 'share' | 'more' | 'add' }[],
+    iosClassicSteps: [
+      { text: 'Tap Share at the bottom of the screen', icon: 'share' },
+      { text: 'Tap Add to Home Screen', icon: 'add' },
+    ] as { text: string; icon: 'menu' | 'share' | 'more' | 'add' }[],
   },
   help: {
     open: 'Help & about',
@@ -388,6 +399,17 @@ const ga: Messages = {
     invite: 'Cuir ar do scáileán baile é chun é a oscailt mar aip.',
     addToHomeScreen: 'Cuir ar an scáileán baile',
     start: 'Aimsigh traein',
+    // iOS isn't available in Irish, so its button names are quoted in English.
+    iosSteps: [
+      { text: 'Brúigh an cnaipe ≡ thíos ar chlé', icon: 'menu' },
+      { text: 'Brúigh “Share”', icon: 'share' },
+      { text: 'Brúigh “View More”', icon: 'more' },
+      { text: 'Brúigh “Add to Home Screen”', icon: 'add' },
+    ],
+    iosClassicSteps: [
+      { text: 'Brúigh “Share” ag bun an scáileáin', icon: 'share' },
+      { text: 'Brúigh “Add to Home Screen”', icon: 'add' },
+    ],
   },
   help: {
     open: 'Cabhair & eolas',

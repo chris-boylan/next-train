@@ -523,9 +523,18 @@
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.04em;
+  line-height: 1.3;
   text-transform: uppercase;
   color: var(--muted);
-  padding: 12px 0;
+  padding: 8px 0;
+}
+
+.trains-empty__para {
+  display: block;
+}
+
+.trains-empty__para + .trains-empty__para {
+  margin-top: 0.6em;
 }
 
 .trains-empty--north {
