@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import { type CSSProperties, type ReactNode, useLayoutEffect, useRef, useState } from 'react';
 import type { LiveTrain } from '@dart-times/core';
 import { Caps, useI18n } from '../lib/i18n';
 import type { Schematic, SchematicPoint } from './data/schematics';
@@ -169,6 +169,30 @@ function placeLabel(p: SchematicPoint, circle: boolean, mapMaxWidth?: number, ex
   }
 }
 
+/**
+ * How much to shrink a map `width` px wide to fit the space it's in: 1 when it fits, less on a narrower screen
+ * (maps are drawn 340 px wide; a 360 px phone has 328 px inside its gutters), so names at its right edge aren't cut
+ * off. Applied as CSS zoom, which scales its layout too, so taps still land on the right station.
+ */
+function useFitScale(width: number) {
+  const ref = useRef<HTMLElement>(null);
+  const [scale, setScale] = useState(1);
+  useLayoutEffect(() => {
+    const parent = ref.current?.parentElement;
+    if (!parent) return;
+    const fit = () => {
+      const style = getComputedStyle(parent);
+      const room = parent.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+      setScale(room > 0 ? Math.min(1, room / width) : 1);
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(parent);
+    return () => observer.disconnect();
+  }, [width]);
+  return [ref, scale] as const;
+}
+
 /** A map drawn from hand-placed positions (see schematics.ts), with rounded corners, in the Beck style. */
 export function PositionedMap({
   schematic,
@@ -188,6 +212,7 @@ export function PositionedMap({
   corner,
 }: Props) {
   const { t } = useI18n();
+  const [mapRef, scale] = useFitScale(schematic.width);
   const { points, width, height, bends = {}, curves = {}, labelMaxWidth, oneWay = [], transfers = [] } = schematic;
   const curveOf = (a: string, b: string) => curves[`${a}|${b}`] ?? curves[`${b}|${a}`] ?? CORNER_RADIUS;
   const coloursOf = (a: string, b: string): (string | undefined)[] => {
@@ -290,7 +315,13 @@ export function PositionedMap({
   };
 
   return (
-    <nav className={`line-map schematic ${className}${corner ? ' line-map--with-bar' : ''}`} aria-label={label} style={{ width, height }}>
+    <nav
+      ref={mapRef}
+      className={`line-map schematic ${className}${corner ? ' line-map--with-bar' : ''}`}
+      aria-label={label}
+      // Zoomed, its own width already fits: max-width: 100% would clip it again.
+      style={{ width, height, ...(scale < 1 && { zoom: scale, maxWidth: 'none' }) }}
+    >
       {corner && (
         <div className="line-map__bar">
           <div className="line-map__bar-controls">{corner}</div>
