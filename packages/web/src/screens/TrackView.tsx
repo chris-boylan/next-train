@@ -804,12 +804,12 @@ function Trains({
                 {/* Late: scheduled time struck through, the delay, then the expected time (delay already included). */}
                 <span className="train__meta">
                   {d.trainCode === lastTodayCode && <span className="train__last">{t.lastToday}</span>}
+                  {/* Its own item, like "Last today": when it and the time don't both fit, it wraps onto a line of
+                      its own rather than pushing the time off the screen. */}
+                  {d.untracked && <span className="train__timetable">{t.notTracked}</span>}
                   <span className="train__times">
                     {d.untracked ? (
-                      <>
-                        <span className="train__timetable">{t.notTracked}</span>
-                        <span className="train__planned">{d.scheduledDepart}</span>
-                      </>
+                      <span className="train__planned">{d.scheduledDepart}</span>
                     ) : d.lateMins > 0 ? (
                       <>
                         <s className="train__scheduled">{d.scheduledDepart}</s>

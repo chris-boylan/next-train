@@ -370,8 +370,8 @@
   white-space: nowrap;
 }
 
-/* When "Last today" and a late train's times don't both fit, the tag wraps onto a line of its own below the times
-   (wrap-reverse puts the overflow line on top), rather than running off the screen. */
+/* When a tag ("Last today", "Not tracked") and the train's times don't both fit, the tag wraps onto a line of its
+   own below the times (wrap-reverse puts the overflow line on top), rather than running off the screen. */
 .train__meta {
   display: flex;
   flex-wrap: wrap-reverse;
