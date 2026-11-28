@@ -6,6 +6,7 @@ import { commuterSchematicFor } from '../maps/data/commuterSchematic';
 import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
 import { intercitySchematic, nirSchematic } from '../maps/data/intercitySchematic';
 import { NIR_ROUTE_MAP } from '../maps/data/nirRoutes';
+import { LuasMap } from '../maps/LuasMap';
 import { NETWORK_TERMINI, withBreaks } from '../maps/data/networkSchematic';
 import { LineMap } from '../maps/LineMap';
 import { useScrollMemory } from '../lib/scrollMemory';
@@ -161,6 +162,8 @@ export function StationPicker({
             hubs={['BFSTC']}
             {...mapProps}
           />
+        ) : service.id === 'luas' ? (
+          <LuasMap view={routesView} onViewChange={onRoutesViewChange} service={service} {...mapProps} />
         ) : SCHEMATICS[service.id] ? (
           <SchematicMap service={service} schematic={SCHEMATICS[service.id]!} {...mapProps} {...liveProps} />
         ) : service.line.paths.length > 1 ? (

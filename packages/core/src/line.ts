@@ -35,6 +35,24 @@ export interface Line {
   paths: string[][];
   /** Where trains in each direction finish their run, including turn-backs like Bray. */
   termini: Record<Direction, string[]>;
+  /** Track run one way only, as [from, to] (the Luas Green line's city-centre loop). Trains never run it to → from. */
+  oneWay?: [string, string][];
+}
+
+/** Whether trains run from `from` to the next station `to` (always, except against a one-way stretch). */
+export function runsBetween(from: string, to: string, line: Line): boolean {
+  const oneWay = line.oneWay ?? [];
+  return !oneWay.some(([a, b]) => a === to && b === from) || oneWay.some(([a, b]) => a === from && b === to);
+}
+
+/** Whether trains run all the way from `from` to `to` along `path`, past no one-way stretch run the other way. */
+function runsAlong(path: string[], from: string, to: string, line: Line): boolean {
+  if (!line.oneWay?.length) return true;
+  const i = path.indexOf(from);
+  const j = path.indexOf(to);
+  const step = j > i ? 1 : -1;
+  for (let k = i; k !== j; k += step) if (!runsBetween(path[k]!, path[k + step]!, line)) return false;
+  return true;
 }
 
 export const DART_LINE: Line = {
@@ -118,8 +136,9 @@ export function adjacentStations(code: string, line: Line = DART_LINE): { north:
     // trains at Mallow), the first path's side wins, as it does for `directionBetween`.
     const after = path[i + 1];
     const before = path[i - 1];
-    if (after && !south.has(after)) north.add(after);
-    if (before && !north.has(before)) south.add(before);
+    // Only where trains go from here: on a one-way stretch, the station they come from isn't a "next station".
+    if (after && !south.has(after) && runsBetween(code, after, line)) north.add(after);
+    if (before && !north.has(before) && runsBetween(code, before, line)) south.add(before);
   }
   return { north: [...north], south: [...south] };
 }
@@ -136,7 +155,13 @@ export function servedStops(movements: RawTrainMovement[]): string[] {
 /** Where trains in a direction can end up, e.g. Connolly northbound → Howth and Malahide. Empty at a terminus. */
 export function terminiFrom(code: string, direction: Direction, line: Line = DART_LINE): string[] {
   // Each once: a route's branches can end at the same place (every InterCity route's paths start at Heuston).
-  return [...new Set(line.termini[direction])].filter((end) => end !== code && directionBetween(code, end, line) === direction);
+  return [...new Set(line.termini[direction])].filter(
+    (end) =>
+      end !== code &&
+      directionBetween(code, end, line) === direction &&
+      // Reachable from here: not against a one-way stretch (from Westmoreland, no tram goes south).
+      line.paths.some((p) => p.includes(code) && p.includes(end) && runsAlong(p, code, end, line)),
+  );
 }
 
 /** Every station you can reach from `code` travelling in `direction`, in line order (nearest first on the trunk). */

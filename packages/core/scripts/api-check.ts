@@ -1,7 +1,7 @@
-// Daily health check against the live Irish Rail API (run by .github/workflows/api-check.yml).
-// The API has no versioning or changelog, so this fails loudly if its data goes missing or changes shape.
+// Daily health check against the live Irish Rail and Luas APIs (run by .github/workflows/api-check.yml).
+// Neither has versioning or a changelog, so this fails loudly if their data goes missing or changes shape.
 // Usage: npm run api-check -w @dart-times/core
-import { IrishRailClient, SERVICES, type ServiceId } from '../src';
+import { getLuasDepartures, IrishRailClient, LUAS_STATION_CODES, LuasClient, SERVICES, type ServiceId } from '../src';
 
 const client = new IrishRailClient({ timeoutMs: 15_000 });
 const problems: string[] = [];
@@ -17,7 +17,8 @@ const missingStationFields = stations[0] ? hasFields(stations[0], ['StationCode'
 check(!missingStationFields.length, `station rows are missing ${missingStationFields.join(', ')}`);
 const known = new Set(stations.map((s) => s.StationCode.trim().toUpperCase()));
 for (const id of Object.keys(SERVICES) as ServiceId[]) {
-  const gone = SERVICES[id].stations.map((s) => s.code).filter((code) => !known.has(code));
+  // Our own codes (NI_ for NI Railways stations Irish Rail doesn't know, LU_ for Luas stops) aren't Irish Rail's.
+  const gone = SERVICES[id].stations.map((s) => s.code).filter((code) => !code.includes('_') && !known.has(code));
   check(!gone.length, `${id}: station codes no longer in the API: ${gone.join(', ')}`);
 }
 
@@ -45,8 +46,22 @@ for (const code of busy) {
 check(total > 10, `only ${total} departures across ${busy.join(', ')} (expected more than 10 mid-morning)`);
 
 console.log(`${stations.length} stations, ${trains.length} trains running`);
+
+// 4. Luas: the stops list still has every stop the app uses, and a busy stop's forecast still parses. Trams may be
+// suspended on one line (the forecast then has none, with a message), so only the Green line's Ranelagh is checked
+// for trams, and a disruption there is reported, not failed.
+const luas = new LuasClient({ timeoutMs: 15_000 });
+const luasStops = new Set((await luas.getStops()).map((s) => `LU_${s.abrev}`));
+const goneLuas = LUAS_STATION_CODES.filter((code) => !luasStops.has(code));
+check(!goneLuas.length, `luas: stop codes no longer in the Luas API: ${goneLuas.join(', ')}`);
+const ranelagh = await getLuasDepartures(luas, 'LU_RAN', SERVICES.luas.stations);
+check(!!ranelagh.message, 'luas: the Ranelagh forecast has no status message (has the format changed?)');
+check(ranelagh.disrupted || ranelagh.departures.length > 0, 'luas: no trams at Ranelagh, and no disruption reported');
+check(ranelagh.departures.every((d) => d.destinationCode), `luas: Ranelagh has trams to unknown stops: ${ranelagh.departures.filter((d) => !d.destinationCode).map((d) => d.destination).join(', ')}`);
+console.log(`Luas: ${luasStops.size} stops, ${ranelagh.departures.length} trams at Ranelagh (${ranelagh.message})`);
+
 if (problems.length) {
-  console.error(`\nIrish Rail API check failed:\n${problems.map((p) => `- ${p}`).join('\n')}`);
+  console.error(`\nAPI check failed:\n${problems.map((p) => `- ${p}`).join('\n')}`);
   process.exit(1);
 }
-console.log('Irish Rail API check passed.');
+console.log('Irish Rail and Luas API check passed.');

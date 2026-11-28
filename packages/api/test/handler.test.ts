@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import type { APIGatewayProxyEventV2 } from 'aws-lambda';
-import { type FeedbackEntry, FavouritesService, FeedbackService, InMemoryFavouritesRepository, InMemoryFeedbackRepository } from '@dart-times/core';
-import { fixtureClient } from '../../core/test/fixtures';
+import { ALL_STATIONS, type FeedbackEntry, FavouritesService, FeedbackService, InMemoryFavouritesRepository, InMemoryFeedbackRepository, LuasClient } from '@dart-times/core';
+import { fixture, fixtureClient } from '../../core/test/fixtures';
 import { createHandler } from '../src/handler';
 
 const feedbackRepo = new InMemoryFeedbackRepository();
 const emailed: FeedbackEntry[] = [];
 const handler = createHandler({
   client: fixtureClient('connolly-midday.xml'),
+  luas: new LuasClient({ fetch: async (url) => new Response(fixture(String(url).includes('stop=WES') ? 'luas/forecast-wes.xml' : 'luas/forecast-ran.xml')) }),
   favourites: new FavouritesService(new InMemoryFavouritesRepository()),
   feedback: new FeedbackService(feedbackRepo, { notify: async (e) => void emailed.push(e) }),
 });
@@ -31,6 +32,37 @@ describe('API handler', () => {
     const res = await request('GET', '/api/stations');
     expect(res.statusCode).toBe(200);
     expect(body(res)).toHaveLength(32);
+  });
+
+  it('returns Luas trams from the Luas feed, with any track no tram stops on', async () => {
+    const res = await request('GET', '/api/stations/LU_RAN/departures?service=luas');
+    expect(res.statusCode).toBe(200);
+    const data = body(res);
+    expect(data.station.code).toBe('LU_RAN');
+    expect(data.departures.length).toBeGreaterThan(0);
+    expect(data.departures.every((d: { category: string }) => d.category === 'luas')).toBe(true);
+    expect(data.luas).toMatchObject({ disrupted: false, noService: [] });
+    expect(res.headers?.['cache-control']).toBe('public, max-age=20');
+    const westmoreland = body(await request('GET', '/api/stations/LU_WES/departures?service=luas'));
+    expect(westmoreland.luas.noService).toEqual(['Southbound']);
+  });
+
+  it('keeps Luas stops on the Luas, and Luas favourites by their LU_ code', async () => {
+    expect((await request('GET', '/api/stations/LU_RAN/departures?service=dart')).statusCode).toBe(404);
+    // As deployed: favourites for any station (index.ts), so the code's underscore must get through the route.
+    const everywhere = createHandler({
+      client: fixtureClient('connolly-midday.xml'),
+      favourites: new FavouritesService(new InMemoryFavouritesRepository(), ALL_STATIONS),
+      feedback: new FeedbackService(new InMemoryFeedbackRepository(), { notify: async () => {} }),
+    });
+    const res = await everywhere({
+      rawPath: '/api/favourites/LU_RAN',
+      queryStringParameters: {},
+      headers: device,
+      requestContext: { http: { method: 'PUT' } },
+    } as unknown as APIGatewayProxyEventV2);
+    expect(res.statusCode).toBe(200);
+    expect(body(res).map((s: { code: string }) => s.code)).toEqual(['LU_RAN']);
   });
 
   it('returns filtered departures', async () => {
@@ -81,7 +113,8 @@ describe('API handler: Enterprise', () => {
   it('rejects stations not on the service, and unknown services', async () => {
     expect((await request('GET', '/api/stations/HOWTH/departures?service=enterprise')).statusCode).toBe(404);
     expect((await request('GET', '/api/stations/NEWRY/departures')).statusCode).toBe(404);
-    expect((await request('GET', '/api/stations/CNLLY/departures?service=luas')).statusCode).toBe(400);
+    expect((await request('GET', '/api/stations/CNLLY/departures?service=bus')).statusCode).toBe(400);
+    expect((await request('GET', '/api/stations/CNLLY/departures?service=luas')).statusCode).toBe(404);
   });
 });
 

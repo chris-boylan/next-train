@@ -6,6 +6,7 @@ import {
   type Departure,
   findStationByCode,
   intercityHeading,
+  luasLineOf,
   irishSecondsOfDay,
   isCityStation,
   route as routeBetween,
@@ -16,6 +17,7 @@ import {
 import { formatTime, useNow } from '../lib/clock';
 import { COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
 import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
+import { LUAS_ROUTE_MAP } from '../maps/data/luasRoutes';
 import { DueIn } from '../components/DueIn';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
@@ -104,6 +106,12 @@ export function StationBoard({ code, name, mode, backLabel, onBack, favourite, l
           colour: INTERCITY_ROUTE_MAP.colour(heading.route.id),
         };
       }
+    }
+    if (mode === 'luas') {
+      // In and out of the city on the stop's line, named by where the trams go ("Green Line · towards Parnell /
+      // Broombridge"): the Red line runs east–west, so north and south would mislead.
+      const line = luasLineOf(code);
+      return { key: d.direction, route: t.luasRoutes[line], colour: LUAS_ROUTE_MAP.colour(line) };
     }
     return { key: d.direction, towards: directionLabel(d.direction) };
   };

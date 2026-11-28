@@ -1,7 +1,7 @@
 export type Direction = 'Northbound' | 'Southbound';
 
-/** `nir`: NI Railways, from Translink's timetable only (there's no live NIR data). */
-export type TrainCategory = 'dart' | 'enterprise' | 'intercity' | 'commuter' | 'nir';
+/** `nir`: NI Railways, from Translink's timetable only (there's no live NIR data). `luas`: Dublin's trams. */
+export type TrainCategory = 'dart' | 'enterprise' | 'intercity' | 'commuter' | 'nir' | 'luas';
 
 export interface Station {
   /** Irish Rail station code, e.g. `CNLLY`. */

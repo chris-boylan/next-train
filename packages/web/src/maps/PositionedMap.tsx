@@ -3,7 +3,7 @@ import type { LiveTrain } from '@dart-times/core';
 import { Caps, useI18n } from '../lib/i18n';
 import type { Schematic, SchematicPoint } from './data/schematics';
 import { MapHits } from './MapHits';
-import { TrainMarkers } from './TrainMarkers';
+import { alongPath, TrainMarkers } from './TrainMarkers';
 
 interface Props {
   schematic: Schematic;
@@ -181,7 +181,7 @@ export function PositionedMap({
   corner,
 }: Props) {
   const { t } = useI18n();
-  const { points, width, height, bends = {}, curves = {}, labelMaxWidth } = schematic;
+  const { points, width, height, bends = {}, curves = {}, labelMaxWidth, oneWay = [] } = schematic;
   const curveOf = (a: string, b: string) => curves[`${a}|${b}`] ?? curves[`${b}|${a}`] ?? CORNER_RADIUS;
   const coloursOf = (a: string, b: string): (string | undefined)[] => {
     const c = colourOf?.(a, b);
@@ -331,6 +331,21 @@ export function PositionedMap({
             );
           })];
         })}
+        {/* One-way track: an arrow halfway along, in the page's colour, pointing the way trains go. */}
+        {oneWay
+          .filter(([a, b]) => points[a] && points[b])
+          .map(([a, b]) => {
+            const at = alongPath(routeOf(a, b), 0.5);
+            const angle = (Math.atan2(at.dy, at.dx) * 180) / Math.PI;
+            return (
+              <path
+                key={`${a}>${b}`}
+                d="M-2.5,-3.5 L1.5,0 L-2.5,3.5"
+                className="line-map__arrow"
+                transform={`translate(${at.x} ${at.y}) rotate(${angle})`}
+              />
+            );
+          })}
         {codes.map((code) => {
           const p = points[code]!;
           const hub = INTERCHANGES.has(code);

@@ -216,3 +216,64 @@
   --north-text: #7fcad6;
   --south-text: #c6dd45;
 }
+
+/* Luas Red line stops: deep red inbound (towards the city, up), light red outbound. */
+:root[data-service='luas-red'] {
+  --north: #c8102e;
+  --south: #f0727f;
+  --north-text: #b00d27;
+  --south-text: #c22b3d;
+  --band-north: #ffb3bb;
+  --band-south: #ffd6da;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-service='luas-red']:not([data-theme='light']) {
+    --north: #ef3b4f;
+    --south: #f8a5ad;
+    --north-text: #ff8a96;
+    --south-text: #ffc4ca;
+    --band-north: #c8102e;
+    --band-south: #a3202f;
+  }
+}
+
+:root[data-service='luas-red'][data-theme='dark'] {
+  --north: #ef3b4f;
+  --south: #f8a5ad;
+  --north-text: #ff8a96;
+  --south-text: #ffc4ca;
+  --band-north: #c8102e;
+  --band-south: #a3202f;
+}
+
+/* Luas Green line stops: deep green inbound (towards the city, up), light green outbound. The map page (no
+   tracks) keeps the default theme. */
+:root[data-service='luas-green'] {
+  --north: #00843d;
+  --south: #5cc27f;
+  --north-text: #00733a;
+  --south-text: #1d7f45;
+  --band-north: #9be0b3;
+  --band-south: #cdeed8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-service='luas-green']:not([data-theme='light']) {
+    --north: #1fae5c;
+    --south: #8fdcab;
+    --north-text: #5fd690;
+    --south-text: #b5ecc8;
+    --band-north: #00843d;
+    --band-south: #1f6b3f;
+  }
+}
+
+:root[data-service='luas-green'][data-theme='dark'] {
+  --north: #1fae5c;
+  --south: #8fdcab;
+  --north-text: #5fd690;
+  --south-text: #b5ecc8;
+  --band-north: #00843d;
+  --band-south: #1f6b3f;
+}

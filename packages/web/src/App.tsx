@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { findStationByCode, hasLiveData, isServiceId, SERVICES, type ServiceId, type Station } from '@dart-times/core';
+import { findStationByCode, hasLiveData, isServiceId, luasLineOf, SERVICES, type ServiceId, type Station } from '@dart-times/core';
 import { fetchFavourites, setFavourite } from './lib/api';
 import { getDeviceId } from './lib/deviceId';
 import { HelpContext } from './lib/help';
@@ -72,10 +72,12 @@ function Screens() {
     fetchFavourites(deviceId).then(setFavourites, (err: Error) => console.error(err));
   }, [deviceId]);
 
-  // Each service brings its own track colours (DART green/orange, Enterprise purple, …).
+  // Each service brings its own track colours (DART green/orange, Enterprise purple, …). A Luas stop takes its
+  // line's: red or green.
   useEffect(() => {
-    document.documentElement.dataset.service = serviceId ?? 'dart';
-  }, [serviceId]);
+    document.documentElement.dataset.service =
+      serviceId === 'luas' && stationCode ? `luas-${luasLineOf(stationCode)}` : (serviceId ?? 'dart');
+  }, [serviceId, stationCode]);
 
   const selectService = (id: ServiceId) => {
     forgetScroll(`map:${id}`); // a map opened from the service list starts at the top

@@ -5,6 +5,7 @@ import {
   findStationByCode,
   type IntercityRouteId,
   type ScheduledDeparture,
+  type LuasRouteId,
   type NirRouteId,
   type ServiceId,
   type Station,
@@ -22,7 +23,7 @@ const KEY = 'dart-times:lang';
 const en = {
   services: 'Services',
   chooseService: 'Choose a service',
-  serviceNames: { dart: 'DART', enterprise: 'Enterprise', cork: 'Cork Commuter', commuter: 'Dublin Commuter', intercity: 'InterCity', nir: 'Translink NIR' } as Record<ServiceId, string>,
+  serviceNames: { dart: 'DART', enterprise: 'Enterprise', cork: 'Cork Commuter', commuter: 'Dublin Commuter', intercity: 'InterCity', nir: 'Translink NIR', luas: 'Luas' } as Record<ServiceId, string>,
   dublinBelfast: 'Dublin – Belfast',
   allStations: 'All stations',
   // Not just Irish Rail's: the map has NI Railways' stations too.
@@ -68,6 +69,12 @@ const en = {
     portrush: 'Portrush',
     portadown: 'Portadown & Newry',
   } as Record<NirRouteId, string>,
+  luasRoutes: { red: 'Red Line', green: 'Green Line' } as Record<LuasRouteId, string>,
+  luasSummary: 'Red: Tallaght · Saggart – The Point · Green: Brides Glen – Broombridge',
+  // A Luas stop's track with no trams: either none due in the feed's next hour or so, or the city-centre loop's
+  // other side (each stop there is served one way only).
+  noTrams: 'No trams due.',
+  luasOneWay: 'Trams don’t stop here going this way: through the city centre the Green line runs one way round a loop.',
   nirNoLiveData: 'NI Railways has no live times, so these are Translink’s timetabled times: delays and cancellations don’t show.',
   nirEnterpriseOnly: 'NI Railways has no live times, so its trains are Translink’s timetabled times: delays and cancellations don’t show. Enterprise and Irish Rail trains are live.',
   timetable: 'Timetable',
@@ -91,7 +98,7 @@ const en = {
   stationCount: (n: number) => `${n} stations`,
   dublin: 'Dublin',
   towards2: (place: string) => `towards ${place}`,
-  categories: { dart: 'DART', enterprise: 'Enterprise', intercity: 'InterCity', commuter: 'Commuter', nir: 'NIR' } as Record<TrainCategory, string>,
+  categories: { dart: 'DART', enterprise: 'Enterprise', intercity: 'InterCity', commuter: 'Commuter', nir: 'NIR', luas: 'Luas' } as Record<TrainCategory, string>,
   stations: 'Stations',
   findStation: 'Find a station',
   favouriteStations: 'Favourite stations',
@@ -122,6 +129,7 @@ const en = {
   noTrains: (direction: string) => `No ${direction.toLowerCase()} trains in the next 90 minutes`,
   noTrainsTo: (station: string) => `No trains to ${station} in the next 90 minutes`,
   terminateHere: 'Trains terminate here',
+  tramsTerminateHere: 'Trams terminate here',
   noMatching: 'No matching trains in the next 90 minutes.',
   hidden: (n: number, places: string) => `${n} train${n === 1 ? '' : 's'} to ${places} hidden`,
   all: 'All',
@@ -275,8 +283,9 @@ const ga: Messages = {
     cork: 'Comaitéara Chorcaí',
     commuter: 'Comaitéara Bhaile Átha Cliath',
     intercity: 'Idirchathrach',
-    // A brand name, like DART and Enterprise.
+    // Brand names, like DART and Enterprise.
     nir: 'Translink NIR',
+    luas: 'Luas',
   },
   // As on Irish Rail's bilingual Dublin–Belfast timetable.
   dublinBelfast: 'Baile Átha Cliath – Béal Feirste',
@@ -326,6 +335,10 @@ const ga: Messages = {
     portrush: 'Port Rois',
     portadown: 'Port an Dúnáin agus an tIúr',
   },
+  luasRoutes: { red: 'An Líne Dhearg', green: 'An Líne Ghlas' },
+  luasSummary: 'Dearg: Tamhlacht · Teach Sagard – The Point · Glas: Gleann Bhríde – Broombridge',
+  noTrams: 'Níl aon tram le teacht.',
+  luasOneWay: 'Ní stopann tramanna anseo sa treo seo: i lár na cathrach téann an Líne Ghlas timpeall lúb in aon treo amháin.',
   nirNoLiveData: 'Níl amanna beo ar fáil d’Iarnród Thuaisceart Éireann, mar sin is iad seo amanna chlár ama Translink: ní thaispeántar moilleanna ná cealuithe.',
   nirEnterpriseOnly: 'Níl amanna beo ar fáil d’Iarnród Thuaisceart Éireann, mar sin is iad amanna chlár ama Translink atá ag a chuid traenacha: ní thaispeántar moilleanna ná cealuithe. Tá traenacha an Enterprise agus Iarnród Éireann beo.',
   timetable: 'Clár ama',
@@ -348,7 +361,7 @@ const ga: Messages = {
   dublin: 'Baile Átha Cliath',
   towards2: (place) => `go dtí ${place}`,
   // As Irish Rail labels them on its Irish pages; DART and Enterprise are brand names.
-  categories: { dart: 'DART', enterprise: 'Enterprise', intercity: 'Idirchathrach', commuter: 'Comaitéara', nir: 'NIR' },
+  categories: { dart: 'DART', enterprise: 'Enterprise', intercity: 'Idirchathrach', commuter: 'Comaitéara', nir: 'NIR', luas: 'Luas' },
   stations: 'Stáisiúin',
   findStation: 'Aimsigh stáisiún',
   favouriteStations: 'Stáisiúin is fearr leat',
@@ -378,6 +391,7 @@ const ga: Messages = {
   noTrains: (direction) => `Níl aon traein ${direction.toLowerCase()} sna 90 nóiméad atá romhainn`,
   noTrainsTo: (station) => `Níl aon traein go dtí ${station} sna 90 nóiméad atá romhainn`,
   terminateHere: 'Críochnaíonn na traenacha anseo',
+  tramsTerminateHere: 'Críochnaíonn na tramanna anseo',
   noMatching: 'Níl aon traein oiriúnach sna 90 nóiméad atá romhainn.',
   hidden: (n, places) => `${n} i bhfolach · go dtí ${places}`,
   all: 'Uile',

@@ -43,6 +43,8 @@ export interface Schematic {
    * and open it as `for`.
    */
   standIns?: StandIn[];
+  /** Track run one way only, as [from, to]: drawn with an arrow pointing the way trams go (the Luas loop). */
+  oneWay?: [string, string][];
 }
 
 export interface StandIn {

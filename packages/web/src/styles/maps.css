@@ -339,3 +339,17 @@
 .schematic__stop--hub.schematic__stop--above {
   margin-top: -4px;
 }
+
+/* One-way track (the Luas loop): a chevron in the page's colour on the line, pointing the way trams run. */
+.line-map__arrow {
+  fill: none;
+  stroke: var(--bg);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The Luas's All view: the Red line's map, then the Green line's. */
+.luas-map + .luas-map {
+  margin-top: 28px;
+}

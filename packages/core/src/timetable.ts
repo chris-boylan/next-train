@@ -2,6 +2,7 @@
 // trains beyond the live API's 90-minute window. GTFS has no Irish Rail station codes, so its stops are matched
 // to ours by position; its trips carry the same train codes as the live API (E200…), so the two can be joined.
 import { callsAt, directionBetween, type Line } from './line';
+import type { ServiceId } from './services';
 import type { Direction, Station, TrainCategory } from './types';
 
 /** How far ahead the live API looks. Timetabled trains are shown only beyond it: live data wins inside it. */
@@ -265,7 +266,8 @@ const CORK_AREA = new Set(['CORK', 'LSLND', 'GHANE', 'CGTWL', 'MDLTN', 'FOTA', '
  * Whether a timetabled train belongs to a service, as `SERVICES[id].matches` does for live trains (the
  * timetable has train codes and destinations, not the live API's origin and train type fields).
  */
-export function scheduledMatches(service: 'dart' | 'enterprise' | 'cork' | 'commuter' | 'intercity' | 'nir', d: ScheduledDeparture): boolean {
+/** Whether a timetabled train belongs to a service. There's no Luas timetable, so none is ever a Luas one. */
+export function scheduledMatches(service: ServiceId, d: ScheduledDeparture): boolean {
   const cork = d.category === 'commuter' && !!d.destinationCode && CORK_AREA.has(d.destinationCode);
   switch (service) {
     case 'dart':

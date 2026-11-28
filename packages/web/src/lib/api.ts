@@ -5,6 +5,8 @@ export interface DeparturesResponse {
   station: Station;
   direction: Direction | null;
   departures: Departure[];
+  /** Luas stops only: the line's status, and tracks where no tram stops here (see core's LuasDepartures). */
+  luas?: { message: string; disrupted: boolean; noService: Direction[] };
   fetchedAt: string;
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { irishDate, irishSecondsOfDay, type ScheduledDeparture } from '@dart-times/core';
+import { irishDate, irishSecondsOfDay, isLuasStop, type ScheduledDeparture } from '@dart-times/core';
 import { fetchTimetable } from './api';
 import { useTimetabledTrains } from './prefs';
 
@@ -22,7 +22,8 @@ export function useScheduled(code: string, enabled = true, withTomorrow = false)
   useEffect(() => {
     let cancelled = false;
     setDepartures(undefined);
-    if (!enabled) return;
+    // There's no Luas timetable (the daily job builds Irish Rail's and NI Railways'), so a stop has no file.
+    if (!enabled || isLuasStop(code)) return;
     const load = async () => {
       if (document.hidden) return;
       const now = Date.now();

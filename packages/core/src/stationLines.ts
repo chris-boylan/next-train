@@ -31,8 +31,9 @@ export interface Placement {
   fallback?: boolean;
 }
 
-/** Services whose Northbound/Southbound are compass directions; elsewhere tracks are named by where trains go. */
-export const hasCompassDirections = (service: ServiceId) => service !== 'commuter' && service !== 'intercity';
+/** Services whose Northbound/Southbound are compass directions; elsewhere tracks are named by where trains go
+ *  (the Luas's are inbound and outbound, and the Red line runs east–west). */
+export const hasCompassDirections = (service: ServiceId) => service !== 'commuter' && service !== 'intercity' && service !== 'luas';
 
 const onPath = (line: Line, code: string) => line.paths.some((p) => p.includes(code));
 

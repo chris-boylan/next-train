@@ -8,6 +8,8 @@ import {
   findStationByCode,
   getDepartures,
   getLiveTrains,
+  getLuasDepartures,
+  LuasClient,
   isLiveService,
   LIVE_SERVICES,
   type IrishRailClient,
@@ -18,6 +20,8 @@ import {
 
 export interface ApiDeps {
   client: IrishRailClient;
+  /** Luas forecasts; a default client when not given. */
+  luas?: LuasClient;
   favourites: FavouritesService;
   feedback: FeedbackService;
 }
@@ -56,7 +60,7 @@ function webUserId(event: APIGatewayProxyEventV2): string | undefined {
   return id && DEVICE_ID.test(id) ? `web:${id}` : undefined;
 }
 
-export function createHandler({ client, favourites, feedback }: ApiDeps) {
+export function createHandler({ client, luas = new LuasClient(), favourites, feedback }: ApiDeps) {
   return async (event: APIGatewayProxyEventV2): Promise<Result> => {
     const method = event.requestContext.http.method;
     const path = event.rawPath.replace(/\/+$/, '');
@@ -66,7 +70,8 @@ export function createHandler({ client, favourites, feedback }: ApiDeps) {
         return json(200, DART_STATIONS, 'public, max-age=86400');
       }
 
-      const departuresMatch = path.match(/^\/api\/stations\/([A-Za-z]+)\/departures$/);
+      // Codes are letters, with an underscore in our own (NI_, LU_).
+      const departuresMatch = path.match(/^\/api\/stations\/([A-Za-z_]+)\/departures$/);
       if (method === 'GET' && departuresMatch) {
         const service = event.queryStringParameters?.service ?? 'dart';
         // "all": every train at any Irish Rail station, for the network map's station boards.
@@ -79,6 +84,15 @@ export function createHandler({ client, favourites, feedback }: ApiDeps) {
         if (!isServiceId(service)) return error(400, 'Unknown service');
         const station = findStationByCode(departuresMatch[1]!, SERVICES[service].stations);
         if (!station) return error(404, 'Unknown station');
+        // Luas trams come from the Luas feed, with the line's status and any track no tram stops on.
+        if (service === 'luas') {
+          const { departures, message, disrupted, noService } = await getLuasDepartures(luas, station.code, SERVICES.luas.stations);
+          return json(
+            200,
+            { station, direction: null, departures, luas: { message, disrupted, noService }, fetchedAt: new Date().toISOString() },
+            DEPARTURES_CACHE,
+          );
+        }
         const direction = parseDirection(event.queryStringParameters?.direction);
         const limit = Number(event.queryStringParameters?.limit) || undefined;
         const departures = await getDepartures(client, station.code, { direction, limit, service });
@@ -114,7 +128,7 @@ export function createHandler({ client, favourites, feedback }: ApiDeps) {
         return json(200, { service, trains, fetchedAt: new Date().toISOString() }, DEPARTURES_CACHE);
       }
 
-      const favouriteMatch = path.match(/^\/api\/favourites(?:\/([A-Za-z]+))?$/);
+      const favouriteMatch = path.match(/^\/api\/favourites(?:\/([A-Za-z_]+))?$/);
       if (favouriteMatch) {
         const userId = webUserId(event);
         if (!userId) return error(400, 'Missing or invalid x-device-id header');
@@ -136,7 +150,7 @@ export function createHandler({ client, favourites, feedback }: ApiDeps) {
     } catch (err) {
       if (err instanceof FavouriteError) return error(err.reason === 'UNKNOWN_STATION' ? 404 : 409, err.message);
       console.error(err);
-      return error(502, 'Could not get train times from Irish Rail');
+      return error(502, 'Could not get live times');
     }
   };
 }
