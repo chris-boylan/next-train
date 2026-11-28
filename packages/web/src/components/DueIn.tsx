@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { dueParts } from '../lib/due';
+import { type CountdownStyle, dueParts } from '../lib/due';
 import { useI18n } from '../lib/i18n';
 import { useCountdownStyle } from '../lib/prefs';
 
@@ -19,12 +19,16 @@ export function DueIn({ mins }: { mins: number }) {
   );
 }
 
+/** A countdown as plain text in a given style: "86 min", or "1h 26 min". */
+export function dueText(mins: number, style: CountdownStyle, units: { hour: string; min: string }): string {
+  return dueParts(mins, style)
+    .map(({ value, unit }) => (unit === 'h' ? `${value}${units.hour}` : `${value} ${units.min}`))
+    .join(' ');
+}
+
 /** The same countdown as plain text, for inline use: "12 min", or "1h 26 min". */
 export function useDueText(): (mins: number) => string {
   const { t } = useI18n();
   const [style] = useCountdownStyle();
-  return (mins) =>
-    dueParts(mins, style)
-      .map(({ value, unit }) => (unit === 'h' ? `${value}${t.hour}` : `${value} ${t.min}`))
-      .join(' ');
+  return (mins) => dueText(mins, style, t);
 }
