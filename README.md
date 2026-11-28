@@ -48,6 +48,7 @@ Everything is merged into `main`. New work goes on a feature branch off `main`. 
 | `fix/deploy-on-request` | Pipeline deploys only when run by hand, not on every merge |
 | `feat/live-trains` | Live trains on the DART and Enterprise maps behind a "Live trains" toggle, with a tap-for-details train card |
 | `feat/ios-header-and-timetable-alerts` | Every screen pinned so the header never moves on iOS, cog always far right, maps keep their place; alerts when the timetable is out of date |
+| `feat/untracked-trains` | Untracked trains drawn hollow; the Luas (Red and Green lines, one combined map, the "Next Tram?" home page, a news ticker, estimated stops ahead, official Irish names); ticket buttons to Irish Rail and Translink; trains drawn as their real trains (Colour or White); maps that scroll only vertically and fit narrow phones (PRs #42–#51) |
 
 ## Using the web app
 

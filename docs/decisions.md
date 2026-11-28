@@ -6,6 +6,19 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-28 · Each service's train drawn as its real train, in livery or white
+
+**Decision:** the station page draws each service's train from the front as the train that runs it: the DART's
+8100/8500/8600 face, the InterCity's 22000, the Enterprise's driving trailer, the Cork Commuter's 2600 (with its
+gangway door), NI Railways' CAF 3000/4000 and Dublin Commuter's 29000 (the same CAF family, in its own dark green).
+Options → Train icons chooses Colour (full livery, the default) or White (white, black and grey, told apart by shape
+alone). The Luas keeps its tram. Hollow (timetabled and untracked) trains fade their livery like their windows.
+
+**Why:** one train shape for every service said "train" but not which. Irish Rail's data doesn't name the class that
+runs a train (only "DART" or "Train", and a service code), so each service shows its usual train; 22000s that run
+some commuter services show as 29000s. A one-detail-in-colour middle option was tried and dropped: the choice
+people wanted was full colour or none, so both are offered, with colour first.
+
 ## 2026-11-28 · A ticket button that opens Irish Rail's planner from the station
 
 **Decision:** station pages for services sold online (Dublin Commuter, InterCity, Enterprise, Cork Commuter) have
