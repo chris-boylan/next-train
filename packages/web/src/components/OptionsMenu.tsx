@@ -3,7 +3,7 @@ import { useOpenHelp } from '../lib/help';
 import { canAddToHomeScreen } from '../lib/install';
 import { type Lang, useI18n } from '../lib/i18n';
 import { type CountdownStyle } from '../lib/due';
-import { type FavouritesPlace, useCountdownStyle, useFavouritesPlace, type TimetabledTrains, useTimetabledTrains } from '../lib/prefs';
+import { type FavouritesPlace, type TrainIcons, useCountdownStyle, useFavouritesPlace, type TimetabledTrains, useTimetabledTrains, useTrainIcons } from '../lib/prefs';
 import { type Theme, useTheme } from '../lib/theme';
 
 /** A cog that slides down a small panel with language, light/dark, where-favourites-go and countdown-style choices (and, on iOS, how to install). */
@@ -13,6 +13,7 @@ export function OptionsMenu() {
   const openHelp = useOpenHelp();
   const [favouritesPlace, setFavouritesPlace] = useFavouritesPlace();
   const [countdownStyle, setCountdownStyle] = useCountdownStyle();
+  const [trainIcons, setTrainIcons] = useTrainIcons();
   const [timetabledTrains, setTimetabledTrains] = useTimetabledTrains();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -76,6 +77,15 @@ export function OptionsMenu() {
             options={[
               { value: 'minutes', label: t.countdownMinutes },
               { value: 'hours', label: t.countdownHours },
+            ]}
+          />
+          <Choice<TrainIcons>
+            label={t.trainIcons}
+            value={trainIcons}
+            onChange={setTrainIcons}
+            options={[
+              { value: 'white', label: t.trainIconsWhite },
+              { value: 'colour', label: t.trainIconsColour },
             ]}
           />
           <Choice<TimetabledTrains>

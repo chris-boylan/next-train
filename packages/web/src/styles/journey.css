@@ -243,8 +243,14 @@
   stroke-dasharray: 6 4;
 }
 
+.journey--untracked .glyph-outline {
+  stroke-dasharray: 6 4;
+}
+
 .journey--untracked .glyph-window,
-.journey--untracked .glyph-light {
+.journey--untracked .glyph-light,
+.journey--untracked .glyph-paint,
+.journey--untracked .glyph-lamp {
   opacity: 0.3;
 }
 

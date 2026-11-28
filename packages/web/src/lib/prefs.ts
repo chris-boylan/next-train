@@ -87,6 +87,12 @@ export function useLiveTrainsPref(): [boolean, (on: boolean) => void] {
   return [choice === 'on', (on) => setChoice(on ? 'on' : 'off')];
 }
 
+/** How the station page draws DART, InterCity and Enterprise trains: white with one detail in colour (the
+ *  default), or in their full livery. */
+export type TrainIcons = 'white' | 'colour';
+
+export const useTrainIcons = storedChoice<TrainIcons>('dart-times:train-icons', ['white', 'colour'], 'white');
+
 /** The home page: trains (the service list, the default) or trams (the Luas map), switched by swiping across it
  *  or by the indicator beside the title, and remembered. */
 export type HomeMode = 'train' | 'tram';

@@ -128,7 +128,7 @@ export function JourneyView({ train, direction, stationCode, origin, returnTo, c
 
       <div className="journey__train">
         <button ref={glyphRef} className="journey__glyph" onClick={onClose} aria-label={t.journey.close}>
-          <TrainGlyph tram={train.category === 'luas'} />
+          <TrainGlyph category={train.category} />
         </button>
         <p className="journey__now" role="status" style={closing ? undefined : { animationDelay: `${STOPS_FROM_MS + 150}ms` }}>
           {train.untracked ? (
