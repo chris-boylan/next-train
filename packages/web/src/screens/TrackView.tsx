@@ -626,6 +626,38 @@ function Trains({
 }) {
   const { t, destinationName, describe, nameOf, list } = useI18n();
   const side = direction === 'Northbound' ? 'north' : 'south';
+  // Trains to leave off after measuring, because what's drawn didn't fit in this half (a long note, names on two
+  // lines): counted for this set of trains, and started again when they change or the screen does.
+  const listRef = useRef<HTMLOListElement>(null);
+  const fitKey = items.map((x) => x.live?.trainCode ?? x.timetabled?.trainCode).join() + `|${others?.services.join() ?? ''}`;
+  const [fit, setFit] = useState({ key: fitKey, drop: 0 });
+  const drop = fit.key === fitKey ? fit.drop : 0;
+  // How many steps of leaving things off there are for what's drawn now (see where `steps` is set below).
+  const stepsRef = useRef(0);
+  useLayoutEffect(() => {
+    const half = listRef.current?.closest('.half');
+    if (!half) return;
+    const box = half.getBoundingClientRect();
+    // The list, the note and the link are laid out in the half; the trains inside slide in with transforms, so
+    // they're left out of the measuring.
+    const spills = [...half.querySelectorAll(':scope > .trains, :scope > .more, :scope > .trains-empty')].some((el) => {
+      const r = el.getBoundingClientRect();
+      return r.top < box.top - 0.5 || r.bottom > box.bottom + 0.5;
+    });
+    if (spills && drop < stepsRef.current) setFit({ key: fitKey, drop: drop + 1 });
+  });
+  useEffect(() => {
+    const half = listRef.current?.closest('.half');
+    if (!half) return;
+    let height = half.clientHeight;
+    const observer = new ResizeObserver(() => {
+      if (half.clientHeight === height) return;
+      height = half.clientHeight;
+      setFit((f) => ({ ...f, drop: 0 }));
+    });
+    observer.observe(half);
+    return () => observer.disconnect();
+  }, [hasData, hidden]);
   if (!hasData || hidden) return null;
 
   // A note by the platform. Live services: nothing live this way in the live window. NI Railways: no more trains
@@ -655,10 +687,30 @@ function Trains({
             ? t.noTrainsTowards(list(places.map(nameOf)))
             : t.noTrainsAnyDirection;
   }
-  const note = message && <p className={`trains-empty trains-empty--${side}`}>{message}</p>;
+  // Paragraphs (split at blank lines) sit a half line apart, not a whole one: every line counts beside a track.
+  // Where even the note alone doesn't fit (a short phone), it keeps only its last paragraph: who does run here,
+  // which says ours don't.
+  const paragraphs = message?.split('\n\n') ?? [];
+  const base = paragraphs.length ? Math.min(1, items.length) : items.length;
+  const min = paragraphs.length ? 0 : 1;
+  const steps = Math.max(0, base - min) + (paragraphs.length > 1 ? 1 : 0);
+  stepsRef.current = items.length ? steps : paragraphs.length > 1 ? 1 : 0;
+  const compact = paragraphs.length > 1 && drop > (items.length ? base - min : -1);
+  const note = message && (
+    <p className={`trains-empty trains-empty--${side}`}>
+      {(compact ? paragraphs.slice(-1) : paragraphs).map((paragraph) => (
+        <span key={paragraph} className="trains-empty__para">
+          {paragraph}
+        </span>
+      ))}
+    </p>
+  );
   if (!items.length) return note || null;
-  // The note takes a train's room: with it, one train fewer fits on a phone (the rest are under "+ N more").
-  const shown = note && items.length > 1 ? items.slice(0, -1) : items;
+  // The note (several lines: no trains of ours, and which service does run) takes most of the half, so with it
+  // at most the first train shows, and none if even that doesn't fit; the rest are under "+ N more". Without a
+  // note, the next train always shows.
+  const count = Math.max(min, base - drop);
+  const shown = items.slice(0, count);
   const more = (
     <button className={`more more--${side}`} onClick={onMore}>
       {moreCount + items.length - shown.length > 0 ? t.more(moreCount + items.length - shown.length) : t.filter}
@@ -669,7 +721,7 @@ function Trains({
     <>
       {side === 'south' && more}
       {side === 'north' && note}
-      <ol className={`trains trains--${side}`}>
+      <ol className={`trains trains--${side}`} ref={listRef}>
         {shown.map(({ live: d, timetabled: s }, i) =>
           d ? (
             <li
