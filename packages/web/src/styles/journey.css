@@ -265,3 +265,16 @@
   color: var(--muted);
   font-weight: 600;
 }
+
+/* Today's last train on its track: its tag and what it means, under where the train is. */
+.journey__last {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.journey__last .train__last {
+  margin-right: 4px;
+  vertical-align: 1px;
+}

@@ -19,6 +19,8 @@ interface Props {
   /** Where the track and train are on the station page now, to glide back to when closing. */
   returnTo: () => Partial<JourneyOrigin> | undefined;
   closing: boolean;
+  /** Today's last train on its track: says so, as its tag on the station page does. */
+  lastToday?: boolean;
   onClose: () => void;
 }
 
@@ -59,7 +61,7 @@ function placeAt(lane: HTMLElement, glyph: HTMLElement, at: Partial<JourneyOrigi
  * the train sits at the end it's coming from, and its stops to the terminus line the track with expected times.
  * Northbound trains travel up, so the train sits at the bottom with the stops above; southbound, the reverse.
  */
-export function JourneyView({ train, direction, stationCode, origin, returnTo, closing, onClose }: Props) {
+export function JourneyView({ train, direction, stationCode, origin, returnTo, closing, lastToday, onClose }: Props) {
   const { t, nameOf, destinationName } = useI18n();
   const { journey, error } = useJourney(train.trainCode, stationCode);
   const side = direction === 'Northbound' ? 'north' : 'south';
@@ -141,6 +143,11 @@ export function JourneyView({ train, direction, stationCode, origin, returnTo, c
             t.journey.unavailable
           ) : (
             t.journey.loading
+          )}
+          {lastToday && (
+            <span className="journey__last">
+              <span className="train__last">{t.lastToday}</span> {t.lastTodayNote}
+            </span>
           )}
         </p>
       </div>
