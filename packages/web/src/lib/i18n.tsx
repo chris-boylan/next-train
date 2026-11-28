@@ -161,10 +161,10 @@ const en = {
   countdownStyle: 'Over an hour',
   countdownMinutes: 'Mins',
   countdownHours: 'Hours',
-  // How the station page draws DART, InterCity and Enterprise trains: plain white (by shape), or in livery.
+  // How the station page draws DART, InterCity and Enterprise trains: in livery (the default), or plain white.
   trainIcons: 'Train icons',
-  trainIconsWhite: 'White',
   trainIconsColour: 'Colour',
+  trainIconsWhite: 'White',
   timetabledTrains: 'Timetabled trains',
   on: 'On',
   off: 'Off',

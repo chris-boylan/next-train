@@ -84,8 +84,8 @@ export function OptionsMenu() {
             value={trainIcons}
             onChange={setTrainIcons}
             options={[
-              { value: 'white', label: t.trainIconsWhite },
               { value: 'colour', label: t.trainIconsColour },
+              { value: 'white', label: t.trainIconsWhite },
             ]}
           />
           <Choice<TimetabledTrains>

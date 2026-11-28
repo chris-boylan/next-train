@@ -11,7 +11,7 @@ import { useTrainIcons } from '../lib/prefs';
  * - The Luas: a tram, rounder, with its pantograph up to the wire.
  * - Anything else (Commuter, Cork, NI Railways): the plain box every train had before.
  *
- * Trains come plain white, black and grey, told apart by shape alone (the default), or in their full livery
+ * Trains come in their full livery (the default), or plain white, black and grey, told apart by shape alone
  * (Options → Train icons). Either way the outline is the same, and a timetabled or untracked train is drawn hollow
  * and dashed with its details faded (track.css), so it never passes for a live one.
  */
