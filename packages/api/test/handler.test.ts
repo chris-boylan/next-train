@@ -8,7 +8,13 @@ const feedbackRepo = new InMemoryFeedbackRepository();
 const emailed: FeedbackEntry[] = [];
 const handler = createHandler({
   client: fixtureClient('connolly-midday.xml'),
-  luas: new LuasClient({ fetch: async (url) => new Response(fixture(String(url).includes('stop=WES') ? 'luas/forecast-wes.xml' : 'luas/forecast-ran.xml')) }),
+  // Westmoreland and Jervis (a Red stop, recorded during a disruption) as recorded; any other stop answers as Ranelagh.
+  luas: new LuasClient({
+    fetch: async (url) => {
+      const stop = new URL(String(url)).searchParams.get('stop');
+      return new Response(fixture(stop === 'WES' ? 'luas/forecast-wes.xml' : stop === 'JER' ? 'luas/forecast-jer.xml' : 'luas/forecast-ran.xml'));
+    },
+  }),
   favourites: new FavouritesService(new InMemoryFavouritesRepository()),
   feedback: new FeedbackService(feedbackRepo, { notify: async (e) => void emailed.push(e) }),
 });
@@ -45,6 +51,15 @@ describe('API handler', () => {
     expect(res.headers?.['cache-control']).toBe('public, max-age=20');
     const westmoreland = body(await request('GET', '/api/stations/LU_WES/departures?service=luas'));
     expect(westmoreland.luas.noService).toEqual(['Southbound']);
+  });
+
+  it("gives each Luas line's status, for the map's news ticker", async () => {
+    const res = await request('GET', '/api/luas/status');
+    expect(res.statusCode).toBe(200);
+    expect(body(res).lines).toEqual({
+      red: { message: 'No service Red Cow – Tallaght / Saggart. See news.', disrupted: true },
+      green: { message: 'Green Line services operating normally', disrupted: false },
+    });
   });
 
   it('keeps Luas stops on the Luas, and Luas favourites by their LU_ code', async () => {

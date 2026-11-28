@@ -6,7 +6,9 @@
 import type { ServiceId } from '@dart-times/core';
 
 /** Where a station's name sits: either side of a vertical line, under or over the dot, or angled above a horizontal line. */
-export type LabelPlacement = 'right' | 'left' | 'below' | 'above' | 'angled';
+/** `angled`: up and to the right from a level line; `angledBelow`: down and to the right; `belowCentre`: centred
+ *  under the stop (wrapping to `labelWidth`), for a stop between two lines close either side of it. */
+export type LabelPlacement = 'right' | 'left' | 'below' | 'above' | 'angled' | 'angledBelow' | 'belowCentre';
 
 export interface SchematicPoint {
   x: number;
@@ -45,6 +47,15 @@ export interface Schematic {
   standIns?: StandIn[];
   /** Track run one way only, as [from, to]: drawn with an arrow pointing the way trams go (the Luas loop). */
   oneWay?: [string, string][];
+  /** Changing line on foot, out of the stations (the Luas's Abbey Street to O'Connell – GPO and Marlborough):
+   *  dashed, through any corners `via`. */
+  transfers?: Transfer[];
+}
+
+export interface Transfer {
+  from: string;
+  to: string;
+  via?: [number, number][];
 }
 
 export interface StandIn {

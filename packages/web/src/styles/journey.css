@@ -267,6 +267,8 @@
 }
 
 /* Today's last train on its track: its tag and what it means, under where the train is. */
+/* A tram's times are worked out, not reported: said once, quietly, under where it is. */
+.journey__estimated,
 .journey__last {
   display: block;
   margin-top: 6px;

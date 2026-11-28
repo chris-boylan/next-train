@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { adjacentStations, directionBetween, terminiFrom } from '../src/line';
-import { LUAS_GREEN_LINE, LUAS_LINE, LUAS_RED_LINE, LUAS_STATION_CODES, luasUnservedAt, toLuasDepartures } from '../src/luas';
+import { getLuasStatus, isLuasDisruption, luasJourney, LUAS_GREEN_LINE, LUAS_LINE, LUAS_RED_LINE, LUAS_STATION_CODES, luasUnservedAt, toLuasDepartures } from '../src/luas';
 import { LuasClient, parseLuasForecast, parseLuasStops } from '../src/luasClient';
 import { SERVICES } from '../src/services';
 import { findStationByCode, findStationByName, LUAS_STATIONS, searchStations } from '../src/stations';
@@ -132,5 +132,77 @@ describe('LuasClient', () => {
     now = 30_000;
     await client.getForecast('RAN');
     expect(urls).toHaveLength(3);
+  });
+});
+
+describe('Luas line status', () => {
+  it('counts anything but "operating normally" as news', () => {
+    expect(isLuasDisruption('Green Line services operating normally')).toBe(false);
+    expect(isLuasDisruption('Green Line services operating with delays')).toBe(true);
+    expect(isLuasDisruption('No service Red Cow – Tallaght / Saggart. See news.')).toBe(true);
+    expect(isLuasDisruption('')).toBe(false);
+  });
+
+  it("reads each line's status from one of its stops, leaving out a line whose forecast fails", async () => {
+    const asked: string[] = [];
+    const client = new LuasClient({
+      fetch: async (url) => {
+        const stop = new URL(String(url)).searchParams.get('stop')!;
+        asked.push(stop);
+        if (stop === 'MAR') return new Response('', { status: 503 });
+        return new Response(fixture('luas/forecast-jer.xml'));
+      },
+    });
+    const errors = console.error;
+    console.error = () => {};
+    try {
+      expect(await getLuasStatus(client)).toEqual({
+        red: { message: 'No service Red Cow – Tallaght / Saggart. See news.', disrupted: true },
+      });
+    } finally {
+      console.error = errors;
+    }
+    expect(asked.sort()).toEqual(['JER', 'MAR']);
+  });
+});
+
+describe('A tram\'s stops ahead, estimated', () => {
+  const tram = (direction: 'Northbound' | 'Southbound', destinationCode: string) =>
+    ({ trainCode: 'x', destination: destinationCode, destinationCode, direction, category: 'luas' }) as Parameters<typeof luasJourney>[0];
+  const MIN = 60_000;
+
+  it('adds the timetable\'s run times to its live time, stop by stop to its destination', () => {
+    const journey = luasJourney(tram('Southbound', 'LU_BRI'), 'LU_RAN', NOW + 2 * MIN, NOW)!;
+    expect(journey.estimated).toBe(true);
+    expect(journey.stops[0]).toMatchObject({ code: 'LU_RAN', inMins: 2 });
+    expect(journey.stops.at(-1)!.code).toBe('LU_BRI');
+    expect(journey.stops.map((s) => s.code).slice(0, 3)).toEqual(['LU_RAN', 'LU_BEE', 'LU_COW']);
+    // Later stops are later, about two minutes apart.
+    const mins = journey.stops.map((s) => s.inMins);
+    expect(mins.every((m, i) => i === 0 || m >= mins[i - 1]!)).toBe(true);
+    expect(mins[1]! - mins[0]!).toBeGreaterThanOrEqual(1);
+    expect(mins[1]! - mins[0]!).toBeLessThanOrEqual(3);
+  });
+
+  it('goes round the city-centre loop the way trams do', () => {
+    const north = luasJourney(tram('Northbound', 'LU_BRO'), 'LU_DAW', NOW, NOW)!.stops.map((s) => s.code);
+    expect(north.slice(0, 5)).toEqual(['LU_DAW', 'LU_WES', 'LU_OGP', 'LU_OUP', 'LU_DOM']);
+    const south = luasJourney(tram('Southbound', 'LU_BRI'), 'LU_DOM', NOW, NOW)!.stops.map((s) => s.code);
+    expect(south.slice(0, 5)).toEqual(['LU_DOM', 'LU_PAR', 'LU_MAR', 'LU_TRY', 'LU_DAW']);
+    // "Parnell" trams turn from O'Connell – Upper into Parnell.
+    expect(luasJourney(tram('Northbound', 'LU_PAR'), 'LU_WES', NOW, NOW)!.stops.map((s) => s.code)).toEqual(['LU_WES', 'LU_OGP', 'LU_OUP', 'LU_PAR']);
+  });
+
+  it('places it back along the track: at the stop when due, else just left the one before, or not yet set off', () => {
+    expect(luasJourney(tram('Southbound', 'LU_BRI'), 'LU_RAN', NOW, NOW)!.now).toMatchObject({ kind: 'at', code: 'LU_RAN' });
+    expect(luasJourney(tram('Southbound', 'LU_BRI'), 'LU_RAN', NOW + MIN, NOW)!.now).toMatchObject({ kind: 'left', code: 'LU_CHA' });
+    expect(luasJourney(tram('Southbound', 'LU_BRI'), 'LU_RAN', NOW + 5 * MIN, NOW)!.now).toMatchObject({ kind: 'left', code: 'LU_STS' });
+    // Due at Charlemont in an hour: further than the line goes back from there.
+    expect(luasJourney(tram('Southbound', 'LU_BRI'), 'LU_CHA', NOW + 60 * MIN, NOW)!.now).toMatchObject({ kind: 'notStarted', code: 'LU_BRO' });
+  });
+
+  it('gives no estimate for a destination it can\'t reach this way', () => {
+    expect(luasJourney(tram('Northbound', 'LU_BRI'), 'LU_RAN', NOW, NOW)).toBeUndefined();
+    expect(luasJourney(tram('Southbound', 'LU_BRI'), 'LU_WES', NOW, NOW)).toBeUndefined();
   });
 });

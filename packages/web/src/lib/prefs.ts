@@ -86,3 +86,9 @@ export function useLiveTrainsPref(): [boolean, (on: boolean) => void] {
   const [choice, setChoice] = useLiveTrainsChoice();
   return [choice === 'on', (on) => setChoice(on ? 'on' : 'off')];
 }
+
+/** The home page: trains (the service list, the default) or trams (the Luas map), switched by swiping across it
+ *  or by the indicator beside the title, and remembered. */
+export type HomeMode = 'train' | 'tram';
+
+export const useHomeMode = storedChoice<HomeMode>('dart-times:home-mode', ['train', 'tram'], 'train');

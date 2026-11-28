@@ -190,6 +190,14 @@ function handler(event) {
           cachePolicy: departuresCache,
           originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
         },
+        // The Luas lines' status (`/api/luas/status`, the map's news ticker): the same for everyone.
+        '/api/luas/*': {
+          origin: apiOrigin,
+          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
+          allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+          cachePolicy: departuresCache,
+          originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+        },
         // Favourites are per device (x-device-id), so never cached.
         '/api/*': {
           origin: apiOrigin,

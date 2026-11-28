@@ -11,8 +11,11 @@
  * centre it's a one-way loop between Dawson and Dominick (see LOOP_ONE_WAY), so those stops each see trams one way
  * only (the feed says "No Northbound/Southbound Service" for the other).
  */
-import { directionBetween, type Line } from './line';
+import type { Journey, JourneyStop, TrainNow } from './journey';
+import { directionBetween, type Line, runsBetween } from './line';
 import type { LuasClient, RawLuasForecast, RawLuasTram } from './luasClient';
+import { LUAS_RUN_SECONDS } from './luasRunTimes.data';
+import { LUAS_STATIONS } from './stations';
 import type { Departure, Direction, Station } from './types';
 
 export type LuasRouteId = 'red' | 'green';
@@ -169,7 +172,7 @@ export function toLuasDepartures(forecast: RawLuasForecast, code: string, stops:
   return {
     departures,
     message: forecast.message,
-    disrupted: !!forecast.message && !/operating normally/i.test(forecast.message),
+    disrupted: isLuasDisruption(forecast.message),
     noService,
   };
 }
@@ -178,4 +181,113 @@ export function toLuasDepartures(forecast: RawLuasForecast, code: string, stops:
 export async function getLuasDepartures(client: LuasClient, code: string, stops: Station[], now = Date.now()): Promise<LuasDepartures> {
   const forecast = await client.getForecast(code.replace(/^LU_/, ''));
   return toLuasDepartures(forecast, code, stops, now);
+}
+
+/** Whether a line's status message is news: anything but "… services operating normally" (delays, no service). */
+export const isLuasDisruption = (message: string) => !!message && !/operating normally/i.test(message);
+
+/** A line's status, as the feed gives it at every one of its stops. */
+export interface LuasLineStatus {
+  /** E.g. "Green Line services operating with delays" or "No service Red Cow – Tallaght / Saggart. See news.". */
+  message: string;
+  disrupted: boolean;
+}
+
+/** The stop each line's status is read from: any would do, as every stop carries its line's message. */
+const STATUS_STOPS: Record<LuasRouteId, string> = { red: 'JER', green: 'MAR' };
+
+/**
+ * Both lines' status, for the map's news ticker: one forecast per line (cached by the client like any other).
+ * A line whose forecast fails is left out rather than failing the other.
+ */
+export async function getLuasStatus(client: LuasClient): Promise<Partial<Record<LuasRouteId, LuasLineStatus>>> {
+  const lines = await Promise.all(
+    LUAS_ROUTES.map(async ({ id }) => {
+      try {
+        const { message } = await client.getForecast(STATUS_STOPS[id]);
+        return [id, { message, disrupted: isLuasDisruption(message) }] as const;
+      } catch (err) {
+        console.error(`Luas status for the ${id} line:`, err);
+        return undefined;
+      }
+    }),
+  );
+  return Object.fromEntries(lines.filter((line) => line !== undefined));
+}
+
+/** A tram's way from one stop to another, in travel order, along track trams run that way (the loop is one way). */
+function luasRoute(from: string, to: string, direction: Direction): string[] | undefined {
+  for (const path of LUAS_LINE.paths) {
+    const ordered = direction === 'Northbound' ? path : [...path].reverse();
+    const i = ordered.indexOf(from);
+    const j = ordered.indexOf(to);
+    if (i < 0 || j <= i) continue;
+    const way = ordered.slice(i, j + 1);
+    if (way.every((code, k) => k === 0 || runsBetween(way[k - 1]!, code, LUAS_LINE))) return way;
+  }
+  return undefined;
+}
+
+/** The track behind a stop, nearest first, on the way a tram to `to` comes: for placing it before it arrives. */
+function luasRouteBehind(from: string, to: string, direction: Direction): string[] {
+  for (const path of LUAS_LINE.paths) {
+    const ordered = direction === 'Northbound' ? path : [...path].reverse();
+    const i = ordered.indexOf(from);
+    const j = ordered.indexOf(to);
+    if (i < 0 || j <= i) continue;
+    const way = ordered.slice(0, j + 1);
+    if (way.every((code, k) => k === 0 || runsBetween(way[k - 1]!, code, LUAS_LINE))) return ordered.slice(0, i).reverse();
+  }
+  return [];
+}
+
+const luasName = (code: string) => LUAS_STATIONS.find((s) => s.code === code)?.name ?? code;
+
+/**
+ * A tram's stops ahead, estimated: the feed gives each stop its next trams but no tram IDs, so a tram can't be
+ * followed from stop to stop. From its live time at `from` (`dueAt`, epoch ms), each later stop adds the
+ * timetable's run time from the one before (LUAS_RUN_SECONDS). Where it is now is estimated the same way
+ * backwards: due in 2 min where the last stretch takes 3 means it left the stop before about a minute ago.
+ * Undefined when its destination isn't ahead on its track, or a stretch has no run time.
+ */
+export function luasJourney(departure: Departure, from: string, dueAt: number, now: number): Journey | undefined {
+  const to = departure.destinationCode;
+  if (!to) return undefined;
+  const direction: Direction = departure.direction === 'Southbound' ? 'Southbound' : 'Northbound';
+  const way = luasRoute(from, to, direction);
+  if (!way) return undefined;
+  const run = (a: string, b: string) => LUAS_RUN_SECONDS[`${a}>${b}`];
+  const stops: JourneyStop[] = [];
+  let at = dueAt;
+  for (let k = 0; k < way.length; k++) {
+    if (k > 0) {
+      const seconds = run(way[k - 1]!, way[k]!);
+      if (seconds === undefined) return undefined;
+      at += seconds * 1000;
+    }
+    const inMins = Math.round((at - now) / 60_000);
+    const time = clockIn(now, inMins);
+    stops.push({ code: way[k]!, name: luasName(way[k]!), expected: time, scheduled: time, lateMins: 0, inMins, cancelled: false });
+  }
+
+  // Where it is now: back along the track from `from` until the time to come is used up.
+  let left = (dueAt - now) / 1000;
+  let position: TrainNow = { kind: 'at', code: from, name: luasName(from) };
+  if (left > 30) {
+    let ahead = from;
+    for (const behind of luasRouteBehind(from, to, direction)) {
+      const seconds = run(behind, ahead);
+      if (seconds === undefined) break;
+      if (left <= seconds) {
+        position = { kind: 'left', code: behind, name: luasName(behind), minsAgo: Math.max(0, Math.round((seconds - left) / 60)) };
+        left = 0;
+        break;
+      }
+      left -= seconds;
+      ahead = behind;
+    }
+    // Further out than the line goes back: it hasn't set off yet.
+    if (left > 0) position = { kind: 'notStarted', code: ahead, name: luasName(ahead), departs: clockIn(now, Math.round(left / 60)) };
+  }
+  return { trainCode: departure.trainCode, origin: '', destination: departure.destination, now: position, stops, estimated: true };
 }

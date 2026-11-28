@@ -31,6 +31,8 @@ export interface Journey {
   now: TrainNow;
   /** From the station the journey was opened at, to the terminus. */
   stops: JourneyStop[];
+  /** Times worked out rather than reported: a Luas tram's, from its time at one stop and the timetable's run times. */
+  estimated?: boolean;
 }
 
 const DAY = 24 * 60 * 60;

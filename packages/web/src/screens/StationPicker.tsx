@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
+import type { SwipeHandlers } from '../lib/useSwipe';
 import { isLiveService, type LiveTrain, searchStations, type Service, type Station } from '@dart-times/core';
 import { BranchLineMap } from '../maps/BranchLineMap';
 import { COMMUTER_MAP_TERMINI, COMMUTER_ROUTE_MAP } from '../maps/data/commuterRoutes';
@@ -31,6 +32,9 @@ interface Props {
   /** For route-based services (Dublin Commuter, InterCity): the map's view, kept by the app. */
   routesView: RoutesView;
   onRoutesViewChange: (view: RoutesView) => void;
+  /** As the home page (the Luas, "Next Tram?"): its title in place of the way back and the service's name, and
+   *  swiping across the page goes back to the trains. */
+  home?: { title: ReactNode; swipe: SwipeHandlers };
 }
 
 /** A service's line map (or search results), where you pick a station. */
@@ -43,6 +47,7 @@ export function StationPicker({
   onToggleFavourite,
   routesView,
   onRoutesViewChange,
+  home,
 }: Props) {
   const { t, stationName } = useI18n();
   const [query, setQuery] = useState('');
@@ -65,27 +70,33 @@ export function StationPicker({
       <LiveTrainsToggle on={liveOn} onChange={setLiveOn} loading={live.loading} failed={!!live.error} />
     ),
   };
+  // Trams stop at stops.
+  const findLabel = service.id === 'luas' ? t.findStop : t.findStation;
   const mapProps = { favouriteCodes: favourites.map((s) => s.code), currentCode, onSelect };
 
   return (
-    <div className="screen picker">
+    <div className="screen picker" {...home?.swipe}>
       <header className="picker__header">
         <div className="picker__title">
-          <button className="chip" onClick={onBack}>
-            ‹ {t.services}
-          </button>
+          {home ? (
+            home.title
+          ) : (
+            <button className="chip" onClick={onBack}>
+              ‹ {t.services}
+            </button>
+          )}
           <OptionsMenu />
         </div>
-        <h1 className="picker__service">{t.serviceNames[service.id]}</h1>
+        {!home && <h1 className="picker__service">{t.serviceNames[service.id]}</h1>}
         <input
           className="search"
           type="search"
-          placeholder={t.findStation}
+          placeholder={findLabel}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          aria-label={t.findStation}
+          aria-label={findLabel}
         />
-        {favouritesPlace === 'service' && favourites.length > 0 && !query.trim() && (
+        {(favouritesPlace === 'service' || home) && favourites.length > 0 && !query.trim() && (
           <div className="favourites" aria-label={t.favouriteStations}>
             {favourites.map((s) => (
               <button key={s.code} className="chip chip--fav" onClick={() => onSelect(s.code)}>
