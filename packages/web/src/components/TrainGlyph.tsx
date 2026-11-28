@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
-import type { TrainCategory } from '@dart-times/core';
+import { isCorkCommuter, type TrainCategory } from '@dart-times/core';
 import { useTrainIcons } from '../lib/prefs';
 
 /**
@@ -8,17 +8,24 @@ import { useTrainIcons } from '../lib/prefs';
  *   lower front, lights low in the corners.
  * - InterCity (22000 class): a domed cab with a tall windscreen curving into the roof, a yellow nose, paired lights.
  * - Enterprise (its driving trailer): a cab sloping back at the top, a split windscreen, a purple band on silver.
+ * - Cork Commuter (2600 class): a flat, square face with its gangway door between two windscreens, silver with a
+ *   green stripe and a yellow front.
+ * - NI Railways (CAF Class 3000 and 4000): a rounded cab with a flatter top than the InterCity's, one wide
+ *   windscreen, Translink's blue band on silver over a yellow front.
  * - The Luas: a tram, rounder, with its pantograph up to the wire.
- * - Anything else (Commuter, Cork, NI Railways): the plain box every train had before.
+ * - Dublin Commuter: the plain box every train had before.
  *
  * Trains come in their full livery (the default), or plain white, black and grey, told apart by shape alone
  * (Options → Train icons). Either way the outline is the same, and a timetabled or untracked train is drawn hollow
  * and dashed with its details faded (track.css), so it never passes for a live one.
  */
-export function TrainGlyph({ category }: { category?: TrainCategory }) {
+export function TrainGlyph({ train }: { train: { category: TrainCategory; destinationCode?: string } }) {
   const [style] = useTrainIcons();
   const colour = style === 'colour';
+  const { category } = train;
   if (category === 'luas') return <Tram />;
+  if (isCorkCommuter(train)) return <Glyph>{colour ? <CorkLivery /> : <CorkWhite />}</Glyph>;
+  if (category === 'nir') return <Glyph>{colour ? <NirLivery /> : <NirWhite />}</Glyph>;
   if (category === 'dart') return <Glyph>{colour ? <DartLivery /> : <DartWhite />}</Glyph>;
   if (category === 'intercity') return <Glyph>{colour ? <InterCityLivery /> : <InterCityWhite />}</Glyph>;
   if (category === 'enterprise') return <Glyph>{colour ? <EnterpriseLivery /> : <EnterpriseWhite />}</Glyph>;
@@ -148,7 +155,65 @@ const EnterpriseLivery = () => (
   </>
 );
 
-/** Every other train: the plain box (Commuter, Cork Commuter, NI Railways). */
+// --- Cork Commuter (2600 class) ---
+const CORK_BODY = 'M5.5 2.5h29a3 3 0 0 1 3 3v41a3 3 0 0 1-3 3h-29a3 3 0 0 1-3-3v-41a3 3 0 0 1 3-3Z';
+/** Two windscreens either side of the gangway door, which has its own outline and window; lights and coupler. */
+const CorkFace = () => (
+  <>
+    <rect x={5.5} y={10} width={9} height={14} className="glyph-window" />
+    <rect x={25.5} y={10} width={9} height={14} className="glyph-window" />
+    <rect x={16} y={7} width={8} height={35} className="glyph-door" />
+    <rect x={17.3} y={9.5} width={5.4} height={12} className="glyph-window" />
+    <Lamp x={5} y={36} w={7} h={5} />
+    <Lamp x={28} y={36} w={7} h={5} />
+    <rect x={17} y={44} width={6} height={3.5} className="glyph-window" />
+  </>
+);
+const CorkWhite = () => (
+  <>
+    <Body d={CORK_BODY} />
+    <CorkFace />
+    <Outline d={CORK_BODY} />
+  </>
+);
+const CorkLivery = () => (
+  <>
+    <Body d={CORK_BODY} livery="#c9cad3" />
+    <Paint d={r(2.5, 30.5, 35, 19)} fill="#ffd400" />
+    <Paint d={r(2.5, 27, 35, 2.5)} fill="#00573f" />
+    <CorkFace />
+    <Outline d={CORK_BODY} />
+  </>
+);
+
+// --- NI Railways (CAF Class 3000 and 4000) ---
+const NIR_BODY = 'M3.5 49.5V14c0-6 3.5-10 10-10.5h13c6.5.5 10 4.5 10 10.5v35.5Z';
+const NirFace = () => (
+  <>
+    <path d="M6.5 24V15c0-3.5 2-6 6-6.5h15c4 .5 6 3 6 6.5v9c-4.5 2-9 3-13.5 3S11 26 6.5 24Z" className="glyph-window" />
+    <Lamp x={6} y={36} w={8} h={4.5} />
+    <Lamp x={26} y={36} w={8} h={4.5} />
+    <rect x={16.5} y={43.5} width={7} height={3.5} className="glyph-window" />
+  </>
+);
+const NirWhite = () => (
+  <>
+    <Body d={NIR_BODY} />
+    <NirFace />
+    <Outline d={NIR_BODY} />
+  </>
+);
+const NirLivery = () => (
+  <>
+    <Body d={NIR_BODY} livery="#d4d6db" />
+    <Paint d={r(3.5, 31, 33, 18.5)} fill="#ffd400" />
+    <Paint d={r(3.5, 26.5, 33, 4.5)} fill="#1e3f8a" />
+    <NirFace />
+    <Outline d={NIR_BODY} />
+  </>
+);
+
+/** Every other train: the plain box (Dublin Commuter). */
 function PlainTrain() {
   return (
     <svg className="train__glyph" viewBox="0 0 40 52" aria-hidden>

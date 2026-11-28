@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildTimetable, matchStops, parseCsv, scheduledBetween, scheduledCategory, servicesOn, type Station } from '../src';
+import { buildTimetable, isCorkCommuter, matchStops, parseCsv, scheduledBetween, scheduledCategory, servicesOn, type Station } from '../src';
 
 const station = (code: string, name: string, lat: number, lon: number): Station =>
   ({ code, name, shortName: name, aliases: [], branch: 'trunk', lat, lon }) as Station;
@@ -125,5 +125,15 @@ describe('timetable files', () => {
     // Irish dates: 23:30 UTC in summer is already the next day in Ireland.
     expect(irishDate(Date.parse('2026-07-01T23:30:00Z'))).toBe('20260702');
     expect(irishDate(Date.parse('2026-11-27T12:00:00Z'), -1)).toBe('20261126');
+  });
+});
+
+describe('Cork Commuter trains', () => {
+  it("are commuter trains running to Cork-area stations; Dublin's aren't", () => {
+    expect(isCorkCommuter({ category: 'commuter', destinationCode: 'COBH' })).toBe(true);
+    expect(isCorkCommuter({ category: 'commuter', destinationCode: 'MLLOW' })).toBe(true);
+    expect(isCorkCommuter({ category: 'commuter', destinationCode: 'MYNTH' })).toBe(false);
+    // An InterCity to Cork is still an InterCity.
+    expect(isCorkCommuter({ category: 'intercity', destinationCode: 'CORK' })).toBe(false);
   });
 });

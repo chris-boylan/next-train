@@ -793,7 +793,7 @@ function Trains({
                 aria-label={t.journey.open(destinationName(d))}
                 onClick={(e) => onOpen(d, e.currentTarget.parentElement?.querySelector('.train__glyph') ?? null)}
               />
-              <TrainGlyph category={d.category} />
+              <TrainGlyph train={d} />
               <div className="train__info">
                 <span className={`train__due${d.dueInMins <= 0 ? ' train__due--now' : ''}`}>
                   {d.dueInMins <= 0 ? t.due : <DueIn mins={d.dueInMins} />}
@@ -882,7 +882,7 @@ function TimetabledTrain({
       aria-label={`${t.describeScheduled(destination, d.time)}${d.tomorrow ? `, ${t.tomorrow}` : ''}${lastToday ? `, ${t.lastTrainToday}` : ''}`}
     >
       <button className="train__open" aria-label={t.whyTimetabled(destination)} onClick={onOpen} />
-      <TrainGlyph category={d.category} />
+      <TrainGlyph train={d} />
       <div className="train__info">
         <span className={`train__due${clock ? ' train__due--clock' : ''}`}>
           {clock ? d.time : <DueIn mins={d.minutes - Math.floor(irishSecondsOfDay(now.getTime()) / 60)} />}

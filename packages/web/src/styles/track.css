@@ -314,6 +314,13 @@
   stroke-linejoin: round;
 }
 
+/* A door's edge on a train's front (the Cork 2600's gangway): a thin outline, dashed on a hollow train like the rest. */
+.glyph-door {
+  fill: none;
+  stroke: var(--glyph-stroke);
+  stroke-width: 1.6;
+}
+
 /* The light in a lamp housing, on fronts painted yellow. */
 .glyph-lamp {
   fill: #ffffff;
@@ -433,7 +440,8 @@
 .train--scheduled .glyph-window,
 .train--scheduled .glyph-light,
 .train--scheduled .glyph-paint,
-.train--scheduled .glyph-lamp {
+.train--scheduled .glyph-lamp,
+.train--scheduled .glyph-door {
   opacity: 0.3;
 }
 

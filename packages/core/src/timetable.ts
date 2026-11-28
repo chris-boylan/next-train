@@ -262,13 +262,17 @@ export function scheduledBetween(
 
 const CORK_AREA = new Set(['CORK', 'LSLND', 'GHANE', 'CGTWL', 'MDLTN', 'FOTA', 'CGLOE', 'RBROK', 'COBH', 'MLLOW']);
 
+/** A Cork Commuter train rather than a Dublin one: both are "commuter", but only Cork's run to Cork-area stations. */
+export const isCorkCommuter = (d: { category: TrainCategory; destinationCode?: string }) =>
+  d.category === 'commuter' && !!d.destinationCode && CORK_AREA.has(d.destinationCode);
+
 /**
  * Whether a timetabled train belongs to a service, as `SERVICES[id].matches` does for live trains (the
  * timetable has train codes and destinations, not the live API's origin and train type fields).
  */
 /** Whether a timetabled train belongs to a service. There's no Luas timetable, so none is ever a Luas one. */
 export function scheduledMatches(service: ServiceId, d: ScheduledDeparture): boolean {
-  const cork = d.category === 'commuter' && !!d.destinationCode && CORK_AREA.has(d.destinationCode);
+  const cork = isCorkCommuter(d);
   switch (service) {
     case 'dart':
       return d.category === 'dart';

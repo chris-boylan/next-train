@@ -250,7 +250,8 @@
 .journey--untracked .glyph-window,
 .journey--untracked .glyph-light,
 .journey--untracked .glyph-paint,
-.journey--untracked .glyph-lamp {
+.journey--untracked .glyph-lamp,
+.journey--untracked .glyph-door {
   opacity: 0.3;
 }
 
