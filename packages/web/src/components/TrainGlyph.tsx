@@ -12,8 +12,11 @@ import { useTrainIcons } from '../lib/prefs';
  *   green stripe and a yellow front.
  * - NI Railways (CAF Class 3000 and 4000): a rounded cab with a flatter top than the InterCity's, one wide
  *   windscreen, Translink's blue band on silver over a yellow front.
+ * - Dublin Commuter (29000 class): the same CAF family as NI Railways' 3000s, so the same cab, in its all-over
+ *   two-tone dark green with a yellow front. Irish Rail doesn't say which class runs a train, and 22000s run some
+ *   commuter services too, but the 29000 is the commuter fleet.
  * - The Luas: a tram, rounder, with its pantograph up to the wire.
- * - Dublin Commuter: the plain box every train had before.
+ * - Anything else: the plain box every train had before.
  *
  * Trains come in their full livery (the default), or plain white, black and grey, told apart by shape alone
  * (Options → Train icons). Either way the outline is the same, and a timetabled or untracked train is drawn hollow
@@ -26,6 +29,7 @@ export function TrainGlyph({ train }: { train: { category: TrainCategory; destin
   if (category === 'luas') return <Tram />;
   if (isCorkCommuter(train)) return <Glyph>{colour ? <CorkLivery /> : <CorkWhite />}</Glyph>;
   if (category === 'nir') return <Glyph>{colour ? <NirLivery /> : <NirWhite />}</Glyph>;
+  if (category === 'commuter') return <Glyph>{colour ? <CommuterLivery /> : <NirWhite />}</Glyph>;
   if (category === 'dart') return <Glyph>{colour ? <DartLivery /> : <DartWhite />}</Glyph>;
   if (category === 'intercity') return <Glyph>{colour ? <InterCityLivery /> : <InterCityWhite />}</Glyph>;
   if (category === 'enterprise') return <Glyph>{colour ? <EnterpriseLivery /> : <EnterpriseWhite />}</Glyph>;
@@ -213,7 +217,19 @@ const NirLivery = () => (
   </>
 );
 
-/** Every other train: the plain box (Dublin Commuter). */
+// --- Dublin Commuter (29000 class): NI Railways' cab, in two-tone dark green with a yellow front ---
+const CommuterLivery = () => (
+  <>
+    <Body d={NIR_BODY} livery="#1b7a50" />
+    <Paint d={r(3.5, 26.5, 33, 4.5)} fill="#0a4a30" />
+    <Paint d={r(3.5, 31, 33, 13.5)} fill="#ffd400" />
+    <Paint d={r(3.5, 44.5, 33, 5)} fill="#0a4a30" />
+    <NirFace />
+    <Outline d={NIR_BODY} />
+  </>
+);
+
+/** Every other train: the plain box. */
 function PlainTrain() {
   return (
     <svg className="train__glyph" viewBox="0 0 40 52" aria-hidden>
