@@ -55,7 +55,8 @@ function storedChoice<T extends string>(key: string, values: readonly T[], fallb
     return () => listeners.delete(listener);
   };
 
-  return () => [useSyncExternalStore(subscribe, () => current), set];
+  // The same value server-side, so components that read a setting can also be rendered outside a browser (tests).
+  return () => [useSyncExternalStore(subscribe, () => current, () => current), set];
 }
 
 /** Where favourite stations show: on each service's map page ("service") or together on the home page ("home"). */
