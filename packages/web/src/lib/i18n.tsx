@@ -207,7 +207,6 @@ const en = {
       'Later trains come from Irish Rail’s timetable, which the National Transport Authority publishes every night as open data (GTFS). Trains beyond the next 90 minutes are listed under “Later · timetable” at their timetabled times, without live information yet.',
       'Northern Ireland: there are no live NI Railways times, so NI Railways trains are shown at their timetabled times, from Translink’s timetable on OpenDataNI (Open Government Licence). Enterprise trains come from Irish Rail.',
       'The Luas: live tram times and each line’s status come from TII’s Luas Forecasting API, checked every 30 seconds (the status every minute). When a line isn’t running normally its message scrolls across the map, and tapping it opens the travel updates on luas.ie. During a disruption the Luas gives no times anywhere on that line, even where trams are still running. Tapping a tram shows its stops ahead, estimated from its live time plus the run times between stops in the National Transport Authority’s Luas timetable (GTFS).',
-      'Irish names of Luas stops are the official ones, as on the stops’ signs, from the National Transport Authority’s Luas timetable data (GTFS). Carrickmines and Laughanstown come from logainm.ie, the Placenames Database of Ireland.',
       'The times are only as good as the data: cancellations and platform changes may not show, and some quieter stations report no trains.',
     ],
     privacyTitle: 'Privacy',
