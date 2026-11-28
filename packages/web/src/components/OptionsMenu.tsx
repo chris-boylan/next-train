@@ -3,7 +3,6 @@ import { useOpenHelp } from '../lib/help';
 import { canAddToHomeScreen } from '../lib/install';
 import { type Lang, useI18n } from '../lib/i18n';
 import { type CountdownStyle } from '../lib/due';
-import { dueText } from './DueIn';
 import { type FavouritesPlace, useCountdownStyle, useFavouritesPlace, type TimetabledTrains, useTimetabledTrains } from '../lib/prefs';
 import { type Theme, useTheme } from '../lib/theme';
 
@@ -74,8 +73,10 @@ export function OptionsMenu() {
             label={t.countdownStyle}
             value={countdownStyle}
             onChange={setCountdownStyle}
-            // Shown, not described: a wait of an hour and a half, written each way, exactly as the pages write it.
-            options={(['minutes', 'hours'] as const).map((value) => ({ value, label: dueText(90, value, t) }))}
+            options={[
+              { value: 'minutes', label: t.countdownMinutes },
+              { value: 'hours', label: t.countdownHours },
+            ]}
           />
           <Choice<TimetabledTrains>
             label={t.timetabledTrains}

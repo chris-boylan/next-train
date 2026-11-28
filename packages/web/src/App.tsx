@@ -81,7 +81,7 @@ function Screens() {
   // Switching the home page between trains and trams: the title slides in, until you leave the home page.
   const [homeSlide, setHomeSlide] = useState(false);
   // Where the browser can, the whole page slides across like a pager (a view transition: see home.css), the dots
-  // easing from one page to the other; elsewhere just the title slides in. With reduced motion it simply switches.
+  // easing from one page to the other (the options button slides with its page); elsewhere just the title slides in. With reduced motion it simply switches.
   const switchHome = (mode: HomeMode) => {
     if (mode === homeMode) return;
     const show = (slideTitle: boolean) => {

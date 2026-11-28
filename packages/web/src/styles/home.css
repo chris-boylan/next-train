@@ -1,6 +1,6 @@
 /* Switching the home page between Next Train? and Next Tram? (see switchHome in App.tsx): a view transition, so the
-   whole page slides across like a pager while the dots ease from one page to the other and the options button stays
-   put. Only while a switch is running (data-home-switch on <html>), so no other change is animated. */
+   whole page slides across like a pager, options button and all, while the dots ease from one page to the other.
+   Only while a switch is running (data-home-switch on <html>), so no other change is animated. */
 
 :root[data-home-switch='forward'] {
   --home-shift: -1;
@@ -17,10 +17,6 @@
 
 :root[data-home-switch] .home-title__dot--tram {
   view-transition-name: home-dot-tram;
-}
-
-:root[data-home-switch] .picker__title .options {
-  view-transition-name: home-options;
 }
 
 :root[data-home-switch]::view-transition-group(*) {

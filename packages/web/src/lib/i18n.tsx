@@ -152,11 +152,13 @@ const en = {
   light: 'Light',
   dark: 'Dark',
   favouritesPlace: 'Favourites',
-  // Favourites show on each service's map, or together on the home page. Kept to one line each.
-  favouritesInService: 'On maps',
-  favouritesOnHome: 'On home',
-  // How a wait of an hour or more is written; its options are examples ("90 min", "1h 30 min").
+  // Favourites show on each service's map, or together on the home page. Each option kept to one short word.
+  favouritesInService: 'Maps',
+  favouritesOnHome: 'Home',
+  // How a wait of an hour or more is written: "86 min", or "1h 26 min".
   countdownStyle: 'Over an hour',
+  countdownMinutes: 'Mins',
+  countdownHours: 'Hours',
   timetabledTrains: 'Timetabled trains',
   on: 'On',
   off: 'Off',
@@ -427,6 +429,8 @@ const ga: Messages = {
   favouritesInService: 'Léarscáil',
   favouritesOnHome: 'Baile',
   countdownStyle: 'Thar uair',
+  countdownMinutes: 'Nóiméid',
+  countdownHours: 'Uaireanta',
   timetabledTrains: 'Traenacha an chláir ama',
   on: 'Ar siúl',
   off: 'Múchta',

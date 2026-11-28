@@ -20,7 +20,7 @@ export function DueIn({ mins }: { mins: number }) {
 }
 
 /** A countdown as plain text in a given style: "86 min", or "1h 26 min". */
-export function dueText(mins: number, style: CountdownStyle, units: { hour: string; min: string }): string {
+function dueText(mins: number, style: CountdownStyle, units: { hour: string; min: string }): string {
   return dueParts(mins, style)
     .map(({ value, unit }) => (unit === 'h' ? `${value}${units.hour}` : `${value} ${units.min}`))
     .join(' ');
