@@ -121,6 +121,16 @@ export class DartTimesStack extends Stack {
     const apiOrigin = FunctionUrlOrigin.withOriginAccessControl(apiUrl);
     // Departures are the same for everyone, so the edge serves repeats for up to 20 s (the handler sends max-age=20):
     // a busy station costs one Lambda call per 20 s rather than one per viewer.
+    const statusCache = new cloudfront.CachePolicy(this, 'StatusCache', {
+      minTtl: Duration.seconds(0),
+      defaultTtl: Duration.seconds(60),
+      maxTtl: Duration.seconds(60),
+      queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
+      headerBehavior: cloudfront.CacheHeaderBehavior.none(),
+      cookieBehavior: cloudfront.CacheCookieBehavior.none(),
+      enableAcceptEncodingGzip: true,
+      enableAcceptEncodingBrotli: true,
+    });
     const departuresCache = new cloudfront.CachePolicy(this, 'DeparturesCache', {
       minTtl: Duration.seconds(0),
       defaultTtl: Duration.seconds(20),
@@ -190,12 +200,13 @@ function handler(event) {
           cachePolicy: departuresCache,
           originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
         },
-        // The Luas lines' status (`/api/luas/status`, the map's news ticker): the same for everyone.
+        // The Luas lines' status (`/api/luas/status`, the map's news ticker): the same for everyone, and slow to
+        // change, so the edge keeps it a minute (the handler sends max-age=60): one Lambda call a minute at most.
         '/api/luas/*': {
           origin: apiOrigin,
           viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
           allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
-          cachePolicy: departuresCache,
+          cachePolicy: statusCache,
           originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
         },
         // Favourites are per device (x-device-id), so never cached.

@@ -171,22 +171,33 @@
   }
 }
 
-/* Subtle: two page dots and the other page's name, small and muted, and a big enough target to tap. */
+/* Subtle: two page dots over the other page's name, small and muted, the pair no taller than the title and centred
+   on it. Left-aligned on the trains page, right-aligned on the trams page, the side each page is on. */
 .home-title__switch {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 4px;
-  min-height: 44px;
-  padding: 0 4px;
+  gap: 5px;
+  height: 2rem;
+  padding: 0 2px;
   border: 0;
   background: none;
   color: var(--muted);
   font-size: 0.7rem;
   font-weight: 700;
+  line-height: 1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* The tap target reaches past what's drawn, to a comfortable 44 px tall. */
+.home-title__switch::before {
+  content: '';
+  position: absolute;
+  inset: -6px -6px;
 }
 
 .home-title__switch--tram {

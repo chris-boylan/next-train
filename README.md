@@ -216,7 +216,7 @@ Both apps store favourites in one table, keyed `web:<device id>` or `alexa:<user
 - **`GET /api/stations`:** DART stations.
 - **`GET /api/stations/:code/departures?service=dart|enterprise|cork|commuter&direction=&limit=`:** a service's trains at one of its stations.
 - **`GET /api/stations/:code/departures?service=all`:** every train at any Irish Rail station, with categories.
-- **`GET /api/luas/status`:** each Luas line's status message and whether it's a disruption (`getLuasStatus`, one forecast per line), for the map's news ticker. Cached at the edge for 20 s.
+- **`GET /api/luas/status`:** each Luas line's status message and whether it's a disruption (`getLuasStatus`, one forecast per line), for the map's news ticker. Cached at the edge for 60 s (it changes every few hours at most), so it's one Lambda call a minute however many people are watching.
 - **`GET /api/trains?service=dart|enterprise|commuter|intercity`:** every running train on the service, placed on the line (`at` a station, or `from` → `to` with `progress`). Cached at the edge for 20 s.
 - **`GET | PUT | DELETE /api/favourites[/:code]`:** needs an `x-device-id` header.
 

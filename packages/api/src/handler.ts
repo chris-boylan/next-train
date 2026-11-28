@@ -41,6 +41,8 @@ function json(statusCode: number, body: unknown, cacheControl = 'no-store'): Res
 
 /** Live times are shared by everyone, so CloudFront may serve them for 20 s (the Irish Rail client caches for 30 s). */
 const DEPARTURES_CACHE = 'public, max-age=20';
+/** The Luas lines' status changes every few hours at most: a minute old is fine, so it's one call a minute. */
+const STATUS_CACHE = 'public, max-age=60';
 
 /** The request's JSON body as an object, or undefined if it isn't one (or is unreasonably large). */
 function parseBody(event: APIGatewayProxyEventV2): Record<string, unknown> | undefined {
@@ -102,7 +104,7 @@ export function createHandler({ client, luas = new LuasClient(), favourites, fee
 
       // Each Luas line's status (its disruption message, if any), for the map's news ticker.
       if (method === 'GET' && path === '/api/luas/status') {
-        return json(200, { lines: await getLuasStatus(luas), fetchedAt: new Date().toISOString() }, DEPARTURES_CACHE);
+        return json(200, { lines: await getLuasStatus(luas), fetchedAt: new Date().toISOString() }, STATUS_CACHE);
       }
 
       if (path === '/api/feedback') {
