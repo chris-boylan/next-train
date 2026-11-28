@@ -40,6 +40,9 @@ body {
 .screen__scroll {
   flex: 1;
   min-height: 0;
+  /* Up and down only: a map's name reaching past the edge (an angled label) mustn't let the page slide sideways
+     under a finger. Rows that scroll sideways (favourites) do so on their own. */
+  overflow-x: hidden;
   overflow-y: auto;
   /* Bounces stay inside the list; the header never moves. */
   overscroll-behavior: contain;

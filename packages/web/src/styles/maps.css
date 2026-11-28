@@ -408,11 +408,14 @@
 /* The ticker's place: news arriving after the page opens slides down into it, the gap opening as it comes. */
 .ticker-slot {
   display: grid;
+  /* minmax(0, …): a grid column otherwise grows to fit the scrolling news, pushing the page wide. */
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: 1fr;
   margin-top: 12px;
 }
 
 .ticker-slot > .ticker {
+  min-width: 0;
   min-height: 0;
 }
 
