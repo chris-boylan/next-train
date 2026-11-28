@@ -80,13 +80,28 @@ function Screens() {
 
   // Switching the home page between trains and trams: the title slides in, until you leave the home page.
   const [homeSlide, setHomeSlide] = useState(false);
+  // Where the browser can, the whole page slides across like a pager (a view transition: see home.css), the dots
+  // easing from one page to the other; elsewhere just the title slides in. With reduced motion it simply switches.
   const switchHome = (mode: HomeMode) => {
     if (mode === homeMode) return;
-    setHomeSlide(true);
-    setHomeMode(mode);
-    setServiceId(undefined);
-    setStationCode(undefined);
-    setPreviousCode(undefined);
+    const show = (slideTitle: boolean) => {
+      setHomeSlide(slideTitle);
+      setHomeMode(mode);
+      setServiceId(undefined);
+      setStationCode(undefined);
+      setPreviousCode(undefined);
+    };
+    const root = document.documentElement;
+    const transitions = document as Document & { startViewTransition?: (update: () => void) => { finished: Promise<void> } };
+    if (!transitions.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      show(!transitions.startViewTransition);
+      return;
+    }
+    // Trams are the page to the right: going to them, the page moves left.
+    root.dataset.homeSwitch = mode === 'tram' ? 'forward' : 'back';
+    transitions
+      .startViewTransition(() => flushSync(() => show(false)))
+      .finished.finally(() => delete root.dataset.homeSwitch);
   };
   const homeSwipe = useSwipe(
     () => switchHome('tram'),
