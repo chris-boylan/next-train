@@ -109,6 +109,8 @@ const en = {
   findStation: 'Find a station',
   findStop: 'Find a stop',
   serviceNews: 'Service news',
+  // The station page's ticket button: opens Irish Rail's planner from this station, in a new tab.
+  buyTickets: 'Buy tickets on irishrail.ie',
   serviceNewsMore: 'Travel updates on luas.ie',
   favouriteStations: 'Favourite stations',
   noMatch: (query: string) => `No station matches “${query}”.`,
@@ -384,6 +386,7 @@ const ga: Messages = {
   findStation: 'Aimsigh stáisiún',
   findStop: 'Aimsigh stad',
   serviceNews: 'Nuacht seirbhíse',
+  buyTickets: 'Ceannaigh ticéid ar irishrail.ie',
   serviceNewsMore: 'Nuashonruithe taistil ar luas.ie',
   favouriteStations: 'Stáisiúin is fearr leat',
   noMatch: (query) => `Níl stáisiún ar bith a mheaitseálann “${query}”.`,

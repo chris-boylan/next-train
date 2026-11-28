@@ -878,3 +878,29 @@
 .tracks--only-south .half {
   transform: translateX(calc((var(--lane-width) + var(--lane-gap)) / -2));
 }
+
+/* Buy tickets on irishrail.ie: a square like the options cog, bottom right, clear of the home bar. */
+.ticket-link {
+  position: absolute;
+  right: 16px;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--rule);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.ticket-link:active {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.ticket-link__icon {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}

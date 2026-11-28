@@ -33,6 +33,7 @@ import { DeparturesSheet } from '../components/DeparturesSheet';
 import { Sheet } from '../components/Sheet';
 import { JOURNEY_CLOSE_MS, type JourneyOrigin, JourneyView, RETURN_FADE_DELAY_MS, RETURN_FADE_MS } from '../components/JourneyView';
 import { TrainGlyph } from '../components/TrainGlyph';
+import { sellsTicketsOnline, TicketLink } from '../components/TicketLink';
 import { DueIn } from '../components/DueIn';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
@@ -474,6 +475,9 @@ export function TrackView({
             </p>
           )}
         </section>
+
+        {/* Inside the tracks, so it fades with them when a train's look-ahead opens. */}
+        {sellsTicketsOnline(service.id) && <TicketLink station={station} />}
 
         {journey && (
           <JourneyView

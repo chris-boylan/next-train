@@ -6,6 +6,19 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-28 · A ticket button that opens Irish Rail's planner from the station
+
+**Decision:** station pages for services sold online (Dublin Commuter, InterCity, Enterprise, Cork Commuter) have
+a square ticket button bottom right that opens Irish Rail's journey planner in a new tab with "From" filled by
+`?S=<station>`. Not the DART, NI Railways or the Luas. It fills only "From": the destination is left to the person,
+even when the page's "Going to" filter is set.
+
+**Why:** a link is only worth having if it saves typing the station, and the planner, which is also where tickets
+are bought, reads `?S=` (undocumented; checked in a browser, and our station names resolve). There's no booking API
+or partner deep link to use instead. Because the parameter could change without notice, the daily API check
+watches that the planner is still the HAFAS web app; the worst case is the planner opening with "From" empty.
+Bottom right because the header is full on a phone and the thumb reaches it there.
+
 ## 2026-11-28 · Trams on the home page's other page, not a service tile
 
 **Decision:** the Luas leaves the service picker. The home page has two pages, "Next Train?" (the service picker)

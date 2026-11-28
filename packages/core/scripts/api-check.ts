@@ -60,8 +60,16 @@ check(ranelagh.disrupted || ranelagh.departures.length > 0, 'luas: no trams at R
 check(ranelagh.departures.every((d) => d.destinationCode), `luas: Ranelagh has trams to unknown stops: ${ranelagh.departures.filter((d) => !d.destinationCode).map((d) => d.destination).join(', ')}`);
 console.log(`Luas: ${luasStops.size} stops, ${ranelagh.departures.length} trams at Ranelagh (${ranelagh.message})`);
 
+// 5. The station page's ticket button opens Irish Rail's journey planner with "From" filled (?S=<station>, see
+// web/src/components/TicketLink.tsx). The planner reads S= in the browser, so this can't see the field filled; it
+// checks the planner is still at that address and still the HAFAS web app that reads it.
+const planner = await fetch('https://journeyplanner.irishrail.ie/webapp/?S=Kildare', { signal: AbortSignal.timeout(15_000) });
+const plannerPage = planner.ok ? await planner.text() : '';
+check(planner.ok, `ticket link: the journey planner returned HTTP ${planner.status}`);
+check(/hafas_webapp/.test(plannerPage), 'ticket link: the journey planner is no longer the HAFAS web app (does ?S= still fill "From"?)');
+
 if (problems.length) {
   console.error(`\nAPI check failed:\n${problems.map((p) => `- ${p}`).join('\n')}`);
   process.exit(1);
 }
-console.log('Irish Rail and Luas API check passed.');
+console.log('Irish Rail, Luas and ticket link check passed.');
