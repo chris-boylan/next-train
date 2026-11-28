@@ -63,7 +63,7 @@ function placeAt(lane: HTMLElement, glyph: HTMLElement, at: Partial<JourneyOrigi
  */
 export function JourneyView({ train, direction, stationCode, origin, returnTo, closing, lastToday, onClose }: Props) {
   const { t, nameOf, destinationName } = useI18n();
-  const { journey, error } = useJourney(train.trainCode, stationCode);
+  const { journey, error } = useJourney(train, stationCode);
   const side = direction === 'Northbound' ? 'north' : 'south';
   const laneRef = useRef<HTMLDivElement>(null);
   const glyphRef = useRef<HTMLButtonElement>(null);
@@ -128,7 +128,7 @@ export function JourneyView({ train, direction, stationCode, origin, returnTo, c
 
       <div className="journey__train">
         <button ref={glyphRef} className="journey__glyph" onClick={onClose} aria-label={t.journey.close}>
-          <TrainGlyph />
+          <TrainGlyph tram={train.category === 'luas'} />
         </button>
         <p className="journey__now" role="status" style={closing ? undefined : { animationDelay: `${STOPS_FROM_MS + 150}ms` }}>
           {train.untracked ? (
@@ -144,6 +144,7 @@ export function JourneyView({ train, direction, stationCode, origin, returnTo, c
           ) : (
             t.journey.loading
           )}
+          {journey?.estimated && <span className="journey__estimated">{t.journey.estimated}</span>}
           {lastToday && (
             <span className="journey__last">
               <span className="train__last">{t.lastToday}</span> {t.lastTodayNote}

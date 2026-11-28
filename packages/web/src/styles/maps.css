@@ -141,6 +141,21 @@
   transform-origin: left bottom;
 }
 
+/* Names under a level line, angled down and to the right (the Luas's Red line east of the Green). */
+.schematic__stop--angledBelow {
+  height: 28px;
+  transform: rotate(58deg);
+  transform-origin: left top;
+}
+
+/* A name centred under its stop, between two lines close either side (Abbey Street inside the Luas loop). */
+.schematic__stop--belowCentre {
+  height: auto;
+  min-height: 0;
+  justify-content: center;
+  white-space: normal;
+}
+
 .schematic__stop--below,
 .schematic__stop--above {
   height: 28px;
@@ -165,7 +180,8 @@
 }
 
 /* Angled names never wrap, even beside the screen edge: they run up and away from their line. */
-.schematic__stop--angled.schematic__stop--wrap {
+.schematic__stop--angled.schematic__stop--wrap,
+.schematic__stop--angledBelow.schematic__stop--wrap {
   white-space: nowrap;
 }
 
@@ -349,7 +365,169 @@
   stroke-linejoin: round;
 }
 
-/* The Luas's All view: the Red line's map, then the Green line's. */
-.luas-map + .luas-map {
-  margin-top: 28px;
+/* Changing line on foot, out of the stations (the Luas's Abbey Street to O'Connell – GPO and Marlborough). */
+.line-map__transfer {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 3;
+  stroke-dasharray: 2 4;
+  stroke-linecap: round;
+}
+
+/* The Luas's All view: both lines on one map, the Red crossing the Green, so names are a size down to fit. */
+.schematic--luas-all .schematic__stop,
+.schematic--luas-all .schematic__stop--wrap {
+  font-size: 0.74rem;
+}
+
+.schematic--luas-all .schematic__stop--angled,
+.schematic--luas-all .schematic__stop--angledBelow {
+  height: 28px;
+  min-height: 0;
+}
+
+.schematic--luas-all .schematic__stop--belowCentre {
+  min-height: 0;
+  line-height: 1.05;
+}
+
+.schematic--luas-all .line-map__stop--major {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Heuston and Connolly, for their trains: bold capitals like the rail maps' interchanges, a size up from the stops around it. */
+.schematic--luas-all .schematic__stop--hub {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- News ticker (the Luas's line status, when a line isn't running normally) ---------- */
+
+/* The ticker's place: news arriving after the page opens slides down into it, the gap opening as it comes. */
+.ticker-slot {
+  display: grid;
+  grid-template-rows: 1fr;
+  margin-top: 12px;
+}
+
+.ticker-slot > .ticker {
+  min-height: 0;
+}
+
+.ticker-slot--arriving {
+  overflow: hidden;
+  animation: ticker-slot-open 320ms ease-out;
+}
+
+.ticker-slot--arriving > .ticker {
+  animation: ticker-slide-down 320ms ease-out;
+}
+
+@keyframes ticker-slot-open {
+  from {
+    grid-template-rows: 0fr;
+    margin-top: 0;
+  }
+}
+
+@keyframes ticker-slide-down {
+  from {
+    transform: translateY(-100%);
+  }
+}
+
+.ticker {
+  display: flex;
+  align-items: stretch;
+  border: 2px solid var(--rule);
+  background: var(--minor-bg);
+  color: var(--minor-text);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.ticker__window {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  /* The news fades in and out at the edges rather than being cut off. */
+  mask-image: linear-gradient(to right, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+}
+
+.ticker__track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: ticker var(--ticker-duration, 20s) linear infinite;
+}
+
+.ticker__run {
+  display: inline-flex;
+}
+
+.ticker__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 32px 8px 0;
+}
+
+.ticker__label {
+  padding: 2px 6px;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ticker__more {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-left: 2px solid var(--rule);
+  font-size: 1.1rem;
+}
+
+.ticker:hover .ticker__track,
+.ticker:focus-visible .ticker__track {
+  animation-play-state: paused;
+}
+
+@keyframes ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Reduced motion: the news stands still, wrapping, once, and appears without sliding. */
+@media (prefers-reduced-motion: reduce) {
+  .ticker-slot--arriving,
+  .ticker-slot--arriving > .ticker {
+    animation: none;
+  }
+
+  .ticker__window {
+    mask-image: none;
+  }
+
+  .ticker__track {
+    animation: none;
+    white-space: normal;
+  }
+
+  .ticker__run {
+    flex-direction: column;
+  }
+
+  .ticker__run + .ticker__run {
+    display: none;
+  }
+
+  .ticker__item {
+    padding: 8px 10px;
+    flex-wrap: wrap;
+  }
 }

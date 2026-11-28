@@ -34,8 +34,9 @@ interface Props {
 
 const CORNER_RADIUS = 28;
 /** The big stations, drawn larger with bolder names to draw the eye: Dublin's two termini, Belfast, the main
- *  city termini (Cork, Limerick, Galway, Waterford, Rosslare Europort) and Kilkenny. */
-export const INTERCHANGES: ReadonlySet<string> = new Set(['CNLLY', 'HSTON', 'BFSTC', 'CORK', 'LMRCK', 'GALWY', 'WFORD', 'RLEPT', 'KKNNY']);
+ *  city termini (Cork, Limerick, Galway, Waterford, Rosslare Europort) and Kilkenny; on the Luas, Heuston and
+ *  Connolly, for their trains. */
+export const INTERCHANGES: ReadonlySet<string> = new Set(['CNLLY', 'HSTON', 'BFSTC', 'CORK', 'LMRCK', 'GALWY', 'WFORD', 'RLEPT', 'KKNNY', 'LU_HEU', 'LU_CON']);
 /** Matches .line-map__track's stroke-width. */
 const TRACK_WIDTH = 10;
 /** Each route's stripe on shared track, as on the tube map: track carrying several routes gets wider rather than
@@ -132,7 +133,7 @@ function tick(p: SchematicPoint, extra = 0): string {
   const length = 12 + extra;
   if (p.label === 'angled' || p.label === 'above') return `M${p.x},${p.y} v-${length}`;
   // A name under a station on a level line (Oranmore under Galway's stem): the tick points down to it.
-  if (p.label === 'below') return `M${p.x},${p.y} v${length}`;
+  if (p.label === 'below' || p.label === 'angledBelow' || p.label === 'belowCentre') return `M${p.x},${p.y} v${length}`;
   if (p.label === 'left') return `M${p.x},${p.y} h-${length}`;
   return `M${p.x},${p.y} h${length}`;
 }
@@ -159,6 +160,12 @@ function placeLabel(p: SchematicPoint, circle: boolean, mapMaxWidth?: number, ex
     case 'angled':
       // Start clear of a full station circle; a tick needs less room.
       return circle ? { left: p.x + 10, top: p.y - 44 } : { left: p.x + 2, top: p.y - 30 };
+    case 'angledBelow':
+      return circle ? { left: p.x + 10, top: p.y + 16 } : { left: p.x + 2, top: p.y + 2 };
+    case 'belowCentre': {
+      const width = p.labelWidth ?? 48;
+      return { left: p.x - width / 2 + dx, top: p.y + (circle ? 10 : 12), width, maxWidth: width, textAlign: 'center' };
+    }
   }
 }
 
@@ -181,7 +188,7 @@ export function PositionedMap({
   corner,
 }: Props) {
   const { t } = useI18n();
-  const { points, width, height, bends = {}, curves = {}, labelMaxWidth, oneWay = [] } = schematic;
+  const { points, width, height, bends = {}, curves = {}, labelMaxWidth, oneWay = [], transfers = [] } = schematic;
   const curveOf = (a: string, b: string) => curves[`${a}|${b}`] ?? curves[`${b}|${a}`] ?? CORNER_RADIUS;
   const coloursOf = (a: string, b: string): (string | undefined)[] => {
     const c = colourOf?.(a, b);
@@ -345,6 +352,13 @@ export function PositionedMap({
                 transform={`translate(${at.x} ${at.y}) rotate(${angle})`}
               />
             );
+          })}
+        {/* Changing line on foot: dashed, under the stations' circles. */}
+        {transfers
+          .filter(({ from, to }) => points[from] && points[to])
+          .map(({ from, to, via = [] }) => {
+            const line: [number, number][] = [[points[from]!.x, points[from]!.y], ...via, [points[to]!.x, points[to]!.y]];
+            return <path key={`${from}~${to}`} d={`M${line.map(([x, y]) => `${x},${y}`).join(' L')}`} className="line-map__transfer" />;
           })}
         {codes.map((code) => {
           const p = points[code]!;

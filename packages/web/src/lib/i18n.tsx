@@ -12,7 +12,7 @@ import {
   type TrainCategory,
 } from '@dart-times/core';
 import { type CountdownStyle, dueParts } from './due';
-import { useCountdownStyle } from './prefs';
+import { type HomeMode, useCountdownStyle } from './prefs';
 
 export type Lang = 'en' | 'ga';
 
@@ -70,11 +70,17 @@ const en = {
     portadown: 'Portadown & Newry',
   } as Record<NirRouteId, string>,
   luasRoutes: { red: 'Red Line', green: 'Green Line' } as Record<LuasRouteId, string>,
-  luasSummary: 'Red: Tallaght · Saggart – The Point · Green: Brides Glen – Broombridge',
+  // The home page's two pages, swiped between: the app's name is the same in both languages.
+  nextTrain: 'Next Train?',
+  nextTram: 'Next Tram?',
+  homeModes: { train: 'Train', tram: 'Tram' } as Record<HomeMode, string>,
+  homeSwitch: { train: 'Show trains', tram: 'Show trams: the Luas' } as Record<HomeMode, string>,
   // A Luas stop's track with no trams: either none due in the feed's next hour or so, or the city-centre loop's
   // other side (each stop there is served one way only).
   noTrams: 'No trams due.',
   luasOneWay: 'Trams don’t stop here going this way: through the city centre the Green line runs one way round a loop.',
+  // During a disruption the feed gives no times anywhere on the line, even where trams still run.
+  luasNoTimes: 'Luas isn’t giving live times on this line during the disruption, so trams may still be running here.',
   nirNoLiveData: 'NI Railways has no live times, so these are Translink’s timetabled times: delays and cancellations don’t show.',
   nirEnterpriseOnly: 'NI Railways has no live times, so its trains are Translink’s timetabled times: delays and cancellations don’t show. Enterprise and Irish Rail trains are live.',
   timetable: 'Timetable',
@@ -101,6 +107,9 @@ const en = {
   categories: { dart: 'DART', enterprise: 'Enterprise', intercity: 'InterCity', commuter: 'Commuter', nir: 'NIR', luas: 'Luas' } as Record<TrainCategory, string>,
   stations: 'Stations',
   findStation: 'Find a station',
+  findStop: 'Find a stop',
+  serviceNews: 'Service news',
+  serviceNewsMore: 'Travel updates on luas.ie',
   favouriteStations: 'Favourite stations',
   noMatch: (query: string) => `No station matches “${query}”.`,
   mapLabel: 'DART stations map',
@@ -197,6 +206,8 @@ const en = {
       'Live times come from Irish Rail’s real-time API, the same data as the screens at stations. The app checks it every 30 seconds, it looks 90 minutes ahead and includes delays, and tapping a train shows its stops ahead from the same feed.',
       'Later trains come from Irish Rail’s timetable, which the National Transport Authority publishes every night as open data (GTFS). Trains beyond the next 90 minutes are listed under “Later · timetable” at their timetabled times, without live information yet.',
       'Northern Ireland: there are no live NI Railways times, so NI Railways trains are shown at their timetabled times, from Translink’s timetable on OpenDataNI (Open Government Licence). Enterprise trains come from Irish Rail.',
+      'The Luas: live tram times and each line’s status come from TII’s Luas Forecasting API, checked every 30 seconds (the status every minute). When a line isn’t running normally its message scrolls across the map, and tapping it opens the travel updates on luas.ie. During a disruption the Luas gives no times anywhere on that line, even where trams are still running. Tapping a tram shows its stops ahead, estimated from its live time plus the run times between stops in the National Transport Authority’s Luas timetable (GTFS).',
+      'Irish names of Luas stops are the official ones, as on the stops’ signs, from the National Transport Authority’s Luas timetable data (GTFS). Carrickmines and Laughanstown come from logainm.ie, the Placenames Database of Ireland.',
       'The times are only as good as the data: cancellations and platform changes may not show, and some quieter stations report no trains.',
     ],
     privacyTitle: 'Privacy',
@@ -236,6 +247,8 @@ const en = {
     untrackedTitle: 'Not tracked',
     // Kept to about three lines: it sits beside the train, in a 92px band.
     untracked: 'Irish Rail isn’t tracking this train, so these are timetable times.',
+    // A Luas tram's stops ahead: the feed only gives each stop's next trams, so they're worked out. Kept short too.
+    estimated: 'Estimated from the timetable’s run times between stops.',
   },
   liveTrains: 'Live trains',
   live: 'Live',
@@ -336,9 +349,13 @@ const ga: Messages = {
     portadown: 'Port an Dúnáin agus an tIúr',
   },
   luasRoutes: { red: 'An Líne Dhearg', green: 'An Líne Ghlas' },
-  luasSummary: 'Dearg: Tamhlacht · Teach Sagard – The Point · Glas: Gleann Bhríde – Broombridge',
+  nextTrain: 'Next Train?',
+  nextTram: 'Next Tram?',
+  homeModes: { train: 'Traein', tram: 'Tram' },
+  homeSwitch: { train: 'Taispeáin traenacha', tram: 'Taispeáin tramanna: an Luas' },
   noTrams: 'Níl aon tram le teacht.',
   luasOneWay: 'Ní stopann tramanna anseo sa treo seo: i lár na cathrach téann an Líne Ghlas timpeall lúb in aon treo amháin.',
+  luasNoTimes: 'Níl amanna beo á dtabhairt ag an Luas ar an líne seo le linn an chur isteach, mar sin d’fhéadfadh tramanna a bheith ag rith anseo fós.',
   nirNoLiveData: 'Níl amanna beo ar fáil d’Iarnród Thuaisceart Éireann, mar sin is iad seo amanna chlár ama Translink: ní thaispeántar moilleanna ná cealuithe.',
   nirEnterpriseOnly: 'Níl amanna beo ar fáil d’Iarnród Thuaisceart Éireann, mar sin is iad amanna chlár ama Translink atá ag a chuid traenacha: ní thaispeántar moilleanna ná cealuithe. Tá traenacha an Enterprise agus Iarnród Éireann beo.',
   timetable: 'Clár ama',
@@ -364,6 +381,9 @@ const ga: Messages = {
   categories: { dart: 'DART', enterprise: 'Enterprise', intercity: 'Idirchathrach', commuter: 'Comaitéara', nir: 'NIR', luas: 'Luas' },
   stations: 'Stáisiúin',
   findStation: 'Aimsigh stáisiún',
+  findStop: 'Aimsigh stad',
+  serviceNews: 'Nuacht seirbhíse',
+  serviceNewsMore: 'Nuashonruithe taistil ar luas.ie',
   favouriteStations: 'Stáisiúin is fearr leat',
   noMatch: (query) => `Níl stáisiún ar bith a mheaitseálann “${query}”.`,
   mapLabel: 'Léarscáil de stáisiúin DART',
@@ -458,6 +478,8 @@ const ga: Messages = {
       'Tagann na hamanna beo ó API fíor-ama Iarnród Éireann, na sonraí céanna agus atá ar na scáileáin ag na stáisiúin. Seiceálann an aip é gach 30 soicind, féachann sé 90 nóiméad chun cinn agus áirítear moilleanna, agus má bhrúnn tú ar thraein taispeántar na stadanna atá roimpi ón bhfotha céanna.',
       'Tagann traenacha níos déanaí ó chlár ama Iarnród Éireann, a fhoilsíonn an tÚdarás Náisiúnta Iompair gach oíche mar shonraí oscailte (GTFS). Liostaítear traenacha tar éis an chéad 90 nóiméad faoi “Níos déanaí · clár ama” ag amanna an chláir ama, gan eolas beo fós.',
       'Tuaisceart Éireann: níl amanna beo d’Iarnród Thuaisceart Éireann ann, mar sin taispeántar a gcuid traenacha de réir chlár ama Translink ar OpenDataNI (Ceadúnas Rialtais Oscailte). Tagann traenacha an Enterprise ó Iarnród Éireann.',
+      'An Luas: tagann amanna beo na dtramanna agus stádas gach líne ó API Réamhaisnéise Luas BIÉ, a sheiceáiltear gach 30 soicind (an stádas gach nóiméad). Nuair nach bhfuil líne ag rith mar is gnách, scrollaíonn a teachtaireacht trasna na léarscáile, agus má bhrúnn tú uirthi osclaítear na nuashonruithe taistil ar luas.ie. Le linn cur isteach ní thugann an Luas aon amanna ar an líne sin, fiú san áit a bhfuil tramanna fós ag rith. Má bhrúnn tú ar thram taispeántar na stadanna atá roimpi, measta óna am beo móide na hamanna taistil idir stadanna i gclár ama Luas an Údaráis Náisiúnta Iompair (GTFS).',
+      'Is iad ainmneacha oifigiúla na stadanna Luas atá ann i nGaeilge, mar atá ar chomharthaí na stadanna, ó shonraí clár ama Luas an Údaráis Náisiúnta Iompair (GTFS). Tagann Carraig Mhaighin agus Baile an Locháin ó logainm.ie, Bunachar Logainmneacha na hÉireann.',
       'Níl na hamanna níos fearr ná na sonraí: b’fhéidir nach dtaispeánfar cealuithe ná athruithe ardáin, agus ní thuairiscíonn roinnt stáisiún ciúin aon traein.',
     ],
     privacyTitle: 'Príobháideacht',
@@ -495,6 +517,7 @@ const ga: Messages = {
     unavailable: 'Níorbh fhéidir stadanna na traenach seo a lódáil.',
     untrackedTitle: 'Gan rianú',
     untracked: 'Níl Iarnród Éireann ag rianú na traenach seo, mar sin is amanna an chláir ama iad seo.',
+    estimated: 'Measta ó amanna taistil an chláir ama idir stadanna.',
   },
   liveTrains: 'Traenacha beo',
   live: 'Beo',

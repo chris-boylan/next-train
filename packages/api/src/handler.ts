@@ -9,6 +9,7 @@ import {
   getDepartures,
   getLiveTrains,
   getLuasDepartures,
+  getLuasStatus,
   LuasClient,
   isLiveService,
   LIVE_SERVICES,
@@ -97,6 +98,11 @@ export function createHandler({ client, luas = new LuasClient(), favourites, fee
         const limit = Number(event.queryStringParameters?.limit) || undefined;
         const departures = await getDepartures(client, station.code, { direction, limit, service });
         return json(200, { station, direction: direction ?? null, departures, fetchedAt: new Date().toISOString() }, DEPARTURES_CACHE);
+      }
+
+      // Each Luas line's status (its disruption message, if any), for the map's news ticker.
+      if (method === 'GET' && path === '/api/luas/status') {
+        return json(200, { lines: await getLuasStatus(luas), fetchedAt: new Date().toISOString() }, DEPARTURES_CACHE);
       }
 
       if (path === '/api/feedback') {

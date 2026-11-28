@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { findStationByCode, hasLiveData, isServiceId, luasLineOf, SERVICES, type ServiceId, type Station } from '@dart-times/core';
+import { findStationByCode, hasLiveData, isLuasStop, isServiceId, luasLineOf, SERVICES, type ServiceId, type Station } from '@dart-times/core';
 import { fetchFavourites, setFavourite } from './lib/api';
 import { getDeviceId } from './lib/deviceId';
 import { HelpContext } from './lib/help';
 import { useI18n } from './lib/i18n';
-import { useStationView } from './lib/prefs';
+import { type HomeMode, useHomeMode, useStationView } from './lib/prefs';
+import { useSwipe } from './lib/useSwipe';
+import { HomeTitle } from './components/HomeTitle';
 import { NetworkMap } from './maps/NetworkMap';
 import type { RoutesView } from './maps/RoutesMap';
 import { HelpPage } from './screens/HelpPage';
@@ -20,8 +22,8 @@ import { TrackView } from './screens/TrackView';
  *  load, as deciding also marks it seen (and React may run a state initialiser twice). */
 const WELCOME_ON_LOAD = shouldWelcome();
 
-/** Service → line map → station. Always opens on the service picker; ?service=&station= links go straight in,
- * and ?help opens the help page. Help sits on top of whatever screen it was opened from. */
+/** Service → line map → station. Always opens on the home page: trains (the service picker) or trams (the Luas
+ * map), whichever was last swiped to; ?service=&station= links go straight in, and ?help opens the help page. Help sits on top of whatever screen it was opened from. */
 export function App() {
   const [showHelp, setShowHelp] = useState(() => new URLSearchParams(location.search).has('help'));
   const [welcome, setWelcome] = useState(WELCOME_ON_LOAD);
@@ -44,7 +46,9 @@ function Screens() {
     const id = params.get('service') ?? (params.get('station') ? 'dart' : undefined);
     return isServiceId(id) ? id : undefined;
   });
-  const service = serviceId && SERVICES[serviceId];
+  // The home page is trains (the service list) or trams (the Luas map, which is then the home page itself).
+  const [homeMode, setHomeMode] = useHomeMode();
+  const service = (serviceId && SERVICES[serviceId]) || (homeMode === 'tram' ? SERVICES.luas : undefined);
   const [stationCode, setStationCode] = useState(() => {
     const code = params.get('station');
     return service && code ? findStationByCode(code, service.stations)?.code : undefined;
@@ -68,6 +72,28 @@ function Screens() {
   // from a station returns to the route you picked it from.
   const [routesViews, setRoutesViews] = useState<Partial<Record<ServiceId, RoutesView>>>({});
 
+  // Opening a service some other way (a link, a favourite) puts the home page on its side: trams for the Luas,
+  // trains for the rest, so going back lands where it belongs.
+  useEffect(() => {
+    if (serviceId) setHomeMode(serviceId === 'luas' ? 'tram' : 'train');
+  }, [serviceId, setHomeMode]);
+
+  // Switching the home page between trains and trams: the title slides in, until you leave the home page.
+  const [homeSlide, setHomeSlide] = useState(false);
+  const switchHome = (mode: HomeMode) => {
+    if (mode === homeMode) return;
+    setHomeSlide(true);
+    setHomeMode(mode);
+    setServiceId(undefined);
+    setStationCode(undefined);
+    setPreviousCode(undefined);
+  };
+  const homeSwipe = useSwipe(
+    () => switchHome('tram'),
+    () => switchHome('train'),
+  );
+  const homeTitle = <HomeTitle mode={homeMode} onChange={switchHome} slideIn={homeSlide} />;
+
   useEffect(() => {
     fetchFavourites(deviceId).then(setFavourites, (err: Error) => console.error(err));
   }, [deviceId]);
@@ -76,17 +102,19 @@ function Screens() {
   // line's: red or green.
   useEffect(() => {
     document.documentElement.dataset.service =
-      serviceId === 'luas' && stationCode ? `luas-${luasLineOf(stationCode)}` : (serviceId ?? 'dart');
-  }, [serviceId, stationCode]);
+      service?.id === 'luas' && stationCode ? `luas-${luasLineOf(stationCode)}` : (service?.id ?? 'dart');
+  }, [service?.id, stationCode]);
 
   const selectService = (id: ServiceId) => {
     forgetScroll(`map:${id}`); // a map opened from the service list starts at the top
+    setHomeSlide(false);
     setServiceId(id);
     setStationCode(undefined);
     setPreviousCode(undefined);
   };
 
   const selectStation = (code: string) => {
+    setHomeSlide(false);
     setStationCode(code);
     setPreviousCode(code);
   };
@@ -128,8 +156,11 @@ function Screens() {
           forgetScroll('map:network');
           setShowNetwork(true);
         }}
-        favourites={favourites}
+        // Luas stops are Next Tram?'s favourites, shown there.
+        favourites={favourites.filter((s) => !isLuasStop(s.code))}
         onSelectFavourite={(s) => setBoardStation({ code: s.code, name: stationName(s), from: 'home' })}
+        title={homeTitle}
+        swipe={homeSwipe}
       />
     );
   }
@@ -188,6 +219,8 @@ function Screens() {
       onToggleFavourite={toggleFavourite}
       routesView={routesView}
       onRoutesViewChange={(view) => setRoutesViews((views) => ({ ...views, [service.id]: view }))}
+      // The Luas map is the trams' home page.
+      home={service.id === 'luas' ? { title: homeTitle, swipe: homeSwipe } : undefined}
     />
   );
 }

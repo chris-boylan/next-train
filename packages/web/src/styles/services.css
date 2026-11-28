@@ -127,3 +127,93 @@
   font-size: 2rem;
   font-weight: 900;
 }
+
+/* ---------- The home page's title: "Next Train?" or "Next Tram?", swiped between ---------- */
+
+.home-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.home-title__name {
+  white-space: nowrap;
+}
+
+.home-title__name--from-right {
+  animation: home-title-from-right 220ms ease-out;
+}
+
+.home-title__name--from-left {
+  animation: home-title-from-left 220ms ease-out;
+}
+
+@keyframes home-title-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes home-title-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-title__name--from-right,
+  .home-title__name--from-left {
+    animation: none;
+  }
+}
+
+/* Subtle: two page dots and the other page's name, small and muted, and a big enough target to tap. */
+.home-title__switch {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.home-title__switch--tram {
+  align-items: flex-end;
+}
+
+.home-title__dots {
+  display: flex;
+  gap: 4px;
+}
+
+.home-title__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: currentColor;
+  opacity: 0.45;
+  transition: width 200ms ease-out;
+}
+
+.home-title__dot--on {
+  width: 16px;
+  opacity: 1;
+  background: var(--text);
+}
+
+.home-title__switch:hover .home-title__other,
+.home-title__switch:focus-visible .home-title__other {
+  color: var(--text);
+}

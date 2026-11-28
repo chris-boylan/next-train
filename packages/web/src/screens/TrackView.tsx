@@ -211,9 +211,11 @@ export function TrackView({
   const shownIn = (direction: Direction) =>
     goingTo && goingDirection === direction ? departuresGoingTo(allIn(direction), station.code, goingTo, line) : allIn(direction);
   const dimmed = (direction: Direction) => !!goingDirection && goingDirection !== direction;
-  // A Luas stop on the city-centre loop is served one way only: the other track is drawn dimmed, with a note.
+  // A Luas stop on the city-centre loop is served one way only: only its one track is drawn, in the middle.
   const unserved = service.id === 'luas' ? luasUnservedAt(station.code) : undefined;
-  const laneDimmed = (direction: Direction) => dimmed(direction) || unserved === direction;
+  const laneDimmed = (direction: Direction) => dimmed(direction);
+  // Its unserved track isn't drawn at all: the one track it has runs down the middle of the screen.
+  const drawn = (direction: Direction) => unserved !== direction;
   const goingToName = goingTo && nameOf(goingTo);
   const name = stationName(station);
 
@@ -254,10 +256,14 @@ export function TrackView({
   const nowMinutes = Math.floor(irishSecondsOfDay(now.getTime()) / 60);
   const liveCodes = new Set(data?.departures.map((d) => d.trainCode));
   // The Luas feed's word on a track: the line's disruption message if there is one, else whether trams stop here
-  // this way at all (one side of the city-centre loop doesn't).
+  // this way at all (one side of the city-centre loop doesn't). During a disruption the feed gives no times
+  // anywhere on the line, even on the stretch still running, so a track with none says the times are missing,
+  // not the trams.
   const luasNoteFor = (direction: Direction) =>
     data?.luas?.disrupted
-      ? data.luas.message
+      ? data.departures.some((d) => d.direction === direction)
+        ? data.luas.message
+        : `${data.luas.message} ${t.luasNoTimes}`
       : unserved === direction || data?.luas?.noService.includes(direction)
         ? t.luasOneWay
         : undefined;
@@ -409,18 +415,20 @@ export function TrackView({
       )}
 
       <div
-        className={`tracks${journey && !closingJourney ? ' tracks--journey' : ''}${closingJourney ? ' tracks--returning' : ''}`}
+        className={`tracks${journey && !closingJourney ? ' tracks--journey' : ''}${closingJourney ? ' tracks--returning' : ''}${unserved ? ` tracks--only-${unserved === 'Southbound' ? 'north' : 'south'}` : ''}`}
         style={{ '--return-fade-delay': `${RETURN_FADE_DELAY_MS}ms`, '--return-fade-ms': `${RETURN_FADE_MS}ms` } as CSSProperties}
       >
         {/* Top half: southbound trains on their way in, nearest at the bottom. Green arrow continues up to its termini. */}
         <section className="half half--top" ref={halfRef} aria-label={compass ? t.towards(t.direction.Southbound, list(south.map(nameOf))) : directionName('Southbound')}>
           {/* Orange runs edge to edge through its trains; green carries on past the platform to its arrowhead halfway up. */}
-          {north.length > 0 && <Lane direction="Northbound" withHead dimmed={laneDimmed('Northbound')} />}
-          <Lane direction="Southbound" dimmed={laneDimmed('Southbound')} />
-          <p className={`terminus terminus--north${laneDimmed('Northbound') ? ' terminus--dimmed' : ''}`} aria-hidden>
-            <Termini codes={north} />
-          </p>
-          {trainsFor('Southbound', south)}
+          {north.length > 0 && drawn('Northbound') && <Lane direction="Northbound" withHead dimmed={laneDimmed('Northbound')} />}
+          {drawn('Southbound') && <Lane direction="Southbound" dimmed={laneDimmed('Southbound')} />}
+          {drawn('Northbound') && (
+            <p className={`terminus terminus--north${laneDimmed('Northbound') ? ' terminus--dimmed' : ''}`} aria-hidden>
+              <Termini codes={north} />
+            </p>
+          )}
+          {drawn('Southbound') && trainsFor('Southbound', south)}
         </section>
 
         <div className="platform">
@@ -457,12 +465,14 @@ export function TrackView({
         {/* Bottom half: northbound trains on their way in, nearest at the top. Orange arrow continues down to its termini. */}
         <section className="half half--bottom" aria-label={compass ? t.towards(t.direction.Northbound, list(north.map(nameOf))) : directionName('Northbound')}>
           {/* Green runs edge to edge through its trains; orange carries on past the platform to its arrowhead halfway down. */}
-          <Lane direction="Northbound" dimmed={laneDimmed('Northbound')} />
-          {south.length > 0 && <Lane direction="Southbound" withHead dimmed={laneDimmed('Southbound')} />}
-          {trainsFor('Northbound', north)}
-          <p className={`terminus terminus--south${laneDimmed('Southbound') ? ' terminus--dimmed' : ''}`} aria-hidden>
-            <Termini codes={south} />
-          </p>
+          {drawn('Northbound') && <Lane direction="Northbound" dimmed={laneDimmed('Northbound')} />}
+          {south.length > 0 && drawn('Southbound') && <Lane direction="Southbound" withHead dimmed={laneDimmed('Southbound')} />}
+          {drawn('Northbound') && trainsFor('Northbound', north)}
+          {drawn('Southbound') && (
+            <p className={`terminus terminus--south${laneDimmed('Southbound') ? ' terminus--dimmed' : ''}`} aria-hidden>
+              <Termini codes={south} />
+            </p>
+          )}
         </section>
 
         {journey && (
@@ -771,16 +781,13 @@ function Trains({
               className={`train train--${side}${i === 0 ? ' train--next' : ''}${d.untracked ? ' train--scheduled train--untracked' : ''}`}
               aria-label={`${describe(d)}${d.trainCode === lastTodayCode ? `, ${t.lastTrainToday}` : ''}`}
             >
-              {/* The whole row opens the train's look-ahead. */}
-              {/* Trams have no ID to look their journey up by, so a Luas row doesn't open one. */}
-              {d.category !== 'luas' && (
-                <button
-                  className="train__open"
-                  aria-label={t.journey.open(destinationName(d))}
-                  onClick={(e) => onOpen(d, e.currentTarget.parentElement?.querySelector('.train__glyph') ?? null)}
-                />
-              )}
-              <TrainGlyph />
+              {/* The whole row opens the train's look-ahead (a tram's is estimated: see luasJourney). */}
+              <button
+                className="train__open"
+                aria-label={t.journey.open(destinationName(d))}
+                onClick={(e) => onOpen(d, e.currentTarget.parentElement?.querySelector('.train__glyph') ?? null)}
+              />
+              <TrainGlyph tram={d.category === 'luas'} />
               <div className="train__info">
                 <span className={`train__due${d.dueInMins <= 0 ? ' train__due--now' : ''}`}>
                   {d.dueInMins <= 0 ? t.due : <DueIn mins={d.dueInMins} />}

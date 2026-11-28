@@ -6,6 +6,18 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-28 · Trams on the home page's other page, not a service tile
+
+**Decision:** the Luas leaves the service picker. The home page has two pages, "Next Train?" (the service picker)
+and "Next Tram?" (the Luas's All routes map, with its search and favourites), swiped between, or switched by a small
+indicator beside the title: two page dots and the other page's name. The page last shown is remembered, and
+opening the Luas or a train service by a link or favourite moves the home page to its side, so back lands there.
+
+**Why:** the Luas is a tram, not a train: as a tile it sat among the rail services as if it were one, under a
+name that says "Train". Its own page gives it the right name and saves a tap, as Luas users only ever want the
+Luas map. A tab bar was considered, but it would take space from every page for something only the home page needs;
+the indicator is enough of a hint, and tappable for anyone who doesn't swipe.
+
 ## 2026-11-28 · Luas trams as one service, from the Luas Forecasting API
 
 **Decision:** the Luas is a service of its own, with both lines on one map (a chip each, as Dublin Commuter's
