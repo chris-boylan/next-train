@@ -43,6 +43,10 @@ const en = {
   timetableWindow: (mins: number) =>
     `Irish Rail’s live tracking covers the next ${mins} minutes. This train is further away, so it shows its timetabled time. Its live time and any delay appear once it’s within ${mins} minutes.`,
   whyTimetabled: (destination: string) => `Why the train to ${destination} shows its timetabled time`,
+  // Tapping a train: what each of its tags means.
+  tomorrowNote: (mins: number) =>
+    `There are no more trains on this track today, so this is tomorrow’s first. It shows its timetabled time; its live time and any delay appear about ${mins} minutes before it leaves.`,
+  lastTodayNote: 'Today’s last train on this track. The next one is tomorrow’s first.',
   map: 'Map',
   allRoutes: 'All routes',
   // The station page's chip for every route at a hub, on one pair of tracks.
@@ -292,6 +296,9 @@ const ga: Messages = {
   timetableWindow: (mins) =>
     `Clúdaíonn rianú beo Iarnród Éireann an ${mins} nóiméad atá romhainn. Tá an traein seo níos faide uainn, mar sin taispeántar am an chláir ama. Feicfear a ham beo agus aon mhoill nuair a bheidh sí laistigh de ${mins} nóiméad.`,
   whyTimetabled: (destination) => `Cén fáth a dtaispeántar am an chláir ama don traein go dtí ${destination}`,
+  tomorrowNote: (mins) =>
+    `Níl a thuilleadh traenacha ar an rian seo inniu, mar sin is í seo an chéad cheann amárach. Taispeántar am an chláir ama; feicfear a ham beo agus aon mhoill thart ar ${mins} nóiméad sula bhfágann sí.`,
+  lastTodayNote: 'An traein dheireanach ar an rian seo inniu. Is í an chéad traein amárach an chéad cheann eile.',
   map: 'Léarscáil',
   allRoutes: 'Gach bealach',
   allRoutesChip: 'Gach ceann',

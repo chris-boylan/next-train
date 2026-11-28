@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Caps, useI18n } from '../lib/i18n';
 
 interface Props {
@@ -7,7 +8,11 @@ interface Props {
   children: ReactNode;
 }
 
-/** A panel that slides up from the bottom over the current screen. Closes on ✕, Escape or a tap outside. */
+/**
+ * A panel that slides up from the bottom over the current screen. Closes on ✕, Escape or a tap outside. Drawn at
+ * the top of the page (a portal), so it always spans the whole screen: opened from inside a map, an ancestor
+ * there would otherwise hold its fixed position to the map's box.
+ */
 export function Sheet({ title, onClose, children }: Props) {
   const { t } = useI18n();
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -23,7 +28,7 @@ export function Sheet({ title, onClose, children }: Props) {
     return () => document.removeEventListener('keydown', onKey);
   }, []);
 
-  return (
+  return createPortal(
     <div className="sheet-backdrop" onClick={onClose}>
       <section className="sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
         <header className="sheet__header">
@@ -36,6 +41,7 @@ export function Sheet({ title, onClose, children }: Props) {
         </header>
         <div className="sheet__body">{children}</div>
       </section>
-    </div>
+    </div>,
+    document.body,
   );
 }

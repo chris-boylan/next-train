@@ -27,7 +27,11 @@ html=$(get "$SITE/") || html=""
 if grep -q "<title>Next Train?" <<<"$html"; then pass "site loads"; else fail "site didn't load or has no Next Train? title"; fi
 if [[ -n "$COMMIT" ]]; then
   bundle=$(grep -o 'src="/assets/index-[^"]*\.js"' <<<"$html" | head -1 | cut -d'"' -f2)
-  if [[ -n "$bundle" ]] && get "$SITE$bundle" | grep -q "· ${COMMIT:0:7}"; then
+  # Downloaded whole, then searched: piping curl into `grep -q` fails at random under pipefail, as grep stops
+  # reading at the first match and curl then can't finish writing (curl error 23).
+  js=""
+  [[ -n "$bundle" ]] && js=$(get "$SITE$bundle")
+  if grep -q "· ${COMMIT:0:7}" <<<"$js"; then
     pass "serving commit ${COMMIT:0:7}"
   else
     fail "not serving commit ${COMMIT:0:7} (stale CloudFront copy, or the upload didn't happen)"

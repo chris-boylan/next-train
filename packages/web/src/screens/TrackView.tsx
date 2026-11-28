@@ -142,9 +142,10 @@ export function TrackView({
   // The full departures panel for one direction; it's also where the going-to filter is chosen.
   const [sheetDirection, setSheetDirection] = useState<Direction>();
   // A tapped timetabled train: a short note on why it shows its timetabled time.
-  const [timetableInfo, setTimetableInfo] = useState<TimetabledDeparture>();
+  // A tapped timetabled train, and whether it's today's last on its track: its sheet explains each of its tags.
+  const [timetableInfo, setTimetableInfo] = useState<{ train: TimetabledDeparture; lastToday: boolean }>();
   // The look-ahead for one approaching train (tap a train); `closing` while it animates away.
-  const [journey, setJourney] = useState<{ train: Departure; direction: Direction; origin?: JourneyOrigin }>();
+  const [journey, setJourney] = useState<{ train: Departure; direction: Direction; origin?: JourneyOrigin; lastToday?: boolean }>();
   const [closingJourney, setClosingJourney] = useState(false);
   const closeJourney = useCallback(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return setJourney(undefined);
@@ -161,12 +162,13 @@ export function TrackView({
     const glyph = document.querySelector(`.train[data-train="${CSS.escape(journey.train.trainCode)}"] .train__glyph`);
     return { lane: lane?.getBoundingClientRect(), glyph: glyph?.getBoundingClientRect() };
   }, [journey]);
-  const openJourney = (train: Departure, direction: Direction, glyph: Element | null) => {
+  const openJourney = (train: Departure, direction: Direction, glyph: Element | null, lastToday: boolean) => {
     // Northbound trains come up the green track in the bottom half; southbound down the orange one at the top.
     const lane = document.querySelector(direction === 'Northbound' ? '.half--bottom .lane--north' : '.half--top .lane--south');
     setJourney({
       train,
       direction,
+      lastToday,
       origin: glyph && lane ? { glyph: glyph.getBoundingClientRect(), lane: lane.getBoundingClientRect() } : undefined,
     });
   };
@@ -296,8 +298,8 @@ export function TrackView({
         goingToName={goingDirection === direction ? goingToName : undefined}
         hidden={hidden}
         hasData={liveStation ? !!data : !!timetable}
-        onOpen={(train, glyph) => openJourney(train, direction, glyph)}
-        onTimetabled={setTimetableInfo}
+        onOpen={(train, glyph) => openJourney(train, direction, glyph, train.trainCode === lastTodayCode)}
+        onTimetabled={(train) => setTimetableInfo({ train, lastToday: train.trainCode === lastTodayCode && !train.tomorrow })}
         serviceId={service.id}
         others={hidden ? undefined : othersIn(direction)}
         lastTodayCode={lastTodayCode}
@@ -459,6 +461,7 @@ export function TrackView({
             origin={journey.origin}
             returnTo={returnTo}
             closing={closingJourney}
+            lastToday={journey.lastToday}
             onClose={closeJourney}
           />
         )}
@@ -481,11 +484,29 @@ export function TrackView({
       )}
 
       {timetableInfo && (
-        <Sheet title={`${timetableInfo.time} · ${scheduledDestination(timetableInfo)}`} onClose={() => setTimetableInfo(undefined)}>
-          <p className="timetable-info">
-            <span className="train__timetable">{timetableInfo.tomorrow ? t.tomorrow : t.timetabled}</span>
-            {timetableInfo.category === 'nir' ? t.nirTimetableNote : t.timetableWindow(LIVE_WINDOW_MINS)}
-          </p>
+        <Sheet
+          title={`${timetableInfo.train.time} · ${scheduledDestination(timetableInfo.train)}`}
+          onClose={() => setTimetableInfo(undefined)}
+        >
+          {/* Each tag the train shows on the track, with what it means. */}
+          <ul className="tag-notes">
+            <li className="tag-notes__item">
+              <span className="train__timetable">{timetableInfo.train.tomorrow ? t.tomorrow : t.timetabled}</span>
+              <span>
+                {timetableInfo.train.category === 'nir'
+                  ? t.nirTimetableNote
+                  : timetableInfo.train.tomorrow
+                    ? t.tomorrowNote(LIVE_WINDOW_MINS)
+                    : t.timetableWindow(LIVE_WINDOW_MINS)}
+              </span>
+            </li>
+            {timetableInfo.lastToday && (
+              <li className="tag-notes__item">
+                <span className="train__last">{t.lastToday}</span>
+                <span>{t.lastTodayNote}</span>
+              </li>
+            )}
+          </ul>
         </Sheet>
       )}
     </div>
