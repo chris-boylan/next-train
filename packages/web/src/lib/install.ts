@@ -34,6 +34,24 @@ export function canAddToHomeScreen(): boolean {
   return ios && !isStandalone();
 }
 
+/**
+ * How to add the app to an iPhone's home screen, which has no install prompt:
+ * - 'safari': Safari from iOS 26, where Share is in the menu behind the ≡ button at the bottom left;
+ * - 'safariClassic': older Safari, with Share in the toolbar along the bottom;
+ * - 'other': iPad (Share at the top) or another iOS browser, which get a short tip.
+ * Undefined off iOS, or when already opened from the home screen.
+ */
+export type IosInstall = 'safari' | 'safariClassic' | 'other';
+
+export function iosInstall(): IosInstall | undefined {
+  if (!canAddToHomeScreen()) return undefined;
+  const ua = navigator.userAgent;
+  const ipad = /iPad/.test(ua) || navigator.platform === 'MacIntel';
+  if (ipad || /CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(ua)) return 'other';
+  const version = Number(/Version\/(\d+)/.exec(ua)?.[1] ?? 0);
+  return version >= 26 ? 'safari' : 'safariClassic';
+}
+
 /** Shows the browser's own install prompt, where it has one (Android Chrome); undefined where it doesn't. */
 export function useInstallPrompt(): (() => Promise<void>) | undefined {
   const event = useSyncExternalStore(

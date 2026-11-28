@@ -119,3 +119,102 @@
     transition: none;
   }
 }
+
+/* iPhone: numbered steps to add it to the home screen, and an arrow down to where to start in Safari's toolbar. */
+.welcome--steps .welcome__body {
+  gap: 10px;
+}
+
+.welcome--steps .welcome__icon {
+  width: 56px;
+  height: 56px;
+}
+
+.welcome--steps .welcome__title {
+  font-size: 2.25rem;
+}
+
+.welcome__steps-title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.welcome__steps {
+  width: 100%;
+  max-width: 20rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+  text-align: left;
+}
+
+.welcome__step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.welcome__step-number {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--north);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.welcome__step-text {
+  flex: 1;
+}
+
+.welcome__step-icon {
+  flex: none;
+  color: var(--muted);
+}
+
+/* Room below the button for the arrow, which points off the bottom of the page at Safari's toolbar. */
+.welcome--steps .welcome__foot {
+  padding-bottom: 36px;
+}
+
+.welcome__pointer {
+  position: absolute;
+  bottom: calc(4px + env(safe-area-inset-bottom));
+  color: var(--north);
+  animation: welcome-nudge 1.4s ease-in-out 900ms infinite;
+}
+
+/* Over the ≡ button: about a third of the way across, where Safari's address bar starts. */
+.welcome__pointer--menu {
+  left: calc(29% - 12px);
+}
+
+.welcome__pointer--share {
+  left: calc(50% - 12px);
+}
+
+@keyframes welcome-nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome__pointer {
+    animation: none;
+  }
+}
