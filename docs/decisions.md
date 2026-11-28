@@ -10,8 +10,9 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 **Decision:** station pages for services sold online (Dublin Commuter, InterCity, Enterprise, Cork Commuter) have
 a square ticket button bottom right that opens Irish Rail's journey planner in a new tab with "From" filled by
-`?S=<station>`. NI Railways pages open Translink's "Plan and buy" the same way, by Translink's own station ID
-(generated, as its planner needs one). Not the DART or the Luas. It fills only "From": the destination is left to the person,
+`?S=<station>`. Stations in Northern Ireland (NI Railways, and the Enterprise's Belfast, Portadown and Newry, which Translink
+sells for) open Translink's "Plan and buy" the same way, by Translink's own station ID (generated, as its planner
+needs one). Not the DART or the Luas. It fills only "From": the destination is left to the person,
 even when the page's "Going to" filter is set.
 
 **Why:** a link is only worth having if it saves typing the station, and the planner, which is also where tickets

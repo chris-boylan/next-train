@@ -7,8 +7,14 @@ const at = (service: ServiceId, code: string) => ticketSite(service, findStation
 describe('ticket link', () => {
   it("opens Irish Rail's planner with the station as From, by Irish Rail's own name", () => {
     expect(at('intercity', 'CNLLY')).toEqual({ site: 'irishrail', href: 'https://journeyplanner.irishrail.ie/webapp/?S=Dublin%20Connolly' });
-    // We show "Belfast Grand Central"; Irish Rail calls it Belfast. The Enterprise is Irish Rail's to sell.
-    expect(at('enterprise', 'BFSTC')!.href).toBe('https://journeyplanner.irishrail.ie/webapp/?S=Belfast');
+    // The Enterprise south of the border is Irish Rail's to sell.
+    expect(at('enterprise', 'DDALK')!.site).toBe('irishrail');
+    expect(at('enterprise', 'CNLLY')!.site).toBe('irishrail');
+  });
+
+  it("sends the Enterprise's Northern Ireland stations to Translink", () => {
+    expect(['BFSTC', 'PDOWN', 'NEWRY'].map((code) => at('enterprise', code)?.site)).toEqual(['translink', 'translink', 'translink']);
+    expect(new URL(at('enterprise', 'BFSTC')!.href).searchParams.get('originId')).toBe('10000055');
   });
 
   it("opens Translink's Plan and buy for NI Railways, with Translink's own ID for the station", () => {

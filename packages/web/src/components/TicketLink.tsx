@@ -8,6 +8,9 @@ const TRANSLINK_PLANNER = 'https://www.translink.co.uk/JourneyPlannerV2';
 
 /** Services whose tickets Irish Rail sells online. Not the DART (Leap or the station's machines) or the Luas. */
 const SOLD_BY_IRISH_RAIL: ReadonlySet<ServiceId> = new Set(['commuter', 'intercity', 'enterprise', 'cork']);
+/** Services whose stations in Northern Ireland Translink sells for: NI Railways, and the Enterprise's Belfast,
+ *  Portadown and Newry. */
+const SOLD_BY_TRANSLINK_IN_NI: ReadonlySet<ServiceId> = new Set(['nir', 'enterprise']);
 
 export interface TicketSite {
   href: string;
@@ -18,18 +21,21 @@ export interface TicketSite {
  * Where to buy tickets from this station, with "From" filled, or undefined where tickets aren't bought online.
  * - Irish Rail: `?S=<station>` (undocumented, but the planner reads it, and matches our names: "Connolly" → Dublin
  *   Connolly). Irish Rail's own name where we show another (Belfast Grand Central is "Belfast" to Irish Rail).
- * - Translink, for NI Railways: "Plan and buy" (`isQuickBuy`) with Translink's own ID for the station
- *   (translinkStops.data.ts): a name alone fills the box but selects no station.
+ * - Translink, for stations in Northern Ireland (NI Railways, and the Enterprise's Belfast, Portadown and Newry):
+ *   "Plan and buy" (`isQuickBuy`) with Translink's own ID for the station (translinkStops.data.ts): a name alone
+ *   fills the box but selects no station.
  * The daily API check watches both.
  */
 export function ticketSite(service: ServiceId, station: Station): TicketSite | undefined {
+  const stop = SOLD_BY_TRANSLINK_IN_NI.has(service) ? TRANSLINK_STOPS[station.code] : undefined;
+  if (stop) {
+    const params = new URLSearchParams({ originId: stop.id, originName: stop.name, originType: 'Train stop', isQuickBuy: 'true' });
+    return { site: 'translink', href: `${TRANSLINK_PLANNER}?${params}` };
+  }
   if (SOLD_BY_IRISH_RAIL.has(service)) {
     return { site: 'irishrail', href: `${IRISH_RAIL_PLANNER}?S=${encodeURIComponent(station.apiName ?? station.name)}` };
   }
-  const stop = service === 'nir' ? TRANSLINK_STOPS[station.code] : undefined;
-  if (!stop) return undefined;
-  const params = new URLSearchParams({ originId: stop.id, originName: stop.name, originType: 'Train stop', isQuickBuy: 'true' });
-  return { site: 'translink', href: `${TRANSLINK_PLANNER}?${params}` };
+  return undefined;
 }
 
 /**
