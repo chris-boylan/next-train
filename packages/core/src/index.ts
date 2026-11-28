@@ -16,4 +16,5 @@ export * from './nir';
 export * from './stationLines';
 export * from './livetrains';
 export * from './luas';
+export { TRANSLINK_STOPS } from './translinkStops.data';
 export * from './luasClient';

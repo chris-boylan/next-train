@@ -54,7 +54,7 @@ export default defineConfig({
       manifest: {
         name: 'Next Train?',
         short_name: 'Next Train',
-        description: 'Live Irish Rail train times',
+        description: 'Live Irish Rail and Luas times, and NI Railways',
         lang: 'en-IE',
         display: 'standalone',
         start_url: '/',

@@ -27,7 +27,8 @@ describe('NIR_TRACK_LINE', () => {
   });
 
   it('branches at Lanyon Place, York Street and Coleraine', () => {
-    expect(adjacentStations('NI_LANYN', line).north.sort()).toEqual(['NI_TITQ', 'NI_YORKG']);
+    // York Street first, as on the ground: over the Dargan Bridge to the north-west, then Titanic Quarter to the east.
+    expect(adjacentStations('NI_LANYN', line).north).toEqual(['NI_YORKG', 'NI_TITQ']);
     expect(adjacentStations('NI_YORKG', line).north.sort()).toEqual(['NI_MOSSW', 'NI_WABBY']);
     expect(adjacentStations('NI_COLER', line).north.sort()).toEqual(['NI_CROCK', 'NI_UNIV']);
     // Derry trains don't call at Whiteabbey, and a Bangor–Larne journey doesn't exist.

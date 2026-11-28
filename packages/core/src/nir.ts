@@ -46,16 +46,18 @@ const pathOf = (id: NirRouteId) => NIR_ROUTES.find((r) => r.id === id)!.line.pat
  * Larne and Derry (and at Coleraine to Portrush). So Grand Central is a through station: Portadown and Newry trains
  * on one track, the rest on the other; and "Northbound" (towards Belfast from Portadown) agrees with the Enterprise.
  * Each path is listed south to north. (The routes above, used by the map, each run from Grand Central outwards.)
+ * Bangor's path comes last so Lanyon Place's sign reads as the lines leave it: York Street (over the Dargan Bridge to
+ * the north-west) on the left, Titanic Quarter (east, towards Bangor) on the right.
  */
 const SOUTH_TO_BELFAST = [...pathOf('portadown')].reverse();
 const beyondBelfast = (id: NirRouteId) => pathOf(id).slice(1); // without Grand Central
 const derryToColeraine = beyondBelfast('derry').slice(0, beyondBelfast('derry').indexOf('NI_COLER') + 1);
 export const NIR_TRACK_LINE: Line = {
   paths: [
-    [...SOUTH_TO_BELFAST, ...beyondBelfast('bangor')],
     [...SOUTH_TO_BELFAST, ...beyondBelfast('larne')],
     [...SOUTH_TO_BELFAST, ...beyondBelfast('derry')],
     [...SOUTH_TO_BELFAST, ...derryToColeraine, ...pathOf('portrush').slice(1)],
+    [...SOUTH_TO_BELFAST, ...beyondBelfast('bangor')],
   ],
   // Most trains towards Belfast finish at Grand Central, so it's a terminus both ways (like Greystones on the DART).
   termini: { Northbound: ['BFSTC', 'NI_BANGR', 'NI_LARNH', 'NI_DERRY', 'NI_PRUSH'], Southbound: ['BFSTC', 'NEWRY'] },

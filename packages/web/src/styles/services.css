@@ -171,22 +171,34 @@
   }
 }
 
-/* Subtle: two page dots and the other page's name, small and muted, and a big enough target to tap. */
+/* Subtle: two page dots over the other page's name, small and muted, the pair no taller than the title and centred
+   on it. Left-aligned on the trains page, right-aligned on the trams page, the side each page is on. */
 .home-title__switch {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 4px;
-  min-height: 44px;
-  padding: 0 4px;
+  gap: 5px;
+  height: 2rem;
+  /* Half a pixel lower, so the dots' top meets the capitals' top and the name sits on their baseline. */
+  padding: 1px 2px 0;
   border: 0;
   background: none;
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   font-weight: 700;
+  line-height: 1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* The tap target reaches past what's drawn, to a comfortable 44 px tall. */
+.home-title__switch::before {
+  content: '';
+  position: absolute;
+  inset: -6px -6px;
 }
 
 .home-title__switch--tram {
@@ -195,20 +207,20 @@
 
 .home-title__dots {
   display: flex;
-  gap: 4px;
+  gap: 5px;
 }
 
 .home-title__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
   background: currentColor;
   opacity: 0.45;
   transition: width 200ms ease-out;
 }
 
 .home-title__dot--on {
-  width: 16px;
+  width: 20px;
   opacity: 1;
   background: var(--text);
 }

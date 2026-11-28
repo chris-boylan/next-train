@@ -22,8 +22,9 @@ export function HomeTitle({ mode, onChange, slideIn }: Props) {
       </h1>
       <button className={`home-title__switch home-title__switch--${mode}`} onClick={() => onChange(other)} aria-label={t.homeSwitch[other]}>
         <span className="home-title__dots" aria-hidden>
-          <span className={`home-title__dot${mode === 'train' ? ' home-title__dot--on' : ''}`} />
-          <span className={`home-title__dot${mode === 'tram' ? ' home-title__dot--on' : ''}`} />
+          {/* Each dot is the same one on both pages (home.css names them), so switching eases one into the other. */}
+          <span className={`home-title__dot home-title__dot--train${mode === 'train' ? ' home-title__dot--on' : ''}`} />
+          <span className={`home-title__dot home-title__dot--tram${mode === 'tram' ? ' home-title__dot--on' : ''}`} />
         </span>
         <span className="home-title__other" aria-hidden>
           {mode === 'train' ? `${t.homeModes.tram} ›` : `‹ ${t.homeModes.train}`}

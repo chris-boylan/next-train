@@ -18,7 +18,7 @@ npm run dev:web                            # Vite on :5173, proxies /api → :30
 npm run build:web                          # typecheck + vite build
 ```
 
-Live-API scripts (hit the real Irish Rail API): `npm run api-check -w @dart-times/core` (the daily health check), `npm run smoke -- connolly south`, `npm run verify-line`, `npm run build-network -w @dart-times/core`, `npm run update-stations -w @dart-times/core`, `npm run update-luas-run-times -w @dart-times/core` (Luas run times from the NTA's GTFS). After `update-stations`, regenerate the Alexa model with `npm run alexa:model`.
+Live-API scripts (hit the real Irish Rail API): `npm run api-check -w @dart-times/core` (the daily health check), `npm run smoke -- connolly south`, `npm run verify-line`, `npm run build-network -w @dart-times/core`, `npm run update-stations -w @dart-times/core`, `npm run update-luas-run-times -w @dart-times/core` (Luas run times from the NTA's GTFS), `npm run update-translink-stops -w @dart-times/core` (Translink's station IDs for NI Railways' ticket button). After `update-stations`, regenerate the Alexa model with `npm run alexa:model`.
 
 Deploy: normally via GitHub Actions — Run workflow on `main` (merges don't deploy). By hand: `npm run deploy -- --profile next-train` (builds web, then CDK deploy to eu-west-1). Needs AWS credentials — don't run without being asked.
 

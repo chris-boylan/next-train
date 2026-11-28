@@ -297,6 +297,35 @@
   fill: var(--glyph-light);
 }
 
+/* Drawn trains (TrainGlyph): the body filled without its own outline, which is drawn last on top of the details. */
+.glyph-fill {
+  stroke: none;
+}
+
+/* A train in its livery (Options → Train icons: Colour). */
+.glyph-livery {
+  fill: var(--livery);
+}
+
+.glyph-outline {
+  fill: none;
+  stroke: var(--glyph-stroke);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+/* A door's edge on a train's front (the Cork 2600's gangway): a thin outline, dashed on a hollow train like the rest. */
+.glyph-door {
+  fill: none;
+  stroke: var(--glyph-stroke);
+  stroke-width: 1.6;
+}
+
+/* The light in a lamp housing, on fronts painted yellow. */
+.glyph-lamp {
+  fill: #ffffff;
+}
+
 /* A tram's pantograph, up to the overhead wire. */
 .glyph-pantograph {
   fill: none;
@@ -370,8 +399,8 @@
   white-space: nowrap;
 }
 
-/* When "Last today" and a late train's times don't both fit, the tag wraps onto a line of its own below the times
-   (wrap-reverse puts the overflow line on top), rather than running off the screen. */
+/* When a tag ("Last today", "Not tracked") and the train's times don't both fit, the tag wraps onto a line of its
+   own below the times (wrap-reverse puts the overflow line on top), rather than running off the screen. */
 .train__meta {
   display: flex;
   flex-wrap: wrap-reverse;
@@ -404,8 +433,15 @@
   stroke-dasharray: 6 4;
 }
 
+.train--scheduled .glyph-outline {
+  stroke-dasharray: 6 4;
+}
+
 .train--scheduled .glyph-window,
-.train--scheduled .glyph-light {
+.train--scheduled .glyph-light,
+.train--scheduled .glyph-paint,
+.train--scheduled .glyph-lamp,
+.train--scheduled .glyph-door {
   opacity: 0.3;
 }
 
@@ -877,4 +913,30 @@
 
 .tracks--only-south .half {
   transform: translateX(calc((var(--lane-width) + var(--lane-gap)) / -2));
+}
+
+/* Buy tickets on irishrail.ie: a square like the options cog, bottom right, clear of the home bar. */
+.ticket-link {
+  position: absolute;
+  right: 16px;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--rule);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.ticket-link:active {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.ticket-link__icon {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
 }

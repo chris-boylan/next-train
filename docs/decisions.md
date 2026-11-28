@@ -6,6 +6,34 @@ entries: if one is reversed, add a new entry and mark the old one **Superseded**
 
 ---
 
+## 2026-11-28 · Each service's train drawn as its real train, in livery or white
+
+**Decision:** the station page draws each service's train from the front as the train that runs it: the DART's
+8100/8500/8600 face, the InterCity's 22000, the Enterprise's driving trailer, the Cork Commuter's 2600 (with its
+gangway door), NI Railways' CAF 3000/4000 and Dublin Commuter's 29000 (the same CAF family, in its own dark green).
+Options → Train icons chooses Colour (full livery, the default) or White (white, black and grey, told apart by shape
+alone). The Luas keeps its tram. Hollow (timetabled and untracked) trains fade their livery like their windows.
+
+**Why:** one train shape for every service said "train" but not which. Irish Rail's data doesn't name the class that
+runs a train (only "DART" or "Train", and a service code), so each service shows its usual train; 22000s that run
+some commuter services show as 29000s. A one-detail-in-colour middle option was tried and dropped: the choice
+people wanted was full colour or none, so both are offered, with colour first.
+
+## 2026-11-28 · A ticket button that opens Irish Rail's planner from the station
+
+**Decision:** station pages for services sold online (Dublin Commuter, InterCity, Enterprise, Cork Commuter) have
+a square ticket button bottom right that opens Irish Rail's journey planner in a new tab with "From" filled by
+`?S=<station>`. Stations in Northern Ireland (NI Railways, and the Enterprise's Belfast, Portadown and Newry, which Translink
+sells for) open Translink's "Plan and buy" the same way, by Translink's own station ID (generated, as its planner
+needs one). Not the DART or the Luas. It fills only "From": the destination is left to the person,
+even when the page's "Going to" filter is set.
+
+**Why:** a link is only worth having if it saves typing the station, and the planner, which is also where tickets
+are bought, reads `?S=` (undocumented; checked in a browser, and our station names resolve). There's no booking API
+or partner deep link to use instead. Because the parameter could change without notice, the daily API check
+watches that the planner is still the HAFAS web app; the worst case is the planner opening with "From" empty.
+Bottom right because the header is full on a phone and the thumb reaches it there.
+
 ## 2026-11-28 · Trams on the home page's other page, not a service tile
 
 **Decision:** the Luas leaves the service picker. The home page has two pages, "Next Train?" (the service picker)

@@ -55,7 +55,8 @@ function storedChoice<T extends string>(key: string, values: readonly T[], fallb
     return () => listeners.delete(listener);
   };
 
-  return () => [useSyncExternalStore(subscribe, () => current), set];
+  // The same value server-side, so components that read a setting can also be rendered outside a browser (tests).
+  return () => [useSyncExternalStore(subscribe, () => current, () => current), set];
 }
 
 /** Where favourite stations show: on each service's map page ("service") or together on the home page ("home"). */
@@ -86,6 +87,12 @@ export function useLiveTrainsPref(): [boolean, (on: boolean) => void] {
   const [choice, setChoice] = useLiveTrainsChoice();
   return [choice === 'on', (on) => setChoice(on ? 'on' : 'off')];
 }
+
+/** How the station page draws DART, InterCity and Enterprise trains: in their full livery (the default), or plain
+ *  white, told apart by shape. */
+export type TrainIcons = 'colour' | 'white';
+
+export const useTrainIcons = storedChoice<TrainIcons>('dart-times:train-icons', ['colour', 'white'], 'colour');
 
 /** The home page: trains (the service list, the default) or trams (the Luas map), switched by swiping across it
  *  or by the indicator beside the title, and remembered. */

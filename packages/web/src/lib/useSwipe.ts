@@ -4,6 +4,17 @@ import { useRef, type TouchEvent } from 'react';
 const MIN_DISTANCE = 60;
 const MIN_RATIO = 2;
 
+/**
+ * Which way a finger went from `from` to `to`, if it was a swipe across: far enough, and much more across than down.
+ * "left" when it moved left (the next page comes in from the right).
+ */
+export function swipeDirection(from: { x: number; y: number }, to: { x: number; y: number }): 'left' | 'right' | undefined {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  if (Math.abs(dx) < MIN_DISTANCE || Math.abs(dx) < MIN_RATIO * Math.abs(dy)) return undefined;
+  return dx < 0 ? 'left' : 'right';
+}
+
 export interface SwipeHandlers {
   onTouchStart: (e: TouchEvent) => void;
   onTouchEnd: (e: TouchEvent) => void;
@@ -26,11 +37,9 @@ export function useSwipe(onLeft: () => void, onRight: () => void): SwipeHandlers
       const touch = e.changedTouches[0];
       start.current = undefined;
       if (!from || !touch) return;
-      const dx = touch.clientX - from.x;
-      const dy = touch.clientY - from.y;
-      if (Math.abs(dx) < MIN_DISTANCE || Math.abs(dx) < MIN_RATIO * Math.abs(dy)) return;
-      if (dx < 0) onLeft();
-      else onRight();
+      const direction = swipeDirection(from, { x: touch.clientX, y: touch.clientY });
+      if (direction === 'left') onLeft();
+      else if (direction === 'right') onRight();
     },
   };
 }

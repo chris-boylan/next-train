@@ -33,6 +33,7 @@ import { DeparturesSheet } from '../components/DeparturesSheet';
 import { Sheet } from '../components/Sheet';
 import { JOURNEY_CLOSE_MS, type JourneyOrigin, JourneyView, RETURN_FADE_DELAY_MS, RETURN_FADE_MS } from '../components/JourneyView';
 import { TrainGlyph } from '../components/TrainGlyph';
+import { TicketLink, ticketSite } from '../components/TicketLink';
 import { DueIn } from '../components/DueIn';
 import { Caps, useI18n } from '../lib/i18n';
 import { OptionsMenu } from '../components/OptionsMenu';
@@ -213,6 +214,8 @@ export function TrackView({
   const dimmed = (direction: Direction) => !!goingDirection && goingDirection !== direction;
   // A Luas stop on the city-centre loop is served one way only: only its one track is drawn, in the middle.
   const unserved = service.id === 'luas' ? luasUnservedAt(station.code) : undefined;
+  // Where to buy tickets from here (Irish Rail's or Translink's site), if they're sold online.
+  const tickets = ticketSite(service.id, station);
   const laneDimmed = (direction: Direction) => dimmed(direction);
   // Its unserved track isn't drawn at all: the one track it has runs down the middle of the screen.
   const drawn = (direction: Direction) => unserved !== direction;
@@ -474,6 +477,9 @@ export function TrackView({
             </p>
           )}
         </section>
+
+        {/* Inside the tracks, so it fades with them when a train's look-ahead opens. */}
+        {tickets && <TicketLink to={tickets} />}
 
         {journey && (
           <JourneyView
@@ -787,7 +793,7 @@ function Trains({
                 aria-label={t.journey.open(destinationName(d))}
                 onClick={(e) => onOpen(d, e.currentTarget.parentElement?.querySelector('.train__glyph') ?? null)}
               />
-              <TrainGlyph tram={d.category === 'luas'} />
+              <TrainGlyph train={d} />
               <div className="train__info">
                 <span className={`train__due${d.dueInMins <= 0 ? ' train__due--now' : ''}`}>
                   {d.dueInMins <= 0 ? t.due : <DueIn mins={d.dueInMins} />}
@@ -798,12 +804,12 @@ function Trains({
                 {/* Late: scheduled time struck through, the delay, then the expected time (delay already included). */}
                 <span className="train__meta">
                   {d.trainCode === lastTodayCode && <span className="train__last">{t.lastToday}</span>}
+                  {/* Its own item, like "Last today": when it and the time don't both fit, it wraps onto a line of
+                      its own rather than pushing the time off the screen. */}
+                  {d.untracked && <span className="train__timetable">{t.notTracked}</span>}
                   <span className="train__times">
                     {d.untracked ? (
-                      <>
-                        <span className="train__timetable">{t.notTracked}</span>
-                        <span className="train__planned">{d.scheduledDepart}</span>
-                      </>
+                      <span className="train__planned">{d.scheduledDepart}</span>
                     ) : d.lateMins > 0 ? (
                       <>
                         <s className="train__scheduled">{d.scheduledDepart}</s>
@@ -876,7 +882,7 @@ function TimetabledTrain({
       aria-label={`${t.describeScheduled(destination, d.time)}${d.tomorrow ? `, ${t.tomorrow}` : ''}${lastToday ? `, ${t.lastTrainToday}` : ''}`}
     >
       <button className="train__open" aria-label={t.whyTimetabled(destination)} onClick={onOpen} />
-      <TrainGlyph />
+      <TrainGlyph train={d} />
       <div className="train__info">
         <span className={`train__due${clock ? ' train__due--clock' : ''}`}>
           {clock ? d.time : <DueIn mins={d.minutes - Math.floor(irishSecondsOfDay(now.getTime()) / 60)} />}
