@@ -8,9 +8,8 @@
  *
  * Red: Tallaght and Saggart branches meet at Belgard; in the city, trams carry on from Busáras either to The Point
  * or to Connolly (a short spur). Green: Brides Glen (or Sandyford) to Broombridge (or Parnell). Through the city
- * centre it's a one-way loop between Dawson and Dominick: northbound by Westmoreland, O'Connell – GPO and O'Connell
- * – Upper; southbound by Parnell, Marlborough and Trinity. Trams "to Parnell" go round the loop and finish there.
- * So those stops each see trams one way only (the feed says "No Northbound/Southbound Service" for the other).
+ * centre it's a one-way loop between Dawson and Dominick (see LOOP_ONE_WAY), so those stops each see trams one way
+ * only (the feed says "No Northbound/Southbound Service" for the other).
  */
 import { directionBetween, type Line } from './line';
 import type { LuasClient, RawLuasForecast, RawLuasTram } from './luasClient';
@@ -33,9 +32,20 @@ const TO_CONNOLLY = lu(['CON']);
 
 const GREEN_SOUTH = lu(['BRI', 'CHE', 'LAU', 'CCK', 'BAW', 'LEO', 'GAL', 'GLE', 'CPK', 'SAN', 'STI', 'KIL', 'BAL', 'DUN', 'WIN', 'MIL', 'COW', 'BEE', 'RAN', 'CHA', 'HAR', 'STS', 'DAW']);
 const GREEN_NORTH = lu(['DOM', 'BRD', 'GRA', 'PHI', 'CAB', 'BRO']);
-/** The city-centre loop: the northbound way round, and the southbound way (listed south to north like the rest). */
+/**
+ * The city-centre loop, as the feed serves it (checked 28 Nov 2026): northbound by Westmoreland, O'Connell – GPO
+ * and O'Connell – Upper, then on to Dominick (Broombridge trams) or round into Parnell, where "Parnell" trams end;
+ * southbound from Dominick by Parnell, Marlborough and Trinity. Listed south to north like the rest.
+ */
 const LOOP_NORTHBOUND = lu(['WES', 'OGP', 'OUP']);
 const LOOP_SOUTHBOUND = lu(['TRY', 'MAR', 'PAR']);
+/** The loop's track, each piece run one way only. */
+const LOOP_ONE_WAY: [string, string][] = (
+  [
+    ['DAW', 'WES'], ['WES', 'OGP'], ['OGP', 'OUP'], ['OUP', 'DOM'], ['OUP', 'PAR'],
+    ['DOM', 'PAR'], ['PAR', 'MAR'], ['MAR', 'TRY'], ['TRY', 'DAW'],
+  ] as const
+).map(([a, b]) => [`LU_${a}`, `LU_${b}`]);
 
 export const LUAS_RED_LINE: Line = {
   paths: [
@@ -51,9 +61,22 @@ export const LUAS_GREEN_LINE: Line = {
   paths: [
     [...GREEN_SOUTH, ...LOOP_NORTHBOUND, ...GREEN_NORTH],
     [...GREEN_SOUTH, ...LOOP_SOUTHBOUND, ...GREEN_NORTH],
+    // "Parnell" trams: up the northbound side and round into Parnell.
+    [...GREEN_SOUTH, ...LOOP_NORTHBOUND, 'LU_PAR'],
   ],
   termini: { Northbound: lu(['BRO', 'PAR']), Southbound: lu(['BRI', 'SAN']) },
+  oneWay: LOOP_ONE_WAY,
 };
+
+/** The track no tram serves at a stop on the city-centre loop (each side is one way), if it's one of them. */
+export function luasUnservedAt(code: string): Direction | undefined {
+  if (LOOP_NORTHBOUND.includes(code)) return 'Southbound';
+  if (LOOP_SOUTHBOUND.includes(code)) return 'Northbound';
+  return undefined;
+}
+
+/** The loop's one-way track, for the map's arrows. */
+export const LUAS_ONE_WAY = LOOP_ONE_WAY;
 
 export const LUAS_ROUTES: LuasRoute[] = [
   { id: 'red', line: LUAS_RED_LINE },
@@ -67,6 +90,7 @@ export const LUAS_LINE: Line = {
     Northbound: [...LUAS_RED_LINE.termini.Northbound, ...LUAS_GREEN_LINE.termini.Northbound],
     Southbound: [...LUAS_RED_LINE.termini.Southbound, ...LUAS_GREEN_LINE.termini.Southbound],
   },
+  oneWay: LOOP_ONE_WAY,
 };
 
 /** Every Luas stop, each once, in route order. */

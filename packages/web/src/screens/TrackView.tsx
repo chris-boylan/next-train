@@ -9,6 +9,7 @@ import {
   type Direction,
   directionBetween,
   hasCompassDirections,
+  luasUnservedAt,
   hasLiveData,
   irishSecondsOfDay,
   placeDeparture,
@@ -210,6 +211,9 @@ export function TrackView({
   const shownIn = (direction: Direction) =>
     goingTo && goingDirection === direction ? departuresGoingTo(allIn(direction), station.code, goingTo, line) : allIn(direction);
   const dimmed = (direction: Direction) => !!goingDirection && goingDirection !== direction;
+  // A Luas stop on the city-centre loop is served one way only: the other track is drawn dimmed, with a note.
+  const unserved = service.id === 'luas' ? luasUnservedAt(station.code) : undefined;
+  const laneDimmed = (direction: Direction) => dimmed(direction) || unserved === direction;
   const goingToName = goingTo && nameOf(goingTo);
   const name = stationName(station);
 
@@ -252,7 +256,11 @@ export function TrackView({
   // The Luas feed's word on a track: the line's disruption message if there is one, else whether trams stop here
   // this way at all (one side of the city-centre loop doesn't).
   const luasNoteFor = (direction: Direction) =>
-    data?.luas?.disrupted ? data.luas.message : data?.luas?.noService.includes(direction) ? t.luasOneWay : undefined;
+    data?.luas?.disrupted
+      ? data.luas.message
+      : unserved === direction || data?.luas?.noService.includes(direction)
+        ? t.luasOneWay
+        : undefined;
   const trainsFor = (direction: Direction, ends: string[]) => {
     const hidden = dimmed(direction);
     const live = hidden ? [] : shownIn(direction);
@@ -407,9 +415,9 @@ export function TrackView({
         {/* Top half: southbound trains on their way in, nearest at the bottom. Green arrow continues up to its termini. */}
         <section className="half half--top" ref={halfRef} aria-label={compass ? t.towards(t.direction.Southbound, list(south.map(nameOf))) : directionName('Southbound')}>
           {/* Orange runs edge to edge through its trains; green carries on past the platform to its arrowhead halfway up. */}
-          {north.length > 0 && <Lane direction="Northbound" withHead dimmed={dimmed('Northbound')} />}
-          <Lane direction="Southbound" dimmed={dimmed('Southbound')} />
-          <p className={`terminus terminus--north${dimmed('Northbound') ? ' terminus--dimmed' : ''}`} aria-hidden>
+          {north.length > 0 && <Lane direction="Northbound" withHead dimmed={laneDimmed('Northbound')} />}
+          <Lane direction="Southbound" dimmed={laneDimmed('Southbound')} />
+          <p className={`terminus terminus--north${laneDimmed('Northbound') ? ' terminus--dimmed' : ''}`} aria-hidden>
             <Termini codes={north} />
           </p>
           {trainsFor('Southbound', south)}
@@ -449,10 +457,10 @@ export function TrackView({
         {/* Bottom half: northbound trains on their way in, nearest at the top. Orange arrow continues down to its termini. */}
         <section className="half half--bottom" aria-label={compass ? t.towards(t.direction.Northbound, list(north.map(nameOf))) : directionName('Northbound')}>
           {/* Green runs edge to edge through its trains; orange carries on past the platform to its arrowhead halfway down. */}
-          <Lane direction="Northbound" dimmed={dimmed('Northbound')} />
-          {south.length > 0 && <Lane direction="Southbound" withHead dimmed={dimmed('Southbound')} />}
+          <Lane direction="Northbound" dimmed={laneDimmed('Northbound')} />
+          {south.length > 0 && <Lane direction="Southbound" withHead dimmed={laneDimmed('Southbound')} />}
           {trainsFor('Northbound', north)}
-          <p className={`terminus terminus--south${dimmed('Southbound') ? ' terminus--dimmed' : ''}`} aria-hidden>
+          <p className={`terminus terminus--south${laneDimmed('Southbound') ? ' terminus--dimmed' : ''}`} aria-hidden>
             <Termini codes={south} />
           </p>
         </section>

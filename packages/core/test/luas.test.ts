@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { adjacentStations, directionBetween } from '../src/line';
-import { LUAS_GREEN_LINE, LUAS_LINE, LUAS_RED_LINE, LUAS_STATION_CODES, toLuasDepartures } from '../src/luas';
+import { adjacentStations, directionBetween, terminiFrom } from '../src/line';
+import { LUAS_GREEN_LINE, LUAS_LINE, LUAS_RED_LINE, LUAS_STATION_CODES, luasUnservedAt, toLuasDepartures } from '../src/luas';
 import { LuasClient, parseLuasForecast, parseLuasStops } from '../src/luasClient';
 import { SERVICES } from '../src/services';
 import { findStationByCode, findStationByName, LUAS_STATIONS, searchStations } from '../src/stations';
@@ -45,9 +45,25 @@ describe('Luas lines', () => {
   it('branches at Belgard and Busáras, and goes round the city-centre loop one way each side', () => {
     expect(adjacentStations('LU_BEL', LUAS_LINE).south.sort()).toEqual(['LU_COO', 'LU_FET']);
     expect(adjacentStations('LU_BUS', LUAS_LINE).north.sort()).toEqual(['LU_CON', 'LU_GDK']);
-    // Northbound by Westmoreland and O'Connell; southbound by Parnell, Marlborough and Trinity.
-    expect(adjacentStations('LU_WES', LUAS_LINE)).toEqual({ north: ['LU_OGP'], south: ['LU_DAW'] });
-    expect(adjacentStations('LU_MAR', LUAS_LINE)).toEqual({ north: ['LU_PAR'], south: ['LU_TRY'] });
+  });
+
+  it("runs the city-centre loop one way each side, as the feed serves it", () => {
+    // Next stations only where trams go: northbound by Westmoreland and O'Connell, southbound by Parnell,
+    // Marlborough and Trinity; O'Connell – Upper leads on to Dominick or round into Parnell.
+    expect(adjacentStations('LU_WES', LUAS_LINE)).toEqual({ north: ['LU_OGP'], south: [] });
+    expect(adjacentStations('LU_MAR', LUAS_LINE)).toEqual({ north: [], south: ['LU_TRY'] });
+    expect(adjacentStations('LU_OUP', LUAS_LINE)).toEqual({ north: ['LU_DOM', 'LU_PAR'], south: [] });
+    expect(adjacentStations('LU_PAR', LUAS_LINE)).toEqual({ north: [], south: ['LU_MAR'] });
+    expect(adjacentStations('LU_DAW', LUAS_LINE)).toEqual({ north: ['LU_WES'], south: ['LU_STS'] });
+    expect(adjacentStations('LU_DOM', LUAS_LINE)).toEqual({ north: ['LU_BRD'], south: ['LU_PAR'] });
+    // Where trams go from each side: Westmoreland only towards Broombridge and Parnell, Trinity only south.
+    expect(terminiFrom('LU_WES', 'Northbound', LUAS_LINE).sort()).toEqual(['LU_BRO', 'LU_PAR']);
+    expect(terminiFrom('LU_WES', 'Southbound', LUAS_LINE)).toEqual([]);
+    expect(terminiFrom('LU_TRY', 'Northbound', LUAS_LINE)).toEqual([]);
+    expect(terminiFrom('LU_RAN', 'Northbound', LUAS_LINE).sort()).toEqual(['LU_BRO', 'LU_PAR']);
+    expect(luasUnservedAt('LU_WES')).toBe('Southbound');
+    expect(luasUnservedAt('LU_PAR')).toBe('Northbound');
+    expect(luasUnservedAt('LU_DAW')).toBeUndefined();
   });
 });
 

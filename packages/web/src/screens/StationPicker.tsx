@@ -6,7 +6,7 @@ import { commuterSchematicFor } from '../maps/data/commuterSchematic';
 import { INTERCITY_ROUTE_MAP } from '../maps/data/intercityRoutes';
 import { intercitySchematic, nirSchematic } from '../maps/data/intercitySchematic';
 import { NIR_ROUTE_MAP } from '../maps/data/nirRoutes';
-import { LUAS_ROUTE_MAP } from '../maps/data/luasRoutes';
+import { LuasMap } from '../maps/LuasMap';
 import { NETWORK_TERMINI, withBreaks } from '../maps/data/networkSchematic';
 import { LineMap } from '../maps/LineMap';
 import { useScrollMemory } from '../lib/scrollMemory';
@@ -163,16 +163,7 @@ export function StationPicker({
             {...mapProps}
           />
         ) : service.id === 'luas' ? (
-          <RoutesMap
-            view={routesView}
-            onViewChange={onRoutesViewChange}
-            service={service}
-            routeMap={LUAS_ROUTE_MAP}
-            routeName={(id) => t.luasRoutes[id]}
-            // No hand-placed map yet: each line is drawn as a tree from its city end.
-            hubs={['LU_TPT', 'LU_BRO']}
-            {...mapProps}
-          />
+          <LuasMap view={routesView} onViewChange={onRoutesViewChange} service={service} {...mapProps} />
         ) : SCHEMATICS[service.id] ? (
           <SchematicMap service={service} schematic={SCHEMATICS[service.id]!} {...mapProps} {...liveProps} />
         ) : service.line.paths.length > 1 ? (
